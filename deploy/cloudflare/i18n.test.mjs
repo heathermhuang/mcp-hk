@@ -54,3 +54,7 @@ test('translated form labels never replace their nested inputs',()=>{
     if (/\bdata-i18n="/.test(match[1])) assert.doesNotMatch(match[2],/<(?:input|textarea|select)\b/);
   }
 });
+
+test('static translation does not overwrite generated HTTP/MCP request examples',()=>{
+  assert.doesNotMatch(read('coverage.html'), /<pre[^>]*\bdata-i18n=/);
+});
