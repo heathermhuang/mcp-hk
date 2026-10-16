@@ -1,40 +1,7 @@
 /* No model calls or demo fixtures: every displayed record comes from the API. */
 (() => {
   const root = document.getElementById('mhk-preview');
-  Object.assign(translations.en, {
-    sample: 'EXAMPLE REQUEST', illustrative: 'Official sources · explicit provenance',
-    sampleBadge: 'PUBLIC SOURCE DATA', searchLabel: 'LOOK UP A HONG KONG ADDRESS',
-    fixtureNote: 'Choose a returned candidate before searching nearby. ALS is not an exhaustive address register.',
-    districtAddress: 'Selected source address', populationLabel: 'DISTRICT POPULATION',
-    populationNote: 'Published district-wide figure, not population within the search radius.',
-    connectionNote: 'Government catalogue tools discover metadata and source links. The resource layer queries supported inventoried files and APIs; Open data shows actual validation and failures. Bespoke packs cover addresses, restaurant licences, district population and independent Plate.hk records.',
-    previewFooter: 'OPEN-SOURCE DEVELOPMENT BUILD', endpointLabel: 'THIS INSTANCE’S MCP ENDPOINT',
-    provenanceLabel: 'Response provenance', getConnected: 'Connect your AI',
-    question: '“Find licensed restaurants near this address.”',
-    navPlates: 'Plate.hk', packsCount: 'Three government packs + one independent provider',
-    externalBadge: '04 / FIRST EXTERNAL PACK · PLATE.HK', plateTitle: 'A plate. Its auction history.',
-    plateDesc: 'Search historical auction records and source-linked comparisons from Plate.hk, an independent Hong Kong data provider.',
-    tryPlate: 'Explore Plate.hk ↗', plateQueryLabel: 'HONG KONG REGISTRATION MARK',
-    plateHistory: 'Auction history', plateCompare: 'Historical comparisons',
-    plateCollection: 'Collection', plateMatch: 'History match', plateExact: 'Exact', plateContains: 'Contains', plateNext: 'Next page',
-    plateCaveat: 'Historical auction amounts are not current valuations, asking prices, ownership or availability. Plate.hk is independent; verify records with their original sources. Comparisons use their own cohort method, rather than the history filters.'
-  });
-  Object.assign(translations.zh, {
-    sample: '查詢示例', illustrative: '官方來源 · 清楚標示出處', sampleBadge: '公共來源資料',
-    searchLabel: '查詢香港地址', fixtureNote: '請選擇傳回的地址，再搜尋附近食肆。地址服務並非完整地址名冊。',
-    districtAddress: '已選來源地址', populationLabel: '地區人口',
-    populationNote: '已發表的全區人口，並非搜尋範圍內的人口。',
-    connectionNote: '政府目錄工具可搜尋資料集描述與來源連結。資源層可查詢已收錄及支援的檔案與 API；Open data 顯示實際驗證及失敗紀錄。專用數據包包括地址、食肆牌照、地區人口及獨立供應商 Plate.hk 的紀錄。',
-    previewFooter: '開源開發版本', endpointLabel: '本實例的 MCP 端點', provenanceLabel: '回應資料來源',
-    navPlates: 'Plate.hk', packsCount: '三個政府數據包 + 一個獨立供應商',
-    externalBadge: '04 / 首個外部數據包 · PLATE.HK', plateTitle: '一個車牌，歷年拍賣紀錄。',
-    plateDesc: '透過香港獨立數據供應商 Plate.hk，查詢歷年拍賣紀錄及附原始來源的歷史比較。',
-    tryPlate: '探索 Plate.hk ↗', plateQueryLabel: '香港車輛登記號碼',
-    plateHistory: '拍賣紀錄', plateCompare: '歷史比較', plateCollection: '資料集',
-    plateMatch: '紀錄比對方式', plateExact: '完全符合', plateContains: '包含', plateNext: '下一頁',
-    plateCaveat: '歷史拍賣金額並非現時估值、叫價、擁有權或可用狀態。Plate.hk 為獨立供應商，請核對紀錄所附原始來源。歷史比較使用其比較群組方法，不套用拍賣紀錄篩選。'
-  });
-  let state = {screen: location.pathname === '/plates' ? 'plates' : location.pathname === '/sources' ? 'sources' : location.pathname === '/demo' ? 'explore' : location.pathname === '/connect' ? 'connect' : 'home', lang: 'en', radius: 500, code: 'http'};
+  let state = {screen: location.pathname === '/plates' ? 'plates' : location.pathname === '/sources' ? 'sources' : location.pathname === '/demo' ? 'explore' : location.pathname === '/connect' ? 'connect' : 'home', lang: MhkI18n.lang, radius: 500, code: 'http'};
   let clientKind = 'codex';
   let selected = null, response = null, population = null, requestQuery = '', pending = false;
   let generation = 0;
@@ -45,32 +12,28 @@
 
   function error(message) { $('#mhk-error').hidden = !message; $('#mhk-error').textContent = message || ''; }
   async function api(path, signal) {
-    const r = await fetch(path, {signal, headers: {'Accept': 'application/json'}});
-    const data = await r.json();
-    if (!r.ok) throw new Error(`${data.error?.code || r.status}: ${data.error?.message || 'Source unavailable'}`);
-    return data;
+    const {fetchPublicJson} = await import('./http.js');
+    return fetchPublicJson(path);
   }
   function render() {
     root.querySelectorAll('[data-page]').forEach(e => e.hidden = e.dataset.page !== state.screen);
-    root.querySelectorAll('[data-screen]').forEach(e => e.setAttribute('aria-pressed', String(e.dataset.screen === state.screen)));
-    root.querySelectorAll('[data-i18n]').forEach(e => e.textContent = translations[state.lang][e.dataset.i18n]);
-    // Only static, application-owned translated headings contain markup.
-    root.querySelectorAll('[data-i18n-html]').forEach(e => e.innerHTML = translations[state.lang][e.dataset.i18nHtml]);
-    $('.mhk-language').textContent = state.lang === 'en' ? '繁' : 'EN';
-    $('.mhk-language').setAttribute('aria-label', state.lang === 'en' ? 'Switch to Traditional Chinese' : 'Switch to English');
-    document.documentElement.lang = state.lang === 'en' ? 'en' : 'zh-Hant';
+    root.querySelectorAll('[data-screen]').forEach(e => { if (e.dataset.screen === state.screen) e.setAttribute('aria-current', 'page'); else e.removeAttribute('aria-current'); });
+    MhkI18n.apply();
+    document.title = MhkI18n.t('pageTitle');
+    renderCoverage();
+    renderStatus();
     const endpoint = location.origin + '/mcp';
     $('[data-dynamic=endpoint]').textContent = endpoint;
     const examples = {codex: `[mcp_servers."mcp.hk"]\nurl = "${endpoint}"\nstartup_timeout_sec = 120`, claude: `claude mcp add --transport http mcp-hk ${endpoint}`, cursor: JSON.stringify({mcpServers: {'mcp.hk': {url: endpoint}}}, null, 2)};
     $('#mhk-install').textContent = examples[clientKind];
-    $('#mhk-client-help').textContent = clientKind === 'cursor' ? 'Add this to .cursor/mcp.json (project) or ~/.cursor/mcp.json (global).' : clientKind === 'claude' ? 'Claude Code requires mcp-hk as its identifier because its CLI does not allow dots. Run the command, then reload the client.' : 'Add this to ~/.codex/config.toml or update its existing mcp.hk section, then reload Codex. The startup window allows accepted data to restore after a cold start.';
+    $('#mhk-client-help').textContent = MhkI18n.t('help_' + clientKind);
     root.querySelectorAll('[data-client]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.client === clientKind)));
     $('#mhk-radius').value = String(state.radius);
     $('.mhk-search button').disabled = pending;
     $('.mhk-found').hidden = !selected;
     if (selected) {
       $('[data-dynamic=address]').textContent = label(selected.address);
-      const districtName = population ? label(population.data.name) : selected.districtId || 'District unavailable';
+      const districtName = population ? label(population.data.name) : selected.districtId || MhkI18n.t('districtUnavailable');
       $('.mhk-found small').textContent = districtName;
     }
     $('.mhk-explore-grid').hidden = !selected;
@@ -90,8 +53,8 @@
       const empty = document.createElement('p'); empty.textContent = state.lang === 'en' ? 'No licence records in this radius.' : '此範圍內沒有牌照記錄。'; list.append(empty);
     }
     const summary = response?.data.summary;
-    $('[data-dynamic=count]').textContent = summary ? `${summary.totalMatched} ${state.lang === 'en' ? 'matching licences · straight-line distance' : '項符合條件的牌照 · 直線距離'}${response.meta.truncated ? ' · ' + response.data.items.length + (state.lang === 'en' ? ' shown' : ' 項已顯示') : ''}` : pending ? 'Loading…' : '';
-    if (summary?.spatialCoverage.unlocatedCount) $('[data-dynamic=count]').textContent += ` · ${summary.spatialCoverage.unlocatedCount} unlocated records across the nonspatial filters`;
+    $('[data-dynamic=count]').textContent = summary ? `${summary.totalMatched} ${state.lang === 'en' ? 'matching licences · straight-line distance' : '項符合條件的牌照 · 直線距離'}${response.meta.truncated ? ' · ' + response.data.items.length + (state.lang === 'en' ? ' shown' : ' 項已顯示') : ''}` : pending ? MhkI18n.t('loading') : '';
+    if (summary?.spatialCoverage.unlocatedCount) $('[data-dynamic=count]').textContent += ` · ${summary.spatialCoverage.unlocatedCount} ${MhkI18n.t('unlocated')}`;
     const more = $('#mhk-more'); more.hidden = !response?.meta.nextCursor; more.disabled = pending;
     more.textContent = state.lang === 'en' ? 'Load more' : '載入更多';
     $('[data-dynamic=groups]').textContent = (summary?.byLicenceType || []).map(g => `${g.licenceType}: ${g.count}`).join(' · ');
@@ -101,18 +64,18 @@
     $('.mhk-pop-value').textContent = population ? population.data.population.toLocaleString(state.lang === 'en' ? 'en-HK' : 'zh-HK') : '—';
     $('[data-dynamic=year]').textContent = population?.data.referencePeriod || '—';
     if (selected && !population && !pending) $('[data-i18n=populationNote]').textContent = state.lang === 'en' ? 'District statistic unavailable for this selected address.' : '此地址所屬地區的統計資料暫時不可用。';
-    if (population) $('[data-i18n=populationNote]').textContent = `${translations[state.lang].populationNote} ${population.data.areaKm2} km² · ${population.data.populationDensity.toLocaleString()} persons/km²`;
+    if (population) $('[data-i18n=populationNote]').textContent = `${translations[state.lang].populationNote} ${population.data.areaKm2} km² · ${population.data.populationDensity.toLocaleString()} ${MhkI18n.t('personsKm')}`;
     root.querySelectorAll('[data-code]').forEach(e => e.setAttribute('aria-pressed', String(e.dataset.code === state.code)));
     let code = `GET ${location.origin}/api/v1/restaurants?${requestQuery || 'lat=…&lon=…&includeSummary=true'}`;
     if (state.code === 'mcp') code = JSON.stringify({tool: 'hk_restaurant_search', arguments: selected ? {lat: selected.latitude, lon: selected.longitude, radiusM: state.radius, includeSummary: true, lang: state.lang === 'en' ? 'en' : 'zh-Hant'} : {}}, null, 2);
-    if (state.code === 'json') code = JSON.stringify(response || {state: 'Choose an address candidate first'}, null, 2);
+    if (state.code === 'json') code = JSON.stringify(response || {state: MhkI18n.t('chooseAddress')}, null, 2);
     $('[data-dynamic=code]').textContent = code;
     const provenance = [ ...(response?.provenance || []), ...(population?.provenance || []) ];
     const sourceBox = $('.mhk-code-source'); sourceBox.replaceChildren();
     for (const p of provenance) {
       const line = document.createElement('p');
       const a = document.createElement('a'); a.href = p.sourceUrl; a.textContent = p.attribution; a.rel = 'noreferrer';
-      const stamp = document.createElement('span'); stamp.textContent = ` · checked ${p.lastCheckedAt}${p.stale ? ' · STALE' : ''}${p.referencePeriod ? ` · year ${p.referencePeriod}` : ''}`;
+      const stamp = document.createElement('span'); stamp.textContent = ` · ${MhkI18n.t('checked')} ${p.lastCheckedAt}${p.stale ? ' · ' + MhkI18n.t('stale') : ''}${p.referencePeriod ? ` · ${MhkI18n.t('year')} ${p.referencePeriod}` : ''}`;
       line.append(a, stamp); sourceBox.append(line);
     }
     if (!provenance.length) sourceBox.textContent = translations[state.lang].provenanceLabel;
@@ -132,7 +95,7 @@
       if (data.method) {
         const method = document.createElement('p'); method.className = 'mhk-note'; method.textContent = data.method; box.append(method);
         const stats = document.createElement('p');
-        stats.textContent = data.statistics ? `Historical HKD · P25 ${data.statistics.p25.toLocaleString()} · Median ${data.statistics.median.toLocaleString()} · P75 ${data.statistics.p75.toLocaleString()}` : (state.lang === 'en' ? 'No qualified historical price distribution.' : '沒有符合條件的歷史價格分佈。');
+        stats.textContent = data.statistics ? `${MhkI18n.t('historicalHkd')} · P25 ${data.statistics.p25.toLocaleString()} · ${MhkI18n.t('median')} ${data.statistics.median.toLocaleString()} · P75 ${data.statistics.p75.toLocaleString()}` : (state.lang === 'en' ? 'No qualified historical price distribution.' : '沒有符合條件的歷史價格分佈。');
         box.append(stats);
       }
       for (const record of data.items) {
@@ -161,7 +124,7 @@
       $('#mhk-plate-code').textContent = `GET ${location.origin}/api/v1/plates/${kind}?${new URLSearchParams(params)}\n\nMCP: ${kind === 'search' ? 'hk_plate_search' : 'hk_plate_comparables'}(${JSON.stringify(params, null, 2)})`;
     }
     const p = plateResult?.provenance[0];
-    $('#mhk-plate-source').textContent = p ? `${p.attribution} · checked ${p.lastCheckedAt} · 5-minute response cache` : '';
+    $('#mhk-plate-source').textContent = p ? `${p.attribution} · ${MhkI18n.t('checked')} ${p.lastCheckedAt} · ${MhkI18n.t('fiveMinuteCache')}` : '';
   }
 
   async function loadPlates(kind, params) {
@@ -185,7 +148,7 @@
   async function loadNearby() {
     const token = ++generation;
     if (!selected) return;
-    if (selected.latitude == null || selected.longitude == null) { error('This source address has no verified coordinates. Choose another candidate.'); return; }
+    if (selected.latitude == null || selected.longitude == null) { error(MhkI18n.t('noCoordinates')); return; }
     pending = true; response = null; population = null; error(''); render();
     requestQuery = new URLSearchParams({lat: selected.latitude, lon: selected.longitude, radiusM: state.radius, includeSummary: 'true', lang: state.lang === 'en' ? 'en' : 'zh-Hant'}).toString();
     const tasks = [api('/api/v1/restaurants?' + requestQuery), selected.districtId ? api('/api/v1/districts/' + encodeURIComponent(selected.districtId) + '/statistics') : Promise.resolve(null)];
@@ -225,26 +188,41 @@
     } catch (e) { if (token === generation) error(e.message); }
     finally { if (token === generation) { pending = false; render(); } }
   });
-  root.querySelectorAll('[data-screen],[data-go]').forEach(b => b.addEventListener('click', () => { state.screen = b.dataset.screen || b.dataset.go; render(); }));
-  $('.mhk-language').addEventListener('click', () => { state.lang = state.lang === 'en' ? 'zh' : 'en'; render(); });
+  function screenFromPath() { return {'/demo':'explore','/connect':'connect','/plates':'plates','/sources':'sources'}[location.pathname] || 'home'; }
+  root.querySelectorAll('[data-screen],[data-go]').forEach(b => b.addEventListener('click', e => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault(); state.screen = b.dataset.screen || b.dataset.go;
+    const path = {home:'/',explore:'/demo',connect:'/connect',plates:'/plates',sources:'/sources'}[state.screen];
+    history.pushState(null, '', path + '?lang=' + MhkI18n.locale); render();
+  }));
+  window.addEventListener('popstate', () => { state.screen = screenFromPath(); render(); });
+  window.addEventListener('mhk:language', () => { state.lang = MhkI18n.lang; render(); });
   $('#mhk-radius').addEventListener('change', e => { state.radius = Number(e.target.value); loadNearby(); });
   root.querySelectorAll('[data-code]').forEach(b => b.addEventListener('click', () => { state.code = b.dataset.code; render(); }));
 
+  let sourceStatus = null, statusError = false, inventory = null, inventoryError = false;
+  function renderStatus() {
+    const box = $('#mhk-status'); box.replaceChildren();
+    if (!sourceStatus) { box.textContent = MhkI18n.t(statusError ? 'statusUnavailable' : 'loading'); return; }
+    for (const source of sourceStatus.sources) {
+      const item = document.createElement('article');
+      const name = document.createElement('h2'); name.textContent = `${MhkI18n.t('source_' + source.sourceId)} · ${MhkI18n.t(source.providerType === 'independent' ? 'independent' : 'government')}`;
+      const status = document.createElement('p'); status.textContent = MhkI18n.t(source.stale ? 'noRecentCheck' : 'recentCheck') + (source.recordCount ? ` · ${source.recordCount.toLocaleString()} ${MhkI18n.t('records')}` : '');
+      const detail = document.createElement('p'); detail.className = 'mhk-small'; detail.textContent = `${MhkI18n.t('lastSuccess')}: ${source.lastSuccess || MhkI18n.t('notChecked')} · ${MhkI18n.t('lastError')}: ${source.lastError || MhkI18n.t('none')}`;
+      const link = document.createElement('a'); link.href = source.sourceUrl; link.textContent = MhkI18n.t(source.providerType === 'independent' ? 'providerData' : 'officialDataset'); link.rel = 'noreferrer';
+      item.append(name, status, detail, link); box.append(item);
+    }
+  }
+  function renderCoverage() { for (const id of ['#mhk-coverage', '#mhk-source-coverage']) MhkI18n.coverageSummary($(id), inventory, inventoryError); }
   async function status() {
-    try {
-      const result = await api('/api/v1/status');
-      const box = $('#mhk-status'); box.replaceChildren();
-      for (const source of result.sources) {
-        const item = document.createElement('article');
-        const name = document.createElement('h2'); name.textContent = `${source.sourceId} · ${source.providerType === 'independent' ? 'Independent provider' : 'Government source'}`;
-        const status = document.createElement('p'); status.textContent = `${source.stale ? 'No recent successful check' : 'Recent successful source check'}${source.recordCount ? ' · ' + source.recordCount.toLocaleString() + ' records' : ''}`;
-        const detail = document.createElement('p'); detail.className = 'mhk-small'; detail.textContent = `Last success: ${source.lastSuccess || 'not checked'} · Last error: ${source.lastError || 'none'}`;
-        const link = document.createElement('a'); link.href = source.sourceUrl; link.textContent = source.providerType === 'independent' ? 'Provider data & attribution ↗' : 'Official dataset ↗'; link.rel = 'noreferrer';
-        item.append(name, status, detail, link); box.append(item);
-      }
-    } catch (e) { $('#mhk-status').textContent = e.message; }
+    try { sourceStatus = await api('/api/v1/status'); } catch { statusError = true; }
+    renderStatus();
+  }
+  async function coverage() {
+    try { inventory = await api('/api/v1/coverage'); } catch { inventoryError = true; }
+    renderCoverage();
   }
   root.querySelectorAll('[data-client]').forEach(b => b.addEventListener('click', () => { clientKind = b.dataset.client; $('#mhk-copy-status').textContent = ''; render(); }));
-  $('#mhk-copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText($('#mhk-install').textContent); $('#mhk-copy-status').textContent = state.lang === 'en' ? ' Copied' : ' 已複製'; } catch { $('#mhk-copy-status').textContent = ' Select and copy the example above.'; } });
-  render(); status();
+  $('#mhk-copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText($('#mhk-install').textContent); $('#mhk-copy-status').textContent = state.lang === 'en' ? ' Copied' : ' 已複製'; } catch { $('#mhk-copy-status').textContent = MhkI18n.t('copyFallback'); } });
+  render(); status(); coverage();
 })();
