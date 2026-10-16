@@ -1,5 +1,5 @@
 /** Stream authenticated checkpoints; never buffer expanded inventory in Worker memory. */
-export const MAX_BACKUP = 75_000_000;
+export const MAX_BACKUP = 150_000_000;
 
 export async function saveBackup(env: Pick<Env, 'BACKUPS'>, source: Request | Response, reason: string) {
   const length = Number(source.headers.get('content-length'));
@@ -22,4 +22,12 @@ export async function saveBackup(env: Pick<Env, 'BACKUPS'>, source: Request | Re
   const receipt = {key, sha256, createdAt, bytes: length, reason};
   await env.BACKUPS.put('latest.json', JSON.stringify(receipt), {httpMetadata: {contentType: 'application/json'}});
   return receipt;
+}
+
+/** Recovery must name the exact accepted checkpoint before stopping an instance. */
+export async function requireCheckpoint(env: Pick<Env, 'BACKUPS'>, sha256: string) {
+  if (!/^[a-f0-9]{64}$/.test(sha256)) throw new Error('Expected checkpoint checksum required');
+  const object = await env.BACKUPS.head('latest.snapshot.tar.gz');
+  if (!object || object.customMetadata?.sha256 !== sha256 || object.size < 1 || object.size > MAX_BACKUP) throw new Error('Accepted checkpoint changed or is missing');
+  return object;
 }

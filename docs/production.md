@@ -110,4 +110,13 @@ source-check receipts use the existing SQLite store and backup path. The new pac
 is optional for readiness: Plate.hk downtime does not disable the government packs.
 An expired query cache never disguises a provider failure as an empty result.
 
-Expanded inventory recovery uses streamed R2 checkpoints, capped at 75 MB compressed, 300 MB SQLite and 500 MB total restored bytes. Checkpoints carry the authenticated producer checksum; bootstrap independently verifies it. Fixed-length streaming rejects truncated/overflowed uploads before recovery pointers advance. The first expanded restore test recovered a 55 MB checkpoint; see resource contracts for cache and query bounds.
+Expanded inventory recovery uses streamed R2 checkpoints, capped at 150 MB compressed, 500 MB SQLite and 750 MB total restored bytes. Checkpoints carry the authenticated producer checksum; bootstrap independently verifies it. Fixed-length streaming rejects truncated/overflowed uploads before recovery pointers advance. The first expanded restore test recovered a 55 MB checkpoint; see resource contracts for cache and query bounds.
+
+The full audit grew its restore-tested checkpoint to 71 MB before finishing. Streaming remains bounded without holding the archive in Worker memory; the larger bound accommodates full receipts and two metadata generations. The host remains one basic container with no new infrastructure.
+
+After uploading a restore-tested operator seed, `scripts/cloudflare_ops.py restart`
+restarts only the named mcp.hk container against the exact accepted checkpoint SHA.
+The private authenticated endpoint checks the R2 object and acquires the maintenance
+lease before stopping; the next request performs normal authenticated bootstrap.
+A missing or changed checkpoint prevents the stop. Use this controlled recovery
+path to adopt a new inventory seed without waiting for an incidental idle shutdown.

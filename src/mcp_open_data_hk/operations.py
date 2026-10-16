@@ -20,9 +20,9 @@ from starlette.background import BackgroundTask
 
 from .contracts import DomainError
 
-MAX_BACKUP = 75_000_000
-MAX_DATABASE = 300_000_000
-MAX_RESTORE = 500_000_000
+MAX_BACKUP = 150_000_000
+MAX_DATABASE = 500_000_000
+MAX_RESTORE = 750_000_000
 refresh_lock = asyncio.Lock()
 checkpoint_lock = threading.Lock()
 

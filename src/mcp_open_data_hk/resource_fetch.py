@@ -3,12 +3,15 @@
 import asyncio
 import gzip
 import http.client
+import os
+import tempfile
+from pathlib import Path
 import ipaddress
 import socket
 import ssl
 import time
 import zlib
-from urllib.parse import urljoin, urlsplit
+from urllib.parse import quote, urljoin, urlsplit
 
 from .contracts import DomainError
 
@@ -74,17 +77,21 @@ class PinnedHTTPS(PinnedHTTP):
         )
 
 
-def fetch_sync(url, headers=None, maximum=MAX_BYTES):
+def fetch_sync(url, headers=None, maximum=MAX_BYTES, destination=None):
     started = time.monotonic()
     for _ in range(4):
         p = validate_url(url)
         connection = (PinnedHTTPS if p.scheme == "https" else PinnedHTTP)(
             p.hostname, port=p.port, timeout=10
         )
+        output = None
         try:
             connection.request(
                 "GET",
-                p.path + ("?" + p.query if p.query else ""),
+                quote(p.path or "/", safe="/%:@!$&'()*+,;=-._~")
+                + (
+                    "?" + quote(p.query, safe="=&;%:+,/?@!$'()*-._~") if p.query else ""
+                ),
                 headers={
                     "User-Agent": "mcp.hk-resources/0.4 (+https://mcp.hk)",
                     "Accept-Encoding": "gzip",
@@ -94,11 +101,11 @@ def fetch_sync(url, headers=None, maximum=MAX_BYTES):
             response = connection.getresponse()
             meta = {k.lower(): v for k, v in response.getheaders()}
             if response.status in {301, 302, 303, 307, 308}:
-                destination = urljoin(url, meta.get("location", ""))
-                validate_url(destination)
-                if p.scheme == "https" and urlsplit(destination).scheme != "https":
+                redirect_url = urljoin(url, meta.get("location", ""))
+                validate_url(redirect_url)
+                if p.scheme == "https" and urlsplit(redirect_url).scheme != "https":
                     raise DomainError("UNSAFE_SOURCE", "HTTPS downgrade rejected", 422)
-                url = destination
+                url = redirect_url
                 continue
             if response.status == 304:
                 return b"", meta, url, 304
@@ -114,6 +121,9 @@ def fetch_sync(url, headers=None, maximum=MAX_BYTES):
                     "SOURCE_TOO_LARGE", "Source exceeds download budget", 422
                 )
             body = bytearray()
+            length = 0
+            if destination:
+                output = Path(destination).open("wb")
             decoder = (
                 zlib.decompressobj(16 + zlib.MAX_WBITS)
                 if meta.get("content-encoding") == "gzip"
@@ -125,9 +135,13 @@ def fetch_sync(url, headers=None, maximum=MAX_BYTES):
                         "SOURCE_TIMEOUT", "Source exceeded download deadline", 504
                     )
                 if decoder:
-                    chunk = decoder.decompress(chunk, maximum + 1 - len(body))
-                body.extend(chunk)
-                if len(body) > maximum or (decoder and decoder.unconsumed_tail):
+                    chunk = decoder.decompress(chunk, maximum + 1 - length)
+                length += len(chunk)
+                if output:
+                    output.write(chunk)
+                else:
+                    body.extend(chunk)
+                if length > maximum or (decoder and decoder.unconsumed_tail):
                     raise DomainError(
                         "SOURCE_TOO_LARGE",
                         "Decoded source exceeds download budget",
@@ -139,8 +153,10 @@ def fetch_sync(url, headers=None, maximum=MAX_BYTES):
                     "Incomplete or concatenated compressed response",
                     422,
                 )
-            return bytes(body), meta, url, 200
+            return Path(destination) if destination else bytes(body), meta, url, 200
         finally:
+            if output:
+                output.close()
             connection.close()
     raise DomainError("SOURCE_REDIRECT_LIMIT", "Source redirected too many times", 422)
 
@@ -158,3 +174,18 @@ async def fetch(url, headers=None, maximum=MAX_BYTES):
         zlib.error,
     ):
         raise DomainError("SOURCE_UNAVAILABLE", "Source download failed", 502) from None
+
+
+async def fetch_file(url, maximum=128_000_000):
+    fd, name = tempfile.mkstemp(prefix="mcp-hk-resource-", suffix=".source")
+    os.close(fd)
+    path = Path(name)
+    try:
+        return await asyncio.to_thread(fetch_sync, url, None, maximum, path)
+    except Exception as exc:
+        path.unlink(missing_ok=True)
+        if isinstance(exc, DomainError):
+            raise
+        raise DomainError(
+            "SOURCE_UNAVAILABLE", "Streamed source download failed", 502
+        ) from None

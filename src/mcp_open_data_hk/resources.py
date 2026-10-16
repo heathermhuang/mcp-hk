@@ -5,11 +5,16 @@ import hashlib
 import json
 import re
 import time
-from urllib.parse import quote, urlencode, urlsplit, urlunsplit
+import tempfile
+import os
+from pathlib import Path
+from urllib.parse import parse_qs, quote, urlencode, urlsplit, urlunsplit
 
 from .catalogue_store import CatalogueStore
 from .contracts import DomainError
-from .resource_fetch import fetch
+from .resource_fields import selected, MISSING, inspect_nested
+from .resource_fetch import fetch, fetch_file
+from .resource_stream import FileRows
 from .resource_formats import parse
 
 SUPPORTED = {
@@ -90,6 +95,117 @@ async def read_json(url, params=None):
     return value, body, headers, final
 
 
+async def hkma_records(url):
+    p = urlsplit(url)
+    params = {k: v[-1] for k, v in parse_qs(p.query).items()}
+    params.pop("fields", None)
+    params.update(pagesize=1000, offset=0)
+    records = []
+    expected = None
+    hashes = []
+    size = 0
+    page_hashes = set()
+    for _ in range(100):
+        value, body, headers, final = await read_json(params_url(url, params))
+        if value.get("header", {}).get("success") is not True:
+            raise DomainError("SOURCE_API_ERROR", "HKMA rejected the API query", 502)
+        result = value.get("result", {})
+        total = result.get("datasize")
+        batch = result.get("records")
+        if (
+            not isinstance(total, int)
+            or not isinstance(batch, list)
+            or (expected is not None and expected != total)
+        ):
+            raise DomainError(
+                "INCOMPLETE_SOURCE", "HKMA count changed or response was malformed", 422
+            )
+        expected = total
+        if expected > 100000:
+            raise DomainError("SOURCE_TOO_LARGE", "HKMA result exceeds row budget", 422)
+        if len(batch) > 1000 or (not batch and len(records) < expected):
+            raise DomainError(
+                "INCOMPLETE_SOURCE", "HKMA pagination ended before total", 422
+            )
+        signature = hashlib.sha256(
+            json.dumps(batch, sort_keys=True).encode()
+        ).hexdigest()
+        if batch and signature in page_hashes:
+            raise DomainError("INCOMPLETE_SOURCE", "HKMA returned a repeated page", 422)
+        page_hashes.add(signature)
+        hashes.append(hashlib.sha256(body).hexdigest())
+        records.extend(batch)
+        size += len(body)
+        if size > 8_000_000:
+            raise DomainError(
+                "SOURCE_TOO_LARGE",
+                "HKMA pages exceed bounded representation budget",
+                422,
+            )
+        if len(records) == expected:
+            break
+        if len(records) > expected:
+            raise DomainError(
+                "INCOMPLETE_SOURCE", "HKMA returned more rows than total", 422
+            )
+        params["offset"] = len(records)
+    if len(records) != expected:
+        raise DomainError("INCOMPLETE_SOURCE", "HKMA pages incomplete", 422)
+    return (
+        json.dumps(records, ensure_ascii=False).encode(),
+        headers,
+        final,
+        {
+            "apiFamily": "HKMA",
+            "scope": "complete_api_pages_live",
+            "sourceMatched": expected,
+            "pageSourceHashes": hashes,
+            "consistency": "Upstream pages are live; no upstream snapshot token is available.",
+        },
+    )
+
+
+async def census_table(url):
+    p = urlsplit(url)
+    query = parse_qs(p.query)
+    table_id = query.get("id", [""])[0]
+    if not re.fullmatch(r"[0-9]{3}-[0-9]{5}[A-Z]?", table_id):
+        raise DomainError(
+            "API_ADAPTER_REQUIRED", "Census table identifier is not supported", 422
+        )
+    lang = (
+        "tc"
+        if p.path.startswith("/tc/")
+        else "sc" if p.path.startswith("/sc/") else "en"
+    )
+    endpoint = "https://www.censtatd.gov.hk/api/get.php?" + urlencode(
+        {"id": table_id, "lang": lang, "full_series": "1"}
+    )
+    value, body, headers, final = await read_json(endpoint)
+    data = value.get("dataSet")
+    header = value.get("header", {})
+    if (
+        header.get("status", {}).get("code") != 0
+        or not isinstance(data, list)
+        or header.get("count", {}).get("noOfRecords") != len(data)
+    ):
+        raise DomainError(
+            "INCOMPLETE_SOURCE", "Census API table count/schema did not reconcile", 422
+        )
+    return (
+        body,
+        headers,
+        final,
+        {
+            "apiFamily": "C&SD tables",
+            "accessMethod": "official_json_equivalent_for_download_page",
+            "originalResourceUrl": url,
+            "scope": "complete_api_table",
+            "sourceMatched": len(data),
+        },
+    )
+
+
 async def arcgis(url, layer):
     p = urlsplit(url)
     root = urlunsplit(
@@ -122,63 +238,89 @@ async def arcgis(url, layer):
         root + "/query", {"f": "json", "where": "1=1", "returnIdsOnly": "true"}
     )
     ids = identities.get("objectIds")
-    if not isinstance(ids, list) or len(ids) != len(set(ids)) or len(ids) > 100000:
+    if not isinstance(ids, list) or len(ids) != len(set(ids)) or len(ids) > 1_000_000:
         raise DomainError(
             "SOURCE_TOO_LARGE",
             "ArcGIS ID set is invalid or exceeds the row budget",
             422,
         )
-    rows = []
-    size = 0
-    for offset in range(0, len(ids), 100):
-        selected = ids[offset : offset + 100]
-        value, body, _, _ = await read_json(
-            root + "/query",
-            {
-                "f": "json",
-                "objectIds": ",".join(str(i) for i in selected),
-                "outFields": "*",
-                "returnGeometry": "true",
-            },
+    fd, name = tempfile.mkstemp(prefix="mcp-hk-arcgis-", suffix=".json")
+    os.close(fd)
+    path = Path(name)
+    count = 0
+    chain = hashlib.sha256()
+    started = time.monotonic()
+    try:
+        with path.open("wb") as output:
+            output.write(b"[")
+            for offset in range(0, len(ids), 100):
+                if time.monotonic() - started > 120:
+                    raise DomainError(
+                        "SOURCE_TIMEOUT",
+                        "Complete ArcGIS read exceeded its deadline",
+                        504,
+                    )
+                selected = ids[offset : offset + 100]
+                value, body, _, _ = await read_json(
+                    root + "/query",
+                    {
+                        "f": "json",
+                        "objectIds": ",".join(str(i) for i in selected),
+                        "outFields": "*",
+                        "returnGeometry": "true",
+                    },
+                )
+                batch = value.get("features", [])
+                chain.update(hashlib.sha256(body).digest())
+                if (
+                    value.get("exceededTransferLimit")
+                    or {r.get("attributes", {}).get(oid) for r in batch}
+                    != set(selected)
+                    or len(batch) != len(selected)
+                ):
+                    raise DomainError(
+                        "INCOMPLETE_SOURCE",
+                        "ArcGIS page did not contain every requested identity",
+                        502,
+                    )
+                for record in batch:
+                    if count:
+                        output.write(b",")
+                    output.write(json.dumps(record, ensure_ascii=False).encode())
+                    count += 1
+                if output.tell() > 128_000_000:
+                    raise DomainError(
+                        "SOURCE_TOO_LARGE",
+                        "ArcGIS layer exceeds the streamed file budget",
+                        422,
+                    )
+            output.write(b"]")
+        again, _, _, _ = await read_json(
+            root + "/query", {"f": "json", "where": "1=1", "returnIdsOnly": "true"}
         )
-        batch = value.get("features", [])
-        size += len(body)
-        if size > 8_000_000:
+        if set(again.get("objectIds", [])) != set(ids):
             raise DomainError(
-                "SOURCE_TOO_LARGE",
-                "ArcGIS complete layer exceeds the response budget",
-                422,
+                "SOURCE_CHANGED", "ArcGIS ID set changed during reading", 409
             )
-        if (
-            value.get("exceededTransferLimit")
-            or {r.get("attributes", {}).get(oid) for r in batch} != set(selected)
-            or len(batch) != len(selected)
-        ):
-            raise DomainError(
-                "INCOMPLETE_SOURCE",
-                "ArcGIS page did not contain every requested identity",
-                502,
-            )
-        rows.extend(batch)
-    again, _, _, _ = await read_json(
-        root + "/query", {"f": "json", "where": "1=1", "returnIdsOnly": "true"}
-    )
-    if set(again.get("objectIds", [])) != set(ids):
-        raise DomainError("SOURCE_CHANGED", "ArcGIS ID set changed during reading", 409)
-    body = json.dumps(rows, sort_keys=True).encode()
-    return (
-        body,
-        {"content-type": "application/json"},
-        root,
-        {
+        extra = {
             "apiFamily": "ArcGIS",
             "scope": "complete_layer_id_set",
             "sourceFields": metadata.get("fields"),
+            "sourceMatched": len(ids),
+            "pageResponseChainHash": chain.hexdigest(),
             "coordinateReferenceSystem": metadata.get("extent", {}).get(
                 "spatialReference"
             ),
-        },
-    )
+        }
+        if path.stat().st_size <= 8_000_000:
+            body = path.read_bytes()
+            path.unlink()
+        else:
+            body = path
+        return body, {"content-type": "application/json"}, root, extra
+    except BaseException:
+        path.unlink(missing_ok=True)
+        raise
 
 
 async def wfs(url, type_name):
@@ -307,6 +449,18 @@ class Resources:
                     ):
                         body, headers, final, extra = await arcgis(url, layer)
                         fmt = "JSON"
+                    elif urlsplit(url).hostname == "api.hkma.gov.hk":
+                        body, headers, final, extra = await hkma_records(url)
+                        fmt = "JSON"
+                        record_path = ""
+                    elif (
+                        urlsplit(url).hostname == "www.censtatd.gov.hk"
+                        and urlsplit(url).path.endswith("/web_table.html")
+                        and fmt in {"CSV", "XLSX", "XLS"}
+                    ):
+                        body, headers, final, extra = await census_table(url)
+                        fmt = "JSON"
+                        record_path = record_path or "dataSet"
                     elif fmt == "WFS":
                         body, headers, final, extra = await wfs(url, record_path)
                         fmt = "GEOJSON"
@@ -318,7 +472,17 @@ class Resources:
                             conditional["If-None-Match"] = check["etag"]
                         if cached and check.get("modified"):
                             conditional["If-Modified-Since"] = check["modified"]
-                        body, headers, final, status = await fetch(url, conditional)
+                        try:
+                            body, headers, final, status = await fetch(url, conditional)
+                        except DomainError as exc:
+                            if exc.code != "SOURCE_TOO_LARGE" or fmt not in {
+                                "CSV",
+                                "JSON",
+                                "GEOJSON",
+                                "API",
+                            }:
+                                raise
+                            body, headers, final, status = await fetch_file(url)
                         if status == 304:
                             if not cached:
                                 raise DomainError(
@@ -342,7 +506,7 @@ class Resources:
                             )
                             return resource, value, check, False
                     content_type = headers.get("content-type", "").lower()
-                    if fmt == "API":
+                    if fmt == "API" and not isinstance(body, Path):
                         if "json" in content_type or body.lstrip().startswith(
                             (b"{", b"[")
                         ):
@@ -356,9 +520,27 @@ class Resources:
                                 422,
                             )
                     # CSDI URLs sometimes publish a JSON document behind an API label.
-                    rows, schema = await asyncio.to_thread(
-                        parse, body, fmt, record_path, sheet
-                    )
+                    if isinstance(body, Path):
+                        rows = await asyncio.to_thread(FileRows, body, fmt, record_path)
+                        schema = rows.schema
+                        if extra.get("streamCountPath"):
+                            import ijson
+
+                            with body.open("rb") as source:
+                                expected = next(
+                                    ijson.items(source, extra["streamCountPath"]), None
+                                )
+                            if expected != len(rows):
+                                raise DomainError(
+                                    "INCOMPLETE_SOURCE",
+                                    "Census streamed record count mismatch",
+                                    422,
+                                )
+                    else:
+                        rows, schema = await asyncio.to_thread(
+                            parse, body, fmt, record_path, sheet
+                        )
+
                     schema.update(extra)
                     schema["sourceResponseComplete"] = True
                     schema["cacheTTLSeconds"] = 300 if resource.get("isApi") else 86400
@@ -371,44 +553,56 @@ class Resources:
                         ("Not inferred from a file or a single API response."),
                     )
                     schema["resolvedSourceUrl"] = final
-                    digest = hashlib.sha256(body).hexdigest()
+                    digest = (
+                        rows.records_digest
+                        if isinstance(rows, FileRows)
+                        else hashlib.sha256(body).hexdigest()
+                    )
                     check = self.catalogue.accept(
                         resource_id, key, rows, schema, digest, headers, fmt == "PDF"
                     )
                 return resource, {"rows": rows, "schema": schema}, check, False
             except Exception as exc:
-                code = getattr(exc, "code", "SOURCE_PARSE_ERROR")
+                code = (
+                    exc.code if isinstance(exc, DomainError) else "SOURCE_PARSE_ERROR"
+                )
                 status = (
-                    "unsupported"
-                    if code
-                    in {
-                        "UNSUPPORTED_FORMAT",
-                        "API_ADAPTER_REQUIRED",
-                        "PARAMETER_ADAPTER_REQUIRED",
-                        "UNSUPPORTED_API",
-                        "UNSUPPORTED_ENCODING",
-                    }
+                    "needs_adapter"
+                    if code in {"SOURCE_PARSE_ERROR", "SOURCE_SCHEMA_CHANGED"}
                     else (
-                        "restricted"
-                        if code == "ACCESS_RESTRICTED"
+                        "unsupported"
+                        if code
+                        in {
+                            "UNSUPPORTED_FORMAT",
+                            "API_ADAPTER_REQUIRED",
+                            "PARAMETER_ADAPTER_REQUIRED",
+                            "UNSUPPORTED_API",
+                            "UNSUPPORTED_ENCODING",
+                        }
                         else (
-                            "needs_selection"
-                            if code
-                            in {
-                                "SHEET_REQUIRED",
-                                "LAYER_REQUIRED",
-                                "INVALID_SHEET",
-                                "INVALID_RECORD_PATH",
-                                "TYPE_NAME_REQUIRED",
-                                "PARAMETERS_REQUIRED",
-                            }
+                            "restricted"
+                            if code == "ACCESS_RESTRICTED"
                             else (
-                                "capacity_limited"
-                                if code in {"SOURCE_TOO_LARGE", "SOURCE_TOO_COMPLEX"}
+                                "needs_selection"
+                                if code
+                                in {
+                                    "SHEET_REQUIRED",
+                                    "LAYER_REQUIRED",
+                                    "INVALID_SHEET",
+                                    "INVALID_RECORD_PATH",
+                                    "TYPE_NAME_REQUIRED",
+                                    "PARAMETERS_REQUIRED",
+                                    "RECORD_PATH_REQUIRED",
+                                }
                                 else (
-                                    "schema_drift"
-                                    if code == "SCHEMA_DRIFT"
-                                    else "unavailable"
+                                    "capacity_limited"
+                                    if code
+                                    in {"SOURCE_TOO_LARGE", "SOURCE_TOO_COMPLEX"}
+                                    else (
+                                        "schema_drift"
+                                        if code == "SCHEMA_DRIFT"
+                                        else "unavailable"
+                                    )
                                 )
                             )
                         )
@@ -452,7 +646,8 @@ class Resources:
                     "lastValidatedAt": check.get("validated"),
                     "publicationDate": resource.get("publicationDate"),
                     "referencePeriod": dataset.get("referencePeriod"),
-                    "contentHash": check.get("hash"),
+                    "contentHash": value["schema"].get("sourceContentHash")
+                    or check.get("hash"),
                     "stale": stale,
                 }
             ],
@@ -477,14 +672,22 @@ class Resources:
         require_fresh=False,
         parameters=None,
     ):
+        self.catalogue.resource(resource_id)
+        started = time.time()
         try:
             return await self._schema(
                 resource_id, record_path, sheet, layer, require_fresh, parameters
             )
-        except DomainError:
+        except DomainError as exc:
+            if self.catalogue.check(resource_id).get("checked", 0) < started:
+                self.catalogue.failure(
+                    resource_id,
+                    exc.code,
+                    "restricted" if exc.code == "ACCESS_RESTRICTED" else "unavailable",
+                )
             raise
         except Exception:
-            self.catalogue.failure(resource_id, "SOURCE_PARSE_ERROR", "unavailable")
+            self.catalogue.failure(resource_id, "SOURCE_PARSE_ERROR", "needs_adapter")
             raise DomainError(
                 "SOURCE_PARSE_ERROR",
                 "Source schema inspection failed; receipt recorded",
@@ -502,9 +705,15 @@ class Resources:
     ):
         resource = self.catalogue.resource(resource_id)
         if any(c in resource["url"] for c in ("{", "}", "<", ">")) and not parameters:
-            self.catalogue.failure(
-                resource_id, "PARAMETERS_REQUIRED", "needs_selection"
-            )
+            try:
+                template_url(resource["url"], {})
+            except DomainError as exc:
+                if exc.code != "PARAMETERS_REQUIRED":
+                    raise
+            if not self.catalogue.check(resource_id).get("validated"):
+                self.catalogue.failure(
+                    resource_id, "PARAMETERS_REQUIRED", "needs_selection"
+                )
             return {
                 "resource": resource,
                 "selectionRequired": "parameters",
@@ -555,7 +764,8 @@ class Resources:
             and layer is None
         ):
             value, _, _, _ = await read_json(resource["url"], {"f": "json"})
-            self.catalogue.failure(resource_id, "LAYER_REQUIRED", "needs_selection")
+            if not self.catalogue.check(resource_id).get("validated"):
+                self.catalogue.failure(resource_id, "LAYER_REQUIRED", "needs_selection")
             return {
                 "resource": resource,
                 "selectionRequired": "layer",
@@ -566,10 +776,14 @@ class Resources:
         resource, value, check, stale = await self.load(
             resource_id, record_path, sheet, layer, require_fresh, parameters
         )
-        return {
-            **self.envelope(resource, value, check, stale),
-            "recordCount": len(value["rows"]),
-        }
+        try:
+            return {
+                **self.envelope(resource, value, check, stale),
+                "recordCount": len(value["rows"]),
+            }
+        finally:
+            if isinstance(value["rows"], FileRows):
+                value["rows"].close()
 
     async def query(
         self,
@@ -604,48 +818,83 @@ class Resources:
         resource, value, check, stale = await self.load(
             resource_id, record_path, sheet, layer, require_fresh, parameters
         )
-        if version and version != check.get("hash"):
-            raise DomainError(
-                "RESOURCE_VERSION_CHANGED", "Resource changed; restart pagination", 409
-            )
-        names = {f["name"] for f in value["schema"]["fields"]}
-        if (set(filters or {}) | set(fields or [])) - names:
-            raise DomainError(
-                "UNKNOWN_FIELD", "Inspect schema for exact source field names", 400
-            )
-        rows = [
-            r
-            for r in value["rows"]
-            if all(
-                k in r and type(r[k]) is type(v) and r[k] == v
-                for k, v in (filters or {}).items()
-            )
-        ]
-        items = rows[offset : offset + limit]
-        if fields:
-            items = [{k: r[k] for k in fields if k in r} for r in items]
-        document = value["schema"].get("scope") == "document_pages"
-        if document:
-            items = [
-                (
-                    {**r, "sourcePageUrl": resource["url"] + "#page=" + str(r["page"])}
-                    if "page" in r
-                    else r
+
+        def build_result():
+            if version and version != check.get("hash"):
+                raise DomainError(
+                    "RESOURCE_VERSION_CHANGED",
+                    "Resource changed; restart pagination",
+                    409,
                 )
-                for r in items
-            ]
-        return {
-            **self.envelope(resource, value, check, stale),
-            "data": {"items": items},
-            "meta": {
-                "total": len(rows),
-                "offset": offset,
-                "nextOffset": offset + limit if offset + limit < len(rows) else None,
-                "version": check.get("hash"),
-                "pagination": "Pass version on every subsequent page; changed content returns 409.",
-                "structuredQueryable": not document,
-            },
-        }
+            if "queryFields" not in value["schema"]:
+                value["schema"]["queryFields"] = inspect_nested(value["rows"])
+            names = {
+                f["name"]
+                for f in value["schema"]["fields"] + value["schema"]["queryFields"]
+            }
+            if (set(filters or {}) | set(fields or [])) - names:
+                raise DomainError(
+                    "UNKNOWN_FIELD", "Inspect schema for exact source field names", 400
+                )
+            total = 0
+            items = []
+            for r in value["rows"]:
+                if all(
+                    selected(r, k) is not MISSING
+                    and type(selected(r, k)) is type(v)
+                    and selected(r, k) == v
+                    for k, v in (filters or {}).items()
+                ):
+                    if offset <= total < offset + limit:
+                        items.append(
+                            {
+                                k: selected(r, k)
+                                for k in fields
+                                if selected(r, k) is not MISSING
+                            }
+                            if fields
+                            else r
+                        )
+                    total += 1
+            if len(json.dumps(items, ensure_ascii=False).encode()) > 512_000:
+                raise DomainError(
+                    "RESPONSE_TOO_LARGE",
+                    "Select a narrower recordPath, fewer fields or a smaller page",
+                    422,
+                )
+            document = value["schema"].get("scope") == "document_pages"
+            if document:
+                items = [
+                    (
+                        {
+                            **r,
+                            "sourcePageUrl": resource["url"]
+                            + "#page="
+                            + str(r["page"]),
+                        }
+                        if "page" in r
+                        else r
+                    )
+                    for r in items
+                ]
+            return {
+                **self.envelope(resource, value, check, stale),
+                "data": {"items": items},
+                "meta": {
+                    "total": total,
+                    "offset": offset,
+                    "nextOffset": offset + limit if offset + limit < total else None,
+                    "version": check.get("hash"),
+                    "pagination": "Pass version on every subsequent page; changed content returns 409.",
+                    "structuredQueryable": not document,
+                },
+            }
+
+        try:
+            return await asyncio.to_thread(build_result)
+        finally:
+            if isinstance(value["rows"], FileRows):
+                value["rows"].close()
 
     async def audit(self, batch=20):
         if not 1 <= batch <= 100:
@@ -674,6 +923,7 @@ class Resources:
                 "schema_drift",
                 "capacity_limited",
                 "needs_selection",
+                "needs_adapter",
             }:
                 continue
             if check.get("validated") and time.time() - check["validated"] < (

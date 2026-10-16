@@ -26,7 +26,7 @@ ownership from presence on DATA.GOV.HK.
 
 Equality filters preserve source types: CSV `"001"` is not JSON number `1`.
 No SQL, source query expressions, arbitrary URLs or network credentials are accepted.
-Use exact field names from schema, up to ten filters, 100 selected fields and
+Use exact field names from `schema.fields` or nested selectors from `schema.queryFields` (for example `properties.name` or `attributes.DC_ENG`). Exact top-level dotted keys take precedence. Projection preserves the requested selector as its output key. Up to ten filters, 100 selected fields and
 100 records/page. Pass returned `meta.version` on every later page; changed content
 returns 409 so clients restart instead of mixing source versions. Catalogue directory
 pagination is live within the reported inventory generation; restart if it changes.
@@ -78,11 +78,11 @@ independent of statistical reference periods. Successful unchanged conditional r
 advance validation time while preserving retrieval time. Source/schema failure retains
 an accepted cached representation with a stale warning; `requireFresh` rejects it.
 
-Initial bounds: 8 MB decoded source, 100k rows, 2m cells, 1k fields, archive expansion
+Small-response bounds: 8 MB decoded source, 100k rows, 2m cells, 1k fields, archive expansion
 32 MB, PDF 200 pages. These are internal capacity limits, **not external blockers**.
 Readers, API adapters, specialised binary formats, deeper verification and capacity
 extensions remain implementation work wherever the directory records them. Directory
-status `pending` means no validation evidence. `queryable` means an actual accepted
+status `needs_adapter` marks parsing/shape implementation work; it is not an external source outage. `pending` means no validation evidence. `queryable` means an actual accepted
 representation, not full historical or semantic qualification of the entire dataset.
 
 ## Inventory and operator jobs
@@ -115,3 +115,32 @@ This bounded schedule does not promise that all discovered resources are fresh;
 coverage and timestamps expose the actual progress. Structural/schema failures are
 held for operator review, not retried in a tight loop. API responses use a five-minute cache; reference files use a one-day validation interval. Recover through a restore-tested
 R2 checkpoint, correct a reader with a source fixture, then resume missing checks.
+
+
+## Audit-driven streaming and department adapters
+
+CSV/JSON/GeoJSON above the small-response budget use DNS-pinned downloads to private
+128 MB temporary files and a complete streaming validation pass (up to 1m rows,
+10m cells, 1k fields, JSON depth 30 and 1 MB per JSON record). Queries scan the accepted
+file and retain only the requested page; files are removed explicitly afterwards.
+Large JSON objects require an explicit array `recordPath`. No full-file record cache
+or raw-dataset repository commit is created. Streamed pagination versions hash selected
+records, while source provenance separately retains the actual response hash.
+
+C&SD `web_table.html?...download_csv=1`/Excel links are interactive download pages.
+The table adapter explicitly resolves their official JSON-equivalent endpoint,
+preserves fields and units such as `svDesc`, and requires its declared complete row
+count. Original and resolved source links and the access method are returned. A live
+96-record table passed this reconciliation; a previously oversized JSON table streamed
+58,374 records successfully.
+
+The HKMA adapter reconciles `datasize` across all bounded `offset`/`pagesize` pages and
+rejects early termination, count changes and repeated pages. Its pagination remains
+live because the provider supplies no snapshot token. The local egress path returned
+an upstream HTTP 405 access page during verification; fixture success is not a live
+provider clearance. Recheck from production after deployment before reporting access.
+
+ArcGIS complete-layer reads spool to the same disk-backed reader after exact object-ID
+batch reconciliation, with up to 1m IDs, 128 MB representation and a 120-second adapter
+deadline. Each page contributes to a response-chain hash, and the final ID set must
+match the initial set. These bounds remain internal capacity limits wherever exceeded.

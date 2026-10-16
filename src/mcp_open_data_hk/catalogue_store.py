@@ -34,6 +34,15 @@ class CatalogueStore:
             """
             )
 
+    def classify_legacy_failures(self):
+        with self.store.connect() as db:
+            db.execute(
+                "UPDATE resource_checks SET reason='SOURCE_PARSE_ERROR',status='needs_adapter' WHERE reason GLOB '[0-9]*'"
+            )
+            db.execute(
+                "UPDATE resource_checks SET status='needs_adapter' WHERE status='unavailable' AND reason IN ('SOURCE_PARSE_ERROR','SOURCE_SCHEMA_CHANGED')"
+            )
+
     def compact(self):
         with self.store.connect() as db:
             for row in db.execute(
@@ -299,10 +308,16 @@ class CatalogueStore:
                 "Source fields/types changed; accepted version retained for operator review",
                 409,
             )
-        encoded = zlib.compress(
-            json.dumps(
-                {"rows": rows, "schema": schema}, ensure_ascii=False, allow_nan=False
-            ).encode()
+        encoded = (
+            zlib.compress(
+                json.dumps(
+                    {"rows": rows, "schema": schema},
+                    ensure_ascii=False,
+                    allow_nan=False,
+                ).encode()
+            )
+            if isinstance(rows, list)
+            else None
         )
         now = time.time()
         retrieved = old.get("retrieved") if old.get("hash") == digest else now
@@ -342,11 +357,15 @@ class CatalogueStore:
                     len(rows),
                 ),
             )
-            if len(encoded) <= CACHE_BYTES:
+            if encoded is not None and len(encoded) <= CACHE_BYTES:
                 db.execute(
                     "INSERT OR REPLACE INTO resource_cache VALUES (?,?,?,?,?)",
                     (key, resource_id, digest, encoded, now),
                 )
+            db.execute(
+                "DELETE FROM resource_variants WHERE key IN (SELECT key FROM resource_variants WHERE resource=? ORDER BY checked DESC LIMIT -1 OFFSET 50)",
+                (resource_id,),
+            )
             size = db.execute(
                 "SELECT COALESCE(sum(length(payload)),0) FROM resource_cache"
             ).fetchone()[0]
