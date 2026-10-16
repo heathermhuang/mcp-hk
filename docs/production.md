@@ -132,3 +132,10 @@ seed streams worked. Checkpoint transfer therefore uses an explicit bounded
 reader/writer pump, aborts both sides on failure, and advances recovery pointers only
 after immutable storage succeeds. Regression tests cover the unsupported pipe and
 retain the previous pointer on truncation.
+
+Checkpoint copies expand compressed inventory/schema metadata to equivalent JSON
+text before shared archive compression. Live metadata and the bounded record cache
+are unchanged. The measured archive fell from 82.7 MB to 46.8 MB; the restored SQLite
+file grew to 244 MB, within the existing 500 MB bound. Both metadata tables retained
+identical logical checksums. Cold MCP startup still requires a 120-second client
+window; a real cold Codex test passed after the default 30-second window timed out.

@@ -11,6 +11,7 @@ import tarfile
 import tempfile
 import threading
 import urllib.request
+import zlib
 from contextlib import closing
 from pathlib import Path
 
@@ -45,11 +46,39 @@ def checkpoint(database: str) -> tuple[Path, str]:
                 closing(sqlite3.connect(raw)) as destination,
             ):
                 source.backup(destination)
+                # Shared archive compression is much smaller than independently
+                # compressed metadata rows. Change only the isolated backup copy;
+                # record-cache blobs retain their bounded cache encoding.
+                tables = {
+                    row[0]
+                    for row in destination.execute(
+                        "SELECT name FROM sqlite_master WHERE type='table'"
+                    )
+                }
+                expanded = False
+                for table, column in (
+                    ("inventory_resources", "payload"),
+                    ("resource_variants", "schema_json"),
+                ):
+                    if table not in tables:
+                        continue
+                    rows = destination.execute(
+                        f"SELECT rowid,{column} FROM {table} WHERE typeof({column})='blob'"
+                    ).fetchall()
+                    for rowid, payload in rows:
+                        destination.execute(
+                            f"UPDATE {table} SET {column}=? WHERE rowid=?",
+                            (zlib.decompress(payload).decode("utf-8"), rowid),
+                        )
+                    expanded = expanded or bool(rows)
+                if expanded:
+                    destination.commit()
+                    destination.execute("VACUUM")
                 if destination.execute("PRAGMA quick_check").fetchone()[0] != "ok":
                     raise ValueError("Checkpoint integrity check failed")
             if raw.stat().st_size > MAX_DATABASE:
                 raise ValueError("Checkpoint exceeds restored database size limit")
-            with tarfile.open(packed, "w:gz") as archive:
+            with tarfile.open(packed, "w:gz", compresslevel=6) as archive:
                 archive.add(raw, arcname="database.sqlite3", recursive=False)
                 for capture in sorted((folder / "captures").glob("*.json")):
                     if (
