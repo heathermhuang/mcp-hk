@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-16",
+  "scope": "local development qualification; production not deployed",
+  "upstreamBaseCommit": "99919aec14b4d4561738ab55cc74a5f3b2817ae9",
+  "python": "3.12.13",
+  "sources": {
+    "restaurantRecords": 17282,
+    "locatedRestaurantRecords": 17282,
+    "unmappedRestaurantDistricts": 0,
+    "districtPopulationRecords": 18,
+    "populationReferencePeriods": [
+      2024
+    ]
+  },
+  "browser": {
+    "sample": "Central Government Offices",
+    "radius500Matches": 92,
+    "radius1000Matches": 756,
+    "districtPopulation": 232200,
+    "mobileWidth": 390,
+    "pageErrors": 0,
+    "pagination": "40 records loaded using cursor"
+  },
+  "mcp": {
+    "remoteHttpTools": 15,
+    "stdioTools": 15
+  },
+  "packaging": {
+    "wheel": "built with web assets",
+    "sdist": "built; runtime DB/captures excluded",
+    "docker": "built; nonroot smoke uid 1000; health/demo 200; unloaded readiness 503"
+  },
+  "remainingGates": [
+    "production host and spending limit",
+    "TLS/DNS and proxy trust",
+    "backup and restore",
+    "refresh scheduler and capture retention",
+    "broader address/client and load qualification",
+    "bulk-data redistribution review"
+  ]
+}

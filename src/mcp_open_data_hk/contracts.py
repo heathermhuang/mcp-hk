@@ -1,0 +1,82 @@
+"""Shared HTTP/MCP contracts. Source publication and retrieval dates are distinct."""
+
+from typing import Any, Literal
+
+from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+
+class DomainError(Exception):
+    def __init__(self, code: str, message: str, status: int = 503):
+        super().__init__(f"{code}: {message}")
+        self.code, self.message, self.status = code, message, status
+
+
+class Model(BaseModel):
+    model_config = ConfigDict(populate_by_name=True, extra="forbid")
+
+
+class Name(Model):
+    en: str | None = None
+    zhHant: str | None = None
+
+
+class Address(Model):
+    id: str
+    name: Name
+    address: Name
+    districtId: str | None
+    latitude: float | None
+    longitude: float | None
+    score: float | None
+
+
+class Restaurant(Model):
+    id: str = Field(min_length=1)
+    name: Name
+    address: Name
+    districtId: str | None
+    licenceType: str
+    latitude: float | None
+    longitude: float | None
+    upstreamUpdatedAt: str | None = None
+
+
+class DistrictStatistics(Model):
+    id: str
+    districtId: str
+    name: Name
+    referencePeriod: int = Field(ge=2000, le=2100)
+    population: int = Field(ge=0)
+    areaKm2: float = Field(gt=0)
+    populationDensity: float = Field(ge=0)
+    populationUnit: Literal["persons"] = "persons"
+    densityUnit: Literal["persons/km2"] = "persons/km2"
+
+
+class RestaurantQuery(Model):
+    q: str = Field(default="", max_length=200)
+    district: str | None = None
+    licenceType: str | None = None
+    lat: float | None = Field(default=None, ge=22.1, le=22.6)
+    lon: float | None = Field(default=None, ge=113.8, le=114.6)
+    radiusM: int | None = Field(default=None, ge=50, le=5000)
+    limit: int = Field(default=20, ge=1, le=100)
+    cursor: str | None = Field(default=None, max_length=2048)
+    includeSummary: bool = False
+    requireFresh: bool = False
+    lang: Literal["en", "zh-Hant"] = "en"
+
+    @model_validator(mode="after")
+    def coordinate_pair(self):
+        if (self.lat is None) != (self.lon is None):
+            raise ValueError("lat and lon must be supplied together")
+        if self.lat is None and self.radiusM is not None:
+            raise ValueError("radiusM requires lat and lon")
+        return self
+
+
+class Envelope(Model):
+    data: Any
+    meta: dict[str, Any]
+    provenance: list[dict[str, Any]]
+    warnings: list[dict[str, Any]] = Field(default_factory=list)

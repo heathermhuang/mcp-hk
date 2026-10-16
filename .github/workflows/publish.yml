@@ -7,6 +7,8 @@ on:
 
 jobs:
   build:
+    # A fork must not publish using the upstream project's package identity.
+    if: github.repository == 'mcp-open-data-hk/mcp-open-data-hk'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
