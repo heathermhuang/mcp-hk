@@ -148,3 +148,5 @@ match the initial set. These bounds remain internal capacity limits wherever exc
 HTTP POST schema inspection accepts only `parameters`, `recordPath`, `sheet`, `layer` and `requireFresh`; it shares the MCP selector contract. GET remains available for simple selectors. The browser uses POST so filled source parameters reach inspection as well as queries.
 
 Catalogue jobs have a ten-minute overall deadline and cancel/drain outstanding source tasks on failure or cancellation. A failed job retains the accepted generation and records its failure rather than leaving source requests running after the job ends.
+
+Template discovery accepts `{name}`, `<name>` and bracketed query-value format hints such as HKO `date=[YYYY-MM-DD]`. Bracket hints use the actual query parameter name (`date`), preserve independent start/end values and leave numeric array literals unchanged. Provenance links to the resolved request URL and retains the original inventoried resource URL. Credential parameter names remain rejected.

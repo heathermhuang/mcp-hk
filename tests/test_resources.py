@@ -794,3 +794,49 @@ async def test_failed_harvest_cancels_and_drains_other_source_reads():
     with pytest.raises(ValueError, match="source schema failed"):
         await complete_harvest([blocked(), failed()])
     assert cancelled.is_set()
+
+
+def test_bracket_query_format_hints_use_names_and_preserve_independent_dates():
+    from mcp_open_data_hk.resources import source_parameters, template_url
+
+    url = "https://data.weather.gov.hk/weatherAPI/opendata/lunardate.php?date=[YYYY-MM-DD]"
+    assert source_parameters(url) == ["date"]
+    assert template_url(url, {"date": "2026-10-16"}).endswith("date=2026-10-16")
+    two = (
+        "https://example.gov.hk/data?start=[YYYY-MM-DD]&end=%5BYYYY-MM-DD%5D&ids=[1,2]"
+    )
+    result = template_url(two, {"start": "2026-10-15", "end": "2026-10-16"})
+    assert result.endswith("start=2026-10-15&end=2026-10-16&ids=[1,2]")
+    with pytest.raises(DomainError, match="ACCESS_RESTRICTED"):
+        template_url(
+            "https://example.gov.hk/data?api-key=[key]", {"api-key": "not-sent"}
+        )
+
+
+@pytest.mark.asyncio
+async def test_bracket_schema_choice_and_citation_match_resolved_request(
+    resource_service, monkeypatch
+):
+    with resource_service.store.connect() as db:
+        row = unpack(
+            db.execute("SELECT payload FROM inventory_resources").fetchone()[0]
+        )
+        row.update(
+            format="JSON", url="https://example.gov.hk/calendar?date=[YYYY-MM-DD]"
+        )
+        db.execute("UPDATE inventory_resources SET payload=?", (json.dumps(row),))
+    choice = await resource_service.resources.schema("r1")
+    assert choice["parameters"] == ["date"] and choice["recordCount"] is None
+
+    async def source(url, headers=None):
+        return b'{"LunarYear":"2026","LunarDate":"09-07"}', {}, url, 200
+
+    monkeypatch.setattr("mcp_open_data_hk.resources.fetch", source)
+    result = await resource_service.resources.query(
+        "r1", parameters={"date": "2026-10-16"}
+    )
+    assert (
+        result["provenance"][0]["sourceUrl"]
+        == "https://example.gov.hk/calendar?date=2026-10-16"
+    )
+    assert result["provenance"][0]["originalResourceUrl"].endswith("[YYYY-MM-DD]")

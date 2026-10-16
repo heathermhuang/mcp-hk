@@ -8,7 +8,7 @@ import time
 import tempfile
 import os
 from pathlib import Path
-from urllib.parse import parse_qs, quote, urlencode, urlsplit, urlunsplit
+from urllib.parse import parse_qs, quote, unquote, urlencode, urlsplit, urlunsplit
 
 from .catalogue_store import CatalogueStore
 from .contracts import DomainError
@@ -43,14 +43,30 @@ def params_url(url, params):
     return urlunsplit((p.scheme, p.netloc, p.path, urlencode(params), ""))
 
 
+def bracket_parameter(pair):
+    key, separator, value = pair.partition("=")
+    if separator and re.fullmatch(r"\[[A-Za-z_][A-Za-z0-9_,:. -]*\]", unquote(value)):
+        return unquote(key)
+    return None
+
+
+def source_parameters(url):
+    names = {a or b for a, b in re.findall(r"\{([^{}]+)\}|<([^<>]+)>", url)}
+    names.update(
+        name
+        for pair in urlsplit(url).query.split("&")
+        if (name := bracket_parameter(pair))
+    )
+    return sorted(names)
+
+
 def template_url(url, parameters):
     if any(c in urlsplit(url).netloc for c in ("{", "}", "<", ">")):
         raise DomainError("UNSAFE_SOURCE", "Source host cannot be parameterised", 422)
-    tokens = re.findall(r"\{([^{}]+)\}|<([^<>]+)>", url)
-    names = {a or b for a, b in tokens}
+    names = set(source_parameters(url))
     if any(
         any(
-            s in name.lower()
+            s in name.lower().replace("-", "_")
             for s in ("token", "secret", "password", "api_key", "apikey")
         )
         for name in names
@@ -80,7 +96,18 @@ def template_url(url, parameters):
         url = url.replace("{" + name + "}", quote(value, safe="")).replace(
             "<" + name + ">", quote(value, safe="")
         )
-    return url
+    parts = urlsplit(url)
+    query = []
+    for pair in parts.query.split("&"):
+        name = bracket_parameter(pair)
+        query.append(
+            pair.partition("=")[0] + "=" + quote(parameters[name], safe="")
+            if name
+            else pair
+        )
+    return urlunsplit(
+        (parts.scheme, parts.netloc, parts.path, "&".join(query), parts.fragment)
+    )
 
 
 async def read_json(url, params=None):
@@ -438,7 +465,11 @@ class Resources:
                         "UNSUPPORTED_FORMAT", "Reader not implemented for " + fmt, 422
                     )
                 url = resource["url"]
-                if any(c in url for c in ("{", "}", "<", ">")) or parameters:
+                if (
+                    source_parameters(url)
+                    or any(c in url for c in ("{", "}", "<", ">"))
+                    or parameters
+                ):
                     url = template_url(url, parameters or {})
                 extra = {}
                 async with self.slots:
@@ -632,7 +663,9 @@ class Resources:
             "schema": value["schema"],
             "provenance": [
                 {
-                    "sourceUrl": resource["url"],
+                    "sourceUrl": value["schema"].get("resolvedSourceUrl")
+                    or resource["url"],
+                    "originalResourceUrl": resource["url"],
                     "catalogueUrl": resource["sourceUrl"],
                     "attribution": dataset["provider"]
                     + (
@@ -704,7 +737,7 @@ class Resources:
         parameters=None,
     ):
         resource = self.catalogue.resource(resource_id)
-        if any(c in resource["url"] for c in ("{", "}", "<", ">")) and not parameters:
+        if source_parameters(resource["url"]) and not parameters:
             try:
                 template_url(resource["url"], {})
             except DomainError as exc:
@@ -717,14 +750,7 @@ class Resources:
             return {
                 "resource": resource,
                 "selectionRequired": "parameters",
-                "parameters": sorted(
-                    {
-                        a or b
-                        for a, b in re.findall(
-                            r"\{([^{}]+)\}|<([^<>]+)>", resource["url"]
-                        )
-                    }
-                ),
+                "parameters": source_parameters(resource["url"]),
                 "recordCount": None,
                 "structuredQueryable": False,
             }
