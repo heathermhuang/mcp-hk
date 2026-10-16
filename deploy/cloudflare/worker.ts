@@ -1,6 +1,6 @@
 import { Container } from '@cloudflare/containers';
 import { scheduledPack } from './cron';
-import {saveBackup} from './backup';
+import {saveBackup, requireCheckpoint} from './backup';
 
 
 async function authorized(request: Request, token: string): Promise<boolean> {
@@ -104,6 +104,19 @@ export class McpContainer extends Container<Env> {
     } finally { await this.ctx.storage.delete('maintenanceLease'); }
   }
 
+  async restartFromCheckpoint(sha256: string) {
+    const acquired = await this.ctx.storage.transaction(async txn => {
+      if ((await txn.get<number>('maintenanceLease') || 0) > Date.now()) return false;
+      await txn.put('maintenanceLease', Date.now() + 15 * 60000); return true;
+    });
+    if (!acquired) throw new Error('Maintenance already running');
+    try {
+      await requireCheckpoint(this.env, sha256);
+      await this.stop();
+      return {status: 'stopped', checkpointSha256: sha256, recovery: 'Next request restores the accepted R2 checkpoint'};
+    } finally { await this.ctx.storage.delete('maintenanceLease'); }
+  }
+
   async operationsStatus() { return await this.ctx.storage.get('maintenanceStatus') || {status: 'not_run'}; }
 }
 
@@ -127,6 +140,7 @@ export default {
         if (!['backup', 'restaurants', 'population', 'all', 'catalogue', 'resources'].includes(pack)) return new Response('Invalid pack', {status: 400});
         return Response.json(await env.APP.get(env.APP.idFromName('production')).maintain(pack));
       }
+      if (url.pathname === '/__ops/restart' && request.method === 'POST') return Response.json(await env.APP.get(env.APP.idFromName('production')).restartFromCheckpoint(request.headers.get('x-snapshot-sha256') || ''));
       if (url.pathname === '/__ops/status') return Response.json(await env.APP.get(env.APP.idFromName('production')).operationsStatus());
       return new Response('Not found', {status: 404});
     }

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
-import {saveBackup, MAX_BACKUP} from './backup.ts';
+import {saveBackup, MAX_BACKUP, requireCheckpoint} from './backup.ts';
 
 globalThis.FixedLengthStream = class extends TransformStream {
   constructor(length) {
@@ -10,7 +10,7 @@ globalThis.FixedLengthStream = class extends TransformStream {
 };
 function bucket() {
   const objects = new Map([['latest.snapshot.tar.gz', {data:new Uint8Array([9])}]]);
-  return {objects, async put(key, body, options) {const data = typeof body === 'string' ? new TextEncoder().encode(body) : new Uint8Array(await new Response(body).arrayBuffer());objects.set(key, {data, options});}, async get(key) {const o=objects.get(key); return o ? {size:o.data.length, body:new Blob([o.data]).stream()} : null;}};
+  return {objects, async head(key) {const o=objects.get(key);return o ? {size:o.data.length,customMetadata:o.options?.customMetadata} : null;}, async put(key, body, options) {const data = typeof body === 'string' ? new TextEncoder().encode(body) : new Uint8Array(await new Response(body).arrayBuffer());objects.set(key, {data, options});}, async get(key) {const o=objects.get(key); return o ? {size:o.data.length, body:new Blob([o.data]).stream()} : null;}};
 }
 function source(bytes, length = bytes.length) {return new Response(new Uint8Array(bytes), {headers:{'content-length':String(length),'x-snapshot-sha256':'a'.repeat(64)}});}
 test('checkpoint uses streams and publishes recovery pointers after immutable upload', async () => {
@@ -27,4 +27,11 @@ test('invalid or oversized metadata fails before storage', async () => {
   const BACKUPS=bucket();await assert.rejects(saveBackup({BACKUPS}, source([1],MAX_BACKUP+1), 'test'));
   await assert.rejects(saveBackup({BACKUPS}, new Response('x'), 'test'));
   assert.equal(BACKUPS.objects.size,1);
+});
+
+test('recovery restart requires the exact accepted checkpoint', async () => {
+  const BACKUPS=bucket();await assert.rejects(requireCheckpoint({BACKUPS}, 'a'.repeat(64)));
+  await saveBackup({BACKUPS},source([1,2,3]),'test');
+  assert.equal((await requireCheckpoint({BACKUPS},'a'.repeat(64))).size,3);
+  await assert.rejects(requireCheckpoint({BACKUPS},'b'.repeat(64)));
 });

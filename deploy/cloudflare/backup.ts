@@ -23,3 +23,11 @@ export async function saveBackup(env: Pick<Env, 'BACKUPS'>, source: Request | Re
   await env.BACKUPS.put('latest.json', JSON.stringify(receipt), {httpMetadata: {contentType: 'application/json'}});
   return receipt;
 }
+
+/** Recovery must name the exact accepted checkpoint before stopping an instance. */
+export async function requireCheckpoint(env: Pick<Env, 'BACKUPS'>, sha256: string) {
+  if (!/^[a-f0-9]{64}$/.test(sha256)) throw new Error('Expected checkpoint checksum required');
+  const object = await env.BACKUPS.head('latest.snapshot.tar.gz');
+  if (!object || object.customMetadata?.sha256 !== sha256 || object.size < 1 || object.size > MAX_BACKUP) throw new Error('Accepted checkpoint changed or is missing');
+  return object;
+}

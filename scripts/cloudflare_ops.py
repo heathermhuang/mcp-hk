@@ -31,6 +31,7 @@ parser.add_argument(
         "catalogue",
         "resources",
         "restore-test",
+        "restart",
     ],
 )
 parser.add_argument("--origin", default="https://mcp-hk.measurable.workers.dev")
@@ -52,6 +53,17 @@ if args.action == "seed":
     if len(data) > MAX_BACKUP:
         raise SystemExit("Seed exceeds upload limit")
     path, method = "/__ops/snapshot", "POST"
+elif args.action == "restart":
+    status_request = urllib.request.Request(
+        args.origin + "/api/v1/operations",
+        headers={"User-Agent": "mcp.hk-operations/0.4"},
+    )
+    with urllib.request.build_opener(NoRedirect).open(
+        status_request, timeout=30
+    ) as response:
+        manifest = json.loads(response.read(10000))
+    headers["X-Snapshot-SHA256"] = manifest["backup"]["sha256"]
+    path, method = "/__ops/restart", "POST"
 elif args.action == "restore-test":
     path = "/__ops/snapshot"
 elif args.action == "status":
