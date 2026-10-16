@@ -11,10 +11,24 @@ export async function saveBackup(env: Pick<Env, 'BACKUPS'>, source: Request | Re
   // FixedLengthStream fails on truncation/overflow. The authenticated producer
   // hashes its SQLite checkpoint; bootstrap independently verifies that checksum.
   const fixed = new FixedLengthStream(length);
-  await Promise.all([
-    source.body.pipeTo(fixed.writable),
-    env.BACKUPS.put(key, fixed.readable, {customMetadata: metadata, httpMetadata: {contentType: 'application/gzip'}}),
-  ]);
+  // Container RPC responses can expose TransformStream bodies. Workerd does not
+  // implement inter-TransformStream pipeTo(), so pump bounded chunks explicitly.
+  const reader = source.body.getReader(), writer = fixed.writable.getWriter();
+  const transfer = (async () => {
+    for (;;) {
+      const {done, value} = await reader.read();
+      if (done) break;
+      await writer.write(value);
+    }
+    await writer.close();
+  })();
+  const stored = env.BACKUPS.put(key, fixed.readable, {customMetadata: metadata, httpMetadata: {contentType: 'application/gzip'}});
+  try { await Promise.all([transfer, stored]); }
+  catch (error) {
+    await Promise.allSettled([reader.cancel(error), writer.abort(error)]);
+    await Promise.allSettled([transfer, stored]);
+    throw error;
+  } finally { reader.releaseLock(); writer.releaseLock(); }
   const saved = await env.BACKUPS.get(key);
   if (!saved || saved.size !== length) throw new Error('Incomplete checkpoint upload');
   // Keep the legacy recovery pointer compatible with previously deployed images.

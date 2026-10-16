@@ -42,3 +42,11 @@ test('private operation errors never expose credentials', () => {
   assert(!result.includes(token));assert(!result.includes('another-value'));
   assert(result.includes('[redacted]'));
 });
+
+test('container transform bodies do not require unsupported inter-stream pipeTo', async () => {
+  const BACKUPS=bucket();const response=source([1,2,3]);
+  Object.defineProperty(response.body,'pipeTo',{value:() => {throw new TypeError('Inter-TransformStream ReadableStream.pipeTo() is not implemented.');}});
+  const receipt=await saveBackup({BACKUPS},response,'container-backup');
+  assert.equal(receipt.bytes,3);
+  assert.deepEqual([...BACKUPS.objects.get('latest.snapshot.tar.gz').data],[1,2,3]);
+});
