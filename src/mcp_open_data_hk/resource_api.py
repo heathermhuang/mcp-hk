@@ -4,26 +4,29 @@ from fastapi import Query
 from pydantic import BaseModel, ConfigDict, Field
 
 
-class ResourceQuery(BaseModel):
+class ResourceSchemaQuery(BaseModel):
     model_config = ConfigDict(extra="forbid", allow_inf_nan=False)
     parameters: dict[str, str] = Field(default_factory=dict, max_length=10)
+    recordPath: str = Field(default="", max_length=300)
+    sheet: str = Field(default="", max_length=100)
+    layer: int | None = Field(default=None, ge=0, le=10000)
+    requireFresh: bool = False
+
+    def arguments(self):
+        data = self.model_dump()
+        data["record_path"] = data.pop("recordPath")
+        data["require_fresh"] = data.pop("requireFresh")
+        return data
+
+
+class ResourceQuery(ResourceSchemaQuery):
     filters: dict[str, str | int | float | bool | None] = Field(
         default_factory=dict, max_length=10
     )
     fields: list[str] = Field(default_factory=list, max_length=100)
     limit: int = Field(default=20, ge=1, le=100)
     offset: int = Field(default=0, ge=0, le=100000)
-    recordPath: str = Field(default="", max_length=300)
-    sheet: str = Field(default="", max_length=100)
-    layer: int | None = Field(default=None, ge=0, le=10000)
-    requireFresh: bool = False
     version: str | None = Field(default=None, max_length=64)
-
-    def arguments(self):
-        d = self.model_dump()
-        d["record_path"] = d.pop("recordPath")
-        d["require_fresh"] = d.pop("requireFresh")
-        return d
 
 
 def register_http(app, resources):
@@ -74,6 +77,11 @@ def register_http(app, resources):
         return await resources.schema(
             resourceId, recordPath, sheet, layer, requireFresh
         )
+
+    @app.post("/api/v1/resources/{resourceId}/schema")
+    async def schema_post(resourceId: str, query: ResourceSchemaQuery):
+        """Read-only schema inspection with source parameters, equivalent to MCP."""
+        return await resources.schema(resourceId, **query.arguments())
 
     @app.post("/api/v1/resources/{resourceId}/query")
     async def query(resourceId: str, query: ResourceQuery):

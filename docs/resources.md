@@ -7,7 +7,7 @@ reconciled inventory for coverage and new applications:
 
 1. `GET /api/v1/catalogue/datasets?q=public%20holidays` / `hk_catalogue_search`.
 2. `GET /api/v1/catalogue/datasets/{id}/resources` / `hk_dataset_resources`.
-3. `GET /api/v1/resources/{resourceId}/schema` / `hk_resource_schema`.
+3. `GET /api/v1/resources/{resourceId}/schema` or read-only `POST .../schema` with source selectors/parameters / `hk_resource_schema`.
 4. `POST /api/v1/resources/{resourceId}/query` / `hk_resource_query`.
 
 The `/coverage` browser explorer performs these requests against actual sources.
@@ -144,3 +144,7 @@ ArcGIS complete-layer reads spool to the same disk-backed reader after exact obj
 batch reconciliation, with up to 1m IDs, 128 MB representation and a 120-second adapter
 deadline. Each page contributes to a response-chain hash, and the final ID set must
 match the initial set. These bounds remain internal capacity limits wherever exceeded.
+
+HTTP POST schema inspection accepts only `parameters`, `recordPath`, `sheet`, `layer` and `requireFresh`; it shares the MCP selector contract. GET remains available for simple selectors. The browser uses POST so filled source parameters reach inspection as well as queries.
+
+Catalogue jobs have a ten-minute overall deadline and cancel/drain outstanding source tasks on failure or cancellation. A failed job retains the accepted generation and records its failure rather than leaving source requests running after the job ends.

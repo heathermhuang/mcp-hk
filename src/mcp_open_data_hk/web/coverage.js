@@ -71,9 +71,9 @@
       const form = new FormData($('record-query'));
       const selectors = {recordPath: form.get('recordPath'), sheet: form.get('sheet')};
       if (form.get('layer') !== '') selectors.layer = Number(form.get('layer'));
-      const body = continuation ? {...lastQuery, offset: nextRecords.offset, version: nextRecords.version} : {...selectors, parameters: JSON.parse(form.get('parameters')), filters: JSON.parse(form.get('filters')), fields: String(form.get('fields')).split(',').map(s => s.trim()).filter(Boolean), limit: 20};
-      const path = `/api/v1/resources/${selected.id}/` + (kind === 'schema' ? 'schema?' + new URLSearchParams(selectors) : 'query');
-      const result = await api(path, kind === 'schema' ? undefined : body);
+      const body = kind === 'schema' ? {...selectors, parameters: JSON.parse(form.get('parameters'))} : continuation ? {...lastQuery, offset: nextRecords.offset, version: nextRecords.version} : {...selectors, parameters: JSON.parse(form.get('parameters')), filters: JSON.parse(form.get('filters')), fields: String(form.get('fields')).split(',').map(s => s.trim()).filter(Boolean), limit: 20};
+      const path = `/api/v1/resources/${selected.id}/` + (kind === 'schema' ? 'schema' : 'query');
+      const result = await api(path, body);
       if (generation !== requestGeneration) return;
       if (result.selectionRequired) {
         $('record-response').textContent = JSON.stringify(result, null, 2);
@@ -95,7 +95,7 @@
       $('resource-citations').replaceChildren();
       for (const p of result.provenance) $('resource-citations').append(link(p.sourceUrl, p.attribution + ' ↗'), node('p', `Validated: ${new Date(p.lastValidatedAt * 1000).toISOString()} · publication: ${p.publicationDate || 'not supplied'} · reference period: ${p.referencePeriod || 'not supplied'}`), link(p.termsUrl, 'Source terms ↗'));
       $('records-next').hidden = !nextRecords;
-      $('resource-code').textContent = kind === 'schema' ? `GET ${location.origin}${path}\n\nMCP: hk_resource_schema(${JSON.stringify({resourceId:selected.id,...selectors},null,2)})` : `POST ${location.origin}${path}\n${JSON.stringify(body,null,2)}\n\nMCP: hk_resource_query(${JSON.stringify({resourceId:selected.id,...body},null,2)})`;
+      $('resource-code').textContent = kind === 'schema' ? `POST ${location.origin}${path}\n${JSON.stringify(body,null,2)}\n\nMCP: hk_resource_schema(${JSON.stringify({resourceId:selected.id,...body},null,2)})` : `POST ${location.origin}${path}\n${JSON.stringify(body,null,2)}\n\nMCP: hk_resource_query(${JSON.stringify({resourceId:selected.id,...body},null,2)})`;
       coverage();
     } catch (e) { if (generation === requestGeneration) $('query-message').textContent = e.message; }
     finally { busy = false; }

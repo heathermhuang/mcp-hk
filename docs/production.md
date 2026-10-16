@@ -125,3 +125,10 @@ Private `/__ops/diagnostics` reports maintenance lease expiry and whether a seed
 lease is held, without the lease owner or credentials. Seed errors identify lease,
 upload or release phase to the authenticated operator; credentials are redacted.
 A lease conflict returns 409 and never changes the accepted recovery pointer.
+
+Hosted checkpoint responses use a transform stream. Workerd rejected native
+`pipeTo()` between that response and `FixedLengthStream`, although direct operator
+seed streams worked. Checkpoint transfer therefore uses an explicit bounded
+reader/writer pump, aborts both sides on failure, and advances recovery pointers only
+after immutable storage succeeds. Regression tests cover the unsupported pipe and
+retain the previous pointer on truncation.
