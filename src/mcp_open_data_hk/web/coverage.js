@@ -110,7 +110,7 @@ import {fetchPublicJson} from './http.js';
     } catch (e) { if (generation !== requestGeneration) return; result = null; queryError = e; }
     finally { busy = false; renderQuery(); }
   }
-  function render() { MhkI18n.apply(); document.title = t('coveragePageTitle'); renderCoverage(); renderDatasets(); renderResources(); renderSelection(); renderQuery(); }
+  function render() { MhkI18n.apply(); if (!selected) $('resource-code').textContent = t('selectForCode'); document.title = t('coveragePageTitle'); renderCoverage(); renderDatasets(); renderResources(); renderSelection(); renderQuery(); }
   $('dataset-query').value = new URL(location.href).searchParams.get('q') || 'public holidays';
   $('dataset-search').addEventListener('submit',e=>{e.preventDefault();searchOffset=0;search();});
   $('datasets-next').addEventListener('click',e=>{searchOffset=Number(e.target.dataset.offset);search();});
