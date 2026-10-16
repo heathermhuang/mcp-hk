@@ -1,14 +1,11 @@
+import {fetchPublicJson} from './http.js';
 /* Source data is always rendered as text, never executable HTML. */
 (() => {
   const $ = id => document.getElementById(id);
+  let searchSequence = 0, resourceSequence = 0;
   let selected = null, nextRecords = null, lastQuery = null, searchOffset = 0, resourceOffset = 0;
   let datasetId = null, directoryMode = false, requestGeneration = 0, busy = false;
-  async function api(path, body) {
-    const response = await fetch(path, {method: body ? 'POST' : 'GET', headers: body ? {'Content-Type': 'application/json'} : {}, body: body ? JSON.stringify(body) : undefined});
-    const payload = await response.json();
-    if (!response.ok) throw new Error(`${payload.error?.code || response.status}: ${payload.error?.message || 'Source unavailable'}`);
-    return payload;
-  }
+  const api = fetchPublicJson;
   function node(tag, text) { const e = document.createElement(tag); e.textContent = text; return e; }
   function link(url, title) { const a = node('a', title); if (/^https?:\/\//i.test(url)) { a.href = url; a.rel = 'noreferrer'; } return a; }
   async function coverage() {
@@ -23,9 +20,11 @@
     } catch (e) { $('coverage-summary').textContent = e.message; }
   }
   async function search() {
+    const sequence = ++searchSequence;
     $('datasets').textContent = 'Searching inventory…';
     try {
       const result = await api('/api/v1/catalogue/datasets?' + new URLSearchParams({q: $('dataset-query').value, limit: 10, offset: searchOffset}));
+      if (sequence !== searchSequence) return;
       $('dataset-total').textContent = `${result.total} matching dataset entries · ${result.items.length} on this page`;
       $('datasets').replaceChildren();
       if (!result.items.length) $('datasets').textContent = 'No matching dataset. Try a provider name or another term.';
@@ -36,9 +35,10 @@
         $('datasets').append(row);
       }
       $('datasets-next').hidden = result.nextOffset == null; $('datasets-next').dataset.offset = result.nextOffset;
-    } catch (e) { $('datasets').textContent = e.message; }
+    } catch (e) { if (sequence === searchSequence) $('datasets').textContent = e.message; }
   }
   async function resources() {
+    const sequence = ++resourceSequence;
     $('resources').textContent = 'Loading source resources…';
     try {
       const params = {limit: 15, offset: resourceOffset};
@@ -46,6 +46,7 @@
       if (!directoryMode) params.datasetId = datasetId;
       if (directoryMode && $('coverage-status').value) params.status = $('coverage-status').value;
       const result = await api('/api/v1/resources?' + new URLSearchParams(params));
+      if (sequence !== resourceSequence) return;
       $('resources').replaceChildren(node('p', `${result.total} resource entries · ${result.items.length} shown`));
       for (const r of result.items) {
         const row = node('article', ''); const button = node('button', `${r.aliases?.[0]?.name || r.datasetId} · ${r.format}`); button.type = 'button';
@@ -62,7 +63,7 @@
         $('resources').append(row);
       }
       $('resources-next').hidden = result.nextOffset == null; $('resources-next').dataset.offset = result.nextOffset;
-    } catch (e) { $('resources').textContent = e.message; }
+    } catch (e) { if (sequence === resourceSequence) $('resources').textContent = e.message; }
   }
   async function query(kind, continuation = false) {
     if (!selected || busy) { if (!selected) $('query-message').textContent = 'Select a resource first.'; return; }
