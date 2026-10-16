@@ -733,3 +733,40 @@ async def test_parser_error_codes_are_not_reported_as_external_outages(
     assert (
         check["reason"] == "SOURCE_PARSE_ERROR" and check["status"] == "needs_adapter"
     )
+
+
+@pytest.mark.asyncio
+async def test_http_schema_parameters_match_mcp_without_query_only_fields(
+    resource_service, monkeypatch
+):
+    with resource_service.store.connect() as db:
+        row = unpack(
+            db.execute("SELECT payload FROM inventory_resources").fetchone()[0]
+        )
+        row.update(format="JSON", url="https://example.gov.hk/stop/{id}")
+        db.execute("UPDATE inventory_resources SET payload=?", (json.dumps(row),))
+    seen = []
+
+    async def source(url, headers=None):
+        seen.append(url)
+        return b'[{"id":"001","name":"One"}]', {}, url, 200
+
+    monkeypatch.setattr("mcp_open_data_hk.resources.fetch", source)
+    app = create_app(resource_service)
+    body = {"parameters": {"id": "001"}}
+    with TestClient(app) as http:
+        response = http.post("/api/v1/resources/r1/schema", json=body)
+        assert response.status_code == 200
+        assert response.json()["recordCount"] == 1
+        assert (
+            http.post(
+                "/api/v1/resources/r1/schema", json={**body, "filters": {}}
+            ).status_code
+            == 400
+        )
+    async with Client(app.state.mcp) as mcp:
+        result = (
+            await mcp.call_tool("hk_resource_schema", {"resourceId": "r1", **body})
+        ).data
+    assert result["schema"] == response.json()["schema"]
+    assert seen == ["https://example.gov.hk/stop/001"]
