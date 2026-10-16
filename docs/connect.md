@@ -18,10 +18,11 @@ Start/reload the client, or use its MCP settings/status view to confirm the tool
 ## Claude Code
 
 ```sh
-claude mcp add --transport http mcp.hk https://mcp.hk/mcp
+claude mcp add --transport http mcp-hk https://mcp.hk/mcp
 ```
 
-Use `/mcp` to inspect connection status.
+Claude Code’s CLI does not allow dots in server identifiers, so its command uses
+`mcp-hk`. Use `/mcp` to inspect connection status.
 [Official documentation](https://code.claude.com/docs/en/mcp).
 
 ## Cursor
