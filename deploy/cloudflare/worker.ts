@@ -145,7 +145,7 @@ export default {
       if (url.pathname === '/__ops/status') return Response.json(await env.APP.get(env.APP.idFromName('production')).operationsStatus());
       return new Response('Not found', {status: 404});
     }
-    if (['/', '/demo', '/sources', '/connect'].includes(url.pathname) || url.pathname.startsWith('/assets/')) {
+    if (['/', '/demo', '/sources', '/connect', '/plates'].includes(url.pathname) || url.pathname.startsWith('/assets/')) {
       url.pathname = url.pathname.startsWith('/assets/') ? url.pathname.slice(7) : '/index.html';
       const response = await env.ASSETS.fetch(new Request(url, request));
       const secured = new Response(response.body, response);

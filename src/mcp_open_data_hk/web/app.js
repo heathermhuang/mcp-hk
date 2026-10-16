@@ -10,7 +10,14 @@
     connectionNote: 'Connection URL for this instance. Supported transport: Streamable HTTP; local stdio is also available.',
     previewFooter: 'OPEN-SOURCE DEVELOPMENT BUILD', endpointLabel: 'THIS INSTANCE’S MCP ENDPOINT',
     provenanceLabel: 'Response provenance', getConnected: 'Connect your AI',
-    question: '“Find licensed restaurants near this address.”'
+    question: '“Find licensed restaurants near this address.”',
+    navPlates: 'Plate.hk', packsCount: 'Three government packs + one independent provider',
+    externalBadge: '04 / FIRST EXTERNAL PACK · PLATE.HK', plateTitle: 'A plate. Its auction history.',
+    plateDesc: 'Search historical auction records and source-linked comparisons from Plate.hk, an independent Hong Kong data provider.',
+    tryPlate: 'Explore Plate.hk ↗', plateQueryLabel: 'HONG KONG REGISTRATION MARK',
+    plateHistory: 'Auction history', plateCompare: 'Historical comparisons',
+    plateCollection: 'Collection', plateMatch: 'History match', plateExact: 'Exact', plateContains: 'Contains', plateNext: 'Next page',
+    plateCaveat: 'Historical auction amounts are not current valuations, asking prices, ownership or availability. Plate.hk is independent; verify records with their original sources. Comparisons use their own cohort method, rather than the history filters.'
   });
   Object.assign(translations.zh, {
     sample: '查詢示例', illustrative: '官方來源 · 清楚標示出處', sampleBadge: '公共來源資料',
@@ -18,12 +25,21 @@
     districtAddress: '已選來源地址', populationLabel: '地區人口',
     populationNote: '已發表的全區人口，並非搜尋範圍內的人口。',
     connectionNote: '本實例的連接網址。支援 Streamable HTTP，亦可在本機使用 stdio。',
-    previewFooter: '開源開發版本', endpointLabel: '本實例的 MCP 端點', provenanceLabel: '回應資料來源'
+    previewFooter: '開源開發版本', endpointLabel: '本實例的 MCP 端點', provenanceLabel: '回應資料來源',
+    navPlates: 'Plate.hk', packsCount: '三個政府數據包 + 一個獨立供應商',
+    externalBadge: '04 / 首個外部數據包 · PLATE.HK', plateTitle: '一個車牌，歷年拍賣紀錄。',
+    plateDesc: '透過香港獨立數據供應商 Plate.hk，查詢歷年拍賣紀錄及附原始來源的歷史比較。',
+    tryPlate: '探索 Plate.hk ↗', plateQueryLabel: '香港車輛登記號碼',
+    plateHistory: '拍賣紀錄', plateCompare: '歷史比較', plateCollection: '資料集',
+    plateMatch: '紀錄比對方式', plateExact: '完全符合', plateContains: '包含', plateNext: '下一頁',
+    plateCaveat: '歷史拍賣金額並非現時估值、叫價、擁有權或可用狀態。Plate.hk 為獨立供應商，請核對紀錄所附原始來源。歷史比較使用其比較群組方法，不套用拍賣紀錄篩選。'
   });
-  let state = {screen: location.pathname === '/sources' ? 'sources' : location.pathname === '/demo' ? 'explore' : location.pathname === '/connect' ? 'connect' : 'home', lang: 'en', radius: 500, code: 'http'};
+  let state = {screen: location.pathname === '/plates' ? 'plates' : location.pathname === '/sources' ? 'sources' : location.pathname === '/demo' ? 'explore' : location.pathname === '/connect' ? 'connect' : 'home', lang: 'en', radius: 500, code: 'http'};
   let clientKind = 'codex';
   let selected = null, response = null, population = null, requestQuery = '', pending = false;
   let generation = 0;
+  let plateResult = null, platePending = false, plateError = '', plateRequest = null;
+  let plateGeneration = 0;
   const $ = selector => root.querySelector(selector);
   const label = value => value?.[state.lang === 'en' ? 'en' : 'zhHant'] || value?.en || value?.zhHant || '—';
 
@@ -100,7 +116,71 @@
       line.append(a, stamp); sourceBox.append(line);
     }
     if (!provenance.length) sourceBox.textContent = translations[state.lang].provenanceLabel;
+    renderPlates();
   }
+
+  function renderPlates() {
+    const data = plateResult?.data;
+    $('#mhk-plate-form').querySelectorAll('button').forEach(b => b.disabled = platePending);
+    const msg = $('#mhk-plate-message');
+    msg.textContent = plateError || (platePending ? (state.lang === 'en' ? 'Reading Plate.hk…' : '正在讀取 Plate.hk…') : '');
+    const box = $('#mhk-plate-results'); box.replaceChildren();
+    if (data) {
+      const summary = document.createElement('p');
+      summary.textContent = data.method ? `${data.sampleSize ?? '—'} ${state.lang === 'en' ? 'comparable plates' : '個歷史比較車牌'} · ${data.dateFrom || '—'} → ${data.dateTo || '—'}` : `${data.total} ${state.lang === 'en' ? 'historical records' : '項歷史紀錄'} · ${data.query}`;
+      box.append(summary);
+      if (data.method) {
+        const method = document.createElement('p'); method.className = 'mhk-note'; method.textContent = data.method; box.append(method);
+        const stats = document.createElement('p');
+        stats.textContent = data.statistics ? `Historical HKD · P25 ${data.statistics.p25.toLocaleString()} · Median ${data.statistics.median.toLocaleString()} · P75 ${data.statistics.p75.toLocaleString()}` : (state.lang === 'en' ? 'No qualified historical price distribution.' : '沒有符合條件的歷史價格分佈。');
+        box.append(stats);
+      }
+      for (const record of data.items) {
+        const row = document.createElement('article'); row.className = 'mhk-plate-record';
+        const mark = document.createElement('strong');
+        mark.textContent = Array.isArray(record.double_line) ? record.double_line.join('\n') : record.double_line || record.single_line;
+        const context = document.createElement('p');
+        const dateLabel = record.auction_date_label || (record.date_precision === 'year_range' ? record.year_range : record.auction_date) || '—';
+        context.textContent = `${dateLabel} · ${record.dataset_key}${record.result_status ? ' · ' + record.result_status : ''}`;
+        const amount = document.createElement('span');
+        amount.textContent = record.amount_hkd == null ? (state.lang === 'en' ? 'No recorded amount' : '未有記錄金額') : `HK$${record.amount_hkd.toLocaleString()}`;
+        const links = document.createElement('p');
+        for (const [url, title] of [[record.pdf_url || record.source_url, state.lang === 'en' ? 'Original source ↗' : '原始來源 ↗'], [record.detailUrl, 'Plate.hk ↗']]) {
+          if (!url) continue;
+          const a = document.createElement('a'); a.href = url; a.textContent = title; a.rel = 'noreferrer'; links.append(a, ' ');
+        }
+        row.append(mark, amount, context, links); box.append(row);
+      }
+      if (!data.items.length) {
+        const empty = document.createElement('p'); empty.textContent = state.lang === 'en' ? 'No historical records matched. This does not establish availability.' : '未有符合的歷史紀錄，並不代表此車牌可供申請。'; box.append(empty);
+      }
+    }
+    const more = $('#mhk-plate-more'); more.hidden = !data?.nextPage; more.disabled = platePending;
+    if (plateRequest) {
+      const {kind, params} = plateRequest;
+      $('#mhk-plate-code').textContent = `GET ${location.origin}/api/v1/plates/${kind}?${new URLSearchParams(params)}\n\nMCP: ${kind === 'search' ? 'hk_plate_search' : 'hk_plate_comparables'}(${JSON.stringify(params, null, 2)})`;
+    }
+    const p = plateResult?.provenance[0];
+    $('#mhk-plate-source').textContent = p ? `${p.attribution} · checked ${p.lastCheckedAt} · 5-minute response cache` : '';
+  }
+
+  async function loadPlates(kind, params) {
+    const token = ++plateGeneration;
+    plateRequest = {kind, params}; platePending = true; plateResult = null; plateError = ''; renderPlates();
+    try { const result = await api('/api/v1/plates/' + kind + '?' + new URLSearchParams(params)); if (token === plateGeneration) plateResult = result; }
+    catch (e) { if (token === plateGeneration) plateError = e.message; }
+    finally { if (token === plateGeneration) { platePending = false; renderPlates(); } }
+  }
+  $('#mhk-plate-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const kind = e.submitter?.dataset.kind || 'search';
+    const params = {q: $('#mhk-plate-query').value, page: 1, pageSize: 5};
+    if (kind === 'search') Object.assign(params, {dataset: $('#mhk-plate-dataset').value, mode: $('#mhk-plate-mode').value, sort: 'date_desc'});
+    loadPlates(kind, params);
+  });
+  $('#mhk-plate-more').addEventListener('click', () => {
+    if (!platePending && plateResult?.data.nextPage && plateRequest) loadPlates(plateRequest.kind, {...plateRequest.params, page: plateResult.data.nextPage});
+  });
 
   async function loadNearby() {
     const token = ++generation;
@@ -156,10 +236,10 @@
       const box = $('#mhk-status'); box.replaceChildren();
       for (const source of result.sources) {
         const item = document.createElement('article');
-        const name = document.createElement('h2'); name.textContent = source.sourceId;
+        const name = document.createElement('h2'); name.textContent = `${source.sourceId} · ${source.providerType === 'independent' ? 'Independent provider' : 'Government source'}`;
         const status = document.createElement('p'); status.textContent = `${source.stale ? 'No recent successful check' : 'Recent successful source check'}${source.recordCount ? ' · ' + source.recordCount.toLocaleString() + ' records' : ''}`;
         const detail = document.createElement('p'); detail.className = 'mhk-small'; detail.textContent = `Last success: ${source.lastSuccess || 'not checked'} · Last error: ${source.lastError || 'none'}`;
-        const link = document.createElement('a'); link.href = source.sourceUrl; link.textContent = 'Official dataset ↗'; link.rel = 'noreferrer';
+        const link = document.createElement('a'); link.href = source.sourceUrl; link.textContent = source.providerType === 'independent' ? 'Provider data & attribution ↗' : 'Official dataset ↗'; link.rel = 'noreferrer';
         item.append(name, status, detail, link); box.append(item);
       }
     } catch (e) { $('#mhk-status').textContent = e.message; }

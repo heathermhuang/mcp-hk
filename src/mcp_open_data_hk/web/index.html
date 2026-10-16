@@ -1,11 +1,12 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Hong Kong public data over MCP and HTTP. Open-source address, restaurant and district data tools."><title>mcp.hk — Hong Kong. One connection.</title><link rel="stylesheet" href="/assets/style.css"><script src="/assets/translations.js" defer></script><script src="/assets/app.js" defer></script></head><body><div id="mhk-preview" aria-label="mcp.hk Hong Kong public data">
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Hong Kong public data over MCP and HTTP. Open-source address, restaurant, district and Plate.hk auction-history data tools."><title>mcp.hk — Hong Kong. One connection.</title><link rel="stylesheet" href="/assets/style.css"><script src="/assets/translations.js" defer></script><script src="/assets/app.js" defer></script></head><body><div id="mhk-preview" aria-label="mcp.hk Hong Kong public data">
  <div class="mhk-window">
   <header class="mhk-nav">
    <div class="mhk-logo"><span class="mhk-mark" aria-hidden="true">港</span>mcp.hk</div>
    <button class="mhk-navbutton" data-screen="home" aria-pressed="true" type="button" data-i18n="navHome">Overview</button>
    <button class="mhk-navbutton" data-screen="explore" aria-pressed="false" type="button" data-i18n="navExplore">Explorer</button>
    <button class="mhk-navbutton" data-screen="connect" aria-pressed="false" type="button" data-i18n="navConnect">Connect</button>
+   <button class="mhk-navbutton" data-screen="plates" aria-pressed="false" type="button" data-i18n="navPlates">Plate.hk</button>
    <a class="mhk-navbutton" href="/sources">Sources</a><button class="mhk-language" type="button" aria-label="Switch to Traditional Chinese">繁</button>
   </header>
   <main class="mhk-main">
@@ -15,12 +16,24 @@
      <div class="mhk-terminal" aria-label="Example MCP request"><div class="mhk-terminal-head"><span class="mhk-lamp"></span><span>MCP PLAYGROUND</span><span data-i18n="sample">SAMPLE</span></div><p class="mhk-prompt" data-i18n="question">“Find licensed restaurants near this address.”</p><p class="mhk-terminal-label">hk_address_search → hk_restaurant_search</p><p class="mhk-terminal-result" data-i18n="answer">One address. A whole neighbourhood.</p><p data-i18n="terminalSub">Bilingual records · distance · licence type</p><p class="mhk-terminal-label" data-i18n="sourceTitle">Every answer has a source.</p><p data-i18n="sources">DPO / FEHD / Census & Statistics</p><div class="mhk-terminal-footer" data-i18n="illustrative">Design preview · illustrative data</div></div>
     </div>
     <div class="mhk-strip"><span data-i18n="stripOne">One shared API. Two ways to build.</span><span>MCP ↗ &nbsp; HTTP ↗ &nbsp; SELF-HOST ↗</span></div>
-    <div class="mhk-section-title"><h2 data-i18n="packsTitle">Start with the city.</h2><span class="mhk-small" data-i18n="packsCount">Three data packs for v0.1</span></div>
+    <div class="mhk-section-title"><h2 data-i18n="packsTitle">Start with the city.</h2><span class="mhk-small" data-i18n="packsCount">Three government packs + one independent provider</span></div>
     <div class="mhk-packs">
      <button class="mhk-pack" type="button" data-go="explore"><span class="mhk-pack-meta">01 / DPO · ALS</span><span class="mhk-pack-name" data-i18n="addressTitle">Every address, understood.</span><span class="mhk-pack-detail" data-i18n="addressDesc">Resolve English and Chinese addresses to one place.</span><span class="mhk-pack-link" data-i18n="tryAddress">Try address lookup ↗</span></button>
      <button class="mhk-pack" type="button" data-go="explore"><span class="mhk-pack-meta">02 / FEHD</span><span class="mhk-pack-name" data-i18n="restaurantTitle">Places with provenance.</span><span class="mhk-pack-detail" data-i18n="restaurantDesc">Find licensed restaurants by location and licence type.</span><span class="mhk-pack-link" data-i18n="tryRestaurant">Explore restaurants ↗</span></button>
      <button class="mhk-pack" type="button" data-go="explore"><span class="mhk-pack-meta">03 / C&SD</span><span class="mhk-pack-name" data-i18n="districtTitle">The bigger picture.</span><span class="mhk-pack-detail" data-i18n="districtDesc">District population, area and density—with the year attached.</span><span class="mhk-pack-link" data-i18n="tryDistrict">See district context ↗</span></button>
     </div>
+    <button class="mhk-external-pack" type="button" data-go="plates"><span class="mhk-pack-meta" data-i18n="externalBadge">04 / FIRST EXTERNAL PACK · PLATE.HK</span><strong data-i18n="plateTitle">A plate. Its auction history.</strong><span data-i18n="plateDesc">Search historical auction records and source-linked comparisons from Plate.hk, an independent Hong Kong data provider.</span><span data-i18n="tryPlate">Explore Plate.hk ↗</span></button>
+   </section>
+   <section data-page="plates" aria-label="Plate.hk auction history demo" hidden>
+    <div class="mhk-pagehead"><div><p class="mhk-eyebrow" data-i18n="externalBadge">04 / FIRST EXTERNAL PACK · PLATE.HK</p><h1 data-i18n="plateTitle">A plate. Its auction history.</h1><p data-i18n="plateDesc">Search historical auction records and source-linked comparisons from Plate.hk, an independent Hong Kong data provider.</p></div></div>
+    <form id="mhk-plate-form"><label class="mhk-search-label" for="mhk-plate-query" data-i18n="plateQueryLabel">HONG KONG REGISTRATION MARK</label><div class="mhk-search"><input id="mhk-plate-query" value="AA88" maxlength="16" required autocomplete="off"><button class="mhk-button" type="submit" data-kind="search" data-i18n="plateHistory">Auction history</button><button class="mhk-button mhk-secondary" type="submit" data-kind="comparables" data-i18n="plateCompare">Historical comparisons</button></div><div class="mhk-plate-filters"><label><span data-i18n="plateCollection">Collection</span> <select id="mhk-plate-dataset"><option value="all">All</option><option value="pvrm">PVRM</option><option value="tvrm_physical">TVRM physical</option><option value="tvrm_eauction">TVRM E-Auction</option><option value="tvrm_legacy">TVRM legacy</option></select></label><label><span data-i18n="plateMatch">History match</span> <select id="mhk-plate-mode"><option value="exact" data-i18n="plateExact">Exact</option><option value="contains" data-i18n="plateContains">Contains</option></select></label></div></form>
+    <p class="mhk-note" data-i18n="plateCaveat">Historical auction amounts are not current valuations, asking prices, ownership or availability. Plate.hk is independent; verify records with their original sources. Comparisons use their own cohort method, rather than the history filters.</p>
+    <p id="mhk-plate-message" role="status" aria-live="polite"></p><div id="mhk-plate-results" aria-live="polite"></div><button id="mhk-plate-more" class="mhk-button mhk-secondary" type="button" hidden data-i18n="plateNext">Next page</button>
+    <div class="mhk-codebox mhk-plate-code"><div class="mhk-codebox-head" data-i18n="underHood">Build with this</div><pre id="mhk-plate-code">GET /api/v1/plates/search?q=AA88&amp;mode=exact
+
+MCP: hk_plate_search({"q":"AA88"})
+MCP: hk_plate_comparables({"q":"AH168"})
+MCP: hk_plate_datasets()</pre><p id="mhk-plate-source" class="mhk-note"></p><a href="https://plate.hk/api.html" rel="noreferrer">Plate.hk API ↗</a> · <a href="/api/v1/packs">Data packs ↗</a></div>
    </section>
    <section data-page="explore" aria-label="Neighbourhood demo" hidden>
     <div class="mhk-pagehead"><div><p class="mhk-eyebrow" style="margin-bottom:9px" data-i18n="explorerEyebrow">A SMALL DEMO. A USEFUL FOUNDATION.</p><h1 data-i18n="explorerTitle">Meet the neighbourhood.</h1><p data-i18n="explorerLead">An address, nearby restaurants, and the district around them.</p></div><span class="mhk-preview-label" data-i18n="sampleBadge">ILLUSTRATIVE DATA</span></div>
@@ -45,8 +58,9 @@ GET /api/v1/restaurants
 
 GET /api/v1/districts
 
-GET /api/v1/datasets
-    ?capability=queryable</pre></div><p class="mhk-note" data-i18n="connectionNote">Proposed connection details. Service and packages have not been published.</p></div></div>
+GET /api/v1/packs
+
+GET /api/v1/plates/search?q=AA88</pre></div><p class="mhk-note" data-i18n="connectionNote">Proposed connection details. Service and packages have not been published.</p></div></div>
    </section>
    <footer class="mhk-foot"><span class="mhk-footerbadge" data-i18n="footer">Built for Hong Kong. Open to everyone.</span><span data-i18n="previewFooter">INTERACTIVE CONCEPT · NO LIVE DATA</span></footer>
 <section data-page="sources" hidden><p class="mhk-eyebrow">SOURCE STATUS</p><h1 style="font-size:36px">Know your sources.</h1><div id="mhk-status" aria-live="polite">Loading source status…</div><p class="mhk-note">Source freshness and statistical reference year are separate. Data attribution and original terms remain with the government and providers.</p><p><a href="https://data.gov.hk/en/terms-and-conditions">DATA.GOV.HK terms</a> · <a href="https://portal.csdi.gov.hk/geoportal/">CSDI portal</a> · <a href="https://github.com/heathermhuang/mcp-hk">Source code</a> · <a href="/docs">HTTP API docs</a></p></section>  </main>

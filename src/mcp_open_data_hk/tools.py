@@ -1,8 +1,13 @@
-"""Seven pack tools in addition to the eight preserved catalogue tools."""
+"""Queryable government and independent data packs alongside catalogue tools."""
 
 from typing import Literal
 
-from .contracts import RestaurantQuery
+from .contracts import (
+    PlateComparablesQuery,
+    PlateDataset,
+    PlateSearchQuery,
+    RestaurantQuery,
+)
 from .services import get_service
 
 
@@ -65,3 +70,61 @@ def register_data_tools(server, service=None):
     def hk_source_status() -> dict:
         """Source freshness and failure receipts, independently of service availability."""
         return current().status()
+
+    @server.tool(annotations={"readOnlyHint": True, "destructiveHint": False})
+    def hk_data_packs() -> dict:
+        """Discover queryable packs, providers and HTTP/MCP interfaces. Plate.hk is independent."""
+        return current().packs()
+
+    @server.tool(annotations={"readOnlyHint": True, "destructiveHint": False})
+    async def hk_plate_search(
+        q: str,
+        dataset: PlateDataset = "all",
+        mode: Literal["exact", "exact_prefix", "contains"] = "exact",
+        sort: Literal[
+            "amount_desc", "amount_asc", "date_desc", "plate_asc"
+        ] = "date_desc",
+        page: int = 1,
+        pageSize: int = 20,
+    ) -> dict:
+        """Search Plate.hk historical HK auction records. Exact match by default; contains for discovery.
+
+        Independent provider, not government. Preserve plate spaces, two-row layout,
+        dates/year ranges, disposition and original source links. Auction amounts
+        are not current values, asking prices, ownership or availability. Pagination
+        is live, not snapshot-pinned. pageSize 1–50, page 1–100.
+        """
+        return await current().plates.search(
+            PlateSearchQuery(
+                q=q,
+                dataset=dataset,
+                mode=mode,
+                sort=sort,
+                page=page,
+                pageSize=pageSize,
+            )
+        )
+
+    @server.tool(annotations={"readOnlyHint": True, "destructiveHint": False})
+    async def hk_plate_comparables(q: str, page: int = 1, pageSize: int = 8) -> dict:
+        """Plate.hk source-linked historical comparisons, not valuation or official classification.
+
+        A cohort can exist without an exact sale. Preserve method, sampleSize and
+        date range; null statistics mean no qualified distribution. pageSize 1–50.
+        """
+        return await current().plates.comparables(
+            PlateComparablesQuery(
+                q=q,
+                page=page,
+                pageSize=pageSize,
+            )
+        )
+
+    @server.tool(annotations={"readOnlyHint": True, "destructiveHint": False})
+    async def hk_plate_datasets() -> dict:
+        """Plate.hk index coverage, publication date, original-source manifests and record counts.
+
+        Independent external pack. The all collection includes the other datasets;
+        do not add its count to the component counts. Data is not relicensed as MIT.
+        """
+        return await current().plates.query("datasets")

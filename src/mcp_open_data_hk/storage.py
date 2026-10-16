@@ -236,12 +236,12 @@ class Store:
                 "UPDATE active_packs SET snapshot=? WHERE pack=?", (snapshot_id, pack)
             )
 
-    def cache_get(self, key: str):
+    def cache_get(self, key: str, ttl: int = 86400):
         with self.connect() as db:
             row = db.execute(
                 "SELECT * FROM address_cache WHERE key=?", (key,)
             ).fetchone()
-        if row and time.time() - row["retrieved"] < 86400:
+        if row and time.time() - row["retrieved"] < ttl:
             return json.loads(row["payload"]), row["retrieved"]
         return None
 
@@ -262,14 +262,24 @@ class Store:
                 (source, day),
             )
 
-    def cache_put(self, key: str, data):
+    def cache_put(self, key: str, data, source: str = "addresses"):
         now = time.time()
         with self.connect() as db:
             db.execute(
                 "INSERT OR REPLACE INTO address_cache VALUES (?,?,?)",
                 (key, json.dumps(data, ensure_ascii=False), now),
             )
-        self.check("addresses")
+            if source == "platehk":
+                # Keep a live query cache bounded; it is not a bulk data mirror.
+                db.execute(
+                    "DELETE FROM address_cache WHERE key LIKE 'platehk:%' AND retrieved<?",
+                    (now - 300,),
+                )
+                db.execute(
+                    "DELETE FROM address_cache WHERE key IN (SELECT key FROM address_cache "
+                    "WHERE key LIKE 'platehk:%' ORDER BY retrieved DESC LIMIT -1 OFFSET 200)"
+                )
+        self.check(source)
         return now
 
     def checks(self):

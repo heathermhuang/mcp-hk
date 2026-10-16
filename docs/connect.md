@@ -46,8 +46,14 @@ year and official sources.”
 
 “用 hk 查詢中環政府總部附近的持牌食肆，清楚標示牌照類別、直線距離、資料來源及人口統計年份。”
 
-There are 15 tools: eight government catalogue tools and seven address, restaurant,
-district and source-status tools. Finding a catalogue entry does not mean every
+There are 19 tools: eight government catalogue tools, seven address/restaurant/
+district/status tools, three Plate.hk tools and the pack directory.
+
+“Use hk to look up the exact auction history of AA88 and compare AH168 with
+historical sales. Keep the original sources, sample size and dates; do not present
+historical prices as a current valuation.”
+
+Plate.hk is the first independent external provider. See [its pack contract](platehk.md). Finding a catalogue entry does not mean every
 dataset's records can be queried. Respect rate-limit responses and retry guidance.
 The first call after inactivity can take longer while the accepted checkpoint is
 restored; a cold start does not silently fabricate sample results.
