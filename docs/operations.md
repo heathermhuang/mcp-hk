@@ -1,8 +1,8 @@
-# Operating the first development release
+# Local and self-hosted operations
 
 This is one ASGI process on one host with persistent SQLite and capture storage.
 Do not run multiple replicas with separate database volumes and call them one
-consistent service. The public domain has not been deployed by this change.
+consistent service. The hosted mcp.hk service uses the separate [Cloudflare/R2 production path](production.md).
 
 ## Install and run
 
@@ -71,8 +71,8 @@ Failed schema/coverage/completeness checks retain the previous pack. Inspect
 then rerun that pack. Do not keep retrying an unchanged schema failure.
 Use `Store.rollback(pack, snapshot_id)` from an operator-only Python session to
 select a previously validated generation; it verifies the pack identity first.
-The initial release retains all generations; automated age-based cleanup and bounded
-capture retention are still required before long-running public hosting.
+Production maintenance prunes obsolete generations after a 48-hour retirement window,
+while retaining the active and previous generations and associated captures.
 
 ## Verification and remaining release gates
 

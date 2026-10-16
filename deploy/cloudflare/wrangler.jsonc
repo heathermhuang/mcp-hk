@@ -6,6 +6,10 @@
   "compatibility_date": "2026-10-16",
   "compatibility_flags": ["nodejs_compat"],
   "workers_dev": true,
+  "routes": [
+    { "pattern": "mcp.hk", "zone_id": "cc6b9c6ef2f428d48c9dd81732917947", "custom_domain": true },
+    { "pattern": "www.mcp.hk", "zone_id": "cc6b9c6ef2f428d48c9dd81732917947", "custom_domain": true }
+  ],
   "secrets": { "required": ["OPS_TOKEN"] },
   "vars": {
     "PUBLIC_ORIGIN": "https://mcp.hk",
