@@ -42,6 +42,7 @@
     $('resources').textContent = 'Loading source resources…';
     try {
       const params = {limit: 15, offset: resourceOffset};
+      if ($('resource-format').value) params.format = $('resource-format').value;
       if (!directoryMode) params.datasetId = datasetId;
       if (directoryMode && $('coverage-status').value) params.status = $('coverage-status').value;
       const result = await api('/api/v1/resources?' + new URLSearchParams(params));
@@ -103,6 +104,7 @@
   $('dataset-search').addEventListener('submit', e => { e.preventDefault(); searchOffset = 0; search(); });
   $('datasets-next').addEventListener('click', e => { searchOffset = Number(e.target.dataset.offset); search(); });
   $('directory').addEventListener('click', () => { directoryMode = true; resourceOffset = 0; resources(); });
+  $('resource-format').addEventListener('change', () => { resourceOffset = 0; if (datasetId || directoryMode) resources(); });
   $('resources-next').addEventListener('click', e => { resourceOffset = Number(e.target.dataset.offset); resources(); });
   $('record-query').addEventListener('submit', e => { e.preventDefault(); query(e.submitter?.value || 'query'); });
   $('records-next').addEventListener('click', () => query('query', true));

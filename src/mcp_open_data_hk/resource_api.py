@@ -52,9 +52,11 @@ def register_http(app, resources):
         datasetId: str,
         limit: int = Query(default=20, ge=1, le=100),
         offset: int = Query(default=0, ge=0, le=100000),
+        format: str | None = Query(default=None, max_length=30),
+        status: str | None = Query(default=None, max_length=30),
     ):
         resources.catalogue.dataset(datasetId)
-        return resources.catalogue.resources(datasetId, limit=limit, offset=offset)
+        return resources.catalogue.resources(datasetId, status, format, limit, offset)
 
     @app.get("/api/v1/resources")
     def directory(
@@ -118,11 +120,17 @@ def register_mcp(server, current):
         return current().resources.catalogue.search(q, limit, offset)
 
     @server.tool(annotations=annotation)
-    def hk_dataset_resources(datasetId: str, limit: int = 20, offset: int = 0) -> dict:
-        """List actual resource IDs, formats, language aliases, original URLs and validation status for an inventoried dataset."""
+    def hk_dataset_resources(
+        datasetId: str,
+        limit: int = 20,
+        offset: int = 0,
+        format: str | None = None,
+        status: str | None = None,
+    ) -> dict:
+        """List actual resource IDs, formats, language aliases, original URLs and validation status for an inventoried dataset. Use format="JSON" (or another exact uppercase format) and optional status to narrow large resource lists."""
         current().resources.catalogue.dataset(datasetId)
         return current().resources.catalogue.resources(
-            datasetId, limit=limit, offset=offset
+            datasetId, status, format, limit, offset
         )
 
     @server.tool(annotations=annotation)
