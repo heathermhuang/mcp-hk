@@ -84,6 +84,7 @@ export class McpContainer extends Container<Env> {
     // No await between checking and writing the lease's transaction boundary.
     const acquired = await this.ctx.storage.transaction(async txn => {
       if ((await txn.get<number>('maintenanceLease') || 0) > Date.now()) return false;
+      await txn.delete('seedOwner');
       await txn.put('maintenanceLease', Date.now() + 15 * 60000); return true;
     });
     if (!acquired) throw new Error('Maintenance already running');
@@ -104,9 +105,28 @@ export class McpContainer extends Container<Env> {
     } finally { await this.ctx.storage.delete('maintenanceLease'); }
   }
 
+  async claimSeedLease() {
+    const owner = crypto.randomUUID();
+    const acquired = await this.ctx.storage.transaction(async txn => {
+      if ((await txn.get<number>('maintenanceLease') || 0) > Date.now()) return false;
+      await txn.put('maintenanceLease', Date.now() + 15 * 60000);
+      await txn.put('seedOwner', owner); return true;
+    });
+    if (!acquired) throw new Error('Maintenance already running');
+    return owner;
+  }
+
+  async releaseSeedLease(owner: string) {
+    await this.ctx.storage.transaction(async txn => {
+      if (await txn.get<string>('seedOwner') !== owner) return;
+      await txn.delete('seedOwner'); await txn.delete('maintenanceLease');
+    });
+  }
+
   async restartFromCheckpoint(sha256: string) {
     const acquired = await this.ctx.storage.transaction(async txn => {
       if ((await txn.get<number>('maintenanceLease') || 0) > Date.now()) return false;
+      await txn.delete('seedOwner');
       await txn.put('maintenanceLease', Date.now() + 15 * 60000); return true;
     });
     if (!acquired) throw new Error('Maintenance already running');
@@ -133,7 +153,10 @@ export default {
         return new Response(object.body, {headers: {'Content-Type': 'application/gzip', 'X-Snapshot-SHA256': object.customMetadata?.sha256 || '', 'Cache-Control': 'no-store'}});
       }
       if (url.pathname === '/__ops/snapshot' && request.method === 'POST') {
-        return Response.json(await saveBackup(env, request, 'operator-seed'));
+        const app = env.APP.get(env.APP.idFromName('production'));
+        const owner = await app.claimSeedLease();
+        try { return Response.json(await saveBackup(env, request, 'operator-seed')); }
+        finally { await app.releaseSeedLease(owner); }
       }
       if (url.pathname === '/__ops/run' && request.method === 'POST') {
         const pack = url.searchParams.get('pack') || 'backup';
