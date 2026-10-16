@@ -1,5 +1,6 @@
 import { Container } from '@cloudflare/containers';
 import { scheduledPack } from './cron';
+import {saveOverview, serveOverview} from './overview';
 import {normalizeBackendResponse, recoveringResponse} from './recovery';
 import {saveBackup, requireCheckpoint, safeOperationError} from './backup';
 
@@ -94,7 +95,10 @@ export class McpContainer extends Container<Env> {
       const response = await this.containerFetch(`${this.env.PUBLIC_ORIGIN}${path}`, {method: 'POST', headers: {'Authorization': `Bearer ${this.env.OPS_TOKEN}`, 'x-mcp-edge-token': this.env.OPS_TOKEN}});
       if (!response.ok) throw new Error(`Maintenance source returned ${response.status}`);
       const receipt = await saveBackup(this.env, response, pack);
-      await this.ctx.storage.put('maintenanceStatus', {status: 'success', ...receipt});
+      let overview;
+      try { overview = await this.publishOverview(); }
+      catch (error) { overview = {status: 'failed', error: safeOperationError(error, this.env.OPS_TOKEN)}; }
+      await this.ctx.storage.put('maintenanceStatus', {status: 'success', ...receipt, overview});
       const cutoff = Date.now() - 30 * 86400000;
       const versions = await this.env.BACKUPS.list({prefix: 'backups/'});
       const expired = versions.objects.filter(object => object.uploaded.getTime() < cutoff).map(object => object.key);
@@ -104,6 +108,13 @@ export class McpContainer extends Container<Env> {
       await this.ctx.storage.put('maintenanceStatus', {status: 'failed', attemptedAt: new Date().toISOString(), pack, error: safeOperationError(error, this.env.OPS_TOKEN)});
       throw new Error('Maintenance failed; previous backup retained');
     } finally { await this.ctx.storage.delete('maintenanceLease'); }
+  }
+
+  async publishOverview() {
+    const response = await this.containerFetch(`${this.env.PUBLIC_ORIGIN}/api/v1/coverage`, {headers: {'x-mcp-edge-token': this.env.OPS_TOKEN}, signal: AbortSignal.timeout(15000)});
+    if (!response.ok) throw new Error(`Coverage returned ${response.status}`);
+    const bytes = await boundedBody(response, 100000);
+    return saveOverview(this.env, JSON.parse(new TextDecoder().decode(bytes)));
   }
 
   async claimSeedLease() {
@@ -178,11 +189,13 @@ export default {
         if (!['backup', 'restaurants', 'population', 'all', 'catalogue', 'resources'].includes(pack)) return new Response('Invalid pack', {status: 400});
         return Response.json(await env.APP.get(env.APP.idFromName('production')).maintain(pack));
       }
+      if (url.pathname === '/__ops/publish-overview' && request.method === 'POST') return Response.json(await env.APP.get(env.APP.idFromName('production')).publishOverview());
       if (url.pathname === '/__ops/restart' && request.method === 'POST') return Response.json(await env.APP.get(env.APP.idFromName('production')).restartFromCheckpoint(request.headers.get('x-snapshot-sha256') || ''));
       if (url.pathname === '/__ops/diagnostics') return Response.json(await env.APP.get(env.APP.idFromName('production')).operationDiagnostics());
       if (url.pathname === '/__ops/status') return Response.json(await env.APP.get(env.APP.idFromName('production')).operationsStatus());
       return new Response('Not found', {status: 404});
     }
+    if (url.pathname === '/assets/overview.json') return serveOverview(env, request);
     if (['/', '/demo', '/sources', '/connect', '/plates', '/coverage', '/data'].includes(url.pathname) || url.pathname.startsWith('/assets/')) {
       url.pathname = url.pathname.startsWith('/assets/') ? url.pathname.slice(7) : ['/coverage','/data'].includes(url.pathname) ? '/coverage.html' : '/index.html';
       const response = await env.ASSETS.fetch(new Request(url, request));
