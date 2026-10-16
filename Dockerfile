@@ -8,7 +8,11 @@ WORKDIR /app
 COPY . /app
 
 # Install dependencies and the package
-RUN pip install --no-cache-dir .
+RUN pip install --no-cache-dir uv==0.11.7 && uv sync --frozen --no-dev --no-editable
 
-# Default command to run the MCP server
-CMD ["mcp-open-data-hk"]
+# Persistent data is populated by the explicit refresh CLI, never by a request.
+RUN useradd --create-home app && mkdir /data && chown app:app /data
+USER app
+ENV PATH=/app/.venv/bin:$PATH MCP_HK_DATABASE=/data/mcp-hk.sqlite3 HOST=0.0.0.0 PORT=8000
+EXPOSE 8000
+CMD ["mcp-hk-http"]

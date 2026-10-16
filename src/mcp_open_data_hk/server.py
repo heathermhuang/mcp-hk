@@ -1,9 +1,7 @@
 from fastmcp import FastMCP
-import httpx
+from .http import request_json
+from .contracts import DomainError
 from typing import Optional, List, Dict, Any
-
-# Initialize the FastMCP server
-mcp = FastMCP("mcp-open-data-hk")
 
 # Base URLs for the data.gov.hk API
 BASE_URLS = {
@@ -20,16 +18,9 @@ async def make_api_request(
     url: str, params: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """Make an API request to data.gov.hk"""
-    async with httpx.AsyncClient() as client:
-        # Print the request for debugging
-        print(f"Making request to {url} with params {params}")
-        response = await client.get(url, params=params)
-        print(f"Response status: {response.status_code}")
-        response.raise_for_status()
-        return response.json()
+    return await request_json(url, params)
 
 
-@mcp.tool
 async def list_datasets(
     limit: Optional[int] = None, offset: Optional[int] = None, language: str = "en"
 ) -> List[str]:
@@ -54,10 +45,11 @@ async def list_datasets(
     if result.get("success"):
         return result["result"]
     else:
-        raise Exception(f"API Error: {result.get('error', 'Unknown error')}")
+        raise DomainError(
+            "CATALOGUE_ERROR", "DATA.GOV.HK rejected or could not complete the query"
+        )
 
 
-@mcp.tool
 async def get_dataset_details(
     dataset_id: str, language: str = "en", include_tracking: bool = False
 ) -> Dict[str, Any]:
@@ -82,10 +74,11 @@ async def get_dataset_details(
     if result.get("success"):
         return result["result"]
     else:
-        raise Exception(f"API Error: {result.get('error', 'Unknown error')}")
+        raise DomainError(
+            "CATALOGUE_ERROR", "DATA.GOV.HK rejected or could not complete the query"
+        )
 
 
-@mcp.tool
 async def list_categories(
     order_by: str = "name",
     sort: str = "title asc",
@@ -122,10 +115,11 @@ async def list_categories(
     if result.get("success"):
         return result["result"]
     else:
-        raise Exception(f"API Error: {result.get('error', 'Unknown error')}")
+        raise DomainError(
+            "CATALOGUE_ERROR", "DATA.GOV.HK rejected or could not complete the query"
+        )
 
 
-@mcp.tool
 async def get_category_details(
     category_id: str,
     include_datasets: bool = False,
@@ -170,10 +164,11 @@ async def get_category_details(
     if result.get("success"):
         return result["result"]
     else:
-        raise Exception(f"API Error: {result.get('error', 'Unknown error')}")
+        raise DomainError(
+            "CATALOGUE_ERROR", "DATA.GOV.HK rejected or could not complete the query"
+        )
 
 
-@mcp.tool
 async def search_datasets(
     query: str = "*:*", limit: int = 10, offset: int = 0, language: str = "en"
 ) -> Dict[str, Any]:
@@ -214,10 +209,11 @@ async def search_datasets(
             "has_more": search_result.get("count", 0) > (offset + rows),
         }
     else:
-        raise Exception(f"API Error: {result.get('error', 'Unknown error')}")
+        raise DomainError(
+            "CATALOGUE_ERROR", "DATA.GOV.HK rejected or could not complete the query"
+        )
 
 
-@mcp.tool
 async def get_supported_formats() -> List[str]:
     """
     Get a list of file formats supported by data.gov.hk
@@ -229,7 +225,6 @@ async def get_supported_formats() -> List[str]:
     return result.get("formats", [])
 
 
-@mcp.tool
 async def search_datasets_with_facets(
     query: str = "*:*", language: str = "en"
 ) -> Dict[str, Any]:
@@ -260,13 +255,15 @@ async def search_datasets_with_facets(
         return {
             "count": search_result.get("count", 0),
             "results": search_result.get("results", []),
+            "search_facets": search_result.get("search_facets", {}),
             "has_more": search_result.get("count", 0) > rows,
         }
     else:
-        raise Exception(f"API Error: {result.get('error', 'Unknown error')}")
+        raise DomainError(
+            "CATALOGUE_ERROR", "DATA.GOV.HK rejected or could not complete the query"
+        )
 
 
-@mcp.tool
 async def get_datasets_by_format(
     file_format: str, limit: int = 10, language: str = "en"
 ) -> Dict[str, Any]:
@@ -301,4 +298,28 @@ async def get_datasets_by_format(
             "results": search_result.get("results", []),
         }
     else:
-        raise Exception(f"API Error: {result.get('error', 'Unknown error')}")
+        raise DomainError(
+            "CATALOGUE_ERROR", "DATA.GOV.HK rejected or could not complete the query"
+        )
+
+
+def create_server(service=None):
+    from .tools import register_data_tools
+
+    server = FastMCP("mcp.hk")
+    for fn in [
+        list_datasets,
+        get_dataset_details,
+        list_categories,
+        get_category_details,
+        search_datasets,
+        get_supported_formats,
+        search_datasets_with_facets,
+        get_datasets_by_format,
+    ]:
+        server.tool(fn, annotations={"readOnlyHint": True, "destructiveHint": False})
+    register_data_tools(server, service)
+    return server
+
+
+mcp = create_server()
