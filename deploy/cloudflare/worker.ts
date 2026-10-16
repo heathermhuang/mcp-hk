@@ -99,8 +99,8 @@ export class McpContainer extends Container<Env> {
       const expired = versions.objects.filter(object => object.uploaded.getTime() < cutoff).map(object => object.key);
       if (expired.length) await this.env.BACKUPS.delete(expired);
       return receipt;
-    } catch {
-      await this.ctx.storage.put('maintenanceStatus', {status: 'failed', attemptedAt: new Date().toISOString(), pack});
+    } catch (error) {
+      await this.ctx.storage.put('maintenanceStatus', {status: 'failed', attemptedAt: new Date().toISOString(), pack, error: safeOperationError(error, this.env.OPS_TOKEN)});
       throw new Error('Maintenance failed; previous backup retained');
     } finally { await this.ctx.storage.delete('maintenanceLease'); }
   }
