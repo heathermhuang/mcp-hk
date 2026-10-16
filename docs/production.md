@@ -145,3 +145,16 @@ JSON `SERVICE_RECOVERING` envelope with `Retry-After`. Existing JSON source erro
 keep their own codes. The coverage explorer retries only that recovery signal,
 with at most three attempts; out-of-order searches/resource lists cannot replace
 newer selections. It never retries unchanged provider or schema failures.
+
+### Public pages and language
+
+The overview reads `/api/v1/coverage` for catalogue, resource and validated-queryable
+counts. The original packs are example workflows, not the full library. Topic links
+open the resource explorer with a search query. A failed coverage request shows an
+unavailable state rather than a hard-coded count.
+
+All public landing/demo/explorer pages share `i18n.js` and `translations.js`.
+`?lang=en` or `?lang=zh-Hant` takes precedence over the saved language; the switch
+updates both the URL and local preference. Internal links retain the language and
+existing query parameters. UI copy, status messages, form labels and connection help
+are translated; original records, source titles and API identifiers retain source text.

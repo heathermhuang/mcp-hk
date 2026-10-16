@@ -1,0 +1,53 @@
+/* Shared locale for every public page. Source data and API identifiers stay verbatim. */
+(() => {
+  const normalize = value => /^(zh|zh-hant|zh-hk)$/i.test(value || '') ? 'zh' : value === 'en' ? 'en' : null;
+  let stored;
+  try { stored = localStorage.getItem('mhk-language'); } catch { /* URL locale works without storage. */ }
+  let lang = normalize(new URL(location.href).searchParams.get('lang')) || normalize(stored) || 'en';
+  const t = (key, values = {}) => {
+    const text = translations[lang][key] ?? translations.en[key] ?? key;
+    return text.replace(/\{(\w+)\}/g, (match, name) => values[name] ?? match);
+  };
+  function apply() {
+    document.documentElement.lang = lang === 'en' ? 'en' : 'zh-Hant';
+    document.querySelectorAll('[data-i18n]').forEach(e => { e.textContent = t(e.dataset.i18n); });
+    // Only checked-in application headings use translated markup.
+    document.querySelectorAll('[data-i18n-html]').forEach(e => { e.innerHTML = t(e.dataset.i18nHtml); });
+    for (const attr of ['placeholder', 'aria-label', 'content']) {
+      document.querySelectorAll('[data-i18n-' + attr + ']').forEach(e => e.setAttribute(attr, t(e.getAttribute('data-i18n-' + attr))));
+    }
+    document.querySelectorAll('.mhk-language').forEach(e => {
+      e.textContent = lang === 'en' ? '繁' : 'EN';
+      e.setAttribute('aria-label', lang === 'en' ? '切換至繁體中文' : 'Switch to English');
+    });
+    document.querySelectorAll('a[href]').forEach(e => {
+      const url = new URL(e.getAttribute('href'), location.href);
+      if (url.origin === location.origin && ['/', '/demo', '/connect', '/sources', '/plates', '/coverage', '/data'].includes(url.pathname)) {
+        url.searchParams.set('lang', lang === 'en' ? 'en' : 'zh-Hant');
+        e.setAttribute('href', url.pathname + url.search + url.hash);
+      }
+    });
+  }
+  function setLanguage(value) {
+    const next = normalize(value); if (!next) return;
+    lang = next;
+    try { localStorage.setItem('mhk-language', lang); } catch { /* Keep working without storage. */ }
+    const url = new URL(location.href); url.searchParams.set('lang', lang === 'en' ? 'en' : 'zh-Hant');
+    history.replaceState(null, '', url.pathname + url.search + url.hash);
+    apply(); window.dispatchEvent(new Event('mhk:language'));
+  }
+  function coverageSummary(box, coverage, failed = false) {
+    box.replaceChildren();
+    if (!coverage) { box.textContent = t(failed ? 'coverageUnavailable' : 'loadingCoverage'); return; }
+    const counts = document.createElement('div'); counts.className = 'mhk-coverage-counts';
+    for (const [value, key] of [[coverage.datasets.discovered, 'datasetEntries'], [coverage.resources.discovered, 'resourceEntries'], [coverage.resources.byStatus.queryable || 0, 'queryableResources']]) {
+      const item = document.createElement('p'), number = document.createElement('strong'), label = document.createElement('span');
+      number.textContent = value.toLocaleString(lang === 'en' ? 'en-HK' : 'zh-HK'); label.textContent = t(key); item.append(number, label); counts.append(item);
+    }
+    const note = document.createElement('p'); note.className = 'mhk-note'; note.textContent = t('coverageClaim'); box.append(counts, note);
+  }
+  window.MhkI18n = {get lang() {return lang;}, get locale() {return lang === 'en' ? 'en' : 'zh-Hant';}, t, apply, setLanguage, coverageSummary};
+  document.querySelectorAll('.mhk-language').forEach(button => button.addEventListener('click', () => setLanguage(lang === 'en' ? 'zh' : 'en')));
+  window.addEventListener('popstate', () => { const value = normalize(new URL(location.href).searchParams.get('lang')); if (value && value !== lang) { lang = value; apply(); window.dispatchEvent(new Event('mhk:language')); } });
+  apply();
+})();
