@@ -9,7 +9,7 @@ profile access or permission to make government submissions.
 ## Codex
 
 ```sh
-codex mcp add hk --url https://mcp.hk/mcp
+codex mcp add mcp.hk --url https://mcp.hk/mcp
 ```
 
 Start/reload the client, or use its MCP settings/status view to confirm the tools.
@@ -18,10 +18,11 @@ Start/reload the client, or use its MCP settings/status view to confirm the tool
 ## Claude Code
 
 ```sh
-claude mcp add --transport http hk https://mcp.hk/mcp
+claude mcp add --transport http mcp-hk https://mcp.hk/mcp
 ```
 
-Use `/mcp` to inspect connection status.
+Claude Code’s CLI does not allow dots in server identifiers, so its command uses
+`mcp-hk`. Use `/mcp` to inspect connection status.
 [Official documentation](https://code.claude.com/docs/en/mcp).
 
 ## Cursor
@@ -31,7 +32,7 @@ Add to `.cursor/mcp.json` for a project, or `~/.cursor/mcp.json` globally:
 ```json
 {
   "mcpServers": {
-    "hk": { "url": "https://mcp.hk/mcp" }
+    "mcp.hk": { "url": "https://mcp.hk/mcp" }
   }
 }
 ```
@@ -40,16 +41,16 @@ Add to `.cursor/mcp.json` for a project, or `~/.cursor/mcp.json` globally:
 
 ## Try it
 
-“Use hk to resolve Central Government Offices, let me choose the address, then find
+“Use mcp.hk to resolve Central Government Offices, let me choose the address, then find
 licensed restaurants within 500 metres. Include the district's population reference
 year and official sources.”
 
-“用 hk 查詢中環政府總部附近的持牌食肆，清楚標示牌照類別、直線距離、資料來源及人口統計年份。”
+“用 mcp.hk 查詢中環政府總部附近的持牌食肆，清楚標示牌照類別、直線距離、資料來源及人口統計年份。”
 
 There are 19 tools: eight government catalogue tools, seven address/restaurant/
 district/status tools, three Plate.hk tools and the pack directory.
 
-“Use hk to look up the exact auction history of AA88 and compare AH168 with
+“Use mcp.hk to look up the exact auction history of AA88 and compare AH168 with
 historical sales. Keep the original sources, sample size and dates; do not present
 historical prices as a current valuation.”
 
