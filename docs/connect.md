@@ -1,0 +1,53 @@
+# Use mcp.hk in your AI
+
+Server URL: **https://mcp.hk/mcp**. Transport: **Streamable HTTP**.
+This is a public read-only data service. No server API key or OAuth sign-in is
+required. Your AI client must support custom remote MCP servers; availability and
+settings depend on the client/workspace. The service does not grant your AI private
+profile access or permission to make government submissions.
+
+## Codex
+
+```sh
+codex mcp add hk --url https://mcp.hk/mcp
+```
+
+Start/reload the client, or use its MCP settings/status view to confirm the tools.
+[Official MCP configuration documentation](https://learn.chatgpt.com/docs/extend/mcp?surface=cli).
+
+## Claude Code
+
+```sh
+claude mcp add --transport http hk https://mcp.hk/mcp
+```
+
+Use `/mcp` to inspect connection status.
+[Official documentation](https://code.claude.com/docs/en/mcp).
+
+## Cursor
+
+Add to `.cursor/mcp.json` for a project, or `~/.cursor/mcp.json` globally:
+
+```json
+{
+  "mcpServers": {
+    "hk": { "url": "https://mcp.hk/mcp" }
+  }
+}
+```
+
+[Official documentation](https://cursor.com/docs/mcp).
+
+## Try it
+
+“Use hk to resolve Central Government Offices, let me choose the address, then find
+licensed restaurants within 500 metres. Include the district's population reference
+year and official sources.”
+
+“用 hk 查詢中環政府總部附近的持牌食肆，清楚標示牌照類別、直線距離、資料來源及人口統計年份。”
+
+There are 15 tools: eight government catalogue tools and seven address, restaurant,
+district and source-status tools. Finding a catalogue entry does not mean every
+dataset's records can be queried. Respect rate-limit responses and retry guidance.
+The first call after inactivity can take longer while the accepted checkpoint is
+restored; a cold start does not silently fabricate sample results.

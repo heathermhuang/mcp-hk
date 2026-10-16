@@ -21,7 +21,7 @@ class Store:
                 PRAGMA journal_mode=WAL;
                 CREATE TABLE IF NOT EXISTS snapshots (
                     id TEXT PRIMARY KEY, pack TEXT NOT NULL, hash TEXT NOT NULL,
-                    retrieved REAL NOT NULL, checked REAL NOT NULL, count INTEGER NOT NULL);
+                    retrieved REAL NOT NULL, checked REAL NOT NULL, count INTEGER NOT NULL, retired REAL);
                 CREATE TABLE IF NOT EXISTS active_packs (pack TEXT PRIMARY KEY, snapshot TEXT NOT NULL);
                 CREATE TABLE IF NOT EXISTS records (
                     snapshot TEXT NOT NULL, id TEXT NOT NULL, payload TEXT NOT NULL,
@@ -32,12 +32,83 @@ class Store:
                     key TEXT PRIMARY KEY, payload TEXT NOT NULL, retrieved REAL NOT NULL);
                 CREATE TABLE IF NOT EXISTS ingestion_runs (
                     id TEXT PRIMARY KEY, pack TEXT NOT NULL, started REAL NOT NULL,
-                    finished REAL, status TEXT NOT NULL, snapshot TEXT, error TEXT);
+                    finished REAL, status TEXT NOT NULL, snapshot TEXT, error TEXT,
+                    capture TEXT);
                 CREATE TABLE IF NOT EXISTS budgets (
                     source TEXT NOT NULL, day INTEGER NOT NULL, count INTEGER NOT NULL,
                     PRIMARY KEY(source, day));
             """
             )
+            if "capture" not in {
+                r[1] for r in db.execute("PRAGMA table_info(ingestion_runs)")
+            }:
+                db.execute("ALTER TABLE ingestion_runs ADD COLUMN capture TEXT")
+            if "retired" not in {
+                r[1] for r in db.execute("PRAGMA table_info(snapshots)")
+            }:
+                db.execute("ALTER TABLE snapshots ADD COLUMN retired REAL")
+                db.execute(
+                    "UPDATE snapshots SET retired=? WHERE id NOT IN (SELECT snapshot FROM active_packs)",
+                    (time.time(),),
+                )
+
+    def prune(self):
+        cutoff = time.time() - 48 * 3600
+        with self.connect() as db:
+            protected = {r[0] for r in db.execute("SELECT snapshot FROM active_packs")}
+            for pack in ("restaurants", "population"):
+                protected.update(
+                    r[0]
+                    for r in db.execute(
+                        "SELECT id FROM snapshots WHERE pack=? ORDER BY retrieved DESC LIMIT 2",
+                        (pack,),
+                    )
+                )
+            obsolete = [
+                r[0]
+                for r in db.execute(
+                    "SELECT id FROM snapshots WHERE retired<?", (cutoff,)
+                )
+                if r[0] not in protected
+            ]
+            for snapshot in obsolete:
+                db.execute("DELETE FROM records WHERE snapshot=?", (snapshot,))
+                db.execute("DELETE FROM snapshots WHERE id=?", (snapshot,))
+            db.execute(
+                "DELETE FROM address_cache WHERE retrieved<?", (time.time() - 86400,)
+            )
+            db.execute(
+                "DELETE FROM budgets WHERE day<?", (int(time.time() // 86400) - 2,)
+            )
+            captures = set()
+            for pack in ("restaurants", "population"):
+                captures.update(
+                    r[0]
+                    for r in db.execute(
+                        "SELECT capture FROM ingestion_runs WHERE pack=? AND capture IS NOT NULL ORDER BY started DESC LIMIT 2",
+                        (pack,),
+                    )
+                )
+            captures.update(
+                r[0]
+                for r in db.execute(
+                    "SELECT capture FROM ingestion_runs WHERE started>? AND capture IS NOT NULL",
+                    (cutoff,),
+                )
+            )
+            for snapshot in protected:
+                captures.update(
+                    r[0]
+                    for r in db.execute(
+                        "SELECT capture FROM ingestion_runs WHERE snapshot=? AND capture IS NOT NULL",
+                        (snapshot,),
+                    )
+                )
+        folder = Path(self.path).parent / "captures"
+        if captures and folder.exists():
+            for path in folder.glob("*.json"):
+                if path.stem not in captures:
+                    path.unlink()
 
     @contextmanager
     def connect(self):
@@ -137,7 +208,7 @@ class Store:
                     )
             if snapshot_id != current:
                 db.execute(
-                    "INSERT INTO snapshots VALUES (?,?,?,?,?,?)",
+                    "INSERT INTO snapshots(id,pack,hash,retrieved,checked,count) VALUES (?,?,?,?,?,?)",
                     (snapshot_id, pack, digest, now, now, len(rows)),
                 )
                 db.executemany(
@@ -151,6 +222,10 @@ class Store:
                     "INSERT OR REPLACE INTO active_packs VALUES (?,?)",
                     (pack, snapshot_id),
                 )
+                if current and snapshot_id != current:
+                    db.execute(
+                        "UPDATE snapshots SET retired=? WHERE id=?", (now, current)
+                    )
         self.check(pack)
         return snapshot_id
 

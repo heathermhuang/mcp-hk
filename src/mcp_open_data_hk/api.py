@@ -54,6 +54,14 @@ def create_app(service=None):
 
     @app.middleware("http")
     async def boundary(request: Request, call_next):
+        edge_mode = os.environ.get("MCP_HK_EDGE_MODE") == "true"
+        if edge_mode:
+            from .operations import authorized
+
+            if not authorized("Bearer " + request.headers.get("x-mcp-edge-token", "")):
+                return JSONResponse(
+                    {"error": {"code": "INVALID_EDGE"}}, status_code=403
+                )
         host = request.url.hostname
         if host not in hosts:
             return JSONResponse(
@@ -85,7 +93,7 @@ def create_app(service=None):
                         {"error": {"code": "BODY_TOO_LARGE"}}, status_code=413
                     )
             request._body = bytes(body)
-        if request.url.path.startswith(("/api/", "/mcp")):
+        if not edge_mode and request.url.path.startswith(("/api/", "/mcp")):
             now = time.monotonic()
             ip = request.client.host if request.client else "unknown"
             kind = (
@@ -225,6 +233,9 @@ def create_app(service=None):
             {**payload, "capability": "catalogue_only"}, "catalogue"
         )
 
+    from .operations import register_operations
+
+    register_operations(app, service)
     web = Path(__file__).parent / "web"
     if web.exists():
 

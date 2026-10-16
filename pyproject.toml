@@ -43,6 +43,7 @@ mcp-open-data-hk = "mcp_open_data_hk:main"
 mcp-hk = "mcp_open_data_hk:main"
 mcp-hk-http = "mcp_open_data_hk.api:main"
 mcp-hk-refresh = "mcp_open_data_hk.ingest:main"
+mcp-hk-container = "mcp_open_data_hk.operations:main"
 
 [project.urls]
 Homepage = "https://mcp.hk"

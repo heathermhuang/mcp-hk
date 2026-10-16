@@ -20,7 +20,8 @@
     connectionNote: '本實例的連接網址。支援 Streamable HTTP，亦可在本機使用 stdio。',
     previewFooter: '開源開發版本', endpointLabel: '本實例的 MCP 端點', provenanceLabel: '回應資料來源'
   });
-  let state = {screen: location.pathname === '/sources' ? 'sources' : location.pathname === '/demo' ? 'explore' : 'home', lang: 'en', radius: 500, code: 'http'};
+  let state = {screen: location.pathname === '/sources' ? 'sources' : location.pathname === '/demo' ? 'explore' : location.pathname === '/connect' ? 'connect' : 'home', lang: 'en', radius: 500, code: 'http'};
+  let clientKind = 'codex';
   let selected = null, response = null, population = null, requestQuery = '', pending = false;
   let generation = 0;
   const $ = selector => root.querySelector(selector);
@@ -42,7 +43,12 @@
     $('.mhk-language').textContent = state.lang === 'en' ? '繁' : 'EN';
     $('.mhk-language').setAttribute('aria-label', state.lang === 'en' ? 'Switch to Traditional Chinese' : 'Switch to English');
     document.documentElement.lang = state.lang === 'en' ? 'en' : 'zh-Hant';
-    $('[data-dynamic=endpoint]').textContent = location.origin + '/mcp';
+    const endpoint = location.origin + '/mcp';
+    $('[data-dynamic=endpoint]').textContent = endpoint;
+    const examples = {codex: `codex mcp add hk --url ${endpoint}`, claude: `claude mcp add --transport http hk ${endpoint}`, cursor: JSON.stringify({mcpServers: {hk: {url: endpoint}}}, null, 2)};
+    $('#mhk-install').textContent = examples[clientKind];
+    $('#mhk-client-help').textContent = clientKind === 'cursor' ? 'Add this to .cursor/mcp.json (project) or ~/.cursor/mcp.json (global).' : 'Run in your terminal, then start or reload the AI client. Ask it to use the hk tools.';
+    root.querySelectorAll('[data-client]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.client === clientKind)));
     $('#mhk-radius').value = String(state.radius);
     $('.mhk-search button').disabled = pending;
     $('.mhk-found').hidden = !selected;
@@ -158,5 +164,7 @@
       }
     } catch (e) { $('#mhk-status').textContent = e.message; }
   }
+  root.querySelectorAll('[data-client]').forEach(b => b.addEventListener('click', () => { clientKind = b.dataset.client; $('#mhk-copy-status').textContent = ''; render(); }));
+  $('#mhk-copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText($('#mhk-install').textContent); $('#mhk-copy-status').textContent = state.lang === 'en' ? ' Copied' : ' 已複製'; } catch { $('#mhk-copy-status').textContent = ' Select and copy the example above.'; } });
   render(); status();
 })();
