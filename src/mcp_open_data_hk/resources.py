@@ -923,6 +923,7 @@ class Resources:
                 "schema_drift",
                 "capacity_limited",
                 "needs_selection",
+                "needs_adapter",
             }:
                 continue
             if check.get("validated") and time.time() - check["validated"] < (
