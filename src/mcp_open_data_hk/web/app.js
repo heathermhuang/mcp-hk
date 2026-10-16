@@ -213,7 +213,7 @@
       item.append(name, status, detail, link); box.append(item);
     }
   }
-  function renderCoverage() { MhkI18n.coverageSummary($('#mhk-coverage'), inventory, inventoryError); }
+  function renderCoverage() { for (const id of ['#mhk-coverage', '#mhk-source-coverage']) MhkI18n.coverageSummary($(id), inventory, inventoryError); }
   async function status() {
     try { sourceStatus = await api('/api/v1/status'); } catch { statusError = true; }
     renderStatus();
