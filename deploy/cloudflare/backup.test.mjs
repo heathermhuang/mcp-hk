@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
-import {saveBackup, MAX_BACKUP, requireCheckpoint} from './backup.ts';
+import {saveBackup, MAX_BACKUP, requireCheckpoint, safeOperationError} from './backup.ts';
 
 globalThis.FixedLengthStream = class extends TransformStream {
   constructor(length) {
@@ -34,4 +34,11 @@ test('recovery restart requires the exact accepted checkpoint', async () => {
   await saveBackup({BACKUPS},source([1,2,3]),'test');
   assert.equal((await requireCheckpoint({BACKUPS},'a'.repeat(64))).size,3);
   await assert.rejects(requireCheckpoint({BACKUPS},'b'.repeat(64)));
+});
+
+test('private operation errors never expose credentials', () => {
+  const token='test-sensitive-value';
+  const result=safeOperationError(new Error('Failed '+token+' Bearer another-value'),token);
+  assert(!result.includes(token));assert(!result.includes('another-value'));
+  assert(result.includes('[redacted]'));
 });

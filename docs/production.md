@@ -120,3 +120,8 @@ The private authenticated endpoint checks the R2 object and acquires the mainten
 lease before stopping; the next request performs normal authenticated bootstrap.
 A missing or changed checkpoint prevents the stop. Use this controlled recovery
 path to adopt a new inventory seed without waiting for an incidental idle shutdown.
+
+Private `/__ops/diagnostics` reports maintenance lease expiry and whether a seed
+lease is held, without the lease owner or credentials. Seed errors identify lease,
+upload or release phase to the authenticated operator; credentials are redacted.
+A lease conflict returns 409 and never changes the accepted recovery pointer.

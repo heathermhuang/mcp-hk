@@ -1,6 +1,6 @@
 import { Container } from '@cloudflare/containers';
 import { scheduledPack } from './cron';
-import {saveBackup, requireCheckpoint} from './backup';
+import {saveBackup, requireCheckpoint, safeOperationError} from './backup';
 
 
 async function authorized(request: Request, token: string): Promise<boolean> {
@@ -137,6 +137,12 @@ export class McpContainer extends Container<Env> {
     } finally { await this.ctx.storage.delete('maintenanceLease'); }
   }
 
+  async operationDiagnostics() {
+    return {leaseUntil: await this.ctx.storage.get<number>('maintenanceLease') || null,
+      seedLease: Boolean(await this.ctx.storage.get<string>('seedOwner')),
+      now: Date.now(), maintenance: await this.operationsStatus()};
+  }
+
   async operationsStatus() { return await this.ctx.storage.get('maintenanceStatus') || {status: 'not_run'}; }
 }
 
@@ -154,9 +160,17 @@ export default {
       }
       if (url.pathname === '/__ops/snapshot' && request.method === 'POST') {
         const app = env.APP.get(env.APP.idFromName('production'));
-        const owner = await app.claimSeedLease();
-        try { return Response.json(await saveBackup(env, request, 'operator-seed')); }
-        finally { await app.releaseSeedLease(owner); }
+        let owner: string | undefined, receipt: unknown, failure: {phase: string; message: string} | undefined;
+        let phase = 'lease';
+        try {
+          owner = await app.claimSeedLease(); phase = 'upload';
+          receipt = await saveBackup(env, request, 'operator-seed');
+        } catch (error) { failure = {phase, message: safeOperationError(error, env.OPS_TOKEN)}; }
+        if (owner) {
+          try { await app.releaseSeedLease(owner); }
+          catch (error) { failure ||= {phase: 'release', message: safeOperationError(error, env.OPS_TOKEN)}; }
+        }
+        return failure ? Response.json({error: {code: 'CHECKPOINT_OPERATION_FAILED', ...failure}}, {status: failure.phase === 'lease' ? 409 : 500}) : Response.json(receipt);
       }
       if (url.pathname === '/__ops/run' && request.method === 'POST') {
         const pack = url.searchParams.get('pack') || 'backup';
@@ -164,6 +178,7 @@ export default {
         return Response.json(await env.APP.get(env.APP.idFromName('production')).maintain(pack));
       }
       if (url.pathname === '/__ops/restart' && request.method === 'POST') return Response.json(await env.APP.get(env.APP.idFromName('production')).restartFromCheckpoint(request.headers.get('x-snapshot-sha256') || ''));
+      if (url.pathname === '/__ops/diagnostics') return Response.json(await env.APP.get(env.APP.idFromName('production')).operationDiagnostics());
       if (url.pathname === '/__ops/status') return Response.json(await env.APP.get(env.APP.idFromName('production')).operationsStatus());
       return new Response('Not found', {status: 404});
     }
