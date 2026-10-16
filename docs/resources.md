@@ -146,3 +146,5 @@ deadline. Each page contributes to a response-chain hash, and the final ID set m
 match the initial set. These bounds remain internal capacity limits wherever exceeded.
 
 HTTP POST schema inspection accepts only `parameters`, `recordPath`, `sheet`, `layer` and `requireFresh`; it shares the MCP selector contract. GET remains available for simple selectors. The browser uses POST so filled source parameters reach inspection as well as queries.
+
+Catalogue jobs have a ten-minute overall deadline and cancel/drain outstanding source tasks on failure or cancellation. A failed job retains the accepted generation and records its failure rather than leaving source requests running after the job ends.

@@ -54,6 +54,17 @@ async def fetch(url, headers=None, maximum=8_000_000):
             return bytes(body), dict(response.headers), url, response.status_code
 
 
+async def complete_harvest(coroutines):
+    tasks = [asyncio.create_task(c) for c in coroutines]
+    try:
+        return await asyncio.gather(*tasks)
+    except BaseException:
+        for task in tasks:
+            task.cancel()
+        await asyncio.gather(*tasks, return_exceptions=True)
+        raise
+
+
 def provider_type(name):
     # Conservative name-based classification; unresolved bodies stay unclassified.
     if name.endswith((" Department", " Bureau")) or name in {
@@ -196,7 +207,7 @@ class Harvester:
                 raise ValueError("Dataset identity mismatch")
             return d
 
-        raw = await asyncio.gather(*(one(i) for i in sorted(ids)))
+        raw = await complete_harvest([one(i) for i in sorted(ids)])
         final_ids = json.loads((await fetch(CKAN + "package_list"))[0])["result"]
         if set(final_ids) != set(ids):
             raise ValueError("Catalogue changed during harvest; rerun from cache")
@@ -316,7 +327,7 @@ class Harvester:
                 "referencePeriod": None,
             }, list(found.values())
 
-        values = await asyncio.gather(*(one(r) for r in records))
+        values = await complete_harvest([one(r) for r in records])
         for d, rs in values:
             datasets.append(d)
             resources.extend(rs)
@@ -335,8 +346,16 @@ async def sync(store, folder=None):
         )
     try:
         h = Harvester(folder or Path(store.path).parent / "catalogue-audit")
-        ds, rs, receipt = await h.datagov()
-        cds, crs, csdi_receipt = await h.csdi()
+        try:
+            (ds, rs, receipt), (cds, crs, csdi_receipt) = await asyncio.wait_for(
+                complete_harvest([h.datagov(), h.csdi()]), timeout=600
+            )
+        except asyncio.TimeoutError:
+            raise DomainError(
+                "CATALOGUE_DEADLINE",
+                "Catalogue harvest exceeded ten minutes; accepted inventory retained",
+                504,
+            ) from None
         shared = set(r["url"] for r in rs) & set(r["url"] for r in crs)
         by_provider = Counter(d["providerType"] for d in ds + cds)
         receipt = {
@@ -363,7 +382,7 @@ async def sync(store, folder=None):
                 ),
             )
         return catalogue.coverage()
-    except Exception as exc:
+    except BaseException as exc:
         with store.connect() as db:
             db.execute(
                 "UPDATE catalogue_runs SET finished=?,status=?,receipt=? WHERE id=?",

@@ -770,3 +770,27 @@ async def test_http_schema_parameters_match_mcp_without_query_only_fields(
         ).data
     assert result["schema"] == response.json()["schema"]
     assert seen == ["https://example.gov.hk/stop/001"]
+
+
+@pytest.mark.asyncio
+async def test_failed_harvest_cancels_and_drains_other_source_reads():
+    import asyncio
+    from mcp_open_data_hk.catalogue_sync import complete_harvest
+
+    started = asyncio.Event()
+    cancelled = asyncio.Event()
+
+    async def blocked():
+        started.set()
+        try:
+            await asyncio.Event().wait()
+        finally:
+            cancelled.set()
+
+    async def failed():
+        await started.wait()
+        raise ValueError("source schema failed")
+
+    with pytest.raises(ValueError, match="source schema failed"):
+        await complete_harvest([blocked(), failed()])
+    assert cancelled.is_set()
