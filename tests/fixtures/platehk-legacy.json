@@ -1,0 +1,28 @@
+{
+  "dataset": "tvrm_legacy",
+  "sort": "date_desc",
+  "page": 1,
+  "page_size": 1,
+  "total": 46925,
+  "rows": [
+    {
+      "dataset_key": "tvrm_legacy",
+      "auction_key": "tvrm_legacy::2000-01-01",
+      "auction_date": "2000-01-01",
+      "auction_date_label": "2000-2006",
+      "date_precision": "year_range",
+      "year_range": "2000-2006",
+      "is_lny": false,
+      "single_line": "12",
+      "double_line": null,
+      "amount_hkd": 7100000,
+      "pdf_url": "./data/TVRM%20auction%20result%20%281973-2026%29.xls",
+      "source_url": "./data/TVRM%20auction%20result%20%281973-2026%29.xls",
+      "source_format": "xls",
+      "source_type": "xls_legacy_year_range",
+      "source_sheet": "2000-2009",
+      "result_status": "sold",
+      "result_text": "登記號碼在拍賣會中售出"
+    }
+  ]
+}

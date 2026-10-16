@@ -7,7 +7,7 @@ import httpx
 
 from .contracts import DomainError
 
-HOSTS = {"data.gov.hk", "www.als.gov.hk", "portal.csdi.gov.hk"}
+HOSTS = {"data.gov.hk", "www.als.gov.hk", "portal.csdi.gov.hk", "plate.hk"}
 
 
 async def request_json(url: str, params: dict | None = None):
@@ -24,6 +24,15 @@ async def request_json(url: str, params: dict | None = None):
             },
         ) as client:
             async with client.stream("GET", url, params=params) as response:
+                if urlsplit(url).hostname == "plate.hk":
+                    if response.status_code == 429:
+                        raise DomainError(
+                            "PLATEHK_RATE_LIMITED", "Plate.hk rate limit reached", 429
+                        )
+                    if response.status_code == 400:
+                        raise DomainError(
+                            "INVALID_QUERY", "Plate.hk rejected this query or page", 400
+                        )
                 response.raise_for_status()
                 body = bytearray()
                 async for chunk in response.aiter_bytes():
@@ -34,11 +43,9 @@ async def request_json(url: str, params: dict | None = None):
                         )
         return json.loads(body)
     except httpx.TimeoutException:
-        raise DomainError(
-            "UPSTREAM_TIMEOUT", "Government source timed out", 504
-        ) from None
+        raise DomainError("UPSTREAM_TIMEOUT", "Data source timed out", 504) from None
     except (httpx.HTTPError, ValueError):
         raise DomainError(
             "UPSTREAM_UNAVAILABLE",
-            "Government source is unavailable or returned invalid JSON",
+            "Data source is unavailable or returned invalid JSON",
         ) from None

@@ -13,7 +13,7 @@ from functools import lru_cache
 
 from .contracts import DomainError, Envelope, RestaurantQuery
 from .http import request_json
-from .sources import DISTRICTS, SOURCES, parse_addresses
+from .sources import DISTRICTS, PACKS, SOURCES, parse_addresses
 from .storage import Store
 
 
@@ -34,8 +34,11 @@ def distance(lat, lon, rlat, rlon):
 
 class Service:
     def __init__(self, store: Store):
+        from .platehk import PlateHK
+
         self.store = store
         self.address_slots = asyncio.Semaphore(3)
+        self.plates = PlateHK(self)
 
     def envelope(
         self,
@@ -237,6 +240,19 @@ class Service:
     def districts(self):
         return {"items": DISTRICTS}
 
+    def packs(self):
+        return {
+            "items": [
+                {
+                    **pack,
+                    "sourceUrl": SOURCES[pack["id"]]["sourceUrl"],
+                    "attribution": SOURCES[pack["id"]]["attribution"],
+                    "capability": "queryable",
+                }
+                for pack in PACKS
+            ]
+        }
+
     def statistics(self, district, year=None, require_fresh=False):
         if district not in {d["id"] for d in DISTRICTS}:
             raise DomainError("NOT_FOUND", "District does not exist", 404)
@@ -271,6 +287,8 @@ class Service:
             item = {
                 "sourceId": pack,
                 "sourceUrl": source["sourceUrl"],
+                "providerType": source.get("providerType", "government"),
+                "attribution": source["attribution"],
                 "snapshotId": sid,
                 "lastSuccess": iso(check["success"]) if check.get("success") else None,
                 "lastFailure": iso(check["failure"]) if check.get("failure") else None,

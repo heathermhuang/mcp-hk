@@ -1,4 +1,4 @@
-"""Official source registry and parsers, verified against captured responses."""
+"""Government and independent provider registry, with source-specific parsers."""
 
 from decimal import Decimal
 from typing import Any
@@ -29,7 +29,56 @@ SOURCES = {
         "attribution": "DATA.GOV.HK and the respective data providers",
         "freshnessSeconds": 172800,
     },
+    "platehk": {
+        "sourceUrl": "https://plate.hk/api.html",
+        "attribution": "Plate.hk, independent index of Transport Department auction publications",
+        "freshnessSeconds": 3600,
+        "provider": "Plate.hk",
+        "providerType": "independent",
+        "accessMode": "live_api",
+        "termsUrl": "https://plate.hk/about.html",
+    },
 }
+
+PACKS = [
+    {
+        "id": "addresses",
+        "title": "Hong Kong addresses",
+        "provider": "Digital Policy Office",
+        "providerType": "government",
+        "http": ["/api/v1/addresses/search"],
+        "tools": ["hk_address_search", "hk_address_get"],
+    },
+    {
+        "id": "restaurants",
+        "title": "Restaurant licences",
+        "provider": "FEHD",
+        "providerType": "government",
+        "http": ["/api/v1/restaurants"],
+        "tools": ["hk_restaurant_search", "hk_restaurant_get"],
+    },
+    {
+        "id": "population",
+        "title": "District statistics",
+        "provider": "Census and Statistics Department",
+        "providerType": "government",
+        "http": ["/api/v1/districts"],
+        "tools": ["hk_district_list", "hk_district_statistics"],
+    },
+    {
+        "id": "platehk",
+        "title": "Plate.hk auction history",
+        "provider": "Plate.hk",
+        "providerType": "independent",
+        "accessMode": "live_api",
+        "http": [
+            "/api/v1/plates/search",
+            "/api/v1/plates/comparables",
+            "/api/v1/plates/datasets",
+        ],
+        "tools": ["hk_plate_search", "hk_plate_comparables", "hk_plate_datasets"],
+    },
+]
 
 # Explicit aliases, not fuzzy matching between neighbourhood and district names.
 DISTRICT_NAMES = [

@@ -15,7 +15,12 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from . import server as catalogue
-from .contracts import DomainError, RestaurantQuery
+from .contracts import (
+    DomainError,
+    PlateComparablesQuery,
+    PlateSearchQuery,
+    RestaurantQuery,
+)
 from .services import get_service
 
 
@@ -169,6 +174,26 @@ def create_app(service=None):
     def status():
         return service.status()
 
+    @app.get("/api/v1/packs")
+    def packs():
+        """Queryable packs, including independent external providers."""
+        return service.packs()
+
+    @app.get("/api/v1/plates/search")
+    async def plate_search(query: Annotated[PlateSearchQuery, Query()]):
+        """Historical Plate.hk auction records; exact match by default."""
+        return await service.plates.search(query)
+
+    @app.get("/api/v1/plates/comparables")
+    async def plate_comparables(query: Annotated[PlateComparablesQuery, Query()]):
+        """Historical structural comparisons, never a current valuation."""
+        return await service.plates.comparables(query)
+
+    @app.get("/api/v1/plates/datasets")
+    async def plate_datasets():
+        """Plate.hk coverage and source publication date; counts overlap with all."""
+        return await service.plates.query("datasets")
+
     @app.get("/api/v1/addresses/search")
     async def addresses(
         q: str = Query(min_length=1, max_length=200),
@@ -242,6 +267,8 @@ def create_app(service=None):
         @app.get("/", include_in_schema=False)
         @app.get("/demo", include_in_schema=False)
         @app.get("/sources", include_in_schema=False)
+        @app.get("/connect", include_in_schema=False)
+        @app.get("/plates", include_in_schema=False)
         def homepage():
             return FileResponse(web / "index.html")
 

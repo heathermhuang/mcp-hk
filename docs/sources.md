@@ -64,7 +64,7 @@ Attribution: Census and Statistics Department, HKSAR Government, DATA.GOV.HK / C
 
 The inherited tools use the DATA.GOV.HK CKAN metadata APIs. The HTTP catalogue
 currently searches live metadata; it is not an offline complete catalogue index.
-Only the three pack services query records. The initial catalogue response marks
+The government packs and the independent Plate.hk pack query records. The initial catalogue response marks
 entries as catalogue-only; pack-to-catalogue capability linking is a follow-up.
 
 [DATA.GOV.HK terms](https://data.gov.hk/en/terms-and-conditions),
@@ -72,3 +72,13 @@ entries as catalogue-only; pack-to-catalogue capability linking is a follow-up.
 Retain provider attribution. Review provider/CSDI redistribution conditions before
 publishing bulk snapshots; full runtime captures and databases are excluded from
 the repository, wheel and Docker build context.
+
+## Plate.hk: first independent external pack
+
+[Plate.hk](https://plate.hk/) is an independent index of Transport Department auction
+PDFs and official workbook exports, not a government agency or a DATA.GOV.HK auction
+dataset. The connector queries its public API directly and caches validated responses
+for five minutes. It does not import a second full archive. Original source links,
+plate layout, disposition, year ranges and provider attribution accompany records.
+Read the [pack contract](platehk.md) and [provider guide](https://plate.hk/about.html).
+The MIT software licence does not relicense provider or underlying source data.

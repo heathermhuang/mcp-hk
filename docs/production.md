@@ -97,3 +97,13 @@ database. A code rollback does not itself reverse data.
 Hosting is metered on the existing Cloudflare account; maximum one instance and the
 durable daily request budgets bound application capacity. They are not a provider
 hard billing cap. Review actual usage after launch before raising limits.
+
+## Independent Plate.hk pack
+
+The adapter reads Plate.hk’s existing public API; Plate.hk owns its auction-data
+refreshes. No second auction crawler or refresh schedule is installed in mcp.hk.
+Validated queries have a 300-second cache, capped at 200 cached responses and 5,000
+uncached reads per UTC day, with three concurrent source reads. Cache entries and
+source-check receipts use the existing SQLite store and backup path. The new pack
+is optional for readiness: Plate.hk downtime does not disable the government packs.
+An expired query cache never disguises a provider failure as an empty result.

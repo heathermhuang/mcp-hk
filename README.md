@@ -11,7 +11,9 @@ The upstream MIT licence and author attribution are preserved.
   queries, stable pagination and full-result summaries.
 - **District population:** all 18 districts, published reference year, population in
   persons, area and density.
-- **Developer interfaces:** eight preserved catalogue tools plus seven new pack tools,
+- **Plate.hk (first external pack):** independent auction-history index, historical
+  comparisons and dataset coverage, with original source links. Try [the plate demo](https://mcp.hk/plates).
+- **Developer interfaces:** eight preserved catalogue tools plus eleven pack/discovery tools,
   remote Streamable HTTP, local stdio, REST and OpenAPI.
 - **Demo:** the bilingual landing page and neighbourhood explorer use the real HTTP
   API, with source citations, error/empty states and equivalent HTTP/MCP/JSON views.
@@ -41,6 +43,9 @@ Set `MCP_HK_DATABASE` to use a different persistent database path.
 curl 'http://127.0.0.1:8000/api/v1/addresses/search?q=Central%20Government%20Offices'
 curl 'http://127.0.0.1:8000/api/v1/restaurants?lat=22.28046&lon=114.16537&radiusM=500&includeSummary=true'
 curl 'http://127.0.0.1:8000/api/v1/districts/central-western/statistics'
+curl 'http://127.0.0.1:8000/api/v1/plates/search?q=AA88'
+curl 'http://127.0.0.1:8000/api/v1/plates/comparables?q=AH168'
+curl 'http://127.0.0.1:8000/api/v1/packs'
 ```
 
 For local stdio use `uv run mcp-hk`; the original `mcp-open-data-hk` command remains
@@ -65,3 +70,7 @@ attributed fixture and a deterministic failure test when changing a source schem
 Never expose arbitrary upstream URLs, SQL, ingestion controls or credentials through
 public tools. Existing live network probes are opt-in with `pytest --live`; they do
 not replace deterministic regression tests.
+
+See [Plate.hk pack examples, semantics and limits](docs/platehk.md). Government
+metadata discovery stays on `/api/v1/datasets`; use `/api/v1/packs` or
+`hk_data_packs` to discover queryable government and independent packs.

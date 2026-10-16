@@ -80,3 +80,21 @@ class Envelope(Model):
     meta: dict[str, Any]
     provenance: list[dict[str, Any]]
     warnings: list[dict[str, Any]] = Field(default_factory=list)
+
+
+PlateDataset = Literal["all", "pvrm", "tvrm_physical", "tvrm_eauction", "tvrm_legacy"]
+
+
+class PlateSearchQuery(Model):
+    q: str = Field(min_length=1, max_length=16)
+    dataset: PlateDataset = "all"
+    mode: Literal["exact", "exact_prefix", "contains"] = "exact"
+    sort: Literal["amount_desc", "amount_asc", "date_desc", "plate_asc"] = "date_desc"
+    page: int = Field(default=1, ge=1, le=100)
+    pageSize: int = Field(default=20, ge=1, le=50)
+
+
+class PlateComparablesQuery(Model):
+    q: str = Field(min_length=1, max_length=16)
+    page: int = Field(default=1, ge=1, le=100)
+    pageSize: int = Field(default=8, ge=1, le=50)
