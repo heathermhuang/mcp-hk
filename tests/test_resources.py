@@ -641,3 +641,31 @@ async def test_hkma_family_reconciles_pages_and_rejects_repeated_pages(monkeypat
     monkeypatch.setattr("mcp_open_data_hk.resources.read_json", repeated)
     with pytest.raises(DomainError, match="repeated page"):
         await hkma_records("https://api.hkma.gov.hk/public/example")
+
+
+@pytest.mark.asyncio
+async def test_schema_selection_failure_always_records_checked_receipt(
+    resource_service, monkeypatch
+):
+    with resource_service.store.connect() as db:
+        row = unpack(
+            db.execute("SELECT payload FROM inventory_resources").fetchone()[0]
+        )
+        row.update(format="ARCGIS", url="https://portal.csdi.gov.hk/test/FeatureServer")
+        db.execute(
+            "UPDATE inventory_resources SET payload=?,format='ARCGIS'",
+            (json.dumps(row),),
+        )
+
+    async def denied(*args, **kwargs):
+        raise DomainError("ACCESS_RESTRICTED", "upstream HTTP 403", 502)
+
+    monkeypatch.setattr("mcp_open_data_hk.resources.read_json", denied)
+    with pytest.raises(DomainError, match="ACCESS_RESTRICTED"):
+        await resource_service.resources.schema("r1")
+    check = resource_service.resources.catalogue.check("r1")
+    assert (
+        check["checked"]
+        and check["status"] == "restricted"
+        and check["reason"] == "ACCESS_RESTRICTED"
+    )

@@ -664,11 +664,19 @@ class Resources:
         require_fresh=False,
         parameters=None,
     ):
+        self.catalogue.resource(resource_id)
+        started = time.time()
         try:
             return await self._schema(
                 resource_id, record_path, sheet, layer, require_fresh, parameters
             )
-        except DomainError:
+        except DomainError as exc:
+            if self.catalogue.check(resource_id).get("checked", 0) < started:
+                self.catalogue.failure(
+                    resource_id,
+                    exc.code,
+                    "restricted" if exc.code == "ACCESS_RESTRICTED" else "unavailable",
+                )
             raise
         except Exception:
             self.catalogue.failure(resource_id, "SOURCE_PARSE_ERROR", "unavailable")
