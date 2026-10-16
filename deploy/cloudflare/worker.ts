@@ -1,5 +1,6 @@
 import { Container } from '@cloudflare/containers';
 import { scheduledPack } from './cron';
+import {normalizeBackendResponse, recoveringResponse} from './recovery';
 import {saveBackup, requireCheckpoint, safeOperationError} from './backup';
 
 
@@ -201,9 +202,9 @@ export default {
     headers.set('x-mcp-client-ip', request.headers.get('cf-connecting-ip') || 'unknown');
     try {
       const response = await env.APP.get(env.APP.idFromName('production')).fetch(new Request(request, {headers}));
-      const result = new Response(response.body, response); result.headers.set('X-Mcp-Release', env.RELEASE_COMMIT); result.headers.set('Strict-Transport-Security', 'max-age=31536000'); return result;
+      return normalizeBackendResponse(response, env.RELEASE_COMMIT);
     } catch {
-      return Response.json({error: {code: 'SERVICE_RECOVERING', message: 'The service is restoring its accepted snapshot. Retry shortly.'}}, {status: 503, headers: {'Retry-After': '10', 'X-Mcp-Release': env.RELEASE_COMMIT}});
+      return recoveringResponse(env.RELEASE_COMMIT);
     }
   },
   async scheduled(controller: ScheduledController, env: Env, ctx: ExecutionContext) {

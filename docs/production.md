@@ -139,3 +139,9 @@ are unchanged. The measured archive fell from 82.7 MB to 46.8 MB; the restored S
 file grew to 244 MB, within the existing 500 MB bound. Both metadata tables retained
 identical logical checksums. Cold MCP startup still requires a 120-second client
 window; a real cold Codex test passed after the default 30-second window timed out.
+
+Transient container proxy responses (plain-text 502/503/504) are converted to the
+JSON `SERVICE_RECOVERING` envelope with `Retry-After`. Existing JSON source errors
+keep their own codes. The coverage explorer retries only that recovery signal,
+with at most three attempts; out-of-order searches/resource lists cannot replace
+newer selections. It never retries unchanged provider or schema failures.
