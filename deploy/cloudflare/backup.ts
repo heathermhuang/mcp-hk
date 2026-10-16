@@ -1,5 +1,5 @@
 /** Stream authenticated checkpoints; never buffer expanded inventory in Worker memory. */
-export const MAX_BACKUP = 75_000_000;
+export const MAX_BACKUP = 150_000_000;
 
 export async function saveBackup(env: Pick<Env, 'BACKUPS'>, source: Request | Response, reason: string) {
   const length = Number(source.headers.get('content-length'));

@@ -434,3 +434,210 @@ def test_catalogued_parameter_templates_keep_the_fixed_origin_and_escape_values(
         template_url("https://{host}/data", {"host": "127.0.0.1"})
     with pytest.raises(DomainError, match="ACCESS_RESTRICTED"):
         template_url("https://example.gov.hk/{api_key}", {"api_key": "secret"})
+
+
+def test_streamed_json_validates_every_record_and_keeps_nested_values(tmp_path):
+    from mcp_open_data_hk.resource_stream import FileRows
+
+    path = tmp_path / "source"
+    path.write_text(
+        json.dumps(
+            {
+                "data": [
+                    {"id": str(i).zfill(5), "unit": "thousands", "nested": {"x": i}}
+                    for i in range(12000)
+                ]
+            }
+        )
+    )
+    rows = FileRows(path, "JSON", "data")
+    assert len(rows) == 12000
+    assert next(iter(rows)) == {"id": "00000", "unit": "thousands", "nested": {"x": 0}}
+    assert rows.schema["scope"] == "complete_streamed_file"
+    assert all(f["unit"] is None for f in rows.schema["fields"])
+    rows.close()
+    assert not path.exists()
+
+
+def test_streamed_json_rejects_truncation_duplicate_keys_and_wrong_paths(tmp_path):
+    from mcp_open_data_hk.resource_stream import FileRows
+
+    for body, path in [
+        (b'[{"id":1}', ""),
+        (b'[{"id":1,"id":2}]', ""),
+        (b'{"data":[]}', "missing"),
+    ]:
+        target = tmp_path / "source"
+        target.write_bytes(body)
+        with pytest.raises(Exception):
+            FileRows(target, "JSON", path)
+
+
+def test_streamed_csv_retains_big5_and_duplicate_headers(tmp_path):
+    from mcp_open_data_hk.resource_stream import FileRows
+
+    path = tmp_path / "source"
+    path.write_bytes("id,名稱,名稱\n001,中文,街道\n".encode("big5"))
+    rows = FileRows(path, "CSV")
+    assert list(rows) == [{"id": "001", "_column_2": "中文", "_column_3": "街道"}]
+    assert rows.schema["sourceColumns"][1]["sourceHeader"] == "名稱"
+    rows.close()
+
+
+@pytest.mark.asyncio
+async def test_large_resource_queries_scan_all_matches_and_pin_selected_records(
+    resource_service, tmp_path, monkeypatch
+):
+    async def small(url, headers=None):
+        raise DomainError("SOURCE_TOO_LARGE", "use stream", 422)
+
+    async def large(url):
+        path = tmp_path / "stream.source"
+        path.write_text("id,name\n" + "".join(f"{i:05},same\n" for i in range(5000)))
+        return path, {}, url, 200
+
+    monkeypatch.setattr("mcp_open_data_hk.resources.fetch", small)
+    monkeypatch.setattr("mcp_open_data_hk.resources.fetch_file", large)
+    first = await resource_service.resources.query(
+        "r1", filters={"name": "same"}, fields=["id"], limit=1
+    )
+    second = await resource_service.resources.query(
+        "r1",
+        filters={"name": "same"},
+        fields=["id"],
+        limit=1,
+        offset=1,
+        version=first["meta"]["version"],
+    )
+    assert first["meta"]["total"] == 5000
+    assert first["data"]["items"] == [{"id": "00000"}] and second["data"]["items"] == [
+        {"id": "00001"}
+    ]
+    assert resource_service.resources.catalogue.coverage()["cache"]["bytes"] == 0
+
+
+@pytest.mark.asyncio
+async def test_census_download_page_adapter_requires_complete_count(monkeypatch):
+    from mcp_open_data_hk.resources import census_table
+
+    seen = []
+
+    async def good(url, params=None):
+        seen.append(url)
+        value = {
+            "header": {"status": {"code": 0}, "count": {"noOfRecords": 2}},
+            "dataSet": [
+                {"figure": 1, "svDesc": "HK$ million"},
+                {"figure": 2, "svDesc": "HK$ million"},
+            ],
+        }
+        return value, json.dumps(value).encode(), {}, url
+
+    monkeypatch.setattr("mcp_open_data_hk.resources.read_json", good)
+    _, _, _, schema = await census_table(
+        "https://www.censtatd.gov.hk/tc/web_table.html?id=645-75013&download_csv=1"
+    )
+    assert "lang=tc" in seen[0] and "full_series=1" in seen[0]
+    assert (
+        schema["sourceMatched"] == 2
+        and schema["accessMethod"] == "official_json_equivalent_for_download_page"
+    )
+
+    async def bad(url, params=None):
+        return (
+            {
+                "header": {"status": {"code": 0}, "count": {"noOfRecords": 3}},
+                "dataSet": [{}],
+            },
+            b"{}",
+            {},
+            url,
+        )
+
+    monkeypatch.setattr("mcp_open_data_hk.resources.read_json", bad)
+    with pytest.raises(DomainError, match="INCOMPLETE_SOURCE"):
+        await census_table("https://www.censtatd.gov.hk/en/web_table.html?id=645-75013")
+
+
+def test_streamed_fetch_redirect_keeps_private_temp_destination(tmp_path, monkeypatch):
+    from mcp_open_data_hk import resource_fetch as fetcher
+
+    responses = []
+
+    class Reply:
+        def __init__(self, status, headers, body=b""):
+            self.status = status
+            self.headers = headers
+            self.body = body
+
+        def getheaders(self):
+            return list(self.headers.items())
+
+        def read1(self, n):
+            result, self.body = self.body, b""
+            return result
+
+    replies = iter(
+        [
+            Reply(302, {"location": "/data.csv"}),
+            Reply(200, {"content-length": "3"}, b"abc"),
+        ]
+    )
+
+    class Connection:
+        def __init__(self, *a, **k):
+            pass
+
+        def request(self, *a, **k):
+            responses.append(a[1])
+
+        def getresponse(self):
+            return next(replies)
+
+        def close(self):
+            pass
+
+    monkeypatch.setattr(fetcher, "PinnedHTTPS", Connection)
+    target = tmp_path / "private.source"
+    path, _, url, status = fetcher.fetch_sync(
+        "https://example.gov.hk/start", destination=target
+    )
+    assert path == target and target.read_bytes() == b"abc"
+    assert url == "https://example.gov.hk/data.csv" and status == 200
+    assert responses == ["/start", "/data.csv"]
+
+
+@pytest.mark.asyncio
+async def test_hkma_family_reconciles_pages_and_rejects_repeated_pages(monkeypatch):
+    from mcp_open_data_hk.resources import hkma_records
+    from urllib.parse import parse_qs, urlsplit
+
+    offsets = []
+
+    async def read(url, params=None):
+        offset = int(parse_qs(urlsplit(url).query)["offset"][0])
+        offsets.append(offset)
+        records = [{"id": i} for i in range(offset, min(offset + 1000, 1002))]
+        value = {
+            "header": {"success": True},
+            "result": {"datasize": 1002, "records": records},
+        }
+        return value, json.dumps(value).encode(), {}, url
+
+    monkeypatch.setattr("mcp_open_data_hk.resources.read_json", read)
+    body, _, _, info = await hkma_records(
+        "https://api.hkma.gov.hk/public/example?lang=en"
+    )
+    assert len(json.loads(body)) == 1002 and offsets == [0, 1000]
+    assert info["scope"] == "complete_api_pages_live"
+
+    async def repeated(url, params=None):
+        value = {
+            "header": {"success": True},
+            "result": {"datasize": 3, "records": [{"id": 1}]},
+        }
+        return value, json.dumps(value).encode(), {}, url
+
+    monkeypatch.setattr("mcp_open_data_hk.resources.read_json", repeated)
+    with pytest.raises(DomainError, match="repeated page"):
+        await hkma_records("https://api.hkma.gov.hk/public/example")
