@@ -31,3 +31,10 @@ export async function requireCheckpoint(env: Pick<Env, 'BACKUPS'>, sha256: strin
   if (!object || object.customMetadata?.sha256 !== sha256 || object.size < 1 || object.size > MAX_BACKUP) throw new Error('Accepted checkpoint changed or is missing');
   return object;
 }
+
+
+export function safeOperationError(error: unknown, token: string): string {
+  let message = error instanceof Error ? error.message : 'Unknown checkpoint error';
+  if (token) message = message.replaceAll(token, '[redacted]');
+  return message.replace(/Bearer\s+\S+/gi, 'Bearer [redacted]').slice(0, 500);
+}
