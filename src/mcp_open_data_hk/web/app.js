@@ -61,9 +61,9 @@
     document.documentElement.lang = state.lang === 'en' ? 'en' : 'zh-Hant';
     const endpoint = location.origin + '/mcp';
     $('[data-dynamic=endpoint]').textContent = endpoint;
-    const examples = {codex: `codex mcp add mcp.hk --url ${endpoint}`, claude: `claude mcp add --transport http mcp-hk ${endpoint}`, cursor: JSON.stringify({mcpServers: {'mcp.hk': {url: endpoint}}}, null, 2)};
+    const examples = {codex: `[mcp_servers."mcp.hk"]\nurl = "${endpoint}"\nstartup_timeout_sec = 120`, claude: `claude mcp add --transport http mcp-hk ${endpoint}`, cursor: JSON.stringify({mcpServers: {'mcp.hk': {url: endpoint}}}, null, 2)};
     $('#mhk-install').textContent = examples[clientKind];
-    $('#mhk-client-help').textContent = clientKind === 'cursor' ? 'Add this to .cursor/mcp.json (project) or ~/.cursor/mcp.json (global).' : clientKind === 'claude' ? 'Claude Code requires mcp-hk as its identifier because its CLI does not allow dots. Run the command, then reload the client.' : 'Run in your terminal, then start or reload the AI client. Ask it to use mcp.hk.';
+    $('#mhk-client-help').textContent = clientKind === 'cursor' ? 'Add this to .cursor/mcp.json (project) or ~/.cursor/mcp.json (global).' : clientKind === 'claude' ? 'Claude Code requires mcp-hk as its identifier because its CLI does not allow dots. Run the command, then reload the client.' : 'Add this to ~/.codex/config.toml or update its existing mcp.hk section, then reload Codex. The startup window allows accepted data to restore after a cold start.';
     root.querySelectorAll('[data-client]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.client === clientKind)));
     $('#mhk-radius').value = String(state.radius);
     $('.mhk-search button').disabled = pending;

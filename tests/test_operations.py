@@ -116,3 +116,53 @@ def test_pruning_keeps_recently_retired_generations(operational):
     operational.prune()
     with pytest.raises(Exception, match="SNAPSHOT_EXPIRED"):
         operational.snapshot("restaurants", original)
+
+
+def test_transport_checkpoint_preserves_metadata_and_record_cache(
+    operational, tmp_path
+):
+    from mcp_open_data_hk.catalogue_store import CatalogueStore
+
+    catalogue = CatalogueStore(operational)
+    dataset = {"id": "sample", "provider": "Example", "catalogue": "DATA.GOV.HK"}
+    resource = {
+        "id": "r1",
+        "datasetId": "sample",
+        "format": "CSV",
+        "url": "https://example.gov.hk/data.csv",
+    }
+    catalogue.publish([dataset], [resource], {})
+    schema = {"fields": [{"name": "id", "types": ["string"]}], "format": "CSV"}
+    catalogue.accept("r1", "variant", [{"id": "001"}], schema, "a" * 64, {})
+    with operational.connect() as db:
+        assert (
+            db.execute("SELECT typeof(payload) FROM inventory_resources").fetchone()[0]
+            == "blob"
+        )
+    path, digest = checkpoint(operational.path)
+    target = tmp_path / "transport-restored" / "app.sqlite3"
+    restore(path.read_bytes(), digest, str(target))
+    recovered = CatalogueStore(Store(str(target)))
+    assert recovered.resource("r1") == resource
+    assert recovered.cached("variant")["value"]["rows"] == [{"id": "001"}]
+    assert recovered.coverage()["resources"]["byStatus"] == {"queryable": 1}
+    with recovered.store.connect() as db:
+        assert (
+            db.execute("SELECT typeof(payload) FROM inventory_resources").fetchone()[0]
+            == "text"
+        )
+        assert (
+            db.execute("SELECT typeof(schema_json) FROM resource_variants").fetchone()[
+                0
+            ]
+            == "text"
+        )
+        assert (
+            db.execute("SELECT typeof(payload) FROM resource_cache").fetchone()[0]
+            == "blob"
+        )
+    with operational.connect() as db:
+        assert (
+            db.execute("SELECT typeof(payload) FROM inventory_resources").fetchone()[0]
+            == "blob"
+        )

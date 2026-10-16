@@ -60,3 +60,22 @@ The first call after inactivity can take longer while the accepted checkpoint is
 restored; a cold start does not silently fabricate sample results.
 
 For generic government resources, ask mcp.hk to call `hk_catalogue_search`, `hk_dataset_resources`, `hk_resource_schema` and `hk_resource_query`. Use `hk_coverage` for actual validation counts and failures. Discovery and API-response access do not establish that all government data is connected. See [resource contracts](resources.md).
+
+## Cold startup
+
+The single container restores its accepted inventory before serving data. Configure
+Codex's existing connection with a 120-second startup window (the default 30-second
+window timed out in the observed cold-client test):
+
+```toml
+[mcp_servers."mcp.hk"]
+url = "https://mcp.hk/mcp"
+startup_timeout_sec = 120
+```
+
+Update the existing section instead of duplicating it. The setting changes only this
+connection; it does not change the model. A controlled cold restart followed by a real
+Codex discovery/schema/record journey passed with this setting. Other clients should
+also allow up to 120 seconds for cold startup.
+
+The connection-specific startup setting is documented in the [official Codex configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference).
