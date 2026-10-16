@@ -835,7 +835,13 @@ class Resources:
                 ):
                     if offset <= total < offset + limit:
                         items.append(
-                            {k: r[k] for k in fields if k in r} if fields else r
+                            {
+                                k: selected(r, k)
+                                for k in fields
+                                if selected(r, k) is not MISSING
+                            }
+                            if fields
+                            else r
                         )
                     total += 1
             if len(json.dumps(items, ensure_ascii=False).encode()) > 512_000:
