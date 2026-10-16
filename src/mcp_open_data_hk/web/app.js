@@ -7,7 +7,7 @@
     fixtureNote: 'Choose a returned candidate before searching nearby. ALS is not an exhaustive address register.',
     districtAddress: 'Selected source address', populationLabel: 'DISTRICT POPULATION',
     populationNote: 'Published district-wide figure, not population within the search radius.',
-    connectionNote: 'Connection URL for this instance. Supported transport: Streamable HTTP; local stdio is also available.',
+    connectionNote: 'Government catalogue tools discover metadata and source links. Record queries currently cover addresses, restaurant licences, district population and the independent Plate.hk pack.',
     previewFooter: 'OPEN-SOURCE DEVELOPMENT BUILD', endpointLabel: 'THIS INSTANCE’S MCP ENDPOINT',
     provenanceLabel: 'Response provenance', getConnected: 'Connect your AI',
     question: '“Find licensed restaurants near this address.”',
@@ -24,7 +24,7 @@
     searchLabel: '查詢香港地址', fixtureNote: '請選擇傳回的地址，再搜尋附近食肆。地址服務並非完整地址名冊。',
     districtAddress: '已選來源地址', populationLabel: '地區人口',
     populationNote: '已發表的全區人口，並非搜尋範圍內的人口。',
-    connectionNote: '本實例的連接網址。支援 Streamable HTTP，亦可在本機使用 stdio。',
+    connectionNote: '政府目錄工具可搜尋資料集描述與來源連結。目前可查詢的紀錄包括地址、食肆牌照、地區人口及獨立供應商 Plate.hk 的數據。',
     previewFooter: '開源開發版本', endpointLabel: '本實例的 MCP 端點', provenanceLabel: '回應資料來源',
     navPlates: 'Plate.hk', packsCount: '三個政府數據包 + 一個獨立供應商',
     externalBadge: '04 / 首個外部數據包 · PLATE.HK', plateTitle: '一個車牌，歷年拍賣紀錄。',
@@ -61,9 +61,9 @@
     document.documentElement.lang = state.lang === 'en' ? 'en' : 'zh-Hant';
     const endpoint = location.origin + '/mcp';
     $('[data-dynamic=endpoint]').textContent = endpoint;
-    const examples = {codex: `codex mcp add hk --url ${endpoint}`, claude: `claude mcp add --transport http hk ${endpoint}`, cursor: JSON.stringify({mcpServers: {hk: {url: endpoint}}}, null, 2)};
+    const examples = {codex: `codex mcp add mcp.hk --url ${endpoint}`, claude: `claude mcp add --transport http mcp.hk ${endpoint}`, cursor: JSON.stringify({mcpServers: {'mcp.hk': {url: endpoint}}}, null, 2)};
     $('#mhk-install').textContent = examples[clientKind];
-    $('#mhk-client-help').textContent = clientKind === 'cursor' ? 'Add this to .cursor/mcp.json (project) or ~/.cursor/mcp.json (global).' : 'Run in your terminal, then start or reload the AI client. Ask it to use the hk tools.';
+    $('#mhk-client-help').textContent = clientKind === 'cursor' ? 'Add this to .cursor/mcp.json (project) or ~/.cursor/mcp.json (global).' : 'Run in your terminal, then start or reload the AI client. Ask it to use mcp.hk.';
     root.querySelectorAll('[data-client]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.client === clientKind)));
     $('#mhk-radius').value = String(state.radius);
     $('.mhk-search button').disabled = pending;
