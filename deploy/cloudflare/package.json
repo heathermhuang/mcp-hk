@@ -1,0 +1,18 @@
+{
+  "name": "mcp-hk-cloudflare",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "types": "wrangler types",
+    "check": "tsc --noEmit",
+    "deploy": "wrangler deploy",
+    "test": "node --experimental-strip-types --test cron.test.mjs"
+  },
+  "dependencies": {
+    "@cloudflare/containers": "0.3.7"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "wrangler": "4.143.0"
+  }
+}

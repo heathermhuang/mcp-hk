@@ -136,3 +136,10 @@ dmypy.json
 *.sqlite3-wal
 *.sqlite3-shm
 playwright-artifacts/
+node_modules/
+.wrangler/
+.dev.vars*
+
+deploy/cloudflare/.ops-secrets.json
+
+deploy/cloudflare/worker-configuration.d.ts

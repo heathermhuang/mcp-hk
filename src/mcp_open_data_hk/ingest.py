@@ -110,8 +110,8 @@ async def refresh(store: Store, pack: str):
         snapshot_id = store.publish(pack, rows, previous)
         with store.connect() as db:
             db.execute(
-                "UPDATE ingestion_runs SET finished=?,status='success',snapshot=? WHERE id=?",
-                (time.time(), snapshot_id, run),
+                "UPDATE ingestion_runs SET finished=?,status='success',snapshot=?,capture=? WHERE id=?",
+                (time.time(), snapshot_id, digest, run),
             )
         return {
             "pack": pack,

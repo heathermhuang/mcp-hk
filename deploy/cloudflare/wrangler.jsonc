@@ -1,0 +1,39 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "mcp-hk",
+  "account_id": "63a7fe52c985c63bb9e69ce47efdc569",
+  "main": "worker.ts",
+  "compatibility_date": "2026-10-16",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "routes": [
+    { "pattern": "mcp.hk", "zone_id": "cc6b9c6ef2f428d48c9dd81732917947", "custom_domain": true },
+    { "pattern": "www.mcp.hk", "zone_id": "cc6b9c6ef2f428d48c9dd81732917947", "custom_domain": true }
+  ],
+  "secrets": { "required": ["OPS_TOKEN"] },
+  "vars": {
+    "PUBLIC_ORIGIN": "https://mcp.hk",
+    "RELEASE_COMMIT": "development",
+    "BOOTSTRAP_ORIGIN": "https://mcp-hk.measurable.workers.dev"
+  },
+  "assets": {
+    "directory": "../../src/mcp_open_data_hk/web",
+    "binding": "ASSETS",
+    "html_handling": "none",
+    "run_worker_first": true
+  },
+  "containers": [{
+    "class_name": "McpContainer",
+    "image": "../../Dockerfile",
+    "instance_type": "basic",
+    "max_instances": 1
+  }],
+  "durable_objects": {
+    "bindings": [{ "name": "APP", "class_name": "McpContainer" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["McpContainer"] }],
+  "r2_buckets": [{ "binding": "BACKUPS", "bucket_name": "mcp-hk-backups" }],
+  "triggers": { "crons": ["0 2 * * *", "0 3 * * SUN", "0 1 * * *"] },
+  "observability": { "enabled": true, "head_sampling_rate": 0.1, "logs": { "enabled": true, "invocation_logs": false } },
+  "limits": { "cpu_ms": 30000 }
+}

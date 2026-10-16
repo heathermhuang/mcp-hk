@@ -4,11 +4,12 @@ FROM python:3.11-slim
 # Set work directory
 WORKDIR /app
 
-# Copy project
+# Keep the runtime dependency layer stable across application-only updates.
+RUN pip install --no-cache-dir uv==0.11.7
+COPY pyproject.toml uv.lock README.md /app/
+RUN uv sync --frozen --no-dev --no-install-project --no-cache
 COPY . /app
-
-# Install dependencies and the package
-RUN pip install --no-cache-dir uv==0.11.7 && uv sync --frozen --no-dev --no-editable
+RUN uv sync --frozen --no-dev --no-editable --no-cache
 
 # Persistent data is populated by the explicit refresh CLI, never by a request.
 RUN useradd --create-home app && mkdir /data && chown app:app /data

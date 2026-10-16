@@ -16,7 +16,11 @@ The upstream MIT licence and author attribution are preserved.
 - **Demo:** the bilingual landing page and neighbourhood explorer use the real HTTP
   API, with source citations, error/empty states and equivalent HTTP/MCP/JSON views.
 
-This is a development release; importing data locally does not deploy `mcp.hk`.
+Hosted service: **https://mcp.hk** · [Demo](https://mcp.hk/demo) · [Connect your AI](https://mcp.hk/connect).
+
+Remote MCP: `https://mcp.hk/mcp` (Streamable HTTP, public read-only, no server API key).
+See [client connection examples](docs/connect.md) and [production recovery/schedules](docs/production.md).
+Importing data locally does not modify the hosted service.
 No model key or Cloudflare account is required. Runtime databases/captures are not
 bundled or relicensed as MIT data.
 
