@@ -4,7 +4,7 @@ Open-source Hong Kong public data over **MCP and HTTP**, extending
 [mcp-open-data-hk](https://github.com/mcp-open-data-hk/mcp-open-data-hk).
 The upstream MIT licence and author attribution are preserved.
 
-## First implementation
+## Public interfaces
 
 - **Addresses:** bilingual DPO ALS lookup and candidate selection.
 - **Restaurants:** complete validated FEHD/CSDI licence snapshots, text/district/radius
@@ -13,7 +13,8 @@ The upstream MIT licence and author attribution are preserved.
   persons, area and density.
 - **Plate.hk (first external pack):** independent auction-history index, historical
   comparisons and dataset coverage, with original source links. Try [the plate demo](https://mcp.hk/plates).
-- **Developer interfaces:** eight preserved catalogue tools plus eleven pack/discovery tools,
+- **Generic resources:** reconciled DATA.GOV.HK/CSDI inventory, source schema inspection and bounded record queries across CSV, JSON, GeoJSON, Excel, XML and API families. See [resource contracts and honest coverage](docs/resources.md) and [the coverage explorer](https://mcp.hk/coverage).
+- **Developer interfaces:** eight preserved catalogue tools plus sixteen resource/pack tools,
   remote Streamable HTTP, local stdio, REST and OpenAPI.
 - **Demo:** the bilingual landing page and neighbourhood explorer use the real HTTP
   API, with source citations, error/empty states and equivalent HTTP/MCP/JSON views.
@@ -74,3 +75,5 @@ not replace deterministic regression tests.
 See [Plate.hk pack examples, semantics and limits](docs/platehk.md). Government
 metadata discovery stays on `/api/v1/datasets`; use `/api/v1/packs` or
 `hk_data_packs` to discover queryable government and independent packs.
+
+The detailed expansion plan and acceptance criteria are in [the engineering plan](docs/plans/government-expansion.md). Inventory discovery is not full government data onboarding; consult live coverage for validation, failures and remaining work.

@@ -1,0 +1,435 @@
+"""Inventory generations and bounded accepted resource cache in the recovery database."""
+
+import hashlib
+import json
+import time
+import uuid
+import zlib
+
+from .contracts import DomainError
+
+CACHE_BYTES = 4_000_000
+
+
+def unpack(value):
+    return json.loads(zlib.decompress(value) if isinstance(value, bytes) else value)
+
+
+class CatalogueStore:
+    def __init__(self, store):
+        self.store = store
+        with store.connect() as db:
+            db.executescript(
+                """
+            CREATE TABLE IF NOT EXISTS inventories (id TEXT PRIMARY KEY, created REAL, receipt TEXT);
+            CREATE TABLE IF NOT EXISTS inventory_head (id INTEGER PRIMARY KEY CHECK(id=1), generation TEXT);
+            CREATE TABLE IF NOT EXISTS inventory_datasets (generation TEXT, id TEXT, payload TEXT, PRIMARY KEY(generation,id));
+            CREATE TABLE IF NOT EXISTS inventory_resources (generation TEXT, id TEXT, dataset TEXT, format TEXT, payload TEXT, PRIMARY KEY(generation,id));
+            CREATE INDEX IF NOT EXISTS resource_dataset ON inventory_resources(generation,dataset);
+            CREATE TABLE IF NOT EXISTS resource_checks (id TEXT PRIMARY KEY, checked REAL, validated REAL, status TEXT, reason TEXT, hash TEXT, schema_hash TEXT, schema_json TEXT, etag TEXT, modified TEXT, retrieved REAL, rows INTEGER);
+            CREATE TABLE IF NOT EXISTS resource_variants (key TEXT PRIMARY KEY, resource TEXT, checked REAL, validated REAL, status TEXT, reason TEXT, hash TEXT, schema_hash TEXT, schema_json TEXT, etag TEXT, modified TEXT, retrieved REAL, rows INTEGER);
+            CREATE TABLE IF NOT EXISTS resource_cache (key TEXT PRIMARY KEY, resource TEXT, hash TEXT, payload BLOB, accessed REAL);
+            CREATE TABLE IF NOT EXISTS catalogue_runs (id TEXT PRIMARY KEY, started REAL, finished REAL, status TEXT, receipt TEXT);
+            CREATE TABLE IF NOT EXISTS resource_audit_cursor (id INTEGER PRIMARY KEY CHECK(id=1), generation TEXT, cursor TEXT);
+            """
+            )
+
+    def compact(self):
+        with self.store.connect() as db:
+            for row in db.execute(
+                "SELECT generation,id,payload FROM inventory_resources WHERE typeof(payload)='text'"
+            ).fetchall():
+                db.execute(
+                    "UPDATE inventory_resources SET payload=? WHERE generation=? AND id=?",
+                    (
+                        zlib.compress(row["payload"].encode()),
+                        row["generation"],
+                        row["id"],
+                    ),
+                )
+
+    def head(self):
+        with self.store.connect() as db:
+            row = db.execute(
+                "SELECT generation FROM inventory_head WHERE id=1"
+            ).fetchone()
+        if not row:
+            raise DomainError(
+                "INVENTORY_NOT_LOADED",
+                "The catalogue inventory has not been published",
+                503,
+            )
+        return row[0]
+
+    def publish(self, datasets, resources, receipt):
+        if (
+            not datasets
+            or len({d["id"] for d in datasets}) != len(datasets)
+            or len({r["id"] for r in resources}) != len(resources)
+        ):
+            raise ValueError("Inventory has empty or duplicate identities")
+        if not {r["datasetId"] for r in resources} <= {d["id"] for d in datasets}:
+            raise ValueError("Inventory contains orphan resources")
+        generation = uuid.uuid4().hex
+        fingerprint = hashlib.sha256(
+            json.dumps(
+                [datasets, resources], sort_keys=True, ensure_ascii=False
+            ).encode()
+        ).hexdigest()
+        receipt = {
+            **receipt,
+            "fingerprint": fingerprint,
+            "datasetCount": len(datasets),
+            "resourceCount": len(resources),
+        }
+        with self.store.connect() as db:
+            db.execute("BEGIN IMMEDIATE")
+            old = db.execute(
+                "SELECT generation FROM inventory_head WHERE id=1"
+            ).fetchone()
+            if old:
+                prior = json.loads(
+                    db.execute(
+                        "SELECT receipt FROM inventories WHERE id=?", (old[0],)
+                    ).fetchone()[0]
+                )
+                if prior.get("fingerprint") == fingerprint:
+                    db.execute(
+                        "UPDATE inventories SET created=?,receipt=? WHERE id=?",
+                        (time.time(), json.dumps(receipt), old[0]),
+                    )
+                    return old[0]
+                if (
+                    len(datasets) < prior["datasetCount"] * 0.8
+                    or len(resources) < prior["resourceCount"] * 0.8
+                ):
+                    raise ValueError(
+                        "Inventory count drop exceeds 20%; previous generation retained"
+                    )
+            db.execute(
+                "INSERT INTO inventories VALUES (?,?,?)",
+                (generation, time.time(), json.dumps(receipt)),
+            )
+            db.executemany(
+                "INSERT INTO inventory_datasets VALUES (?,?,?)",
+                (
+                    (generation, d["id"], json.dumps(d, ensure_ascii=False))
+                    for d in datasets
+                ),
+            )
+            db.executemany(
+                "INSERT INTO inventory_resources VALUES (?,?,?,?,?)",
+                (
+                    (
+                        generation,
+                        r["id"],
+                        r["datasetId"],
+                        r["format"],
+                        zlib.compress(json.dumps(r, ensure_ascii=False).encode()),
+                    )
+                    for r in resources
+                ),
+            )
+            db.execute(
+                "INSERT OR REPLACE INTO inventory_head VALUES (1,?)", (generation,)
+            )
+            # Keep active and previous metadata generations; R2 retains older checkpoints.
+            keep = [
+                r[0]
+                for r in db.execute(
+                    "SELECT id FROM inventories ORDER BY created DESC LIMIT 2"
+                )
+            ]
+            for row in db.execute("SELECT id FROM inventories").fetchall():
+                if row[0] not in keep:
+                    for table in ("inventory_resources", "inventory_datasets"):
+                        db.execute(f"DELETE FROM {table} WHERE generation=?", (row[0],))
+                    db.execute("DELETE FROM inventories WHERE id=?", (row[0],))
+        return generation
+
+    def resource(self, resource_id):
+        with self.store.connect() as db:
+            row = db.execute(
+                "SELECT payload FROM inventory_resources WHERE generation=? AND id=?",
+                (self.head(), resource_id),
+            ).fetchone()
+        if not row:
+            raise DomainError(
+                "RESOURCE_NOT_FOUND", "Use a resource ID from the inventory", 404
+            )
+        return unpack(row[0])
+
+    def dataset(self, dataset_id):
+        with self.store.connect() as db:
+            row = db.execute(
+                "SELECT payload FROM inventory_datasets WHERE generation=? AND id=?",
+                (self.head(), dataset_id),
+            ).fetchone()
+        if not row:
+            raise DomainError(
+                "DATASET_NOT_FOUND", "Dataset is absent from this inventory", 404
+            )
+        return json.loads(row[0])
+
+    def search(self, q="", limit=20, offset=0):
+        if len(q) > 200 or not 1 <= limit <= 100 or not 0 <= offset <= 100000:
+            raise DomainError("INVALID_QUERY", "Invalid search or pagination", 400)
+        with self.store.connect() as db:
+            # Search literal text, not caller SQL/Solr. Escape LIKE metacharacters.
+            term = (
+                "%"
+                + q.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+                + "%"
+            )
+            args = (self.head(), term)
+            total = db.execute(
+                "SELECT count(*) FROM inventory_datasets WHERE generation=? AND payload LIKE ? ESCAPE '\\'",
+                args,
+            ).fetchone()[0]
+            rows = db.execute(
+                "SELECT payload FROM inventory_datasets WHERE generation=? AND payload LIKE ? ESCAPE '\\' ORDER BY id LIMIT ? OFFSET ?",
+                (*args, limit, offset),
+            ).fetchall()
+        return {
+            "items": [json.loads(r[0]) for r in rows],
+            "total": total,
+            "offset": offset,
+            "nextOffset": offset + limit if offset + limit < total else None,
+            "generation": self.head(),
+        }
+
+    def resources(self, dataset=None, status=None, fmt=None, limit=20, offset=0):
+        if not 1 <= limit <= 100 or not 0 <= offset <= 100000:
+            raise DomainError("INVALID_QUERY", "Invalid pagination", 400)
+        where = "r.generation=?"
+        args = [self.head()]
+        for expression, value in [
+            ("r.dataset", dataset),
+            ("COALESCE(c.status,'pending')", status),
+            ("r.format", fmt),
+        ]:
+            if value:
+                where += f" AND {expression}=?"
+                args.append(value)
+        source = "inventory_resources r LEFT JOIN resource_checks c ON c.id=r.id"
+        with self.store.connect() as db:
+            total = db.execute(
+                f"SELECT count(*) FROM {source} WHERE {where}", args
+            ).fetchone()[0]
+            rows = db.execute(
+                f"SELECT r.payload,c.status,c.reason,c.checked,c.validated,c.rows FROM {source} WHERE {where} ORDER BY r.id LIMIT ? OFFSET ?",
+                (*args, limit, offset),
+            ).fetchall()
+        items = []
+        for row in rows:
+            items.append(
+                {
+                    **unpack(row["payload"]),
+                    "validation": {
+                        "status": row["status"] or "pending",
+                        "reason": row["reason"],
+                        "lastCheckedAt": row["checked"],
+                        "lastValidatedAt": row["validated"],
+                        "recordCount": row["rows"],
+                    },
+                }
+            )
+        return {
+            "items": items,
+            "total": total,
+            "offset": offset,
+            "nextOffset": offset + limit if offset + limit < total else None,
+            "generation": self.head(),
+        }
+
+    def check(self, resource_id, key=None):
+        with self.store.connect() as db:
+            r = (
+                db.execute(
+                    "SELECT * FROM resource_variants WHERE key=?", (key,)
+                ).fetchone()
+                if key
+                else db.execute(
+                    "SELECT * FROM resource_checks WHERE id=?", (resource_id,)
+                ).fetchone()
+            )
+        return dict(r) if r else {}
+
+    def failure(self, resource_id, code, status="unavailable", key=None):
+        with self.store.connect() as db:
+            db.execute(
+                "INSERT INTO resource_checks(id,checked,status,reason) VALUES (?,?,?,?) ON CONFLICT(id) DO UPDATE SET checked=excluded.checked,status=excluded.status,reason=excluded.reason",
+                (resource_id, time.time(), status, code),
+            )
+            if key:
+                db.execute(
+                    "UPDATE resource_variants SET checked=?,status=?,reason=? WHERE key=?",
+                    (time.time(), status, code, key),
+                )
+
+    def accept(self, resource_id, key, rows, schema, digest, headers, document=False):
+        schema_hash = hashlib.sha256(
+            json.dumps(
+                [
+                    {"name": f["name"], "types": [t for t in f["types"] if t != "null"]}
+                    for f in schema.get("fields", [])
+                ],
+                sort_keys=True,
+            ).encode()
+        ).hexdigest()
+        old = self.check(resource_id, key)
+        if old.get("schema_json"):
+            prior_schema = unpack(old["schema_json"])
+            old["schema_hash"] = hashlib.sha256(
+                json.dumps(
+                    [
+                        {
+                            "name": f["name"],
+                            "types": [t for t in f["types"] if t != "null"],
+                        }
+                        for f in prior_schema.get("fields", [])
+                    ],
+                    sort_keys=True,
+                ).encode()
+            ).hexdigest()
+        if old.get("schema_hash") and old["schema_hash"] != schema_hash:
+            self.failure(resource_id, "SCHEMA_DRIFT", "schema_drift", key)
+            raise DomainError(
+                "SCHEMA_DRIFT",
+                "Source fields/types changed; accepted version retained for operator review",
+                409,
+            )
+        encoded = zlib.compress(
+            json.dumps(
+                {"rows": rows, "schema": schema}, ensure_ascii=False, allow_nan=False
+            ).encode()
+        )
+        now = time.time()
+        retrieved = old.get("retrieved") if old.get("hash") == digest else now
+        with self.store.connect() as db:
+            db.execute(
+                "INSERT OR REPLACE INTO resource_variants VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                (
+                    key,
+                    resource_id,
+                    now,
+                    now,
+                    "document" if document else "queryable",
+                    None,
+                    digest,
+                    schema_hash,
+                    zlib.compress(json.dumps(schema).encode()),
+                    headers.get("etag"),
+                    headers.get("last-modified"),
+                    retrieved,
+                    len(rows),
+                ),
+            )
+            db.execute(
+                "INSERT OR REPLACE INTO resource_checks VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+                (
+                    resource_id,
+                    now,
+                    now,
+                    "document" if document else "queryable",
+                    None,
+                    digest,
+                    schema_hash,
+                    None,
+                    headers.get("etag"),
+                    headers.get("last-modified"),
+                    retrieved,
+                    len(rows),
+                ),
+            )
+            if len(encoded) <= CACHE_BYTES:
+                db.execute(
+                    "INSERT OR REPLACE INTO resource_cache VALUES (?,?,?,?,?)",
+                    (key, resource_id, digest, encoded, now),
+                )
+            size = db.execute(
+                "SELECT COALESCE(sum(length(payload)),0) FROM resource_cache"
+            ).fetchone()[0]
+            for row in db.execute(
+                "SELECT key,length(payload) FROM resource_cache ORDER BY accessed"
+            ).fetchall():
+                if size <= CACHE_BYTES:
+                    break
+                db.execute("DELETE FROM resource_cache WHERE key=?", (row[0],))
+                size -= row[1]
+        return self.check(resource_id, key)
+
+    def cached(self, key):
+        with self.store.connect() as db:
+            r = db.execute(
+                "SELECT * FROM resource_cache WHERE key=?", (key,)
+            ).fetchone()
+            if r:
+                db.execute(
+                    "UPDATE resource_cache SET accessed=? WHERE key=?",
+                    (time.time(), key),
+                )
+        return (
+            {**dict(r), "value": json.loads(zlib.decompress(r["payload"]))}
+            if r
+            else None
+        )
+
+    def coverage(self):
+        generation = self.head()
+        with self.store.connect() as db:
+            meta = db.execute(
+                "SELECT * FROM inventories WHERE id=?", (generation,)
+            ).fetchone()
+            statuses = {
+                r[0]: r[1]
+                for r in db.execute(
+                    "SELECT COALESCE(c.status,'pending'),count(*) FROM inventory_resources r LEFT JOIN resource_checks c ON c.id=r.id WHERE r.generation=? GROUP BY 1",
+                    (generation,),
+                )
+            }
+            stale = db.execute(
+                "SELECT count(*) FROM resource_checks c JOIN inventory_resources r ON r.id=c.id WHERE r.generation=? AND c.validated<? AND c.status IN ('queryable','document')",
+                (generation, time.time() - 86400),
+            ).fetchone()[0]
+            formats = {
+                r[0]: r[1]
+                for r in db.execute(
+                    "SELECT format,count(*) FROM inventory_resources WHERE generation=? GROUP BY format",
+                    (generation,),
+                )
+            }
+            dataset_validated = db.execute(
+                "SELECT count(DISTINCT r.dataset) FROM inventory_resources r JOIN resource_checks c ON c.id=r.id WHERE r.generation=? AND c.status='queryable'",
+                (generation,),
+            ).fetchone()[0]
+            reasons = {
+                r[0]: r[1]
+                for r in db.execute(
+                    "SELECT reason,count(*) FROM resource_checks c JOIN inventory_resources r ON r.id=c.id WHERE r.generation=? AND reason IS NOT NULL GROUP BY reason",
+                    (generation,),
+                )
+            }
+            cache_bytes = db.execute(
+                "SELECT COALESCE(sum(length(payload)),0) FROM resource_cache"
+            ).fetchone()[0]
+        receipt = json.loads(meta["receipt"])
+        return {
+            "generation": generation,
+            "lastCatalogueCheckAt": meta["created"],
+            "catalogue": receipt,
+            "resources": {
+                "discovered": receipt["resourceCount"],
+                "byStatus": statuses,
+                "staleValidated": stale,
+                "byFormat": formats,
+                "failureReasons": reasons,
+            },
+            "datasets": {
+                "discovered": receipt["datasetCount"],
+                "withQueryableResource": dataset_validated,
+            },
+            "cache": {"bytes": cache_bytes, "budgetBytes": CACHE_BYTES},
+            "claim": "Inventory discovery is not full data onboarding. Queryability requires an actual successful resource read; API response coverage is not necessarily full historical coverage.",
+            "allGovernmentDataConnected": False,
+        }

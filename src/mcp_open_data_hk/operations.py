@@ -20,9 +20,9 @@ from starlette.background import BackgroundTask
 
 from .contracts import DomainError
 
-MAX_BACKUP = 25_000_000
-MAX_DATABASE = 150_000_000
-MAX_RESTORE = 300_000_000
+MAX_BACKUP = 75_000_000
+MAX_DATABASE = 300_000_000
+MAX_RESTORE = 500_000_000
 refresh_lock = asyncio.Lock()
 checkpoint_lock = threading.Lock()
 
@@ -185,13 +185,21 @@ def register_operations(app, service):
     async def refresh_data(request: Request, pack: str):
         if not authorized(request.headers.get("authorization")):
             raise DomainError("NOT_FOUND", "Not found", 404)
-        if pack not in {"restaurants", "population", "all"}:
+        if pack not in {"restaurants", "population", "all", "catalogue", "resources"}:
             raise DomainError("INVALID_PACK", "Unknown pack", 400)
         if refresh_lock.locked():
             raise DomainError("REFRESH_IN_PROGRESS", "Another refresh is running", 409)
         from .ingest import refresh
 
         async with refresh_lock:
+            if pack == "catalogue":
+                from .catalogue_sync import sync
+
+                await sync(service.store)
+                return await send_checkpoint()
+            if pack == "resources":
+                await service.resources.audit(20)
+                return await send_checkpoint()
             for name in (["population", "restaurants"] if pack == "all" else [pack]):
                 await refresh(service.store, name)
             return await send_checkpoint()

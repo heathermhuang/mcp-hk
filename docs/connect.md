@@ -58,3 +58,5 @@ Plate.hk is the first independent external provider. See [its pack contract](pla
 dataset's records can be queried. Respect rate-limit responses and retry guidance.
 The first call after inactivity can take longer while the accepted checkpoint is
 restored; a cold start does not silently fabricate sample results.
+
+For generic government resources, ask mcp.hk to call `hk_catalogue_search`, `hk_dataset_resources`, `hk_resource_schema` and `hk_resource_query`. Use `hk_coverage` for actual validation counts and failures. Discovery and API-response access do not establish that all government data is connected. See [resource contracts](resources.md).

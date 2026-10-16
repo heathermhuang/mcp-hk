@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mcp-hk"
-version = "0.3.0a1"
+version = "0.4.0a1"
 description = "Hong Kong public data over MCP and HTTP, extending mcp-open-data-hk"
 readme = "README.md"
 authors = [{name = "Tony Chan", email = "chankwongyintony@gmail.com"}]
@@ -15,6 +15,10 @@ dependencies = [
     "fastapi==0.143.2",
     "pydantic==2.14.1",
     "uvicorn==0.54.0",
+    "defusedxml==0.7.1",
+    "openpyxl==3.1.5",
+    "xlrd==2.0.2",
+    "pypdf==6.12.0",
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -43,6 +47,7 @@ mcp-open-data-hk = "mcp_open_data_hk:main"
 mcp-hk = "mcp_open_data_hk:main"
 mcp-hk-http = "mcp_open_data_hk.api:main"
 mcp-hk-refresh = "mcp_open_data_hk.ingest:main"
+mcp-hk-catalogue = "mcp_open_data_hk.catalogue_cli:main"
 mcp-hk-container = "mcp_open_data_hk.operations:main"
 
 [project.urls]

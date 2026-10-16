@@ -48,6 +48,8 @@ maintenance lease:
 | Backup | `0 1 * * *` | Daily 09:00 |
 | Restaurant refresh + backup | `0 2 * * *` | Daily 10:00 |
 | Population check + backup | `0 3 * * SUN` | Sunday 11:00 |
+| Reconciled catalogue sync + backup | `0 4 * * SUN` | Sunday 12:00 |
+| Bounded resource validation + backup | `20 * * * *` | Hourly at minute 20 |
 
 Every successful operation stores an immutable version under `backups/`, then
 publishes `latest.snapshot.tar.gz` and a manifest. Only complete, validated imports
@@ -107,3 +109,5 @@ uncached reads per UTC day, with three concurrent source reads. Cache entries an
 source-check receipts use the existing SQLite store and backup path. The new pack
 is optional for readiness: Plate.hk downtime does not disable the government packs.
 An expired query cache never disguises a provider failure as an empty result.
+
+Expanded inventory recovery uses streamed R2 checkpoints, capped at 75 MB compressed, 300 MB SQLite and 500 MB total restored bytes. Checkpoints carry the authenticated producer checksum; bootstrap independently verifies it. Fixed-length streaming rejects truncated/overflowed uploads before recovery pointers advance. The first expanded restore test recovered a 55 MB checkpoint; see resource contracts for cache and query bounds.

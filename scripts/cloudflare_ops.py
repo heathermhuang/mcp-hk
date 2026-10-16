@@ -28,6 +28,8 @@ parser.add_argument(
         "restaurants",
         "population",
         "all",
+        "catalogue",
+        "resources",
         "restore-test",
     ],
 )
@@ -46,6 +48,7 @@ method, data = "GET", None
 if args.action == "seed":
     seed = json.loads(Path(".data/seed-receipt.json").read_text())
     data = Path(seed["file"]).read_bytes()
+    headers["X-Snapshot-SHA256"] = seed["sha256"]
     if len(data) > MAX_BACKUP:
         raise SystemExit("Seed exceeds upload limit")
     path, method = "/__ops/snapshot", "POST"

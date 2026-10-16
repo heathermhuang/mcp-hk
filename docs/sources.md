@@ -64,8 +64,7 @@ Attribution: Census and Statistics Department, HKSAR Government, DATA.GOV.HK / C
 
 The inherited tools use the DATA.GOV.HK CKAN metadata APIs. The HTTP catalogue
 currently searches live metadata; it is not an offline complete catalogue index.
-The government packs and the independent Plate.hk pack query records. The initial catalogue response marks
-entries as catalogue-only; pack-to-catalogue capability linking is a follow-up.
+The government packs and the independent Plate.hk pack query records. The compatibility catalogue response marks entries as catalogue-only. The separate reconciled inventory and generic record layer are described in [resource contracts](resources.md); validation and failure counts are public at `/coverage`.
 
 [DATA.GOV.HK terms](https://data.gov.hk/en/terms-and-conditions),
 [reuse FAQ](https://data.gov.hk/en/faq), [CSDI](https://portal.csdi.gov.hk/geoportal/).
