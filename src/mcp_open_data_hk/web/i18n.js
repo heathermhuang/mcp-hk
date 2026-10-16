@@ -45,6 +45,10 @@
       number.textContent = value.toLocaleString(lang === 'en' ? 'en-HK' : 'zh-HK'); label.textContent = t(key); item.append(number, label); counts.append(item);
     }
     const note = document.createElement('p'); note.className = 'mhk-note'; note.textContent = t('coverageClaim'); box.append(counts, note);
+    if (coverage.asOf) {
+      const stamp = document.createElement('p'); stamp.className = 'mhk-small';
+      stamp.textContent = t('coverageAsOf') + ' · ' + new Date(coverage.asOf).toLocaleString(lang === 'en' ? 'en-HK' : 'zh-HK', {timeZone: 'Asia/Hong_Kong', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'}) + ' (HKT)'; box.append(stamp);
+    }
   }
   window.MhkI18n = {get lang() {return lang;}, get locale() {return lang === 'en' ? 'en' : 'zh-Hant';}, t, apply, setLanguage, coverageSummary};
   document.querySelectorAll('.mhk-language').forEach(button => button.addEventListener('click', () => setLanguage(lang === 'en' ? 'zh' : 'en')));

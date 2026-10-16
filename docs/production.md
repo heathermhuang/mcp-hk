@@ -148,8 +148,10 @@ newer selections. It never retries unchanged provider or schema failures.
 
 ### Public pages and language
 
-The overview reads `/api/v1/coverage` for catalogue, resource and validated-queryable
-counts. The original packs are example workflows, not the full library. Topic links
+The homepage reads `/assets/overview.json` for dated catalogue, resource and
+validated-queryable counts. The Worker serves a compact R2 summary without calling
+the query container; if it is missing or R2 is unavailable, a verified, dated release
+snapshot is served from static assets. The original packs are example workflows, not the full library. Topic links
 open the resource explorer with a search query. A failed coverage request shows an
 unavailable state rather than a hard-coded count.
 
@@ -158,3 +160,11 @@ All public landing/demo/explorer pages share `i18n.js` and `translations.js`.
 updates both the URL and local preference. Internal links retain the language and
 existing query parameters. UI copy, status messages, form labels and connection help
 are translated; original records, source titles and API identifiers retain source text.
+
+The existing maintenance jobs publish the summary after saving their checkpoints.
+A failed summary update retains the prior publication and is recorded under
+`maintenanceStatus.overview`; the UI always shows the summary timestamp. To republish
+manually, run `python scripts/cloudflare_ops.py publish-overview` from the project
+environment. No browser request triggers publication or warms the container. Source
+status is requested only when the Sources page is opened. Actual resource queries
+and the detailed coverage explorer still use the backend.

@@ -22,6 +22,7 @@
     document.title = MhkI18n.t('pageTitle');
     renderCoverage();
     renderStatus();
+    if (state.screen === 'sources' && !statusStarted) { statusStarted = true; status(); }
     const endpoint = location.origin + '/mcp';
     $('[data-dynamic=endpoint]').textContent = endpoint;
     const examples = {codex: `[mcp_servers."mcp.hk"]\nurl = "${endpoint}"\nstartup_timeout_sec = 120`, claude: `claude mcp add --transport http mcp-hk ${endpoint}`, cursor: JSON.stringify({mcpServers: {'mcp.hk': {url: endpoint}}}, null, 2)};
@@ -90,12 +91,12 @@
     const box = $('#mhk-plate-results'); box.replaceChildren();
     if (data) {
       const summary = document.createElement('p');
-      summary.textContent = data.method ? `${data.sampleSize ?? '—'} ${state.lang === 'en' ? 'comparable plates' : '個歷史比較車牌'} · ${data.dateFrom || '—'} → ${data.dateTo || '—'}` : `${data.total} ${state.lang === 'en' ? 'historical records' : '項歷史紀錄'} · ${data.query}`;
+      summary.textContent = data.method ? `${data.sampleSize ?? '—'} ${state.lang === 'en' ? 'comparable plates' : '個相近車牌'} · ${data.dateFrom || '—'} → ${data.dateTo || '—'}` : `${data.total} ${state.lang === 'en' ? 'historical records' : '項歷史紀錄'} · ${data.query}`;
       box.append(summary);
       if (data.method) {
         const method = document.createElement('p'); method.className = 'mhk-note'; method.textContent = data.method; box.append(method);
         const stats = document.createElement('p');
-        stats.textContent = data.statistics ? `${MhkI18n.t('historicalHkd')} · P25 ${data.statistics.p25.toLocaleString()} · ${MhkI18n.t('median')} ${data.statistics.median.toLocaleString()} · P75 ${data.statistics.p75.toLocaleString()}` : (state.lang === 'en' ? 'No qualified historical price distribution.' : '沒有符合條件的歷史價格分佈。');
+        stats.textContent = data.statistics ? `${MhkI18n.t('historicalHkd')} · P25 ${data.statistics.p25.toLocaleString()} · ${MhkI18n.t('median')} ${data.statistics.median.toLocaleString()} · P75 ${data.statistics.p75.toLocaleString()}` : (state.lang === 'en' ? 'No qualified historical price distribution.' : '未有足夠成交紀錄作比較。');
         box.append(stats);
       }
       for (const record of data.items) {
@@ -115,7 +116,7 @@
         row.append(mark, amount, context, links); box.append(row);
       }
       if (!data.items.length) {
-        const empty = document.createElement('p'); empty.textContent = state.lang === 'en' ? 'No historical records matched. This does not establish availability.' : '未有符合的歷史紀錄，並不代表此車牌可供申請。'; box.append(empty);
+        const empty = document.createElement('p'); empty.textContent = state.lang === 'en' ? 'No historical records matched. This does not establish availability.' : '找不到相關拍賣紀錄，並不代表此車牌可供購買。'; box.append(empty);
       }
     }
     const more = $('#mhk-plate-more'); more.hidden = !data?.nextPage; more.disabled = platePending;
@@ -200,7 +201,7 @@
   $('#mhk-radius').addEventListener('change', e => { state.radius = Number(e.target.value); loadNearby(); });
   root.querySelectorAll('[data-code]').forEach(b => b.addEventListener('click', () => { state.code = b.dataset.code; render(); }));
 
-  let sourceStatus = null, statusError = false, inventory = null, inventoryError = false;
+  let sourceStatus = null, statusError = false, statusStarted = false, inventory = null, inventoryError = false;
   function renderStatus() {
     const box = $('#mhk-status'); box.replaceChildren();
     if (!sourceStatus) { box.textContent = MhkI18n.t(statusError ? 'statusUnavailable' : 'loading'); return; }
@@ -219,10 +220,10 @@
     renderStatus();
   }
   async function coverage() {
-    try { inventory = await api('/api/v1/coverage'); } catch { inventoryError = true; }
+    try { inventory = await api('/assets/overview.json'); } catch { inventoryError = true; }
     renderCoverage();
   }
   root.querySelectorAll('[data-client]').forEach(b => b.addEventListener('click', () => { clientKind = b.dataset.client; $('#mhk-copy-status').textContent = ''; render(); }));
   $('#mhk-copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText($('#mhk-install').textContent); $('#mhk-copy-status').textContent = state.lang === 'en' ? ' Copied' : ' 已複製'; } catch { $('#mhk-copy-status').textContent = MhkI18n.t('copyFallback'); } });
-  render(); status(); coverage();
+  render(); coverage();
 })();

@@ -45,8 +45,8 @@ test('landing and explorer have complete dictionaries and shared language contro
 });
 test('coverage metrics use supplied counts and retain the incomplete-coverage qualification',()=>{
   const b=browser('https://mcp.hk/?lang=zh-Hant'),box=new Element();
-  b.context.MhkI18n.coverageSummary(box,{datasets:{discovered:4984},resources:{discovered:63360,byStatus:{queryable:40765}}});
-  assert.deepEqual(box.children[0].children.map(p=>p.children[0].textContent),['4,984','63,360','40,765']);assert.match(box.children[1].textContent,/不等於已接通全部/);
+  b.context.MhkI18n.coverageSummary(box,{asOf:'2026-10-16T23:11:28Z',datasets:{discovered:4984},resources:{discovered:63360,byStatus:{queryable:40765}}});
+  assert.deepEqual(box.children[0].children.map(p=>p.children[0].textContent),['4,984','63,360','40,765']);assert.match(box.children[1].textContent,/部分仍未能查詢/);assert.match(box.children[2].textContent,/數字更新時間.*2026/);
   b.context.MhkI18n.coverageSummary(box,null,true);assert.match(box.textContent,/暫時無法/);
 });
 test('translated form labels never replace their nested inputs',()=>{

@@ -1,0 +1,14 @@
+{
+  "generation": "f8d8e9945a694617b6a2a9eb565e2a03",
+  "asOf": "2026-10-16T23:11:28.860902+00:00",
+  "datasets": {
+    "discovered": 4984
+  },
+  "resources": {
+    "discovered": 63360,
+    "byStatus": {
+      "queryable": 40765
+    }
+  },
+  "allGovernmentDataConnected": false
+}

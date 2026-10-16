@@ -32,6 +32,7 @@ parser.add_argument(
         "resources",
         "restore-test",
         "restart",
+        "publish-overview",
     ],
 )
 parser.add_argument("--origin", default="https://mcp-hk.measurable.workers.dev")
@@ -53,6 +54,8 @@ if args.action == "seed":
     if len(data) > MAX_BACKUP:
         raise SystemExit("Seed exceeds upload limit")
     path, method = "/__ops/snapshot", "POST"
+elif args.action == "publish-overview":
+    path, method = "/__ops/publish-overview", "POST"
 elif args.action == "restart":
     status_request = urllib.request.Request(
         args.origin + "/api/v1/operations",
