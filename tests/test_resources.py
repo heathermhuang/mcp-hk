@@ -840,3 +840,30 @@ async def test_bracket_schema_choice_and_citation_match_resolved_request(
         == "https://example.gov.hk/calendar?date=2026-10-16"
     )
     assert result["provenance"][0]["originalResourceUrl"].endswith("[YYYY-MM-DD]")
+
+
+@pytest.mark.asyncio
+async def test_resource_format_filters_match_http_and_mcp(resource_service):
+    catalogue = resource_service.resources.catalogue
+    dataset = catalogue.dataset("sample")
+    old = catalogue.resource("r1")
+    other = {
+        **old,
+        "id": "r2",
+        "format": "JSON",
+        "url": "https://example.gov.hk/second.json",
+    }
+    catalogue.publish([dataset], [old, other], {})
+    app = create_app(resource_service)
+    with TestClient(app) as http:
+        result = http.get(
+            "/api/v1/catalogue/datasets/sample/resources?format=JSON"
+        ).json()
+        assert result["total"] == 1 and result["items"][0]["id"] == "r2"
+    async with Client(app.state.mcp) as client:
+        mcp = (
+            await client.call_tool(
+                "hk_dataset_resources", {"datasetId": "sample", "format": "JSON"}
+            )
+        ).data
+    assert mcp["items"] == result["items"] and mcp["total"] == 1
