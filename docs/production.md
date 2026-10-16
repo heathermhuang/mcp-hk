@@ -47,7 +47,7 @@ maintenance lease:
 |---|---|---|
 | Backup | `0 1 * * *` | Daily 09:00 |
 | Restaurant refresh + backup | `0 2 * * *` | Daily 10:00 |
-| Population check + backup | `0 3 * * 0` | Sunday 11:00 |
+| Population check + backup | `0 3 * * SUN` | Sunday 11:00 |
 
 Every successful operation stores an immutable version under `backups/`, then
 publishes `latest.snapshot.tar.gz` and a manifest. Only complete, validated imports

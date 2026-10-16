@@ -41,7 +41,7 @@ if urlsplit(args.origin).scheme != "https" or urlsplit(args.origin).hostname not
 secret = json.loads(Path("deploy/cloudflare/.ops-secrets.json").read_text())[
     "OPS_TOKEN"
 ]
-headers = {"Authorization": "Bearer " + secret}
+headers = {"Authorization": "Bearer " + secret, "User-Agent": "mcp.hk-operations/0.3"}
 method, data = "GET", None
 if args.action == "seed":
     seed = json.loads(Path(".data/seed-receipt.json").read_text())

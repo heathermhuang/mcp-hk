@@ -1,4 +1,5 @@
 import { Container } from '@cloudflare/containers';
+import { scheduledPack } from './cron';
 
 const MAX_BACKUP = 25_000_000;
 
@@ -73,7 +74,7 @@ export class McpContainer extends Container<Env> {
     if (url.pathname.startsWith('/__ops/')) return new Response('Not found', {status: 404});
     let body: Uint8Array | undefined, sourceCalls = url.pathname.startsWith('/api/v1/addresses') ? 1 : 0;
     if (request.method === 'POST') {
-      body = await boundedBody(request, 65536);
+      try { body = await boundedBody(request, 65536); } catch { return Response.json({error: {code: 'BODY_TOO_LARGE'}}, {status: 413}); }
       if (url.pathname === '/mcp') {
         try {
           const parsed = JSON.parse(new TextDecoder().decode(body));
@@ -124,6 +125,7 @@ export class McpContainer extends Container<Env> {
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
+    if (url.protocol !== 'https:' && !['localhost', '127.0.0.1'].includes(url.hostname)) return Response.redirect(`https://${url.host}${url.pathname}${url.search}`, 308);
     if (url.hostname === 'www.mcp.hk') return Response.redirect(`https://mcp.hk${url.pathname}${url.search}`, 308);
     if (url.pathname.startsWith('/__ops/')) {
       if (!(await authorized(request, env.OPS_TOKEN))) return new Response('Not found', {status: 404});
@@ -151,6 +153,7 @@ export default {
       secured.headers.set('X-Content-Type-Options', 'nosniff');
       secured.headers.set('Referrer-Policy', 'no-referrer');
       secured.headers.set('X-Mcp-Release', env.RELEASE_COMMIT);
+      secured.headers.set('Strict-Transport-Security', 'max-age=31536000');
       return secured;
     }
     if (url.pathname === '/api/v1/operations') {
@@ -161,13 +164,13 @@ export default {
     headers.set('x-mcp-client-ip', request.headers.get('cf-connecting-ip') || 'unknown');
     try {
       const response = await env.APP.get(env.APP.idFromName('production')).fetch(new Request(request, {headers}));
-      const result = new Response(response.body, response); result.headers.set('X-Mcp-Release', env.RELEASE_COMMIT); return result;
+      const result = new Response(response.body, response); result.headers.set('X-Mcp-Release', env.RELEASE_COMMIT); result.headers.set('Strict-Transport-Security', 'max-age=31536000'); return result;
     } catch {
       return Response.json({error: {code: 'SERVICE_RECOVERING', message: 'The service is restoring its accepted snapshot. Retry shortly.'}}, {status: 503, headers: {'Retry-After': '10', 'X-Mcp-Release': env.RELEASE_COMMIT}});
     }
   },
   async scheduled(controller: ScheduledController, env: Env, ctx: ExecutionContext) {
-    const pack = controller.cron === '0 2 * * *' ? 'restaurants' : controller.cron === '0 3 * * 0' ? 'population' : 'backup';
+    const pack = scheduledPack(controller.cron);
     ctx.waitUntil(env.APP.get(env.APP.idFromName('production')).maintain(pack));
   },
 } satisfies ExportedHandler<Env>;

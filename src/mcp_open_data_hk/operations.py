@@ -146,7 +146,13 @@ def bootstrap():
     token = os.environ.get("MCP_HK_OPS_TOKEN", "")
     if not token:
         raise ValueError("Bootstrap authentication is missing")
-    request = urllib.request.Request(url, headers={"Authorization": "Bearer " + token})
+    request = urllib.request.Request(
+        url,
+        headers={
+            "Authorization": "Bearer " + token,
+            "User-Agent": "mcp.hk-operations/0.3",
+        },
+    )
 
     class NoRedirect(urllib.request.HTTPRedirectHandler):
         def redirect_request(self, *args, **kwargs):
