@@ -34,6 +34,15 @@ class CatalogueStore:
             """
             )
 
+    def classify_legacy_failures(self):
+        with self.store.connect() as db:
+            db.execute(
+                "UPDATE resource_checks SET reason='SOURCE_PARSE_ERROR',status='needs_adapter' WHERE reason GLOB '[0-9]*'"
+            )
+            db.execute(
+                "UPDATE resource_checks SET status='needs_adapter' WHERE status='unavailable' AND reason IN ('SOURCE_PARSE_ERROR','SOURCE_SCHEMA_CHANGED')"
+            )
+
     def compact(self):
         with self.store.connect() as db:
             for row in db.execute(

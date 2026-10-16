@@ -710,3 +710,26 @@ async def test_generic_geojson_filters_actual_nested_properties(
         result["data"]["items"] == [{"properties.id": "001"}]
         and result["meta"]["total"] == 1
     )
+
+
+@pytest.mark.asyncio
+async def test_parser_error_codes_are_not_reported_as_external_outages(
+    resource_service, monkeypatch
+):
+    with resource_service.store.connect() as db:
+        row = unpack(
+            db.execute("SELECT payload FROM inventory_resources").fetchone()[0]
+        )
+        row["format"] = "XML"
+        db.execute("UPDATE inventory_resources SET payload=?", (json.dumps(row),))
+
+    async def source(url, headers=None):
+        return b"<root><bad></root>", {}, url, 200
+
+    monkeypatch.setattr("mcp_open_data_hk.resources.fetch", source)
+    with pytest.raises(DomainError, match="SOURCE_PARSE_ERROR"):
+        await resource_service.resources.query("r1")
+    check = resource_service.resources.catalogue.check("r1")
+    assert (
+        check["reason"] == "SOURCE_PARSE_ERROR" and check["status"] == "needs_adapter"
+    )

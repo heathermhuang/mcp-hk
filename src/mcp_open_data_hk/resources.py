@@ -563,39 +563,46 @@ class Resources:
                     )
                 return resource, {"rows": rows, "schema": schema}, check, False
             except Exception as exc:
-                code = getattr(exc, "code", "SOURCE_PARSE_ERROR")
+                code = (
+                    exc.code if isinstance(exc, DomainError) else "SOURCE_PARSE_ERROR"
+                )
                 status = (
-                    "unsupported"
-                    if code
-                    in {
-                        "UNSUPPORTED_FORMAT",
-                        "API_ADAPTER_REQUIRED",
-                        "PARAMETER_ADAPTER_REQUIRED",
-                        "UNSUPPORTED_API",
-                        "UNSUPPORTED_ENCODING",
-                    }
+                    "needs_adapter"
+                    if code in {"SOURCE_PARSE_ERROR", "SOURCE_SCHEMA_CHANGED"}
                     else (
-                        "restricted"
-                        if code == "ACCESS_RESTRICTED"
+                        "unsupported"
+                        if code
+                        in {
+                            "UNSUPPORTED_FORMAT",
+                            "API_ADAPTER_REQUIRED",
+                            "PARAMETER_ADAPTER_REQUIRED",
+                            "UNSUPPORTED_API",
+                            "UNSUPPORTED_ENCODING",
+                        }
                         else (
-                            "needs_selection"
-                            if code
-                            in {
-                                "SHEET_REQUIRED",
-                                "LAYER_REQUIRED",
-                                "INVALID_SHEET",
-                                "INVALID_RECORD_PATH",
-                                "TYPE_NAME_REQUIRED",
-                                "PARAMETERS_REQUIRED",
-                                "RECORD_PATH_REQUIRED",
-                            }
+                            "restricted"
+                            if code == "ACCESS_RESTRICTED"
                             else (
-                                "capacity_limited"
-                                if code in {"SOURCE_TOO_LARGE", "SOURCE_TOO_COMPLEX"}
+                                "needs_selection"
+                                if code
+                                in {
+                                    "SHEET_REQUIRED",
+                                    "LAYER_REQUIRED",
+                                    "INVALID_SHEET",
+                                    "INVALID_RECORD_PATH",
+                                    "TYPE_NAME_REQUIRED",
+                                    "PARAMETERS_REQUIRED",
+                                    "RECORD_PATH_REQUIRED",
+                                }
                                 else (
-                                    "schema_drift"
-                                    if code == "SCHEMA_DRIFT"
-                                    else "unavailable"
+                                    "capacity_limited"
+                                    if code
+                                    in {"SOURCE_TOO_LARGE", "SOURCE_TOO_COMPLEX"}
+                                    else (
+                                        "schema_drift"
+                                        if code == "SCHEMA_DRIFT"
+                                        else "unavailable"
+                                    )
                                 )
                             )
                         )
@@ -680,7 +687,7 @@ class Resources:
                 )
             raise
         except Exception:
-            self.catalogue.failure(resource_id, "SOURCE_PARSE_ERROR", "unavailable")
+            self.catalogue.failure(resource_id, "SOURCE_PARSE_ERROR", "needs_adapter")
             raise DomainError(
                 "SOURCE_PARSE_ERROR",
                 "Source schema inspection failed; receipt recorded",
@@ -698,6 +705,11 @@ class Resources:
     ):
         resource = self.catalogue.resource(resource_id)
         if any(c in resource["url"] for c in ("{", "}", "<", ">")) and not parameters:
+            try:
+                template_url(resource["url"], {})
+            except DomainError as exc:
+                if exc.code != "PARAMETERS_REQUIRED":
+                    raise
             if not self.catalogue.check(resource_id).get("validated"):
                 self.catalogue.failure(
                     resource_id, "PARAMETERS_REQUIRED", "needs_selection"

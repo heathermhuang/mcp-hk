@@ -82,7 +82,7 @@ Small-response bounds: 8 MB decoded source, 100k rows, 2m cells, 1k fields, arch
 32 MB, PDF 200 pages. These are internal capacity limits, **not external blockers**.
 Readers, API adapters, specialised binary formats, deeper verification and capacity
 extensions remain implementation work wherever the directory records them. Directory
-status `pending` means no validation evidence. `queryable` means an actual accepted
+status `needs_adapter` marks parsing/shape implementation work; it is not an external source outage. `pending` means no validation evidence. `queryable` means an actual accepted
 representation, not full historical or semantic qualification of the entire dataset.
 
 ## Inventory and operator jobs
