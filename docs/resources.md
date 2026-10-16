@@ -26,7 +26,7 @@ ownership from presence on DATA.GOV.HK.
 
 Equality filters preserve source types: CSV `"001"` is not JSON number `1`.
 No SQL, source query expressions, arbitrary URLs or network credentials are accepted.
-Use exact field names from schema, up to ten filters, 100 selected fields and
+Use exact field names from `schema.fields` or nested selectors from `schema.queryFields` (for example `properties.name` or `attributes.DC_ENG`). Exact top-level dotted keys take precedence. Projection preserves the requested selector as its output key. Up to ten filters, 100 selected fields and
 100 records/page. Pass returned `meta.version` on every later page; changed content
 returns 409 so clients restart instead of mixing source versions. Catalogue directory
 pagination is live within the reported inventory generation; restart if it changes.

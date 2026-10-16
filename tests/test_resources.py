@@ -669,3 +669,44 @@ async def test_schema_selection_failure_always_records_checked_receipt(
         and check["status"] == "restricted"
         and check["reason"] == "ACCESS_RESTRICTED"
     )
+
+
+def test_nested_selectors_preserve_direct_dotted_keys_and_missing_values():
+    from mcp_open_data_hk.resource_fields import selected, inspect_nested, MISSING
+
+    row = {"attributes": {"id": "001", "population": 2.2}, "attributes.id": "literal"}
+    assert selected(row, "attributes.id") == "literal"
+    assert selected(row, "attributes.population") == 2.2
+    assert selected(row, "attributes.absent") is MISSING
+    assert "attributes.population" in {f["name"] for f in inspect_nested([row])}
+
+
+@pytest.mark.asyncio
+async def test_generic_geojson_filters_actual_nested_properties(
+    resource_service, monkeypatch
+):
+    with resource_service.store.connect() as db:
+        row = unpack(
+            db.execute("SELECT payload FROM inventory_resources").fetchone()[0]
+        )
+        row["format"] = "GEOJSON"
+        db.execute("UPDATE inventory_resources SET payload=?", (json.dumps(row),))
+
+    async def source(url, headers=None):
+        value = {
+            "type": "FeatureCollection",
+            "features": [
+                {"properties": {"district": "Central", "id": "001"}, "geometry": None},
+                {"properties": {"district": "Eastern", "id": "002"}, "geometry": None},
+            ],
+        }
+        return json.dumps(value).encode(), {}, url, 200
+
+    monkeypatch.setattr("mcp_open_data_hk.resources.fetch", source)
+    result = await resource_service.resources.query(
+        "r1", filters={"properties.district": "Central"}, fields=["properties.id"]
+    )
+    assert (
+        result["data"]["items"] == [{"properties.id": "001"}]
+        and result["meta"]["total"] == 1
+    )

@@ -9,6 +9,7 @@ import ijson
 from ijson.common import ObjectBuilder
 
 from .contracts import DomainError
+from .resource_fields import add_nested, nested_schema
 from .resource_formats import table, safe_json
 
 
@@ -75,10 +76,12 @@ class FileRows:
         if self.fmt == "CSV":
             self.schema["encoding"] = self.encoding
         stats = {}
+        nested_stats = {}
         cells = 0
         records_digest = hashlib.sha256()
         for row in self:
             self.count += 1
+            add_nested(nested_stats, row)
             cells += len(row)
             records_digest.update(
                 json.dumps(
@@ -126,6 +129,7 @@ class FileRows:
             }
             for k, v in sorted(stats.items())
         ]
+        self.schema["queryFields"] = nested_schema(nested_stats, self.count)
         digest = hashlib.sha256()
         with path.open("rb") as f:
             while chunk := f.read(1024 * 1024):

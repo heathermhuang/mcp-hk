@@ -12,6 +12,7 @@ from urllib.parse import parse_qs, quote, urlencode, urlsplit, urlunsplit
 
 from .catalogue_store import CatalogueStore
 from .contracts import DomainError
+from .resource_fields import selected, MISSING, inspect_nested
 from .resource_fetch import fetch, fetch_file
 from .resource_stream import FileRows
 from .resource_formats import parse
@@ -813,7 +814,12 @@ class Resources:
                     "Resource changed; restart pagination",
                     409,
                 )
-            names = {f["name"] for f in value["schema"]["fields"]}
+            if "queryFields" not in value["schema"]:
+                value["schema"]["queryFields"] = inspect_nested(value["rows"])
+            names = {
+                f["name"]
+                for f in value["schema"]["fields"] + value["schema"]["queryFields"]
+            }
             if (set(filters or {}) | set(fields or [])) - names:
                 raise DomainError(
                     "UNKNOWN_FIELD", "Inspect schema for exact source field names", 400
@@ -822,7 +828,9 @@ class Resources:
             items = []
             for r in value["rows"]:
                 if all(
-                    k in r and type(r[k]) is type(v) and r[k] == v
+                    selected(r, k) is not MISSING
+                    and type(selected(r, k)) is type(v)
+                    and selected(r, k) == v
                     for k, v in (filters or {}).items()
                 ):
                     if offset <= total < offset + limit:

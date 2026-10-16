@@ -13,6 +13,7 @@ from datetime import date, datetime
 from defusedxml import ElementTree
 
 from .contracts import DomainError
+from .resource_fields import inspect_nested
 
 MAX_ROWS = 100_000
 MAX_FIELDS = 1000
@@ -195,6 +196,7 @@ def parse(body, fmt, record_path="", sheet=""):
                 unreadMembers=[m.filename for m in members if m not in selected],
                 datasetCompleteness="Only the listed supported archive members; binary/other members remain unqueried.",
             )
+            info["queryFields"] = inspect_nested(rows)
             return rows, info
     info = {
         "format": fmt,
@@ -404,4 +406,5 @@ def parse(body, fmt, record_path="", sheet=""):
         }
         for k in fields
     ]
+    info["queryFields"] = inspect_nested(rows)
     return rows, info

@@ -11,7 +11,7 @@ import socket
 import ssl
 import time
 import zlib
-from urllib.parse import urljoin, urlsplit
+from urllib.parse import quote, urljoin, urlsplit
 
 from .contracts import DomainError
 
@@ -88,7 +88,10 @@ def fetch_sync(url, headers=None, maximum=MAX_BYTES, destination=None):
         try:
             connection.request(
                 "GET",
-                p.path + ("?" + p.query if p.query else ""),
+                quote(p.path or "/", safe="/%:@!$&'()*+,;=-._~")
+                + (
+                    "?" + quote(p.query, safe="=&;%:+,/?@!$'()*-._~") if p.query else ""
+                ),
                 headers={
                     "User-Agent": "mcp.hk-resources/0.4 (+https://mcp.hk)",
                     "Accept-Encoding": "gzip",
