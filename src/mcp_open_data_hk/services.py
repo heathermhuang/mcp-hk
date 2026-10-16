@@ -35,10 +35,12 @@ def distance(lat, lon, rlat, rlon):
 class Service:
     def __init__(self, store: Store):
         from .platehk import PlateHK
+        from .resources import Resources
 
         self.store = store
         self.address_slots = asyncio.Semaphore(3)
         self.plates = PlateHK(self)
+        self.resources = Resources(store)
 
     def envelope(
         self,

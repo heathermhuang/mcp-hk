@@ -258,6 +258,9 @@ def create_app(service=None):
             {**payload, "capability": "catalogue_only"}, "catalogue"
         )
 
+    from .resource_api import register_http
+
+    register_http(app, service.resources)
     from .operations import register_operations
 
     register_operations(app, service)
@@ -271,6 +274,11 @@ def create_app(service=None):
         @app.get("/plates", include_in_schema=False)
         def homepage():
             return FileResponse(web / "index.html")
+
+        @app.get("/coverage", include_in_schema=False)
+        @app.get("/data", include_in_schema=False)
+        def coverage_page():
+            return FileResponse(web / "coverage.html")
 
         app.mount("/assets", StaticFiles(directory=web), name="assets")
     # The MCP app owns /mcp. Mount at root last to avoid /mcp/mcp and keep REST routes.

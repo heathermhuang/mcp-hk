@@ -6,7 +6,7 @@
     "types": "wrangler types",
     "check": "tsc --noEmit",
     "deploy": "wrangler deploy",
-    "test": "node --experimental-strip-types --test cron.test.mjs"
+    "test": "node --experimental-strip-types --test *.test.mjs"
   },
   "dependencies": {
     "@cloudflare/containers": "0.3.7"

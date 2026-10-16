@@ -33,7 +33,7 @@
   },
   "migrations": [{ "tag": "v1", "new_sqlite_classes": ["McpContainer"] }],
   "r2_buckets": [{ "binding": "BACKUPS", "bucket_name": "mcp-hk-backups" }],
-  "triggers": { "crons": ["0 2 * * *", "0 3 * * SUN", "0 1 * * *"] },
+  "triggers": { "crons": ["0 2 * * *", "0 3 * * SUN", "0 1 * * *", "0 4 * * SUN", "20 * * * *"] },
   "observability": { "enabled": true, "head_sampling_rate": 0.1, "logs": { "enabled": true, "invocation_logs": false } },
   "limits": { "cpu_ms": 30000 }
 }

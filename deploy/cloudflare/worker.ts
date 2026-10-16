@@ -1,7 +1,7 @@
 import { Container } from '@cloudflare/containers';
 import { scheduledPack } from './cron';
+import {saveBackup} from './backup';
 
-const MAX_BACKUP = 25_000_000;
 
 async function authorized(request: Request, token: string): Promise<boolean> {
   if (!token) return false;
@@ -25,20 +25,6 @@ async function boundedBody(request: Request | Response, limit: number): Promise<
   const result = new Uint8Array(length); let offset = 0;
   for (const p of parts) { result.set(p, offset); offset += p.length; }
   return result;
-}
-
-async function saveBackup(env: Env, data: Uint8Array, reason: string) {
-  const digest = await crypto.subtle.digest('SHA-256', data);
-  const sha256 = Array.from(new Uint8Array(digest), n => n.toString(16).padStart(2, '0')).join('');
-  const createdAt = new Date().toISOString();
-  const key = `backups/${createdAt.replaceAll(':', '-')}-${crypto.randomUUID()}.snapshot.tar.gz`;
-  const metadata = {sha256, createdAt, reason};
-  await env.BACKUPS.put(key, data, {customMetadata: metadata, httpMetadata: {contentType: 'application/gzip'}});
-  // Latest is published only after the immutable version has been stored.
-  await env.BACKUPS.put('latest.snapshot.tar.gz', data, {customMetadata: {...metadata, backupKey: key}, httpMetadata: {contentType: 'application/gzip'}});
-  const receipt = {key, sha256, createdAt, bytes: data.length, reason};
-  await env.BACKUPS.put('latest.json', JSON.stringify(receipt), {httpMetadata: {contentType: 'application/json'}});
-  return receipt;
 }
 
 export class McpContainer extends Container<Env> {
@@ -105,8 +91,7 @@ export class McpContainer extends Container<Env> {
       const path = pack === 'backup' ? '/__ops/backup' : `/__ops/refresh?pack=${pack}`;
       const response = await this.containerFetch(`${this.env.PUBLIC_ORIGIN}${path}`, {method: 'POST', headers: {'Authorization': `Bearer ${this.env.OPS_TOKEN}`, 'x-mcp-edge-token': this.env.OPS_TOKEN}});
       if (!response.ok) throw new Error(`Maintenance source returned ${response.status}`);
-      const data = await boundedBody(response, MAX_BACKUP);
-      const receipt = await saveBackup(this.env, data, pack);
+      const receipt = await saveBackup(this.env, response, pack);
       await this.ctx.storage.put('maintenanceStatus', {status: 'success', ...receipt});
       const cutoff = Date.now() - 30 * 86400000;
       const versions = await this.env.BACKUPS.list({prefix: 'backups/'});
@@ -135,18 +120,18 @@ export default {
         return new Response(object.body, {headers: {'Content-Type': 'application/gzip', 'X-Snapshot-SHA256': object.customMetadata?.sha256 || '', 'Cache-Control': 'no-store'}});
       }
       if (url.pathname === '/__ops/snapshot' && request.method === 'POST') {
-        return Response.json(await saveBackup(env, await boundedBody(request, MAX_BACKUP), 'operator-seed'));
+        return Response.json(await saveBackup(env, request, 'operator-seed'));
       }
       if (url.pathname === '/__ops/run' && request.method === 'POST') {
         const pack = url.searchParams.get('pack') || 'backup';
-        if (!['backup', 'restaurants', 'population', 'all'].includes(pack)) return new Response('Invalid pack', {status: 400});
+        if (!['backup', 'restaurants', 'population', 'all', 'catalogue', 'resources'].includes(pack)) return new Response('Invalid pack', {status: 400});
         return Response.json(await env.APP.get(env.APP.idFromName('production')).maintain(pack));
       }
       if (url.pathname === '/__ops/status') return Response.json(await env.APP.get(env.APP.idFromName('production')).operationsStatus());
       return new Response('Not found', {status: 404});
     }
-    if (['/', '/demo', '/sources', '/connect', '/plates'].includes(url.pathname) || url.pathname.startsWith('/assets/')) {
-      url.pathname = url.pathname.startsWith('/assets/') ? url.pathname.slice(7) : '/index.html';
+    if (['/', '/demo', '/sources', '/connect', '/plates', '/coverage', '/data'].includes(url.pathname) || url.pathname.startsWith('/assets/')) {
+      url.pathname = url.pathname.startsWith('/assets/') ? url.pathname.slice(7) : ['/coverage','/data'].includes(url.pathname) ? '/coverage.html' : '/index.html';
       const response = await env.ASSETS.fetch(new Request(url, request));
       const secured = new Response(response.body, response);
       secured.headers.set('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'");
@@ -158,7 +143,7 @@ export default {
     }
     if (url.pathname === '/api/v1/operations') {
       const manifest = await env.BACKUPS.get('latest.json');
-      return Response.json({backup: manifest ? await manifest.json() : null, maintenance: await env.APP.get(env.APP.idFromName('production')).operationsStatus(), schedules: {restaurants: 'daily 10:00 Asia/Hong_Kong', population: 'Sunday 11:00 Asia/Hong_Kong', backup: 'daily 09:00 Asia/Hong_Kong'}, retentionDays: 30});
+      return Response.json({backup: manifest ? await manifest.json() : null, maintenance: await env.APP.get(env.APP.idFromName('production')).operationsStatus(), schedules: {catalogue: 'Sunday 12:00 Asia/Hong_Kong', resources: 'every hour at minute 20, 20 resources per batch', restaurants: 'daily 10:00 Asia/Hong_Kong', population: 'Sunday 11:00 Asia/Hong_Kong', backup: 'daily 09:00 Asia/Hong_Kong'}, retentionDays: 30});
     }
     const headers = new Headers(request.headers);
     headers.set('x-mcp-client-ip', request.headers.get('cf-connecting-ip') || 'unknown');

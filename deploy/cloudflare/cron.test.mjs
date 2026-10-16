@@ -15,3 +15,8 @@ test('unsupported triggers cannot silently become backups', () => {
   assert.throws(() => scheduledPack('0 3 * * 0'));
   assert.throws(() => scheduledPack('* * * * *'));
 });
+
+test('catalogue and resource checks remain separate deterministic jobs', () => {
+  assert.equal(scheduledPack('0 4 * * SUN'), 'catalogue');
+  assert.equal(scheduledPack('20 * * * *'), 'resources');
+});
