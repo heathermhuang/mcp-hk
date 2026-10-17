@@ -13,6 +13,7 @@ The upstream MIT licence and author attribution are preserved.
   persons, area and density.
 - **Plate.hk (first external pack):** independent auction-history index, historical
   comparisons and dataset coverage, with original source links. Try [the plate demo](https://mcp.hk/plates).
+- **Real-time transport:** source-timestamp-validated MTR, bus, green-minibus and ferry arrival adapters, short caches and explicit coverage scope. See [request contracts and live verification](docs/transport.md).
 - **Generic resources:** reconciled DATA.GOV.HK/CSDI inventory, source schema inspection and bounded record queries across CSV, JSON, GeoJSON, Excel, XML and API families. See [resource contracts and honest coverage](docs/resources.md) and [the coverage explorer](https://mcp.hk/coverage).
 - **Developer interfaces:** eight preserved catalogue tools plus sixteen resource/pack tools,
   remote Streamable HTTP, local stdio, REST and OpenAPI.

@@ -77,7 +77,7 @@ class PinnedHTTPS(PinnedHTTP):
         )
 
 
-def fetch_sync(url, headers=None, maximum=MAX_BYTES, destination=None):
+def fetch_sync(url, headers=None, maximum=MAX_BYTES, destination=None, payload=None):
     started = time.monotonic()
     for _ in range(4):
         p = validate_url(url)
@@ -87,11 +87,12 @@ def fetch_sync(url, headers=None, maximum=MAX_BYTES, destination=None):
         output = None
         try:
             connection.request(
-                "GET",
+                "POST" if payload is not None else "GET",
                 quote(p.path or "/", safe="/%:@!$&'()*+,;=-._~")
                 + (
                     "?" + quote(p.query, safe="=&;%:+,/?@!$'()*-._~") if p.query else ""
                 ),
+                body=payload,
                 headers={
                     "User-Agent": "mcp.hk-resources/0.4 (+https://mcp.hk)",
                     "Accept-Encoding": "gzip",
@@ -101,6 +102,10 @@ def fetch_sync(url, headers=None, maximum=MAX_BYTES, destination=None):
             response = connection.getresponse()
             meta = {k.lower(): v for k, v in response.getheaders()}
             if response.status in {301, 302, 303, 307, 308}:
+                if payload is not None:
+                    raise DomainError(
+                        "UNSAFE_SOURCE", "Transport POST redirects are not allowed", 422
+                    )
                 redirect_url = urljoin(url, meta.get("location", ""))
                 validate_url(redirect_url)
                 if p.scheme == "https" and urlsplit(redirect_url).scheme != "https":
@@ -161,9 +166,11 @@ def fetch_sync(url, headers=None, maximum=MAX_BYTES, destination=None):
     raise DomainError("SOURCE_REDIRECT_LIMIT", "Source redirected too many times", 422)
 
 
-async def fetch(url, headers=None, maximum=MAX_BYTES):
+async def fetch(url, headers=None, maximum=MAX_BYTES, payload=None):
     try:
-        return await asyncio.to_thread(fetch_sync, url, headers, maximum)
+        return await asyncio.to_thread(
+            fetch_sync, url, headers, maximum, payload=payload
+        )
     except DomainError:
         raise
     except (
