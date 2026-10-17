@@ -246,7 +246,8 @@ const translations = {
     "transportRefreshDue": "Arrival check expired",
     "transportFeed": "{operator} · arrivals · response cache {seconds}s. Validation applies to the last selected route or stop.",
     "transportReference": "{operator} · routes, stops or other reference data; not a live arrival feed.",
-    "transportInputs": "Required inputs: {parameters}"
+    "transportInputs": "Required inputs: {parameters}",
+    "independent_or_public_corporation": "Public corporation or independent provider"
   },
   "zh": {
     "interfaces": "MCP · HTTP API · 支援自行部署",
@@ -494,6 +495,7 @@ const translations = {
     "transportRefreshDue": "到站資料待更新",
     "transportFeed": "{operator} · 到站資訊 · 回應快取 {seconds} 秒。檢查結果只適用於上次選擇的路線或車站。",
     "transportReference": "{operator} · 路線、車站或其他參考資料，並非即時到站資訊。",
-    "transportInputs": "所需輸入：{parameters}"
+    "transportInputs": "所需輸入：{parameters}",
+    "independent_or_public_corporation": "公共機構或獨立供應商"
   }
 };
