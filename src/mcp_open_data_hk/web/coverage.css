@@ -1,1 +1,13 @@
 #mhk-preview section{margin:28px 0;padding-bottom:24px;border-bottom:1px solid var(--mhk-line)}#mhk-preview h1{font-size:clamp(36px,5vw,58px)}#mhk-preview h2{font-size:22px;font-weight:500}#mhk-preview pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:500px;overflow:auto}#mhk-preview #datasets article,#mhk-preview #resources article{padding:14px 0;border-bottom:1px solid var(--mhk-line)}#mhk-preview article button{display:block;text-align:left;border:0;background:transparent;color:var(--mhk-accent);font-size:17px;padding:4px 0}#mhk-preview article p{margin:6px 0;overflow-wrap:anywhere}#mhk-preview label{display:block;margin:12px 0 4px}#mhk-preview input,#mhk-preview textarea{width:100%;background:var(--mhk-paper);color:var(--mhk-ink);border:1px solid var(--mhk-line);padding:10px;font:inherit}#mhk-preview select{background:var(--mhk-paper);color:var(--mhk-ink);padding:8px}#mhk-preview .query-selectors{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}#mhk-preview .query-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}#mhk-preview .coverage-counts{display:flex;gap:24px;flex-wrap:wrap}#mhk-preview .coverage-counts strong{font-size:30px;display:block;font-weight:500}#mhk-preview .table-scroll{overflow-x:auto}#mhk-preview table{border-collapse:collapse;width:100%;font-size:13px}#mhk-preview th,#mhk-preview td{padding:10px;border-bottom:1px solid var(--mhk-line);text-align:left;max-width:400px;overflow-wrap:anywhere;white-space:pre-wrap}#mhk-preview .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}@media(max-width:700px){#mhk-preview .query-selectors{grid-template-columns:1fr}#mhk-preview .query-selectors label{margin:0}}
+/* Keep the data task aligned with the other pages; diagnostics are optional. */
+#mhk-preview h1{font-size:clamp(30px,4vw,42px);line-height:1.15;letter-spacing:-1.3px}
+#mhk-preview section{margin:28px 0}
+#mhk-preview h2{margin-bottom:16px}
+#mhk-preview .mhk-search{align-items:stretch}
+#mhk-preview .mhk-search input{flex:1;min-width:0}
+#mhk-preview textarea{box-sizing:border-box}
+#mhk-preview .mhk-coverage-details{margin-top:36px}
+#mhk-preview td details{min-width:150px}
+#mhk-preview td summary{cursor:pointer;color:var(--mhk-accent)}
+#mhk-preview td details pre{max-height:240px;max-width:360px;margin-top:10px}
+#mhk-preview button:disabled{opacity:.5;cursor:default}

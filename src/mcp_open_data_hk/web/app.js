@@ -19,7 +19,7 @@
     root.querySelectorAll('[data-page]').forEach(e => e.hidden = e.dataset.page !== state.screen);
     root.querySelectorAll('[data-screen]').forEach(e => { if (e.dataset.screen === state.screen) e.setAttribute('aria-current', 'page'); else e.removeAttribute('aria-current'); });
     MhkI18n.apply();
-    document.title = MhkI18n.t('pageTitle');
+    document.title = MhkI18n.t(state.screen + 'PageTitle');
     renderCoverage();
     renderStatus();
     if (state.screen === 'sources' && !statusStarted) { statusStarted = true; status(); }

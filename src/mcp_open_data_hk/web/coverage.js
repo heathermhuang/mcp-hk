@@ -75,19 +75,33 @@ import {fetchPublicJson} from './http.js';
     renderResources();
   }
   function renderQuery() {
+    $('record-query').querySelectorAll('button').forEach(button => { button.disabled = !selected || busy; });
     $('record-table').replaceChildren(); $('resource-citations').replaceChildren();
     if (queryError) { $('query-message').textContent = failure(queryError); return; }
     if (busy) { $('query-message').textContent = t('readingSource'); return; }
     if (!result) { $('query-message').textContent = selected ? t('inspectHint') : ''; return; }
     $('record-response').textContent = JSON.stringify(result,null,2);
     if (result.selectionRequired) {
+      $('query-options').open = true;
       $('query-message').textContent = t('chooseSelection',{kind:t(result.selectionRequired)}) + JSON.stringify(result.layers || result.featureTypes || result.sheets || result.parameters); return;
     }
     if (result.data) {
       const items = result.data.items, fields = [...new Set(items.flatMap(Object.keys))].slice(0,12);
       const table = node('table',''), thead = node('thead',''), tr = node('tr',''); fields.forEach(f => tr.append(node('th',f))); thead.append(tr); table.append(thead);
       const tbody = node('tbody','');
-      for (const item of items) { const row = node('tr',''); fields.forEach(f => row.append(node('td',item[f] == null ? '—' : typeof item[f] === 'object' ? JSON.stringify(item[f]) : String(item[f])))); tbody.append(row); }
+      for (const item of items) {
+        const row = node('tr','');
+        fields.forEach(f => {
+          const value = item[f], cell = node('td','');
+          if (value && typeof value === 'object') {
+            const details = node('details','');
+            details.append(node('summary', t(Array.isArray(value) ? 'nestedItems' : 'nestedFields', {total:Object.keys(value).length})), node('pre',JSON.stringify(value,null,2)));
+            cell.append(details);
+          } else cell.textContent = value == null ? '—' : String(value);
+          row.append(cell);
+        });
+        tbody.append(row);
+      }
       table.append(tbody); const wrap = node('div',''); wrap.className = 'table-scroll'; wrap.append(table); $('record-table').append(wrap);
       $('query-message').textContent = t('matchedRecords',{total:result.meta.total,shown:items.length}) + (!items.length ? ' · '+t('noMatches') : '') + (result.meta.structuredQueryable ? '' : ' · '+t('unverifiedText')) + (result.warnings.length ? ' · '+result.warnings.map(w=>w.code).join(', ') : '');
     } else { $('query-message').textContent = t('schemaSummary',{total:result.recordCount,scope:result.schema.scope,fields:result.schema.fields.map(f=>f.name).join(', ')}); }
