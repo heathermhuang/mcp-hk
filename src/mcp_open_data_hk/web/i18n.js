@@ -12,7 +12,7 @@
     document.documentElement.lang = lang === 'en' ? 'en' : 'zh-Hant';
     document.querySelectorAll('.mhk-navbutton').forEach(link => {
       const path = new URL(link.getAttribute('href'), location.href).pathname;
-      if (path === location.pathname || (path === '/coverage' && location.pathname === '/data')) link.setAttribute('aria-current', 'page');
+      if (path === location.pathname || (path === '/coverage' && ['/data','/plates','/demo'].includes(location.pathname))) link.setAttribute('aria-current', 'page');
       else link.removeAttribute('aria-current');
     });
     document.querySelectorAll('[data-i18n]').forEach(e => { e.textContent = t(e.dataset.i18n); });
@@ -21,11 +21,13 @@
     for (const attr of ['placeholder', 'aria-label', 'content']) {
       document.querySelectorAll('[data-i18n-' + attr + ']').forEach(e => e.setAttribute(attr, t(e.getAttribute('data-i18n-' + attr))));
     }
+    document.querySelectorAll('[data-language-value]').forEach(e=>e.value=lang==='en'?'en':'zh-Hant');
     document.querySelectorAll('.mhk-language').forEach(e => {
       e.textContent = lang === 'en' ? '繁' : 'EN';
       e.setAttribute('aria-label', lang === 'en' ? '切換至繁體中文' : 'Switch to English');
     });
     document.querySelectorAll('a[href]').forEach(e => {
+      if (e.getAttribute('href').startsWith('#')) return;
       const url = new URL(e.getAttribute('href'), location.href);
       if (url.origin === location.origin && ['/', '/demo', '/connect', '/sources', '/plates', '/coverage', '/data', '/terms', '/privacy'].includes(url.pathname)) {
         url.searchParams.set('lang', lang === 'en' ? 'en' : 'zh-Hant');

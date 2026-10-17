@@ -173,6 +173,24 @@ def profile(resource):
             {a or b for a, b in re.findall(r"\{([^{}]+)\}|<([^<>]+)>", p.template)}
         )
         p.required = [k for k in p.required if k not in p.defaults]
+        examples = {
+            "MTR": {"line": "TWL", "sta": "CEN"},
+            "MTR Light Rail": {"station_id": "001"},
+            "MTR Bus": {"routeName": "K12"},
+            "KMB/LWB": {"route": "1", "service_type": "1"},
+            "Citybus": {"stop_id": "001145", "route": "11"},
+            "Green minibuses": {
+                "route_id": "2006408",
+                "route_seq": "1",
+                "stop_seq": "1",
+            },
+            "New Lantao Bus": {"routeId": "1", "stopId": "1", "languageCode": "en"},
+            "Sun Ferry": {"routecode": "CECC"},
+            "Hong Kong & Kowloon Ferry": {"route_id": "3", "direction": "inbound"},
+        }.get(p.operator, {})
+        p.parameter_examples = p.parameter_examples or {
+            key: examples[key] for key in p.required if key in examples
+        }
         if not p.arrivals:
             p.ttl = 300
     return p

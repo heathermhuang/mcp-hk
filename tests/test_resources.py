@@ -867,3 +867,72 @@ async def test_resource_format_filters_match_http_and_mcp(resource_service):
             )
         ).data
     assert mcp["items"] == result["items"] and mcp["total"] == 1
+
+
+@pytest.mark.asyncio
+async def test_connected_catalogue_discovery_and_access_parity(resource_service):
+    app = create_app(resource_service)
+    with TestClient(app) as http:
+        for term in ["plate.hk", "Plate HK", "車牌", "拍賣", "auction history"]:
+            result = http.get("/api/v1/catalogue/datasets", params={"q": term}).json()
+            assert result["items"][0]["id"] == "mcp:platehk"
+            assert result["items"][0]["providerType"] == "independent"
+            assert result["items"][0]["action"]["url"] == "/plates"
+        http_access = http.get(
+            "/api/v1/catalogue/datasets/mcp:platehk/resources"
+        ).json()
+    async with Client(app.state.mcp) as client:
+        found = (await client.call_tool("hk_catalogue_search", {"q": "車牌"})).data
+        access = (
+            await client.call_tool("hk_dataset_resources", {"datasetId": "mcp:platehk"})
+        ).data
+    assert found["items"][0]["id"] == "mcp:platehk"
+    assert "hk_plate_search" in access["access"]["tools"]
+    assert access["connected"]["provider"] == "Plate.hk" and access["items"] == []
+    assert http_access == access
+
+
+def test_connected_views_keep_native_denominators_and_pagination(resource_service):
+    from mcp_open_data_hk.connected import entries
+    from mcp_open_data_hk.sources import PACKS
+
+    c = resource_service.resources.catalogue
+    before = c.coverage()
+    assert {e["packId"] for e in entries()} == {p["id"] for p in PACKS}
+    assert c.search(access="sources")["total"] == 1
+    assert c.search(access="connected")["total"] == 4
+    pages = [c.search(limit=1, offset=i) for i in range(5)]
+    assert len({p["items"][0]["id"] for p in pages}) == 5
+    assert pages[-1]["nextOffset"] is None and pages[0]["total"] == 5
+    assert c.coverage()["datasets"] == before["datasets"]
+    assert c.search(q="%")["total"] == 0
+    assert c.search(q="_")["total"] == 0
+    with pytest.raises(DomainError):
+        c.search(access="made-up")
+
+
+def test_calendar_preview_selects_source_events_and_retains_metadata():
+    calendar = {
+        "prodid": "government-calendar",
+        "version": "2.0",
+        "x-wr-timezone": "Asia/Hong_Kong",
+        "vevent": [
+            {
+                "summary": "Holiday",
+                "dtstart": ["20260101", {"value": "DATE"}],
+                "uid": "one",
+            },
+            {
+                "summary": "Another holiday",
+                "dtstart": ["20260217", {"value": "DATE"}],
+                "uid": "two",
+            },
+        ],
+    }
+    body = json.dumps({"vcalendar": [calendar]}).encode()
+    rows, schema = parse(body, "JSON")
+    assert rows == calendar["vevent"] and schema["scope"] == "calendar_events"
+    assert schema["recordPath"] == "vcalendar/0/vevent"
+    assert schema["calendarMetadata"]["x-wr-timezone"] == "Asia/Hong_Kong"
+    wrapper, _ = parse(body, "JSON", record_path="vcalendar")
+    assert wrapper == [calendar]

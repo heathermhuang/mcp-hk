@@ -247,7 +247,29 @@ def parse(body, fmt, record_path="", sheet=""):
             and "code" in value["error"]
         ):
             invalid("Source API returned an error envelope", "SOURCE_API_ERROR")
-        if isinstance(value, dict) and value.get("type") == "FeatureCollection":
+        calendar = value.get("vcalendar") if isinstance(value, dict) else None
+        calendar = (
+            calendar[0]
+            if isinstance(calendar, list)
+            and len(calendar) == 1
+            and isinstance(calendar[0], dict)
+            and isinstance(calendar[0].get("vevent"), list)
+            and "prodid" in calendar[0]
+            and "version" in calendar[0]
+            else None
+        )
+        if calendar is not None:
+            info["calendarMetadata"] = {
+                k: v for k, v in calendar.items() if k != "vevent"
+            }
+        if calendar is not None and record_path in {"", "vcalendar/0/vevent"}:
+            info["recordPath"] = "vcalendar/0/vevent"
+            info["scope"] = "calendar_events"
+            info["rowMeaning"] = (
+                "One source iCalendar event; calendar metadata retained separately."
+            )
+            value = calendar["vevent"]
+        elif isinstance(value, dict) and value.get("type") == "FeatureCollection":
             info["sourceCrs"] = value.get("crs")
             value = value.get("features")
             info["recordPath"] = "features"

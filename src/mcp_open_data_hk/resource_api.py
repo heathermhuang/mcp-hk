@@ -1,5 +1,7 @@
 """HTTP/MCP transport adapters for the common resource service."""
 
+from typing import Literal
+
 from fastapi import Query
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -39,9 +41,10 @@ def register_http(app, resources):
         q: str = Query(default="", max_length=200),
         limit: int = Query(default=20, ge=1, le=100),
         offset: int = Query(default=0, ge=0, le=100000),
+        access: Literal["all", "connected", "sources"] = "all",
     ):
-        """Search the reconciled native catalogue inventory, independent of the incomplete CKAN search index."""
-        return resources.catalogue.search(q, limit, offset)
+        """Search connected services and the reconciled native catalogue inventory, independent of the incomplete CKAN search index."""
+        return resources.catalogue.search(q, limit, offset, access)
 
     @app.get("/api/v1/catalogue/datasets/{datasetId}")
     def dataset(datasetId: str):
@@ -115,9 +118,14 @@ def register_mcp(server, current):
     annotation = {"readOnlyHint": True, "destructiveHint": False}
 
     @server.tool(annotations=annotation)
-    def hk_catalogue_search(q: str = "", limit: int = 20, offset: int = 0) -> dict:
-        """Search complete harvested DATA.GOV.HK and CSDI metadata. Discovery is not record validation. Then list resources, inspect schema, query records."""
-        return current().resources.catalogue.search(q, limit, offset)
+    def hk_catalogue_search(
+        q: str = "",
+        limit: int = 20,
+        offset: int = 0,
+        access: Literal["all", "connected", "sources"] = "all",
+    ) -> dict:
+        """Search connected query services (including independent Plate.hk) and harvested DATA.GOV.HK/CSDI sources. Connected entries include direct HTTP/MCP actions; source entries require resource inspection. Discovery is not record validation."""
+        return current().resources.catalogue.search(q, limit, offset, access)
 
     @server.tool(annotations=annotation)
     def hk_dataset_resources(
@@ -127,7 +135,7 @@ def register_mcp(server, current):
         format: str | None = None,
         status: str | None = None,
     ) -> dict:
-        """List actual resource IDs, formats, language aliases, original URLs and validation status for an inventoried dataset. Use format="JSON" (or another exact uppercase format) and optional status to narrow large resource lists."""
+        """Connected query entries return their direct HTTP/MCP access instructions. For source datasets, list actual resource IDs, formats, language aliases, original URLs and validation status. Use format="JSON" (or another exact uppercase format) and optional status to narrow large resource lists."""
         current().resources.catalogue.dataset(datasetId)
         return current().resources.catalogue.resources(
             datasetId, status, format, limit, offset

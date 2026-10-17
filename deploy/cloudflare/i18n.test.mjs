@@ -17,13 +17,13 @@ function browser(url='https://mcp.hk/',saved=null,denied=false) {
   let stored=saved;
   const label=new Element();label.dataset.i18n='navData';
   const placeholder=new Element({'data-i18n-placeholder':'datasetPlaceholder'}),button=new Element();
-  const link=new Element({href:'/coverage?q=weather#results'}),external=new Element({href:'https://data.gov.hk/en/'}),api=new Element({href:'/api/v1/coverage'});
+  const link=new Element({href:'/coverage?q=weather#results'}),skip=new Element({href:'#main-content'}),external=new Element({href:'https://data.gov.hk/en/'}),api=new Element({href:'/api/v1/coverage'});
   const nav=['/','/coverage','/connect','/sources'].map(href=>new Element({href}));
   const location=new URL(url),events=[];
-  const document={documentElement:{},createElement:()=>new Element(),querySelectorAll:selector=>({'.mhk-navbutton':nav,'[data-i18n]':[label],'[data-i18n-placeholder]':[placeholder],'.mhk-language':[button],'a[href]':[link,external,api]}[selector] || [])};
+  const document={documentElement:{},createElement:()=>new Element(),querySelectorAll:selector=>({'.mhk-navbutton':nav,'[data-i18n]':[label],'[data-i18n-placeholder]':[placeholder],'.mhk-language':[button],'a[href]':[link,skip,external,api]}[selector] || [])};
   const context=vm.createContext({document,location,URL,Event,history:{replaceState:(_a,_b,value)=>{location.href=new URL(value,location.href).href;}},localStorage:{getItem(){if(denied)throw Error('denied');return stored;},setItem(_key,value){if(denied)throw Error('denied');stored=value;}},addEventListener(){},dispatchEvent:event=>events.push(event.type)});
   context.window=context;vm.runInContext(read('translations.js')+'\n'+read('i18n.js'),context);
-  return {context,document,label,placeholder,button,link,external,api,location,events,nav,stored:()=>stored};
+  return {context,document,label,placeholder,button,link,skip,external,api,location,events,nav,stored:()=>stored};
 }
 test('language selection updates UI, accessible labels, URL and persistent navigation',()=>{
   const b=browser();b.button.listeners.click();
@@ -31,6 +31,7 @@ test('language selection updates UI, accessible labels, URL and persistent navig
   assert.match(b.placeholder.attrs.placeholder,/天氣/);assert.equal(b.button.attrs['aria-label'],'Switch to English');
   assert.equal(b.stored(),'zh');assert.equal(b.location.search,'?lang=zh-Hant');
   assert.equal(b.link.attrs.href,'/coverage?q=weather&lang=zh-Hant#results');
+  assert.equal(b.skip.attrs.href,'#main-content');
   assert.equal(b.external.attrs.href,'https://data.gov.hk/en/');assert.equal(b.api.attrs.href,'/api/v1/coverage');assert.deepEqual(b.events,['mhk:language']);
 });
 test('saved locale survives pages; explicit links override it and storage denial still works',()=>{
@@ -64,7 +65,7 @@ test('static translation does not overwrite generated HTTP/MCP request examples'
 test('primary routes have one active item and examples are outside primary navigation',()=>{
   for(const path of ['/','/coverage','/demo','/plates','/connect','/sources','/data']) for(const lang of ['en','zh-Hant']) {
     const b=browser('https://mcp.hk'+path+'?lang='+lang);
-    const expected=['/demo','/plates'].includes(path)?[]:[path==='/data'?'/coverage':path];
+    const expected=['/demo','/plates'].includes(path)?['/coverage']:[path==='/data'?'/coverage':path];
     assert.deepEqual(b.nav.filter(link=>link.attrs['aria-current']==='page').map(link=>link.attrs.href),expected);
     b.button.listeners.click();
     assert.equal(b.nav.filter(link=>link.attrs['aria-current']==='page').length,expected.length);
