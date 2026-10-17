@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="176" height="40" viewBox="0 0 176 40" role="img" aria-labelledby="title description">
+  <title id="title">mcp.hk</title>
+  <desc id="description">Two interlocking halves of an H, followed by the mcp.hk wordmark.</desc>
+  <style>
+    .mark,.dot{fill:#26694c}
+    .word{fill:none;stroke:#192c25;stroke-width:3.6;stroke-linecap:round;stroke-linejoin:round}
+    @media(prefers-color-scheme:dark){.mark,.dot{fill:#9cddb8}.word{stroke:#e4eee7}}
+  </style>
+  <g class="mark" transform="translate(0 4)">
+    <path d="M4 4h6v9h9l-6 6h-3v9H4Z"/>
+    <path d="M22 4h6v24h-6v-9h-6l6-6Z"/>
+  </g>
+  <g class="word">
+    <path d="M46 31V16m0 6c0-4 2.5-6 6-6s6 2 6 6v9m0-9c0-4 2.5-6 6-6s6 2 6 6v9"/>
+    <path d="M90 18a8 8 0 1 0 0 11"/>
+    <path d="M99 38V16m0 7.5a7.5 7.5 0 1 0 15 0 7.5 7.5 0 1 0-15 0"/>
+    <path d="M132 31V8m0 15c0-4.5 2.5-7 6.5-7s6.5 2.5 6.5 7v8"/>
+    <path d="M155 8v23m11-15-11 10m4-3 9 8"/>
+  </g>
+  <circle class="dot" cx="123" cy="29" r="2.4"/>
+</svg>
