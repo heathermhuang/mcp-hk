@@ -44,7 +44,7 @@ export class UsageStore {
     this.sql.exec('DELETE FROM daily WHERE day < ?',Math.floor(now/86400000)-2);
     this.sql.exec('DELETE FROM usage_daily WHERE day < ?',Math.floor(now/86400000)-LIMITS.retentionDays+1);
   }
-  quota(key: string, sourceCalls: number, now = Date.now()) {
+  quota(key: string, sourceCalls: number, now = Date.now(), commit = true) {
     const minute = Math.floor(now/60000), day = Math.floor(now/86400000), sql = this.sql;
     sql.exec('DELETE FROM rate WHERE minute < ?',minute-2);
     sql.exec('DELETE FROM daily WHERE day < ?',day-2);
@@ -53,8 +53,10 @@ export class UsageStore {
     const dailyExceeded = daily.calls >= LIMITS.dailyRequests || daily.addresses + sourceCalls > LIMITS.dailyAddressRequests;
     const reset = dailyExceeded ? (day+1)*86400 : (minute+1)*60;
     if (rate >= LIMITS.perMinute || dailyExceeded) return {allowed:false, remaining:0, reset, retryAfter:Math.max(1,Math.ceil(reset-now/1000)), scope:dailyExceeded ? 'shared_daily_budget' : 'client_minute'};
-    sql.exec('INSERT INTO rate VALUES (?,?,1) ON CONFLICT(ip,minute) DO UPDATE SET count=count+1',key,minute);
-    sql.exec('INSERT INTO daily VALUES (?,1,?) ON CONFLICT(day) DO UPDATE SET calls=calls+1,addresses=addresses+excluded.addresses',day,sourceCalls);
+    if (commit) {
+      sql.exec('INSERT INTO rate VALUES (?,?,1) ON CONFLICT(ip,minute) DO UPDATE SET count=count+1',key,minute);
+      sql.exec('INSERT INTO daily VALUES (?,1,?) ON CONFLICT(day) DO UPDATE SET calls=calls+1,addresses=addresses+excluded.addresses',day,sourceCalls);
+    }
     return {allowed:true, remaining:LIMITS.perMinute-rate-1, reset, retryAfter:0, scope:'client_minute'};
   }
   record(op: Operation, status: number, outcome: string, bytesIn: number, bytesOut: number, items: number | null, duration: number, now = Date.now()) {

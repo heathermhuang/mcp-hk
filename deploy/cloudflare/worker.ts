@@ -53,17 +53,24 @@ export class McpContainer extends Container<Env> {
     const started = Date.now(), url = new URL(request.url);
     if (url.pathname.startsWith('/__ops/')) return new Response('Not found', {status: 404});
     const usage = new UsageStore(this.ctx.storage.sql);
+    const key = await clientKey(request.headers.get('x-mcp-client-ip') || 'unknown',this.env.OPS_TOKEN);
+    const preliminary=usage.quota(key,0,Date.now(),false);
+    if (!preliminary.allowed) {
+      const response=Response.json({error:{code:'RATE_LIMITED',scope:preliminary.scope}},{status:429,headers:{'Retry-After':String(preliminary.retryAfter),'RateLimit-Limit':String(LIMITS.perMinute),'RateLimit-Remaining':'0','RateLimit-Reset':String(preliminary.retryAfter),'Cache-Control':'no-store','Access-Control-Allow-Origin':'*','Access-Control-Expose-Headers':'RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset, Retry-After'}});
+      const metered=meterResponse(response,describeRequest(request),0,started,(...args)=>usage.record(...args));
+      this.ctx.waitUntil(metered.done);return metered.response;
+    }
     let body: Uint8Array | undefined;
     if (!['GET','HEAD'].includes(request.method)) {
       try { body = await boundedBody(request, LIMITS.bodyBytes); }
       catch (error) {
-        const response=Response.json({error:{code:'BODY_TOO_LARGE'}},{status:413,headers:{'Cache-Control':'no-store','Access-Control-Allow-Origin':'*'}});
+        const admission=usage.quota(key,0);
+        const response=admission.allowed ? Response.json({error:{code:'BODY_TOO_LARGE'}},{status:413,headers:{'Cache-Control':'no-store','Access-Control-Allow-Origin':'*'}}) : Response.json({error:{code:'RATE_LIMITED',scope:admission.scope}},{status:429,headers:{'Retry-After':String(admission.retryAfter),'Cache-Control':'no-store','Access-Control-Allow-Origin':'*'}});
         const metered=meterResponse(response,describeRequest(request),error instanceof BodyLimitError ? error.bytesRead : 0,started,(...args)=>usage.record(...args));
         this.ctx.waitUntil(metered.done);return metered.response;
       }
     }
     const op = describeRequest(request,body);
-    const key = await clientKey(request.headers.get('x-mcp-client-ip') || 'unknown',this.env.OPS_TOKEN);
     const quota = usage.quota(key,op.sourceCalls);
     const rateHeaders = {'RateLimit-Limit':String(LIMITS.perMinute),'RateLimit-Remaining':String(quota.remaining),'RateLimit-Reset':String(Math.max(1,Math.ceil(quota.reset-Date.now()/1000))),'Cache-Control':'no-store','Access-Control-Allow-Origin':'*','Access-Control-Expose-Headers':'RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset, Retry-After, MCP-Protocol-Version, Mcp-Session-Id'};
     if (!quota.allowed) {

@@ -7,9 +7,12 @@ function store(){const db=new DatabaseSync(':memory:');const sql={exec(query,...
 const op={protocol:'mcp',operation:'hk_resource_query',resource:rid,dataset:'',sourceCalls:0};
 test('global durable quota rejects the 61st request and resets at the actual minute',()=>{
   const {usage}=store();for(let i=0;i<60;i++)assert.equal(usage.quota('daily-hash',0,now).allowed,true);
+  assert.equal(usage.quota('daily-hash',0,now,false).allowed,false);
   const denied=usage.quota('daily-hash',0,now);assert.equal(denied.allowed,false);assert.equal(denied.retryAfter,50);
   assert.equal(usage.quota('daily-hash',0,now+50000).allowed,true);
   assert.equal(usage.quota('other-hash',0,now).allowed,true);
+  for(let i=0;i<100;i++)assert.equal(usage.quota('preview-only',0,now,false).allowed,true);
+  assert.equal(usage.quota('preview-only',0,now).remaining,59);
 });
 test('shared daily source/request budgets cannot be bypassed by changing client key',()=>{
   const {db,usage}=store(),day=Math.floor(now/86400000);
