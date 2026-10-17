@@ -118,7 +118,11 @@ def fetch_sync(url, headers=None, maximum=MAX_BYTES, destination=None, payload=N
                 code = (
                     "ACCESS_RESTRICTED"
                     if response.status in {401, 403}
-                    else "SOURCE_HTTP_ERROR"
+                    else (
+                        "SOURCE_NOT_FOUND"
+                        if response.status == 404
+                        else "SOURCE_HTTP_ERROR"
+                    )
                 )
                 raise DomainError(code, f"Source returned HTTP {response.status}", 502)
             if int(meta.get("content-length", "0")) > maximum:

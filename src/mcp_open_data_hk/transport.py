@@ -14,7 +14,7 @@ from urllib.parse import quote, urlsplit
 
 from .contracts import DomainError
 
-REVISION = "transport-1"
+REVISION = "transport-2"
 HKT = timezone(timedelta(hours=8))
 DATASETS = (
     "mtr-data2-nexttrain-data",
@@ -43,6 +43,7 @@ class Profile:
     method: str = "GET"
     ttl: int = 20
     max_age: int = 150
+    parameter_examples: dict = field(default_factory=dict)
 
     @property
     def arrivals(self):
@@ -55,6 +56,7 @@ class Profile:
             operation="arrivals" if self.arrivals else "reference",
             requiredParameters=self.required,
             optionalParameters=self.defaults,
+            parameterExamples=self.parameter_examples,
             cacheTTLSeconds=self.ttl,
             maxSourceAgeSeconds=self.max_age,
             validationScope="last_selected_route_or_stop",
@@ -138,7 +140,14 @@ def profile(resource):
     elif host == "www.sunferry.com.hk" and path.startswith("/eta/"):
         p = Profile("Sun Ferry", "ferry", "ferry", url)
     elif host == "www.hongkongwatertaxi.com.hk" and path.startswith("/eta/"):
-        p = Profile("Fortune Ferry / Water Taxi", "ferry", "ferry", url)
+        water_taxi = resource["datasetId"] == "ff-watertaxi-schedule2"
+        p = Profile(
+            "Water Taxi" if water_taxi else "Fortune Ferry",
+            "ferry",
+            "ferry",
+            url,
+            parameter_examples={"route_code": "WATERTAXI" if water_taxi else "NPKT"},
+        )
     elif host == "www.hkkfeta.com" and "/opendata/" in path:
         op = path.split("/opendata/", 1)[1].split("/")[0]
         tail, names = {

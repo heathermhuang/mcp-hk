@@ -55,6 +55,7 @@ import {fetchPublicJson} from './http.js';
         selected = r; ++requestGeneration; nextRecords = null; lastQuery = null; result = null; queryError = null;
         $('record-table').replaceChildren(); $('record-response').textContent = ''; $('resource-citations').replaceChildren(); $('records-next').hidden = true;
         renderSelection(); renderQuery();
+        if (r.transport?.parameterExamples && Object.keys(r.transport.parameterExamples).length) $('record-query').elements.parameters.value = JSON.stringify(r.transport.parameterExamples);
         $('resource-code').textContent = `GET ${location.origin}/api/v1/resources/${r.id}/schema\n\nMCP: hk_resource_schema({"resourceId":"${r.id}"})`;
         $('selected-resource').scrollIntoView({behavior:'smooth',block:'center'});
       });
@@ -64,7 +65,8 @@ import {fetchPublicJson} from './http.js';
         row.append(node('p',t(r.transport.operation === 'arrivals' ? 'transportFeed' : 'transportReference', {operator:r.transport.operator,seconds:r.transport.cacheTTLSeconds})));
         if (r.transport.requiredParameters.length) row.append(node('p',t('transportInputs',{parameters:r.transport.requiredParameters.join(', ')})));
       }
-      row.append(button, node('p', `${r.catalogue} · ${t(r.transport?.operation === 'arrivals' && (v.status === 'stale' || expired) ? 'transportRefreshDue' : v.status)}${v.reason ? ' · ' + v.reason : ''} · ${t('lastCheck')}: ${v.lastCheckedAt ? new Date(v.lastCheckedAt * 1000).toISOString() : t('pending')}`), link(r.url, t('sourceLink'))); $('resources').append(row);
+      const reason = r.transport && v.reason === 'SOURCE_NOT_FOUND' ? t('transportEndpointMissing') : v.reason;
+      row.append(button, node('p', `${r.catalogue} · ${t(r.transport?.operation === 'arrivals' && (v.status === 'stale' || expired) ? 'transportRefreshDue' : v.status)}${reason ? ' · ' + reason : ''} · ${t('lastCheck')}: ${v.lastCheckedAt ? new Date(v.lastCheckedAt * 1000).toISOString() : t('pending')}`), link(r.url, t('sourceLink'))); $('resources').append(row);
     }
     $('resources-next').hidden = resourceList.nextOffset == null; $('resources-next').dataset.offset = resourceList.nextOffset;
     const deadlines = resourceList.items.filter(r => r.transport?.operation === 'arrivals' && r.validation.status === 'queryable').map(r => (r.validation.lastValidatedAt + r.transport.cacheTTLSeconds) * 1000 - Date.now()).filter(ms => ms > 0);
