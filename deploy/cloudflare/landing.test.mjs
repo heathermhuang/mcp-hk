@@ -18,7 +18,7 @@ test('opening home only loads the edge overview; source status loads once on dem
   globalThis.fetch=async path=>{calls.push(path);resolveOverview();if(path==='/assets/overview.json'){resolveOverview();return Response.json({datasets:{discovered:4984},resources:{discovered:63360,byStatus:{queryable:40765}}});}if(path==='/api/v1/status'){resolveStatus();return Response.json({sources:[]});}throw Error('Unexpected backend request: '+path);};
   try {
     const document={getElementById:()=>root,createElement:()=>new Element(),documentElement:{}},location=new URL('https://mcp.hk/');
-    const context={document,location,URLSearchParams,history:{pushState(){}},window:{addEventListener(){}},translations:{en:{provenanceLabel:'Source'}},MhkI18n:{lang:'en',locale:'en',t:key=>key,apply(){},coverageSummary(){}}};
+    const context={document,location,URLSearchParams,Event,history:{pushState(){}},window:{addEventListener(){},dispatchEvent(){}},translations:{en:{provenanceLabel:'Source'}},MhkI18n:{lang:'en',locale:'en',t:key=>key,apply(){},coverageSummary(){}}};
     const url=new URL('../../src/mcp_open_data_hk/web/app.js',import.meta.url);
     vm.runInNewContext(readFileSync(url,'utf8'),context,{filename:fileURLToPath(url),importModuleDynamically:vm.constants.USE_MAIN_CONTEXT_DEFAULT_LOADER});
     await overviewRead;await new Promise(resolve=>setImmediate(resolve));assert.deepEqual(calls,['/assets/overview.json']);

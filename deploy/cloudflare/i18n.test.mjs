@@ -39,7 +39,7 @@ test('saved locale survives pages; explicit links override it and storage denial
 });
 test('landing and explorer have complete dictionaries and shared language controls',()=>{
   const b=browser(),dictionary=vm.runInContext('translations',b.context);assert.deepEqual(Object.keys(dictionary.en).sort(),Object.keys(dictionary.zh).sort());
-  for(const file of ['index.html','coverage.html']) {
+  for(const file of ['index.html','coverage.html','legal.html']) {
     const html=read(file);assert.match(html,/assets\/i18n\.js/);assert.match(html,/mhk-language/);
     for(const m of html.matchAll(/data-i18n(?:-html|-placeholder|-aria-label|-content)?="([^"]+)"/g)) for(const lang of ['en','zh']) assert.ok(dictionary[lang][m[1]],`${file}: missing ${lang}.${m[1]}`);
     assert.doesNotMatch(html,/Three government packs|Three data packs|計劃中的遠端|INTERACTIVE CONCEPT|NO LIVE DATA/);
@@ -52,7 +52,7 @@ test('coverage metrics use supplied counts and retain the incomplete-coverage qu
   b.context.MhkI18n.coverageSummary(box,null,true);assert.match(box.textContent,/暫時無法/);
 });
 test('translated form labels never replace their nested inputs',()=>{
-  for(const file of ['index.html','coverage.html']) for(const match of read(file).matchAll(/<label([^>]*)>([\s\S]*?)<\/label>/g)) {
+  for(const file of ['index.html','coverage.html','legal.html']) for(const match of read(file).matchAll(/<label([^>]*)>([\s\S]*?)<\/label>/g)) {
     if (/\bdata-i18n="/.test(match[1])) assert.doesNotMatch(match[2],/<(?:input|textarea|select)\b/);
   }
 });
@@ -74,6 +74,8 @@ test('data browser shares the same complete navigation and footer as the other p
   const shell=(file,tag)=>read(file).match(new RegExp('<'+tag+' class="mhk-'+(tag==='header'?'nav':'foot')+'">[\\s\\S]*?</'+tag+'>'))[0];
   assert.equal(shell('index.html','header'),shell('coverage.html','header'));
   assert.equal(shell('index.html','footer'),shell('coverage.html','footer'));
+  assert.equal(shell('legal.html','header'),shell('coverage.html','header'));
+  assert.equal(shell('legal.html','footer'),shell('coverage.html','footer'));
   const links=[...shell('coverage.html','header').matchAll(/class="mhk-navbutton"[^>]*href="([^"]+)"/g)].map(m=>m[1]);
   assert.deepEqual(links,['/','/coverage','/connect','/sources']);
   const examples=read('index.html').match(/<div class="mhk-packs mhk-demos">([\s\S]*?)<\/div>/)[1];

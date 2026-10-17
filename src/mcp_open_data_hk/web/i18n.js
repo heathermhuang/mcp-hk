@@ -27,7 +27,7 @@
     });
     document.querySelectorAll('a[href]').forEach(e => {
       const url = new URL(e.getAttribute('href'), location.href);
-      if (url.origin === location.origin && ['/', '/demo', '/connect', '/sources', '/plates', '/coverage', '/data'].includes(url.pathname)) {
+      if (url.origin === location.origin && ['/', '/demo', '/connect', '/sources', '/plates', '/coverage', '/data', '/terms', '/privacy'].includes(url.pathname)) {
         url.searchParams.set('lang', lang === 'en' ? 'en' : 'zh-Hant');
         e.setAttribute('href', url.pathname + url.search + url.hash);
       }

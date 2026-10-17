@@ -3,6 +3,7 @@ import { scheduledPack } from './cron';
 import {saveOverview, serveOverview} from './overview';
 import {normalizeBackendResponse, recoveringResponse} from './recovery';
 import {saveBackup, requireCheckpoint, safeOperationError} from './backup';
+import {UsageStore, LIMITS, clientKey, describeRequest, meterResponse} from './usage';
 
 
 async function authorized(request: Request, token: string): Promise<boolean> {
@@ -13,6 +14,10 @@ async function authorized(request: Request, token: string): Promise<boolean> {
   return crypto.subtle.timingSafeEqual(a, b);
 }
 
+class BodyLimitError extends Error {
+  bytesRead: number;
+  constructor(bytesRead: number) {super('Body exceeds limit');this.bytesRead=bytesRead;}
+}
 async function boundedBody(request: Request | Response, limit: number): Promise<Uint8Array> {
   const reader = request.body?.getReader();
   if (!reader) return new Uint8Array();
@@ -21,7 +26,7 @@ async function boundedBody(request: Request | Response, limit: number): Promise<
     const {done, value} = await reader.read();
     if (done) break;
     length += value.length;
-    if (length > limit) { await reader.cancel(); throw new Error('Body exceeds limit'); }
+    if (length > limit) { await reader.cancel(); throw new BodyLimitError(length); }
     parts.push(value);
   }
   const result = new Uint8Array(length); let offset = 0;
@@ -42,44 +47,62 @@ export class McpContainer extends Container<Env> {
   };
   entrypoint = ['mcp-hk-container'];
 
-  private quota(ip: string, sourceCalls: number) {
-    const now = Date.now(), minute = Math.floor(now / 60000), day = Math.floor(now / 86400000);
-    const sql = this.ctx.storage.sql;
-    sql.exec('CREATE TABLE IF NOT EXISTS rate (ip TEXT, minute INTEGER, count INTEGER, PRIMARY KEY(ip,minute))');
-    sql.exec('CREATE TABLE IF NOT EXISTS daily (day INTEGER PRIMARY KEY, calls INTEGER, addresses INTEGER)');
-    sql.exec('DELETE FROM rate WHERE minute < ?', minute - 2);
-    sql.exec('DELETE FROM daily WHERE day < ?', day - 2);
-    const rate = [...sql.exec<{count: number}>('SELECT count FROM rate WHERE ip=? AND minute=?', ip, minute)][0]?.count || 0;
-    const daily = [...sql.exec<{calls: number; addresses: number}>('SELECT calls,addresses FROM daily WHERE day=?', day)][0] || {calls: 0, addresses: 0};
-    if (rate >= 60 || daily.calls >= 50000 || (sourceCalls && daily.addresses + sourceCalls > 10000)) return false;
-    sql.exec('INSERT INTO rate VALUES (?,?,1) ON CONFLICT(ip,minute) DO UPDATE SET count=count+1', ip, minute);
-    sql.exec('INSERT INTO daily VALUES (?,1,?) ON CONFLICT(day) DO UPDATE SET calls=calls+1,addresses=addresses+excluded.addresses', day, sourceCalls);
-    return true;
-  }
+  usageReport(days: number) { return new UsageStore(this.ctx.storage.sql).report(days); }
 
   async fetch(request: Request): Promise<Response> {
-    const url = new URL(request.url);
+    const started = Date.now(), url = new URL(request.url);
     if (url.pathname.startsWith('/__ops/')) return new Response('Not found', {status: 404});
-    let body: Uint8Array | undefined, sourceCalls = url.pathname.startsWith('/api/v1/addresses') ? 1 : 0;
-    if (request.method === 'POST') {
-      try { body = await boundedBody(request, 65536); } catch { return Response.json({error: {code: 'BODY_TOO_LARGE'}}, {status: 413}); }
-      if (url.pathname === '/mcp') {
-        try {
-          const parsed = JSON.parse(new TextDecoder().decode(body));
-          const calls = Array.isArray(parsed) ? parsed : [parsed];
-          sourceCalls = calls.filter(call => call.method === 'tools/call' && ['hk_address_search', 'hk_address_get'].includes(call.params?.name)).length;
-        } catch { /* The MCP transport returns its own JSON-RPC parse error. */ }
+    const usage = new UsageStore(this.ctx.storage.sql);
+    const key = await clientKey(request.headers.get('x-mcp-client-ip') || 'unknown',this.env.OPS_TOKEN);
+    const preliminary=usage.quota(key,0,Date.now(),false);
+    if (!preliminary.allowed) {
+      const response=Response.json({error:{code:'RATE_LIMITED',scope:preliminary.scope}},{status:429,headers:{'Retry-After':String(preliminary.retryAfter),'RateLimit-Limit':String(LIMITS.perMinute),'RateLimit-Remaining':'0','RateLimit-Reset':String(preliminary.retryAfter),'Cache-Control':'no-store','Access-Control-Allow-Origin':'*','Access-Control-Expose-Headers':'RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset, Retry-After'}});
+      const metered=meterResponse(response,describeRequest(request),0,started,(...args)=>usage.record(...args));
+      this.ctx.waitUntil(metered.done);return metered.response;
+    }
+    let body: Uint8Array | undefined;
+    if (!['GET','HEAD'].includes(request.method)) {
+      try { body = await boundedBody(request, LIMITS.bodyBytes); }
+      catch (error) {
+        const admission=usage.quota(key,0);
+        const response=admission.allowed ? Response.json({error:{code:'BODY_TOO_LARGE'}},{status:413,headers:{'Cache-Control':'no-store','Access-Control-Allow-Origin':'*'}}) : Response.json({error:{code:'RATE_LIMITED',scope:admission.scope}},{status:429,headers:{'Retry-After':String(admission.retryAfter),'Cache-Control':'no-store','Access-Control-Allow-Origin':'*'}});
+        const metered=meterResponse(response,describeRequest(request),error instanceof BodyLimitError ? error.bytesRead : 0,started,(...args)=>usage.record(...args));
+        this.ctx.waitUntil(metered.done);return metered.response;
       }
     }
-    const ip = request.headers.get('x-mcp-client-ip') || 'unknown';
-    if (!this.quota(ip, sourceCalls)) return Response.json({error: {code: 'RATE_LIMITED', message: 'Request or source budget exceeded'}}, {status: 429, headers: {'Retry-After': '60'}});
+    const op = describeRequest(request,body);
+    const quota = usage.quota(key,op.sourceCalls);
+    const rateHeaders = {'RateLimit-Limit':String(LIMITS.perMinute),'RateLimit-Remaining':String(quota.remaining),'RateLimit-Reset':String(Math.max(1,Math.ceil(quota.reset-Date.now()/1000))),'Cache-Control':'no-store','Access-Control-Allow-Origin':'*','Access-Control-Expose-Headers':'RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset, Retry-After, MCP-Protocol-Version, Mcp-Session-Id'};
+    if (!quota.allowed) {
+      const response = Response.json({error:{code:'RATE_LIMITED',message:'Request or source budget exceeded',scope:quota.scope}},{status:429,headers:{...rateHeaders,'Retry-After':String(quota.retryAfter)}});
+      const metered = meterResponse(response,op,body?.length || 0,started,(...args)=>usage.record(...args));
+      this.ctx.waitUntil(metered.done); return metered.response;
+    }
+    if (url.pathname === '/mcp' && body) {
+      let batch = false;
+      try { batch = Array.isArray(JSON.parse(new TextDecoder().decode(body))); } catch { /* Backend handles JSON-RPC parse errors. */ }
+      if (batch) {
+        const response = Response.json({error:{code:'BATCH_NOT_SUPPORTED',message:'Send one JSON-RPC operation per request'}},{status:400,headers:rateHeaders});
+        const metered = meterResponse(response,op,body.length,started,(...args)=>usage.record(...args));
+        this.ctx.waitUntil(metered.done); return metered.response;
+      }
+    }
     const headers = new Headers(request.headers);
     headers.set('x-mcp-edge-token', this.env.OPS_TOKEN);
-    const forwarded = new Request(request.url, {method: request.method, headers, body: body ?? request.body, redirect: 'manual'});
-    return this.containerFetch(forwarded);
+    const forwarded = new Request(request.url, {method: request.method, headers, body: body ?? request.body, redirect:'manual'});
+    let response: Response;
+    try { response = await this.containerFetch(forwarded); }
+    catch { response = recoveringResponse(this.env.RELEASE_COMMIT); }
+    response = await normalizeBackendResponse(response,this.env.RELEASE_COMMIT);
+    const result = new Response(response.body,response);
+    for (const [name,value] of Object.entries(rateHeaders)) result.headers.set(name,value);
+    result.headers.set('Access-Control-Expose-Headers','RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset, Retry-After, MCP-Protocol-Version, Mcp-Session-Id');
+    const metered = meterResponse(result,op,body?.length || 0,started,(...args)=>usage.record(...args));
+    this.ctx.waitUntil(metered.done); return metered.response;
   }
 
   async maintain(pack: string) {
+    new UsageStore(this.ctx.storage.sql).cleanup();
     const now = Date.now();
     const lease = await this.ctx.storage.get<number>('maintenanceLease');
     if (lease && lease > now) throw new Error('Maintenance already running');
@@ -192,15 +215,18 @@ export default {
       if (url.pathname === '/__ops/publish-overview' && request.method === 'POST') return Response.json(await env.APP.get(env.APP.idFromName('production')).publishOverview());
       if (url.pathname === '/__ops/restart' && request.method === 'POST') return Response.json(await env.APP.get(env.APP.idFromName('production')).restartFromCheckpoint(request.headers.get('x-snapshot-sha256') || ''));
       if (url.pathname === '/__ops/diagnostics') return Response.json(await env.APP.get(env.APP.idFromName('production')).operationDiagnostics());
+      if (url.pathname === '/__ops/usage' && request.method === 'GET') return Response.json(await env.APP.get(env.APP.idFromName('production')).usageReport(Number(url.searchParams.get('days') || 7)),{headers:{'Cache-Control':'no-store'}});
       if (url.pathname === '/__ops/status') return Response.json(await env.APP.get(env.APP.idFromName('production')).operationsStatus());
       return new Response('Not found', {status: 404});
     }
+    if (url.pathname === '/api/v1/limits') return Response.json({...LIMITS,window:'UTC fixed minute/day',dailyBudgets:'shared across all clients',mcpBatch:'one JSON-RPC operation per request'},{headers:{'Cache-Control':'public, max-age=300'}});
+    if (url.pathname === '/assets/site-config.json') return Response.json({googleAnalyticsId:/^G-[A-Z0-9]{4,20}$/.test(env.GA_MEASUREMENT_ID) ? env.GA_MEASUREMENT_ID : ''},{headers:{'Cache-Control':'no-store'}});
     if (url.pathname === '/assets/overview.json') return serveOverview(env, request);
-    if (['/', '/demo', '/sources', '/connect', '/plates', '/coverage', '/data'].includes(url.pathname) || url.pathname.startsWith('/assets/')) {
-      url.pathname = url.pathname.startsWith('/assets/') ? url.pathname.slice(7) : ['/coverage','/data'].includes(url.pathname) ? '/coverage.html' : '/index.html';
+    if (['/', '/demo', '/sources', '/connect', '/plates', '/coverage', '/data', '/terms', '/privacy'].includes(url.pathname) || url.pathname.startsWith('/assets/')) {
+      url.pathname = url.pathname.startsWith('/assets/') ? url.pathname.slice(7) : ['/coverage','/data'].includes(url.pathname) ? '/coverage.html' : ['/terms','/privacy'].includes(url.pathname) ? '/legal.html' : '/index.html';
       const response = await env.ASSETS.fetch(new Request(url, request));
       const secured = new Response(response.body, response);
-      secured.headers.set('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'");
+      secured.headers.set('Content-Security-Policy', "default-src 'self'; script-src 'self' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com; img-src 'self' data: https://www.google-analytics.com; frame-ancestors 'none'; base-uri 'none'");
       secured.headers.set('X-Content-Type-Options', 'nosniff');
       secured.headers.set('Referrer-Policy', 'no-referrer');
       secured.headers.set('X-Mcp-Release', env.RELEASE_COMMIT);

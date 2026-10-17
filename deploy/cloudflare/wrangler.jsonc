@@ -13,6 +13,7 @@
   "secrets": { "required": ["OPS_TOKEN"] },
   "vars": {
     "PUBLIC_ORIGIN": "https://mcp.hk",
+    "GA_MEASUREMENT_ID": "",
     "RELEASE_COMMIT": "development",
     "BOOTSTRAP_ORIGIN": "https://mcp-hk.measurable.workers.dev"
   },

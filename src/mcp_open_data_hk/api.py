@@ -285,6 +285,11 @@ def create_app(service=None):
         def coverage_page():
             return FileResponse(web / "coverage.html")
 
+        @app.get("/terms", include_in_schema=False)
+        @app.get("/privacy", include_in_schema=False)
+        def legal_page():
+            return FileResponse(web / "legal.html")
+
         app.mount("/assets", StaticFiles(directory=web), name="assets")
     # The MCP app owns /mcp. Mount at root last to avoid /mcp/mcp and keep REST routes.
     app.mount("/", mcp_app)
