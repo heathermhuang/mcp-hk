@@ -40,6 +40,16 @@ CASES = [
         "b9361a1598c2265a3992a54e4cabdf35",
         {"route_id": "2006408", "route_seq": "1", "stop_seq": "1"},
     ),
+    (
+        "Fortune-Ferry",
+        "e34a14f5c386e36b39bdbcadfa1dda15",
+        {"route_code": "NPKT"},
+    ),
+    (
+        "Water-Taxi",
+        "6b9abfae6619ecbd96c06b48a8a1bcdf",
+        {"route_code": "WATERTAXI"},
+    ),
     ("Sun-Ferry", "479f49ec6b78e5a94e4d176227488d95", {"routecode": "CECC"}),
     (
         "HKKF",
@@ -109,44 +119,55 @@ def main():
     for name, rid, parameters in CASES:
         if args.only and name not in args.only.split(","):
             continue
-        entry = {"operator": name, "parameters": parameters}
-        try:
-            payload, headers = read(
-                origin + "/api/v1/resources/" + rid + "/query",
-                {"parameters": parameters, "limit": 2, "requireFresh": True},
-            )
-            assert "cache-control: no-store" in headers.lower(), headers
-            entry["http"] = check(payload)
-            if args.mcp:
-                rpc, _ = read(
-                    origin + "/mcp",
-                    {
-                        "jsonrpc": "2.0",
-                        "id": 1,
-                        "method": "tools/call",
-                        "params": {
-                            "name": "hk_resource_query",
-                            "arguments": {
-                                "resourceId": rid,
-                                "parameters": parameters,
-                                "limit": 2,
-                                "requireFresh": True,
+        entry = {"operator": name, "resourceId": rid, "parameters": parameters}
+        for protocol in (["http", "mcp"] if args.mcp else ["http"]):
+            # A failed HTTP query must not suppress the independent MCP probe.
+            started = time.time()
+            try:
+                if protocol == "http":
+                    payload, headers = read(
+                        origin + "/api/v1/resources/" + rid + "/query",
+                        {"parameters": parameters, "limit": 2, "requireFresh": True},
+                    )
+                    assert "cache-control: no-store" in headers.lower(), headers
+                else:
+                    rpc, _ = read(
+                        origin + "/mcp",
+                        {
+                            "jsonrpc": "2.0",
+                            "id": 1,
+                            "method": "tools/call",
+                            "params": {
+                                "name": "hk_resource_query",
+                                "arguments": {
+                                    "resourceId": rid,
+                                    "parameters": parameters,
+                                    "limit": 2,
+                                    "requireFresh": True,
+                                },
                             },
                         },
-                    },
-                    True,
+                        True,
+                    )
+                    result = rpc["result"]
+                    assert not result.get("isError"), result
+                    payload = result.get("structuredContent") or json.loads(
+                        result["content"][0]["text"]
+                    )
+                entry[protocol] = dict(
+                    status="pass", checkedAt=started, **check(payload)
                 )
-                result = rpc["result"]
-                assert not result.get("isError"), result
-                data = result.get("structuredContent") or json.loads(
-                    result["content"][0]["text"]
+                if protocol == "mcp" and entry["http"]["status"] == "pass":
+                    assert entry["mcp"]["source"] == entry["http"]["source"]
+            except Exception as exc:
+                entry[protocol] = dict(
+                    status="failed", checkedAt=started, error=str(exc)[:1500]
                 )
-                entry["mcp"] = check(data)
-                assert entry["mcp"]["source"] == entry["http"]["source"]
-            entry["status"] = "pass"
-        except Exception as exc:
-            entry["status"] = "failed"
-            entry["error"] = str(exc)[:1500]
+        entry["status"] = (
+            "pass"
+            if all(entry[p]["status"] == "pass" for p in ["http", "mcp"] if p in entry)
+            else "failed"
+        )
         receipts.append(entry)
         print(json.dumps(entry, ensure_ascii=False), flush=True)
         Path(args.out).write_text(

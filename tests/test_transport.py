@@ -253,12 +253,6 @@ def test_provider_contracts_preserve_schedule_and_advisories():
                 "data": [{"ETA": STAMP, "direction": "inbound"}],
             },
         ),
-        (
-            "ff-fortune-schedule2",
-            "https://www.hongkongwatertaxi.com.hk/eta/?route={route_code}",
-            {"route_code": "NPHT"},
-            {"generated_timestamp": STAMP, "data": [{"eta": "14:15"}]},
-        ),
     ]
     for dataset, url, parameters, data in cases:
         p = transport.profile({"datasetId": dataset, "url": url})
@@ -402,6 +396,90 @@ def test_transport_post_redirect_is_rejected(monkeypatch):
     assert sent[0][0][0] == "POST"
     assert sent[0][1]["body"] == b'{"routeName":"K12"}'
     assert len(sent) == 1
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "dataset,operator,code",
+    [
+        ("ff-fortune-schedule2", "Fortune Ferry", "NPKT"),
+        ("ff-watertaxi-schedule2", "Water Taxi", "WATERTAXI"),
+    ],
+)
+async def test_ferry_failure_survives_parameter_discovery(
+    transport_service, monkeypatch, dataset, operator, code
+):
+    catalogue = transport_service.resources.catalogue
+    resource = catalogue.resource("mtr")
+    resource.pop("transport")
+    resource.update(
+        id="ferry",
+        datasetId=dataset,
+        url="https://www.hongkongwatertaxi.com.hk/eta/?route={route_code}",
+    )
+    definition = catalogue.dataset("mtr-data2-nexttrain-data")
+    definition.update(id=dataset, title=operator)
+    catalogue.publish([definition], [resource], {})
+    seen = []
+
+    async def missing(url, headers=None, **kwargs):
+        seen.append(url)
+        raise DomainError("SOURCE_NOT_FOUND", "Source returned HTTP 404", 502)
+
+    monkeypatch.setattr("mcp_open_data_hk.resources.fetch", missing)
+    with pytest.raises(DomainError, match="SOURCE_NOT_FOUND"):
+        await transport_service.resources.query(
+            "ferry", parameters={"route_code": code}
+        )
+    previous = catalogue.check("ferry")
+    schema = await transport_service.resources.schema("ferry")
+    assert schema["selectionRequired"] == "parameters"
+    assert schema["transport"]["operator"] == operator
+    assert schema["transport"]["parameterExamples"] == {"route_code": code}
+    assert catalogue.check("ferry") == previous
+    assert previous["status"] == "unavailable" and not previous["validated"]
+    assert seen == ["https://www.hongkongwatertaxi.com.hk/eta/?route=" + code]
+
+    # The current operator site is HTML. A soft-404/maintenance page must also
+    # fail, even if it changes to HTTP 200. No timetable/empty-list fallback.
+    async def maintenance(url, headers=None, **kwargs):
+        return b"<html><title>Page not found</title></html>", {}, url, 200
+
+    monkeypatch.setattr("mcp_open_data_hk.resources.fetch", maintenance)
+    with pytest.raises(DomainError, match="SOURCE_RESPONSE_ERROR"):
+        await transport_service.resources.query(
+            "ferry", parameters={"route_code": code}
+        )
+    assert catalogue.check("ferry")["status"] == "unavailable"
+
+
+def test_upstream_404_has_distinct_receipt(monkeypatch):
+    from mcp_open_data_hk import resource_fetch
+
+    class Reply:
+        status = 404
+
+        def getheaders(self):
+            return [("content-type", "text/html")]
+
+    class Connection:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def request(self, *args, **kwargs):
+            pass
+
+        def getresponse(self):
+            return Reply()
+
+        def close(self):
+            pass
+
+    monkeypatch.setattr(resource_fetch, "PinnedHTTPS", Connection)
+    with pytest.raises(DomainError, match="SOURCE_NOT_FOUND: Source returned HTTP 404"):
+        resource_fetch.fetch_sync(
+            "https://www.hongkongwatertaxi.com.hk/eta/?route=NPKT"
+        )
 
 
 @pytest.mark.asyncio

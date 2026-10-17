@@ -247,6 +247,7 @@ const translations = {
     "transportFeed": "{operator} · arrivals · response cache {seconds}s. Validation applies to the last selected route or stop.",
     "transportReference": "{operator} · routes, stops or other reference data; not a live arrival feed.",
     "transportInputs": "Required inputs: {parameters}",
+    "transportEndpointMissing": "The operator's published API returned 404. Live arrivals are unavailable; timetables are not live predictions.",
     "independent_or_public_corporation": "Public corporation or independent provider",
     "transportSnapshot": "Source time: {time}. This is a snapshot; choose Show records to refresh."
   },
@@ -497,6 +498,7 @@ const translations = {
     "transportFeed": "{operator} · 到站資訊 · 回應快取 {seconds} 秒。檢查結果只適用於上次選擇的路線或車站。",
     "transportReference": "{operator} · 路線、車站或其他參考資料，並非即時到站資訊。",
     "transportInputs": "所需輸入：{parameters}",
+    "transportEndpointMissing": "營辦商公布的 API 回傳 404，暫無即時到站資料；時間表並非即時預測。",
     "independent_or_public_corporation": "公共機構或獨立供應商",
     "transportSnapshot": "來源時間：{time}。此為查詢時的結果；按「顯示紀錄」可更新。"
   }

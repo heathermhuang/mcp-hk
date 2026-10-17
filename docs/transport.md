@@ -17,7 +17,8 @@ A catalogue entry is not evidence that every route, stop or operator works.
 | Green minibuses | `b9361a1598c2265a3992a54e4cabdf35` | `route_id`, `route_seq`, `stop_seq`; stop-wide ETA is also supported |
 | Sun Ferry | `479f49ec6b78e5a94e4d176227488d95` | `routecode`, e.g. `CECC` (Central → Cheung Chau) |
 | Hong Kong & Kowloon Ferry | `340cd0efe47f2162049e823b3beb9d77` | `route_id`, `direction` (`inbound` or `outbound`) |
-| Fortune Ferry / Water Taxi | The corresponding inventoried ETA resource | `route_code`; access restrictions and source failures are reported, never inferred as working coverage |
+| Fortune Ferry | `e34a14f5c386e36b39bdbcadfa1dda15` | `route_code`, e.g. `NPKT`; published endpoint currently returns 404 (checked 2026-10-17) |
+| Water Taxi | `6b9abfae6619ecbd96c06b48a8a1bcdf` | `route_code=WATERTAXI`; published endpoint currently returns 404 (checked 2026-10-17) |
 
 The Citybus adapter uses the current v2 endpoints even when catalogue metadata
 still contains the retired v1 address. MTR train queries add the required line and
@@ -77,6 +78,31 @@ arrival feeds separately from static routes/stops, and shows required settings.
 
 This does not claim live red-minibus coverage or an ETA feed for ferry operators
 that only publish timetables. Provider downtime/access restrictions remain visible.
+Schema/parameter discovery does not erase a previous upstream failure receipt.
+
+### Fortune Ferry and Water Taxi source investigation (2026-10-17)
+
+Both DATA.GOV.HK entries still publish
+`https://www.hongkongwatertaxi.com.hk/eta/?route={route_code}` and the same old
+[API dictionary](https://www.hongkongwatertaxi.com.hk/csv/Watertaxi_FortuneFerry_ETA_API_Specification_and_Data_Dictionary.pdf).
+Direct HTTP and real-browser requests for `NPKT` and `WATERTAXI` return the
+operator's HTML 404/maintenance page. The dictionary itself also returns 404.
+Some non-browser clients receive a Cloudflare 403 first; neither is a live feed.
+
+The current [Fortune route page](https://www.fortuneferry.com.hk/zh/route-and-fare)
+and [Water Taxi government routes](https://www.hongkongwatertaxi.com.hk/Schedule-And-Ticket/Government-Public-Routes/)
+publish schedules, with no working replacement ETA endpoint found in their public
+pages/scripts. Fortune's same-path `/eta/` URL returns 502. The current
+[`hk-bus-eta` Fortune implementation](https://github.com/hkbus/hk-bus-eta/blob/master/src/fortuneferry.ts)
+also disables the old API and returns explicitly scheduled departures instead.
+Those schedules are not substituted for live arrivals in mcp.hk.
+
+The two operators have separate coverage labels and documented example parameters.
+404 is recorded as `SOURCE_NOT_FOUND`, not a successful empty arrival list. A
+replacement endpoint must return real source timestamps and pass the freshness
+checks above before either feed can be counted as working. Upstream restoration
+or an operator-published replacement is still required; do not mark these repaired
+merely because the local adapter or availability checks pass.
 
 ## Verification and recovery
 
@@ -90,7 +116,10 @@ python scripts/verify_transport.py --base-url https://mcp.hk --mcp \
 
 Use `--only Citybus,HKKF` to resume only affected cases after investigating a failure.
 The matrix includes two MTR lines, Light Rail, MTR Bus, KMB, LWB, Citybus, NLB,
-green minibuses, Sun Ferry and HKKF. Empty live responses are recorded separately
+green minibuses, Sun Ferry, HKKF, Fortune Ferry and Water Taxi. It probes HTTP and
+MCP independently even when the first protocol fails, and exits nonzero for an
+unavailable source. Use `--only Fortune-Ferry,Water-Taxi` for these two feeds.
+Empty live responses are recorded separately
 from nonempty arrivals. Each receipt includes source time, source age and TTL.
 
 On a failure, inspect its code and the operator's published service state before

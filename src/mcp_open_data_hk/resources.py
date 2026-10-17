@@ -817,7 +817,10 @@ class Resources:
             except DomainError as exc:
                 if exc.code != "PARAMETERS_REQUIRED":
                     raise
-            if not self.catalogue.check(resource_id).get("validated"):
+            check = self.catalogue.check(resource_id)
+            # Parameter discovery is not a new source observation. Preserve an
+            # upstream failure until another actual request succeeds or fails.
+            if not check or check.get("status") in {"pending", "needs_selection"}:
                 self.catalogue.failure(
                     resource_id, "PARAMETERS_REQUIRED", "needs_selection"
                 )
