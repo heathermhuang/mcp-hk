@@ -32,6 +32,7 @@ test('request dimensions omit search text, coordinates, arbitrary tool names and
 });
 test('MCP tool errors are errors despite HTTP 200, and returned counts never use dataset total',()=>{
   assert.equal(inspectResponse('data: '+JSON.stringify({result:{isError:true,content:[{text:'sensitive error'}]}})+'\n\n',op,200).outcome,'error');
+  assert.equal(inspectResponse(': keepalive\n\nevent: message\ndata: {"method":"notifications/progress","params":{"progress":1}}\n\nevent: message\ndata: {"result":{"isError":true}}\n\n',op,200).outcome,'error');
   const payload={resource:{id:rid,datasetId:'ff-fortune-schedule2'},data:{items:[{eta:'12:00'},{eta:'12:10'}]},meta:{total:10000}};
   const result=inspectResponse(JSON.stringify({result:{structuredContent:payload}}),op,200);
   assert.equal(result.items,2);assert.equal(result.op.dataset,'ff-fortune-schedule2');

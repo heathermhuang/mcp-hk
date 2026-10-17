@@ -75,7 +75,11 @@ export class UsageStore {
 export function inspectResponse(raw: string, op: Operation, status: number) {
   let payload: ObjectValue = {}, inspected = false;
   try {
-    const text = raw.startsWith('event:') || raw.startsWith('data:') ? raw.split('\n').find(line=>line.startsWith('data: '))?.slice(6) || '' : raw;
+    let text=raw;
+    if (/(^|\n)data:/.test(raw)) {
+      const messages=raw.split(/\r?\n\r?\n/).map(block=>block.split(/\r?\n/).filter(line=>line.startsWith('data:')).map(line=>line.slice(5).trimStart()).join('\n')).filter(Boolean);
+      text=messages.reverse().find(message=>{try{const value=object(JSON.parse(message));return 'result' in value || 'error' in value;}catch{return false;}}) || '';
+    }
     payload = object(JSON.parse(text)); inspected = true;
     if (op.protocol === 'mcp') {
       const result = object(payload.result);
