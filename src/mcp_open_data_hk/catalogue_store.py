@@ -7,7 +7,7 @@ import uuid
 import zlib
 
 from .contracts import DomainError
-from . import transport
+from . import transport, connected
 
 CACHE_BYTES = 4_000_000
 
@@ -208,6 +208,8 @@ class CatalogueStore:
         return result
 
     def dataset(self, dataset_id):
+        if entry := connected.get(dataset_id):
+            return entry
         with self.store.connect() as db:
             row = db.execute(
                 "SELECT payload FROM inventory_datasets WHERE generation=? AND id=?",
@@ -219,34 +221,93 @@ class CatalogueStore:
             )
         return json.loads(row[0])
 
-    def search(self, q="", limit=20, offset=0):
-        if len(q) > 200 or not 1 <= limit <= 100 or not 0 <= offset <= 100000:
+    def search(self, q="", limit=20, offset=0, access="all"):
+        if (
+            len(q) > 200
+            or not 1 <= limit <= 100
+            or not 0 <= offset <= 100000
+            or access not in {"all", "connected", "sources"}
+        ):
             raise DomainError("INVALID_QUERY", "Invalid search or pagination", 400)
+        self.refresh_transport_policies()
+        generation = self.head()
+        curated = connected.matching(q) if access != "sources" else []
+        terms = connected.normalise(q).split() or [""]
+        patterns = [
+            "%" + t.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%"
+            for t in terms
+        ]
+        where = "generation=?" + " AND payload LIKE ? ESCAPE '\\'" * len(patterns)
         with self.store.connect() as db:
-            # Search literal text, not caller SQL/Solr. Escape LIKE metacharacters.
-            term = (
-                "%"
-                + q.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
-                + "%"
+            total_native = (
+                db.execute(
+                    "SELECT count(*) FROM inventory_datasets WHERE " + where,
+                    (generation, *patterns),
+                ).fetchone()[0]
+                if access != "connected"
+                else 0
             )
-            args = (self.head(), term)
-            total = db.execute(
-                "SELECT count(*) FROM inventory_datasets WHERE generation=? AND payload LIKE ? ESCAPE '\\'",
-                args,
-            ).fetchone()[0]
-            rows = db.execute(
-                "SELECT payload FROM inventory_datasets WHERE generation=? AND payload LIKE ? ESCAPE '\\' ORDER BY id LIMIT ? OFFSET ?",
-                (*args, limit, offset),
-            ).fetchall()
+            start_native = max(0, offset - len(curated))
+            count_native = max(0, limit - len(curated[offset : offset + limit]))
+            rows = (
+                db.execute(
+                    "SELECT payload FROM inventory_datasets WHERE "
+                    + where
+                    + " ORDER BY CASE WHEN lower(json_extract(payload,'$.title'))=? THEN 0 WHEN json_extract(payload,'$.title') LIKE ? ESCAPE '\\' OR json_extract(payload,'$.titleZhHant') LIKE ? ESCAPE '\\' THEN 1 WHEN json_extract(payload,'$.provider') LIKE ? ESCAPE '\\' THEN 2 ELSE 3 END,id LIMIT ? OFFSET ?",
+                    (
+                        generation,
+                        *patterns,
+                        connected.normalise(q),
+                        patterns[0],
+                        patterns[0],
+                        patterns[0],
+                        count_native,
+                        start_native,
+                    ),
+                ).fetchall()
+                if total_native and count_native
+                else []
+            )
+            native = [json.loads(r[0]) for r in rows]
+            for item in native:
+                states = {
+                    r[0]: r[1]
+                    for r in db.execute(
+                        "SELECT COALESCE(c.status,'pending'),count(*) FROM inventory_resources r LEFT JOIN resource_checks c ON c.id=r.id WHERE r.generation=? AND r.dataset=? GROUP BY 1",
+                        (generation, item["id"]),
+                    )
+                }
+                item["entryKind"] = "source_dataset"
+                item["resourceSummary"] = {
+                    "total": sum(states.values()),
+                    "byStatus": states,
+                }
+        total = len(curated) + total_native
         return {
-            "items": [json.loads(r[0]) for r in rows],
+            "items": curated[offset : offset + limit] + native,
             "total": total,
+            "connectedTotal": len(curated),
+            "sourceTotal": total_native,
             "offset": offset,
             "nextOffset": offset + limit if offset + limit < total else None,
-            "generation": self.head(),
+            "generation": generation,
+            "scope": "Connected query services plus harvested source datasets; connected views can overlap source datasets and are not added to government coverage counts.",
         }
 
     def resources(self, dataset=None, status=None, fmt=None, limit=20, offset=0):
+        if not 1 <= limit <= 100 or not 0 <= offset <= 100000:
+            raise DomainError("INVALID_QUERY", "Invalid pagination", 400)
+        if entry := connected.get(dataset):
+            return {
+                "items": [],
+                "total": 0,
+                "offset": offset,
+                "nextOffset": None,
+                "connected": entry,
+                "access": entry["access"],
+                "generation": self.head(),
+                "scope": "Use the connected HTTP endpoint or MCP tool; this is not an imported government resource.",
+            }
         self.refresh_transport_policies()
         if not 1 <= limit <= 100 or not 0 <= offset <= 100000:
             raise DomainError("INVALID_QUERY", "Invalid pagination", 400)
@@ -266,7 +327,7 @@ class CatalogueStore:
                 f"SELECT count(*) FROM {source} WHERE {where}", args
             ).fetchone()[0]
             rows = db.execute(
-                f"SELECT r.payload,c.status,c.reason,c.checked,c.validated,c.rows FROM {source} WHERE {where} ORDER BY r.id LIMIT ? OFFSET ?",
+                f"SELECT r.payload,c.status,c.reason,c.checked,c.validated,c.rows FROM {source} WHERE {where} ORDER BY CASE WHEN c.status='queryable' THEN 0 WHEN c.status IN ('needs_selection','stale') THEN 1 WHEN c.status='document' THEN 2 WHEN c.status IN ('unavailable','restricted') THEN 4 ELSE 3 END, CASE WHEN r.format IN ('JSON','CSV','GEOJSON') THEN 0 WHEN r.format IN ('XML','XLSX','XLS') THEN 1 WHEN r.format IN ('ARCGIS','API') THEN 2 WHEN r.format='PDF' THEN 3 ELSE 4 END,r.id LIMIT ? OFFSET ?",
                 (*args, limit, offset),
             ).fetchall()
         items = []

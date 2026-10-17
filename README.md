@@ -12,15 +12,15 @@ The upstream MIT licence and author attribution are preserved.
 - **District population:** all 18 districts, published reference year, population in
   persons, area and density.
 - **Plate.hk (first external pack):** independent auction-history index, historical
-  comparisons and dataset coverage, with original source links. Try [the plate demo](https://mcp.hk/plates).
+  comparisons and dataset coverage, with original source links. [Search Plate.hk](https://mcp.hk/coverage?q=Plate.hk&access=all).
 - **Real-time transport:** source-timestamp-validated MTR, bus, green-minibus and ferry arrival adapters, short caches and explicit coverage scope. See [request contracts and live verification](docs/transport.md).
 - **Generic resources:** reconciled DATA.GOV.HK/CSDI inventory, source schema inspection and bounded record queries across CSV, JSON, GeoJSON, Excel, XML and API families. See [resource contracts and honest coverage](docs/resources.md) and [the coverage explorer](https://mcp.hk/coverage).
 - **Developer interfaces:** eight preserved catalogue tools plus sixteen resource/pack tools,
   remote Streamable HTTP, local stdio, REST and OpenAPI.
-- **Demo:** the bilingual landing page and neighbourhood explorer use the real HTTP
+- **Discovery:** one bilingual search covers connected queries and source datasets, including independent providers. Guided queries and the neighbourhood explorer use the real HTTP
   API, with source citations, error/empty states and equivalent HTTP/MCP/JSON views.
 
-Hosted service: **https://mcp.hk** · [Demo](https://mcp.hk/demo) · [Connect your AI](https://mcp.hk/connect).
+Hosted service: **https://mcp.hk** · [Browse data](https://mcp.hk/coverage) · [Connect your AI](https://mcp.hk/connect).
 
 Remote MCP: `https://mcp.hk/mcp` (Streamable HTTP, public read-only, no server API key).
 See [client connection examples](docs/connect.md) and [production recovery/schedules](docs/production.md).
@@ -74,7 +74,11 @@ public tools. Existing live network probes are opt-in with `pytest --live`; they
 not replace deterministic regression tests.
 
 See [Plate.hk pack examples, semantics and limits](docs/platehk.md). Government
-metadata discovery stays on `/api/v1/datasets`; use `/api/v1/packs` or
-`hk_data_packs` to discover queryable government and independent packs.
+metadata discovery stays on `/api/v1/datasets`. Unified discovery uses
+`/api/v1/catalogue/datasets` or `hk_catalogue_search`, with `access=all`,
+`connected` or `sources`. Connected results include direct user actions and
+HTTP/MCP methods; native source results include resource capability summaries.
+The pack-only `/api/v1/packs` and `hk_data_packs` remain available.
+See [the discovery UX contract and next onboarding priorities](docs/discovery-ux.md).
 
 The detailed expansion plan and acceptance criteria are in [the engineering plan](docs/plans/government-expansion.md). Inventory discovery is not full government data onboarding; consult live coverage for validation, failures and remaining work.

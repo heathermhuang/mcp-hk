@@ -438,7 +438,7 @@ class Resources:
             require_fresh = require_fresh or profile.arrivals
         key = hashlib.sha256(
             json.dumps(
-                [resource_id, record_path, sheet, layer]
+                ["structured-reader-2", resource_id, record_path, sheet, layer]
                 + ([transport.REVISION] if profile else [])
                 + ([parameters] if parameters else []),
                 sort_keys=True,

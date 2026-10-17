@@ -9,6 +9,10 @@
   let plateGeneration = 0;
   const $ = selector => root.querySelector(selector);
   const label = value => value?.[state.lang === 'en' ? 'en' : 'zhHant'] || value?.en || value?.zhHant || '—';
+  $('#mhk-discovery-form').addEventListener('submit', e => {
+    e.preventDefault();
+    location.assign('/coverage?' + new URLSearchParams({q:$('#mhk-discovery-query').value.trim(),access:'all',lang:MhkI18n.locale}));
+  });
 
   function error(message) { $('#mhk-error').hidden = !message; $('#mhk-error').textContent = message || ''; }
   async function api(path, signal) {
@@ -30,7 +34,7 @@
     $('#mhk-client-help').textContent = MhkI18n.t('help_' + clientKind);
     root.querySelectorAll('[data-client]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.client === clientKind)));
     $('#mhk-radius').value = String(state.radius);
-    $('.mhk-search button').disabled = pending;
+    $('#mhk-address-form button').disabled = pending;
     $('.mhk-found').hidden = !selected;
     if (selected) {
       $('[data-dynamic=address]').textContent = label(selected.address);
@@ -105,7 +109,7 @@
         mark.textContent = Array.isArray(record.double_line) ? record.double_line.join('\n') : record.double_line || record.single_line;
         const context = document.createElement('p');
         const dateLabel = record.auction_date_label || (record.date_precision === 'year_range' ? record.year_range : record.auction_date) || '—';
-        context.textContent = `${dateLabel} · ${record.dataset_key}${record.result_status ? ' · ' + record.result_status : ''}`;
+        context.textContent = `${dateLabel} · ${MhkI18n.t({pvrm:'pvrm',tvrm_physical:'tvrmPhysical',tvrm_eauction:'tvrmEauction',tvrm_legacy:'tvrmLegacy'}[record.dataset_key] || record.dataset_key)}${record.result_status ? ' · ' + record.result_status : ''}`;
         const amount = document.createElement('span');
         amount.textContent = record.amount_hkd == null ? (state.lang === 'en' ? 'No recorded amount' : '未有記錄金額') : `HK$${record.amount_hkd.toLocaleString()}`;
         const links = document.createElement('p');
@@ -172,7 +176,7 @@
     } catch (e) { if (token === generation) error(e.message); }
     finally { if (token === generation) { pending = false; render(); } }
   });
-  $('.mhk-search').addEventListener('submit', async e => {
+  $('#mhk-address-form').addEventListener('submit', async e => {
     e.preventDefault();
     const token = ++generation;
     selected = null; response = null; population = null; pending = true; error(''); render();
@@ -201,8 +205,9 @@
   $('#mhk-radius').addEventListener('change', e => { state.radius = Number(e.target.value); loadNearby(); });
   root.querySelectorAll('[data-code]').forEach(b => b.addEventListener('click', () => { state.code = b.dataset.code; render(); }));
 
-  let sourceStatus = null, statusError = false, statusStarted = false, inventory = null, inventoryError = false;
+  let sourceStatus = null, transportStatus = null, statusError = false, statusStarted = false, inventory = null, inventoryError = false;
   function renderStatus() {
+    renderTransportStatus();
     const box = $('#mhk-status'); box.replaceChildren();
     if (!sourceStatus) { box.textContent = MhkI18n.t(statusError ? 'statusUnavailable' : 'loading'); return; }
     for (const source of sourceStatus.sources) {
@@ -215,8 +220,17 @@
     }
   }
   function renderCoverage() { for (const id of ['#mhk-coverage', '#mhk-source-coverage']) MhkI18n.coverageSummary($(id), inventory, inventoryError); }
+  function renderTransportStatus() {
+    const box=$('#mhk-feed-status');box.replaceChildren();
+    if(!transportStatus){box.textContent=MhkI18n.t(statusError?'statusUnavailable':'loading');return;}
+    const groups=new Map();for(const r of transportStatus.resources||[]){const states=groups.get(r.operator)||[];states.push(MhkI18n.t(r.status==='stale'?'transportRefreshDue':r.status));groups.set(r.operator,states);}
+    const searches={'KMB/LWB':'KMB','Green minibuses':'GMB','Hong Kong & Kowloon Ferry':'HKKF','New Lantao Bus':'NLB'};
+    for(const [operator,states] of groups){const row=document.createElement('article'),h=document.createElement('h3'),p=document.createElement('p'),a=document.createElement('a');h.textContent=operator;p.textContent=[...new Set(states)].join(' · ');a.href='/coverage?'+new URLSearchParams({q:searches[operator]||operator,access:'sources',lang:MhkI18n.locale});a.textContent=MhkI18n.t('sourceStatusLink');row.append(h,p,a);box.append(row);}
+  }
   async function status() {
-    try { sourceStatus = await api('/api/v1/status'); } catch { statusError = true; }
+    const outcomes=await Promise.allSettled([api('/api/v1/status'),api('/api/v1/coverage')]);
+    if(outcomes[0].status==='fulfilled')sourceStatus=outcomes[0].value;else statusError=true;
+    if(outcomes[1].status==='fulfilled')transportStatus=outcomes[1].value.realtimeTransport;else statusError=true;
     renderStatus();
   }
   async function coverage() {

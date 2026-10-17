@@ -247,6 +247,7 @@ class Service:
             "items": [
                 {
                     **pack,
+                    "catalogueId": "mcp:" + pack["id"],
                     "sourceUrl": SOURCES[pack["id"]]["sourceUrl"],
                     "attribution": SOURCES[pack["id"]]["attribution"],
                     "capability": "queryable",
