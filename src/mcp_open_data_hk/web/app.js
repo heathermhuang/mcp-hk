@@ -194,7 +194,7 @@
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     e.preventDefault(); state.screen = b.dataset.screen || b.dataset.go;
     const path = {home:'/',explore:'/demo',connect:'/connect',plates:'/plates',sources:'/sources'}[state.screen];
-    history.pushState(null, '', path + '?lang=' + MhkI18n.locale); render();
+    history.pushState(null, '', path + '?lang=' + MhkI18n.locale); render(); window.dispatchEvent(new Event('mhk:navigate'));
   }));
   window.addEventListener('popstate', () => { state.screen = screenFromPath(); render(); });
   window.addEventListener('mhk:language', () => { state.lang = MhkI18n.lang; render(); });

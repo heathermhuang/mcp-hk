@@ -249,7 +249,19 @@ const translations = {
     "transportInputs": "Required inputs: {parameters}",
     "transportEndpointMissing": "The operator's published API returned 404. Live arrivals are unavailable; timetables are not live predictions.",
     "independent_or_public_corporation": "Public corporation or independent provider",
-    "transportSnapshot": "Source time: {time}. This is a snapshot; choose Show records to refresh."
+    "transportSnapshot": "Source time: {time}. This is a snapshot; choose Show records to refresh.",
+    "termsTitle": "Terms of use",
+    "privacyTitle": "Privacy policy",
+    "analyticsSettings": "Analytics choices",
+    "analyticsChoiceTitle": "Optional website analytics",
+    "analyticsChoiceCopy": "Allow Google Analytics to measure page visits? We send the page path without searches, query strings or API data. Essential service usage counters run separately to protect and operate the API. You can change this choice at any time.",
+    "analyticsReject": "Reject analytics",
+    "analyticsAllow": "Allow analytics",
+    "analyticsEnabled": "Website analytics are allowed on this browser.",
+    "analyticsDisabled": "Website analytics are off.",
+    "analyticsNotConfigured": "Google Analytics is not enabled on this site yet.",
+    "analyticsOptOut": "Your browser privacy signal is respected. Google Analytics stays off.",
+    "close": "Close"
   },
   "zh": {
     "interfaces": "MCP · HTTP API · 支援自行部署",
@@ -500,6 +512,18 @@ const translations = {
     "transportInputs": "所需輸入：{parameters}",
     "transportEndpointMissing": "營辦商公布的 API 回傳 404，暫無即時到站資料；時間表並非即時預測。",
     "independent_or_public_corporation": "公共機構或獨立供應商",
-    "transportSnapshot": "來源時間：{time}。此為查詢時的結果；按「顯示紀錄」可更新。"
+    "transportSnapshot": "來源時間：{time}。此為查詢時的結果；按「顯示紀錄」可更新。",
+    "termsTitle": "使用條款",
+    "privacyTitle": "私隱政策",
+    "analyticsSettings": "分析數據設定",
+    "analyticsChoiceTitle": "網站分析由你選擇",
+    "analyticsChoiceCopy": "是否允許 Google Analytics 統計網頁瀏覽？我們只傳送網頁路徑，不包含搜尋字詞、網址查詢參數或 API 數據。服務另設必要用量統計，用於營運及防止濫用。你可隨時更改選擇。",
+    "analyticsReject": "拒絕網站分析",
+    "analyticsAllow": "允許網站分析",
+    "analyticsEnabled": "此瀏覽器已允許網站分析。",
+    "analyticsDisabled": "網站分析已關閉。",
+    "analyticsNotConfigured": "此網站尚未啟用 Google Analytics。",
+    "analyticsOptOut": "我們尊重瀏覽器的私隱訊號，Google Analytics 保持關閉。",
+    "close": "關閉"
   }
 };
