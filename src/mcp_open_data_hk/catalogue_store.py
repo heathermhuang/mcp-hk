@@ -7,6 +7,7 @@ import uuid
 import zlib
 
 from .contracts import DomainError
+from . import transport
 
 CACHE_BYTES = 4_000_000
 
@@ -21,6 +22,7 @@ class CatalogueStore:
         with store.connect() as db:
             db.executescript(
                 """
+            CREATE TABLE IF NOT EXISTS resource_policies (id TEXT PRIMARY KEY, revision TEXT, ttl INTEGER, operator TEXT, mode TEXT);
             CREATE TABLE IF NOT EXISTS inventories (id TEXT PRIMARY KEY, created REAL, receipt TEXT);
             CREATE TABLE IF NOT EXISTS inventory_head (id INTEGER PRIMARY KEY CHECK(id=1), generation TEXT);
             CREATE TABLE IF NOT EXISTS inventory_datasets (generation TEXT, id TEXT, payload TEXT, PRIMARY KEY(generation,id));
@@ -32,6 +34,38 @@ class CatalogueStore:
             CREATE TABLE IF NOT EXISTS catalogue_runs (id TEXT PRIMARY KEY, started REAL, finished REAL, status TEXT, receipt TEXT);
             CREATE TABLE IF NOT EXISTS resource_audit_cursor (id INTEGER PRIMARY KEY CHECK(id=1), generation TEXT, cursor TEXT);
             """
+            )
+
+    def refresh_transport_policies(self):
+        """Invalidate legacy success/error labels once per adapter revision/resource."""
+        placeholders = ",".join("?" for _ in transport.DATASETS)
+        with self.store.connect() as db:
+            rows = db.execute(
+                f"SELECT r.id,r.payload,p.revision FROM inventory_resources r LEFT JOIN resource_policies p ON p.id=r.id WHERE r.generation=(SELECT generation FROM inventory_head WHERE id=1) AND r.dataset IN ({placeholders})",
+                transport.DATASETS,
+            ).fetchall()
+            for row in rows:
+                p = transport.profile(unpack(row["payload"]))
+                if not p or row["revision"] == transport.REVISION:
+                    continue
+                status = "needs_selection" if p.required else "pending"
+                db.execute(
+                    "INSERT INTO resource_checks(id,status,reason) VALUES (?,?,?) ON CONFLICT(id) DO UPDATE SET status=excluded.status,reason=excluded.reason,validated=NULL,hash=NULL,schema_hash=NULL,schema_json=NULL,rows=NULL",
+                    (row["id"], status, "TRANSPORT_VALIDATION_REQUIRED"),
+                )
+                db.execute(
+                    "INSERT OR REPLACE INTO resource_policies VALUES (?,?,?,?,?)",
+                    (
+                        row["id"],
+                        transport.REVISION,
+                        p.ttl if p.arrivals else None,
+                        p.operator,
+                        p.mode,
+                    ),
+                )
+            db.execute(
+                "UPDATE resource_checks SET status='stale',reason='TRANSPORT_REFRESH_DUE' WHERE status='queryable' AND EXISTS (SELECT 1 FROM resource_policies p WHERE p.id=resource_checks.id AND p.ttl IS NOT NULL AND resource_checks.validated < ? - p.ttl)",
+                (time.time(),),
             )
 
     def classify_legacy_failures(self):
@@ -154,6 +188,7 @@ class CatalogueStore:
                     for table in ("inventory_resources", "inventory_datasets"):
                         db.execute(f"DELETE FROM {table} WHERE generation=?", (row[0],))
                     db.execute("DELETE FROM inventories WHERE id=?", (row[0],))
+        self.refresh_transport_policies()
         return generation
 
     def resource(self, resource_id):
@@ -166,7 +201,11 @@ class CatalogueStore:
             raise DomainError(
                 "RESOURCE_NOT_FOUND", "Use a resource ID from the inventory", 404
             )
-        return unpack(row[0])
+        result = unpack(row[0])
+        p = transport.profile(result)
+        if p:
+            result["transport"] = p.describe()
+        return result
 
     def dataset(self, dataset_id):
         with self.store.connect() as db:
@@ -208,6 +247,7 @@ class CatalogueStore:
         }
 
     def resources(self, dataset=None, status=None, fmt=None, limit=20, offset=0):
+        self.refresh_transport_policies()
         if not 1 <= limit <= 100 or not 0 <= offset <= 100000:
             raise DomainError("INVALID_QUERY", "Invalid pagination", 400)
         where = "r.generation=?"
@@ -243,6 +283,11 @@ class CatalogueStore:
                     },
                 }
             )
+        for item in items:
+            p = transport.profile(item)
+            if p:
+                item["transport"] = p.describe()
+                item["validation"]["scope"] = "last_selected_route_or_stop"
         return {
             "items": items,
             "total": total,
@@ -301,7 +346,12 @@ class CatalogueStore:
                     sort_keys=True,
                 ).encode()
             ).hexdigest()
-        if old.get("schema_hash") and old["schema_hash"] != schema_hash:
+        arrival_contract = schema.get("transport", {}).get("operation") == "arrivals"
+        if (
+            not arrival_contract
+            and old.get("schema_hash")
+            and old["schema_hash"] != schema_hash
+        ):
             self.failure(resource_id, "SCHEMA_DRIFT", "schema_drift", key)
             raise DomainError(
                 "SCHEMA_DRIFT",
@@ -395,6 +445,7 @@ class CatalogueStore:
         )
 
     def coverage(self):
+        self.refresh_transport_policies()
         generation = self.head()
         with self.store.connect() as db:
             meta = db.execute(
@@ -432,9 +483,21 @@ class CatalogueStore:
             cache_bytes = db.execute(
                 "SELECT COALESCE(sum(length(payload)),0) FROM resource_cache"
             ).fetchone()[0]
+        with self.store.connect() as db:
+            live = [
+                dict(r)
+                for r in db.execute(
+                    "SELECT p.operator,p.mode,p.ttl,COALESCE(c.status,'pending') status,count(*) resources FROM resource_policies p JOIN inventory_resources r ON r.id=p.id AND r.generation=? LEFT JOIN resource_checks c ON c.id=p.id WHERE p.ttl IS NOT NULL GROUP BY p.operator,p.mode,p.ttl,c.status",
+                    (generation,),
+                )
+            ]
         receipt = json.loads(meta["receipt"])
         return {
             "generation": generation,
+            "realtimeTransport": {
+                "resources": live,
+                "scope": "Last tested route/stop selections only; not every route or operator. Expired checks require a new source read. Scheduled departures remain labelled by the provider.",
+            },
             "lastCatalogueCheckAt": meta["created"],
             "catalogue": receipt,
             "resources": {

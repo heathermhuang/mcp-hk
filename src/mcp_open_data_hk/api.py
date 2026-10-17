@@ -128,6 +128,11 @@ def create_app(service=None):
             while len(buckets) > 10000:
                 buckets.popitem(last=False)
         response = await call_next(request)
+        if (
+            request.url.path.startswith("/api/v1/resources")
+            or request.url.path == "/api/v1/coverage"
+        ):
+            response.headers["Cache-Control"] = "no-store"
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["Referrer-Policy"] = "no-referrer"
         response.headers["Content-Security-Policy"] = (

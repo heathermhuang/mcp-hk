@@ -58,7 +58,11 @@ import {fetchPublicJson} from './http.js';
         $('selected-resource').scrollIntoView({behavior:'smooth',block:'center'});
       });
       const v = r.validation;
-      row.append(button, node('p', `${r.catalogue} · ${t(v.status)}${v.reason ? ' · ' + v.reason : ''} · ${t('lastCheck')}: ${v.lastCheckedAt ? new Date(v.lastCheckedAt * 1000).toISOString() : t('pending')}`), link(r.url, t('sourceLink'))); $('resources').append(row);
+      if (r.transport) {
+        row.append(node('p',t(r.transport.operation === 'arrivals' ? 'transportFeed' : 'transportReference', {operator:r.transport.operator,seconds:r.transport.cacheTTLSeconds})));
+        if (r.transport.requiredParameters.length) row.append(node('p',t('transportInputs',{parameters:r.transport.requiredParameters.join(', ')})));
+      }
+      row.append(button, node('p', `${r.catalogue} · ${t(r.transport?.operation === 'arrivals' && v.status === 'stale' ? 'transportRefreshDue' : v.status)}${v.reason ? ' · ' + v.reason : ''} · ${t('lastCheck')}: ${v.lastCheckedAt ? new Date(v.lastCheckedAt * 1000).toISOString() : t('pending')}`), link(r.url, t('sourceLink'))); $('resources').append(row);
     }
     $('resources-next').hidden = resourceList.nextOffset == null; $('resources-next').dataset.offset = resourceList.nextOffset;
   }

@@ -242,7 +242,11 @@ const translations = {
     "sourcesPageTitle": "Source status · mcp.hk",
     "pvrm": "Personalised plates",
     "nestedItems": "{total} nested items",
-    "nestedFields": "{total} nested fields"
+    "nestedFields": "{total} nested fields",
+    "transportRefreshDue": "Arrival check expired",
+    "transportFeed": "{operator} · arrivals · response cache {seconds}s. Validation applies to the last selected route or stop.",
+    "transportReference": "{operator} · routes, stops or other reference data; not a live arrival feed.",
+    "transportInputs": "Required inputs: {parameters}"
   },
   "zh": {
     "interfaces": "MCP · HTTP API · 支援自行部署",
@@ -486,6 +490,10 @@ const translations = {
     "sourcesPageTitle": "來源狀態 · mcp.hk",
     "pvrm": "自訂車牌",
     "nestedItems": "{total} 項內嵌紀錄",
-    "nestedFields": "{total} 個內嵌欄位"
+    "nestedFields": "{total} 個內嵌欄位",
+    "transportRefreshDue": "到站資料待更新",
+    "transportFeed": "{operator} · 到站資訊 · 回應快取 {seconds} 秒。檢查結果只適用於上次選擇的路線或車站。",
+    "transportReference": "{operator} · 路線、車站或其他參考資料，並非即時到站資訊。",
+    "transportInputs": "所需輸入：{parameters}"
   }
 };

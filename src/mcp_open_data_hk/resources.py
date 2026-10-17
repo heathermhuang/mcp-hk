@@ -12,6 +12,7 @@ from urllib.parse import parse_qs, quote, unquote, urlencode, urlsplit, urlunspl
 
 from .catalogue_store import CatalogueStore
 from .contracts import DomainError
+from . import transport
 from .resource_fields import selected, MISSING, inspect_nested
 from .resource_fetch import fetch, fetch_file
 from .resource_stream import FileRows
@@ -406,6 +407,7 @@ class Resources:
         self.catalogue = CatalogueStore(store)
         self.slots = asyncio.Semaphore(2)
         self.locks = {}
+        self.catalogue.refresh_transport_policies()
 
     async def load(
         self,
@@ -423,9 +425,21 @@ class Resources:
         ):
             raise DomainError("INVALID_QUERY", "Invalid source selector", 400)
         resource = self.catalogue.resource(resource_id)
+        profile = transport.profile(resource)
+        if profile and profile.arrivals and (record_path or sheet or layer is not None):
+            raise DomainError(
+                "INVALID_QUERY",
+                "Arrival feeds expose fixed rows; omit recordPath, sheet and layer",
+                400,
+            )
+        ttl = profile.ttl if profile else (300 if resource.get("isApi") else 86400)
+        force_transport_read = bool(profile and profile.arrivals and require_fresh)
+        if profile:
+            require_fresh = require_fresh or profile.arrivals
         key = hashlib.sha256(
             json.dumps(
                 [resource_id, record_path, sheet, layer]
+                + ([transport.REVISION] if profile else [])
                 + ([parameters] if parameters else []),
                 sort_keys=True,
             ).encode()
@@ -442,14 +456,25 @@ class Resources:
                 and check.get("status") in {"queryable", "document"}
                 and check.get("hash") == cached["hash"]
                 and check.get("validated")
-                and time.time() - check["validated"]
-                < (300 if resource.get("isApi") else 86400)
+                and time.time() - check["validated"] < ttl
+                and (
+                    not profile
+                    or not profile.arrivals
+                    or (
+                        not force_transport_read
+                        and cached["value"]["schema"]
+                        .get("transport", {})
+                        .get("freshUntil", 0)
+                        > time.time()
+                    )
+                )
             ):
                 return resource, cached["value"], check, False
             if (
                 cached
                 and check.get("status") not in {"queryable", "document"}
-                and time.time() - check.get("checked", 0) < 300
+                and time.time() - check.get("checked", 0)
+                < (2 if profile and profile.arrivals else 300)
             ):
                 if require_fresh:
                     raise DomainError(
@@ -465,7 +490,10 @@ class Resources:
                         "UNSUPPORTED_FORMAT", "Reader not implemented for " + fmt, 422
                     )
                 url = resource["url"]
-                if (
+                payload = None
+                if profile:
+                    url, payload = transport.request(profile, parameters or {})
+                elif (
                     source_parameters(url)
                     or any(c in url for c in ("{", "}", "<", ">"))
                     or parameters
@@ -504,7 +532,19 @@ class Resources:
                         if cached and check.get("modified"):
                             conditional["If-Modified-Since"] = check["modified"]
                         try:
-                            body, headers, final, status = await fetch(url, conditional)
+                            if profile and profile.arrivals:
+                                conditional = {"Cache-Control": "no-cache"}
+                            if payload is not None:
+                                conditional["Content-Type"] = "application/json"
+                                body, headers, final, status = await fetch(
+                                    url,
+                                    conditional,
+                                    payload=json.dumps(payload).encode(),
+                                )
+                            else:
+                                body, headers, final, status = await fetch(
+                                    url, conditional
+                                )
                         except DomainError as exc:
                             if exc.code != "SOURCE_TOO_LARGE" or fmt not in {
                                 "CSV",
@@ -514,6 +554,12 @@ class Resources:
                             }:
                                 raise
                             body, headers, final, status = await fetch_file(url)
+                        if status == 304 and profile and profile.arrivals:
+                            raise DomainError(
+                                "SOURCE_RESPONSE_ERROR",
+                                "Arrival source did not return a fresh payload",
+                                502,
+                            )
                         if status == 304:
                             if not cached:
                                 raise DomainError(
@@ -536,6 +582,13 @@ class Resources:
                                 fmt == "PDF",
                             )
                             return resource, value, check, False
+                    if profile and not isinstance(body, Path):
+                        body, extra = transport.validate(
+                            body, profile, parameters or {}, headers
+                        )
+                        if profile.arrivals:
+                            record_path = ""
+                            fmt = "JSON"
                     content_type = headers.get("content-type", "").lower()
                     if fmt == "API" and not isinstance(body, Path):
                         if "json" in content_type or body.lstrip().startswith(
@@ -574,7 +627,7 @@ class Resources:
 
                     schema.update(extra)
                     schema["sourceResponseComplete"] = True
-                    schema["cacheTTLSeconds"] = 300 if resource.get("isApi") else 86400
+                    schema["cacheTTLSeconds"] = ttl
                     schema.setdefault(
                         "scope",
                         "source_response" if resource.get("isApi") else "complete_file",
@@ -587,7 +640,8 @@ class Resources:
                     digest = (
                         rows.records_digest
                         if isinstance(rows, FileRows)
-                        else hashlib.sha256(body).hexdigest()
+                        else extra.get("sourceContentHash")
+                        or hashlib.sha256(body).hexdigest()
                     )
                     check = self.catalogue.accept(
                         resource_id, key, rows, schema, digest, headers, fmt == "PDF"
@@ -624,6 +678,7 @@ class Resources:
                                     "TYPE_NAME_REQUIRED",
                                     "PARAMETERS_REQUIRED",
                                     "RECORD_PATH_REQUIRED",
+                                    "INVALID_QUERY",
                                 }
                                 else (
                                     "capacity_limited"
@@ -656,6 +711,14 @@ class Resources:
                 ) from None
 
     def envelope(self, resource, value, check, stale=False):
+        live = value["schema"].get("transport")
+        if live and live.get("sourceTimestamp"):
+            live["sourceAgeSeconds"] = max(
+                0, time.time() - transport.timestamp(live["sourceTimestamp"])
+            )
+            live["cacheAgeSeconds"] = max(
+                0, time.time() - check.get("checked", time.time())
+            )
         dataset = self.catalogue.dataset(resource["datasetId"])
         return {
             "resource": resource,
@@ -693,7 +756,13 @@ class Resources:
                 ]
                 if stale
                 else []
-            ),
+            )
+            + [
+                {"code": "TRANSPORT_SERVICE_ADVISORY", "message": message}
+                for message in value["schema"]
+                .get("transport", {})
+                .get("advisories", [])
+            ],
         }
 
     async def schema(
@@ -737,9 +806,14 @@ class Resources:
         parameters=None,
     ):
         resource = self.catalogue.resource(resource_id)
-        if source_parameters(resource["url"]) and not parameters:
+        profile = transport.profile(resource)
+        required = profile.required if profile else source_parameters(resource["url"])
+        if required and not parameters:
             try:
-                template_url(resource["url"], {})
+                if profile:
+                    transport.request(profile, {})
+                else:
+                    template_url(resource["url"], {})
             except DomainError as exc:
                 if exc.code != "PARAMETERS_REQUIRED":
                     raise
@@ -750,7 +824,8 @@ class Resources:
             return {
                 "resource": resource,
                 "selectionRequired": "parameters",
-                "parameters": source_parameters(resource["url"]),
+                "parameters": required,
+                **({"transport": profile.describe()} if profile else {}),
                 "recordCount": None,
                 "structuredQueryable": False,
             }

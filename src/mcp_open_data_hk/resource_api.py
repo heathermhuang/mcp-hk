@@ -142,7 +142,7 @@ def register_mcp(server, current):
         requireFresh: bool = False,
         parameters: dict[str, str] | None = None,
     ) -> dict:
-        """Read actual resource fields/types, units (unknown unless source states them), nesting paths, source dates and query scope. Workbooks may require sheet; ArcGIS may require layer."""
+        """Read actual source fields and required settings. Transport feeds return required line/station, route/stop or direction parameters before querying; use their exact names. Workbooks may require sheet; ArcGIS may require layer."""
         return await current().resources.schema(
             resourceId, recordPath, sheet, layer, requireFresh, parameters
         )
@@ -161,7 +161,7 @@ def register_mcp(server, current):
         version: str | None = None,
         parameters: dict[str, str] | None = None,
     ) -> dict:
-        """Query actual resource records with scalar equality filters, selected fields and bounded pages (1..100). Preserve nested values/units/source citations. Pass returned version for later pages. PDF responses are unverified page text, not structured data. A source API response is not necessarily its full historical dataset."""
+        """Query actual resource records with bounded pages (1..100). For transport arrivals, provide parameters from hk_resource_schema; responses have 10/20-second caches, checked provider timestamps, and no expired fallback. requireFresh forces an arrival-source read. Preserve scheduled/predicted flags and service advisories. Pass version for later pages. PDF is unverified text. A source read does not prove all routes/operators are covered."""
         query = ResourceQuery(
             filters=filters or {},
             fields=fields or [],
