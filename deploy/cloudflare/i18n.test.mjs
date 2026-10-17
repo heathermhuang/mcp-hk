@@ -18,7 +18,7 @@ function browser(url='https://mcp.hk/',saved=null,denied=false) {
   const label=new Element();label.dataset.i18n='navData';
   const placeholder=new Element({'data-i18n-placeholder':'datasetPlaceholder'}),button=new Element();
   const link=new Element({href:'/coverage?q=weather#results'}),external=new Element({href:'https://data.gov.hk/en/'}),api=new Element({href:'/api/v1/coverage'});
-  const nav=['/','/coverage','/demo','/plates','/connect','/sources'].map(href=>new Element({href}));
+  const nav=['/','/coverage','/connect','/sources'].map(href=>new Element({href}));
   const location=new URL(url),events=[];
   const document={documentElement:{},createElement:()=>new Element(),querySelectorAll:selector=>({'.mhk-navbutton':nav,'[data-i18n]':[label],'[data-i18n-placeholder]':[placeholder],'.mhk-language':[button],'a[href]':[link,external,api]}[selector] || [])};
   const context=vm.createContext({document,location,URL,Event,history:{replaceState:(_a,_b,value)=>{location.href=new URL(value,location.href).href;}},localStorage:{getItem(){if(denied)throw Error('denied');return stored;},setItem(_key,value){if(denied)throw Error('denied');stored=value;}},addEventListener(){},dispatchEvent:event=>events.push(event.type)});
@@ -61,12 +61,13 @@ test('static translation does not overwrite generated HTTP/MCP request examples'
   assert.doesNotMatch(read('coverage.html'), /<pre[^>]*\bdata-i18n=/);
 });
 
-test('every public route has one active navigation item in either language',()=>{
+test('primary routes have one active item and examples are outside primary navigation',()=>{
   for(const path of ['/','/coverage','/demo','/plates','/connect','/sources','/data']) for(const lang of ['en','zh-Hant']) {
     const b=browser('https://mcp.hk'+path+'?lang='+lang);
-    assert.deepEqual(b.nav.filter(link=>link.attrs['aria-current']==='page').map(link=>link.attrs.href),[path==='/data'?'/coverage':path]);
+    const expected=['/demo','/plates'].includes(path)?[]:[path==='/data'?'/coverage':path];
+    assert.deepEqual(b.nav.filter(link=>link.attrs['aria-current']==='page').map(link=>link.attrs.href),expected);
     b.button.listeners.click();
-    assert.equal(b.nav.filter(link=>link.attrs['aria-current']==='page').length,1);
+    assert.equal(b.nav.filter(link=>link.attrs['aria-current']==='page').length,expected.length);
   }
 });
 test('data browser shares the same complete navigation and footer as the other pages',()=>{
@@ -74,5 +75,7 @@ test('data browser shares the same complete navigation and footer as the other p
   assert.equal(shell('index.html','header'),shell('coverage.html','header'));
   assert.equal(shell('index.html','footer'),shell('coverage.html','footer'));
   const links=[...shell('coverage.html','header').matchAll(/class="mhk-navbutton"[^>]*href="([^"]+)"/g)].map(m=>m[1]);
-  assert.deepEqual(links,['/','/coverage','/demo','/plates','/connect','/sources']);
+  assert.deepEqual(links,['/','/coverage','/connect','/sources']);
+  const examples=read('index.html').match(/<div class="mhk-packs mhk-demos">([\s\S]*?)<\/div>/)[1];
+  for(const path of ['/demo','/plates']) assert.ok(examples.includes('href="'+path+'"'),path+' remains accessible as a homepage example');
 });
