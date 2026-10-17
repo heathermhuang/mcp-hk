@@ -6,7 +6,7 @@ import {fetchPublicJson} from './http.js';
   let selected = null, nextRecords = null, lastQuery = null, searchOffset = 0, resourceOffset = 0;
   let datasetId = null, directoryMode = false, busy = false;
   let inventory = null, inventoryFailed = false, datasets = null, resourceList = null, result = null;
-  let searchError = null, resourceError = null, queryError = null;
+  let searchError = null, resourceError = null, queryError = null, expiryTimer = null;
   const api = fetchPublicJson;
   const node = (tag, text) => { const e = document.createElement(tag); e.textContent = text; return e; };
   function link(url, title) { const a = node('a', title); if (/^https?:\/\//i.test(url)) { a.href = url; a.rel = 'noreferrer'; } return a; }
@@ -44,6 +44,7 @@ import {fetchPublicJson} from './http.js';
     $('selected-resource').replaceChildren(node('span', `${selected.datasetId} · ${selected.format} · `), link(selected.url, t('originalSource')));
   }
   function renderResources() {
+    clearTimeout(expiryTimer); expiryTimer = null;
     if (!datasetId && !directoryMode) { $('resources').textContent = t('searchFirst'); return; }
     $('resources').replaceChildren();
     if (!resourceList) { $('resources').textContent = resourceError ? failure(resourceError) : t('loadingResources'); return; }
@@ -58,13 +59,16 @@ import {fetchPublicJson} from './http.js';
         $('selected-resource').scrollIntoView({behavior:'smooth',block:'center'});
       });
       const v = r.validation;
+      const expired = r.transport?.operation === 'arrivals' && v.status === 'queryable' && Date.now() >= (v.lastValidatedAt + r.transport.cacheTTLSeconds) * 1000;
       if (r.transport) {
         row.append(node('p',t(r.transport.operation === 'arrivals' ? 'transportFeed' : 'transportReference', {operator:r.transport.operator,seconds:r.transport.cacheTTLSeconds})));
         if (r.transport.requiredParameters.length) row.append(node('p',t('transportInputs',{parameters:r.transport.requiredParameters.join(', ')})));
       }
-      row.append(button, node('p', `${r.catalogue} · ${t(r.transport?.operation === 'arrivals' && v.status === 'stale' ? 'transportRefreshDue' : v.status)}${v.reason ? ' · ' + v.reason : ''} · ${t('lastCheck')}: ${v.lastCheckedAt ? new Date(v.lastCheckedAt * 1000).toISOString() : t('pending')}`), link(r.url, t('sourceLink'))); $('resources').append(row);
+      row.append(button, node('p', `${r.catalogue} · ${t(r.transport?.operation === 'arrivals' && (v.status === 'stale' || expired) ? 'transportRefreshDue' : v.status)}${v.reason ? ' · ' + v.reason : ''} · ${t('lastCheck')}: ${v.lastCheckedAt ? new Date(v.lastCheckedAt * 1000).toISOString() : t('pending')}`), link(r.url, t('sourceLink'))); $('resources').append(row);
     }
     $('resources-next').hidden = resourceList.nextOffset == null; $('resources-next').dataset.offset = resourceList.nextOffset;
+    const deadlines = resourceList.items.filter(r => r.transport?.operation === 'arrivals' && r.validation.status === 'queryable').map(r => (r.validation.lastValidatedAt + r.transport.cacheTTLSeconds) * 1000 - Date.now()).filter(ms => ms > 0);
+    if (deadlines.length) expiryTimer = setTimeout(renderResources, Math.min(...deadlines) + 25);
   }
   async function resources() {
     const sequence = ++resourceSequence; resourceList = null; resourceError = null; $('resources-next').hidden = true; renderResources();
@@ -109,6 +113,7 @@ import {fetchPublicJson} from './http.js';
       table.append(tbody); const wrap = node('div',''); wrap.className = 'table-scroll'; wrap.append(table); $('record-table').append(wrap);
       $('query-message').textContent = t('matchedRecords',{total:result.meta.total,shown:items.length}) + (!items.length ? ' · '+t('noMatches') : '') + (result.meta.structuredQueryable ? '' : ' · '+t('unverifiedText')) + (result.warnings.length ? ' · '+result.warnings.map(w=>w.code).join(', ') : '');
     } else { $('query-message').textContent = t('schemaSummary',{total:result.recordCount,scope:result.schema.scope,fields:result.schema.fields.map(f=>f.name).join(', ')}); }
+    if (result.schema?.transport?.sourceTimestamp) $('resource-citations').append(node('p',t('transportSnapshot',{time:result.schema.transport.sourceTimestamp})));
     for (const p of result.provenance) $('resource-citations').append(link(p.sourceUrl,p.attribution+' ↗'),node('p',`${t('validated')}: ${new Date(p.lastValidatedAt*1000).toISOString()} · ${t('publication')}: ${p.publicationDate || t('notSupplied')} · ${t('referencePeriod')}: ${p.referencePeriod || t('notSupplied')}`),link(p.termsUrl,t('sourceTerms')));
     $('records-next').hidden = !nextRecords;
   }
@@ -126,7 +131,7 @@ import {fetchPublicJson} from './http.js';
       $('resource-code').textContent = `POST ${location.origin}${path}\n${JSON.stringify(body,null,2)}\n\nMCP: ${kind === 'schema' ? 'hk_resource_schema' : 'hk_resource_query'}(${JSON.stringify({resourceId:selected.id,...body},null,2)})`;
       coverage();
     } catch (e) { if (generation !== requestGeneration) return; result = null; queryError = e; }
-    finally { busy = false; renderQuery(); }
+    finally { busy = false; renderQuery(); if (datasetId || directoryMode) resources(); }
   }
   function render() { MhkI18n.apply(); if (!selected) $('resource-code').textContent = t('selectForCode'); document.title = t('coveragePageTitle'); renderCoverage(); renderDatasets(); renderResources(); renderSelection(); renderQuery(); }
   $('dataset-query').value = new URL(location.href).searchParams.get('q') || 'public holidays';

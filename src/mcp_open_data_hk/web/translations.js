@@ -247,7 +247,8 @@ const translations = {
     "transportFeed": "{operator} · arrivals · response cache {seconds}s. Validation applies to the last selected route or stop.",
     "transportReference": "{operator} · routes, stops or other reference data; not a live arrival feed.",
     "transportInputs": "Required inputs: {parameters}",
-    "independent_or_public_corporation": "Public corporation or independent provider"
+    "independent_or_public_corporation": "Public corporation or independent provider",
+    "transportSnapshot": "Source time: {time}. This is a snapshot; choose Show records to refresh."
   },
   "zh": {
     "interfaces": "MCP · HTTP API · 支援自行部署",
@@ -496,6 +497,7 @@ const translations = {
     "transportFeed": "{operator} · 到站資訊 · 回應快取 {seconds} 秒。檢查結果只適用於上次選擇的路線或車站。",
     "transportReference": "{operator} · 路線、車站或其他參考資料，並非即時到站資訊。",
     "transportInputs": "所需輸入：{parameters}",
-    "independent_or_public_corporation": "公共機構或獨立供應商"
+    "independent_or_public_corporation": "公共機構或獨立供應商",
+    "transportSnapshot": "來源時間：{time}。此為查詢時的結果；按「顯示紀錄」可更新。"
   }
 };
