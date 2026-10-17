@@ -75,8 +75,14 @@ This is not an individual-user identity or unique-visitor estimate.
 
 ## Google Analytics activation
 
-`GA_MEASUREMENT_ID` is a non-secret production configuration value. It is empty
-until the owner supplies/verifies the correct GA4 web-stream measurement ID.
+`GA_MEASUREMENT_ID` is a non-secret production configuration value. The dedicated
+GA4 property is `mcp.hk` (property `559386431`, account `39547952`), with web stream
+`mcp.hk web` (`16147472136`) and measurement ID `G-Y1PSQCCW4C`. It uses Hong Kong
+reporting time and HKD currency. Enhanced Measurement was disabled with explicit
+owner approval on 2026-10-17. Google Signals and user-provided data collection
+were confirmed off. Current GA4 retention settings are 2 months for event data,
+14 months for user data, with reset on new user activity enabled. These controls
+do not cap aggregated standard reports.
 Never copy an ID from a different project or invent one. `/assets/site-config.json`
 exposes only a validated `G-…` value, with no operations credential. A missing ID
 disables the Allow analytics button and sends no Google requests.
