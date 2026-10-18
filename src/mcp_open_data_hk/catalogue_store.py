@@ -436,12 +436,26 @@ class CatalogueStore:
             )
         return dict(row)
 
-    def accept(self, resource_id, key, rows, schema, digest, headers, document=False):
-        contract = schema.get("sourceContract", {}).get("id")
+    def accept(
+        self,
+        resource_id,
+        key,
+        rows,
+        schema,
+        digest,
+        headers,
+        document=False,
+        previous_key=None,
+    ):
+        contract = schema.get("sourceContract", {}).get("id") or schema.get(
+            "readerContract"
+        )
         schema_hash = hashlib.sha256(
             json.dumps(comparable_fields(schema, contract), sort_keys=True).encode()
         ).hexdigest()
         old = self.check(resource_id, key)
+        if not old.get("schema_hash") and previous_key:
+            old = self.check(resource_id, previous_key)
         if old.get("schema_json"):
             prior_schema = unpack(old["schema_json"])
             old["schema_hash"] = hashlib.sha256(

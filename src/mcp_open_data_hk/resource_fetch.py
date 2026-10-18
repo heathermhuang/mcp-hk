@@ -5,6 +5,7 @@ import gzip
 import http.client
 import os
 import tempfile
+import threading
 from pathlib import Path
 import ipaddress
 import socket
@@ -78,11 +79,13 @@ class PinnedHTTPS(PinnedHTTP):
         )
 
 
-def fetch_sync(url, headers=None, maximum=MAX_BYTES, destination=None, payload=None):
+def fetch_sync(
+    url, headers=None, maximum=MAX_BYTES, destination=None, payload=None, deadline=30
+):
     started = time.monotonic()
     identity_retry = False
     for _ in range(4):
-        if time.monotonic() - started > 30:
+        if time.monotonic() - started > deadline:
             raise DomainError(
                 "SOURCE_TIMEOUT", "Source exceeded download deadline", 504
             )
@@ -163,7 +166,7 @@ def fetch_sync(url, headers=None, maximum=MAX_BYTES, destination=None, payload=N
                 else None
             )
             while chunk := response.read1(65536):
-                if time.monotonic() - started > 30:
+                if time.monotonic() - started > deadline:
                     raise DomainError(
                         "SOURCE_TIMEOUT", "Source exceeded download deadline", 504
                     )
@@ -240,10 +243,22 @@ async def fetch_file(url, maximum=128_000_000):
     fd, name = tempfile.mkstemp(prefix="mcp-hk-resource-", suffix=".source")
     os.close(fd)
     path = Path(name)
+    cancelled = threading.Event()
+
+    def download():
+        try:
+            return fetch_sync(url, None, maximum, path, deadline=60)
+        finally:
+            if cancelled.is_set():
+                path.unlink(missing_ok=True)
+
     try:
-        return await asyncio.to_thread(fetch_sync, url, None, maximum, path)
-    except Exception as exc:
+        return await asyncio.to_thread(download)
+    except BaseException as exc:
+        cancelled.set()
         path.unlink(missing_ok=True)
+        if not isinstance(exc, Exception):
+            raise
         if isinstance(exc, DomainError):
             raise
         raise source_failure(exc) from None

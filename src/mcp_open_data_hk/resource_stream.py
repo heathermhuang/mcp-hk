@@ -156,7 +156,7 @@ class FileRows:
                 if header is None:
                     raise DomainError("INVALID_SOURCE", "Empty CSV source", 422)
                 info = {}
-                table([header], info)
+                table([header], info, positional_date_header=True)
                 columns = [c["name"] for c in info["sourceColumns"]]
                 self.schema.update(info)
                 for values in reader:

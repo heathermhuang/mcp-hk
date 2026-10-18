@@ -14,6 +14,7 @@ from defusedxml import ElementTree
 
 from .contracts import DomainError
 from .resource_fields import inspect_nested
+from .source_contracts import CSV_DATE_PREAMBLE, date_only_header
 
 MAX_ROWS = 100_000
 MAX_FIELDS = 1000
@@ -98,18 +99,23 @@ def no_duplicates(pairs):
     return result
 
 
-def table(matrix, info=None):
+def table(matrix, info=None, positional_date_header=False):
     matrix = iter(matrix)
     header = next(matrix, None)
     if header is None:
         invalid("No table header")
     raw = [str(x) if x is not None else "" for x in header]
+    dated = positional_date_header and date_only_header(raw)
     if not raw or len(raw) > MAX_FIELDS:
         invalid("Table field budget exceeded", "SOURCE_TOO_COMPLEX")
     header = []
     mapping = []
     for i, name in enumerate(raw):
-        field = name if name and raw.count(name) == 1 else "_column_" + str(i + 1)
+        field = (
+            name
+            if not dated and name and raw.count(name) == 1
+            else "_column_" + str(i + 1)
+        )
         while field in header or (field in raw and field != name):
             field = "_" + field
         header.append(field)
@@ -131,6 +137,11 @@ def table(matrix, info=None):
             mapping.append({"name": field, "sourceHeader": None, "columnIndex": i + 1})
         rows.append(dict(zip(header, values)))
     if info is not None:
+        if dated:
+            info["readerContract"] = CSV_DATE_PREAMBLE
+            info["rowMeaning"] = (
+                "The dated first row is retained as header metadata; remaining raw rows may include source header/description rows. Row counts are not verified counts of real-world entities."
+            )
         info["sourceColumns"] = mapping
         info["headerVerification"] = (
             "First row retained as source header metadata; blank/duplicate/extra columns have explicit positional names. No semantic table interpretation."
@@ -217,7 +228,9 @@ def parse(body, fmt, record_path="", sheet=""):
         except csv.Error:
             dialect = csv.excel
         rows = table(
-            csv.reader(io.StringIO(decoded, newline=""), dialect, strict=True), info
+            csv.reader(io.StringIO(decoded, newline=""), dialect, strict=True),
+            info,
+            positional_date_header=True,
         )
     elif fmt in {"JSON", "GEOJSON", "API"}:
         decoded, encoding = text(body)
