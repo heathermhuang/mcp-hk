@@ -1,6 +1,7 @@
 import { Container } from '@cloudflare/containers';
 import { scheduledPack } from './cron';
-import {maintenanceResponse, maintenanceRuntimeReady, scheduledMaintenance} from './maintenance';
+import {maintenanceResponse, maintenanceRuntimeReady, scheduledMaintenance, maintenancePackForRequest} from './maintenance';
+import {probePublicSource} from './source-probe';
 import {saveOverview, serveOverview} from './overview';
 import {normalizeBackendResponse, recoveringResponse} from './recovery';
 import {saveBackup, requireCheckpoint, safeOperationError} from './backup';
@@ -197,6 +198,7 @@ export default {
     if (url.hostname === 'www.mcp.hk') return Response.redirect(`https://mcp.hk${url.pathname}${url.search}`, 308);
     if (url.pathname.startsWith('/__ops/')) {
       if (!(await authorized(request, env.OPS_TOKEN))) return new Response('Not found', {status: 404});
+      if (url.pathname === '/__ops/source-probe' && request.method === 'GET') return probePublicSource(url.searchParams.get('source') || 'xpms');
       if (url.pathname === '/__ops/snapshot' && request.method === 'GET') {
         const object = await env.BACKUPS.get('latest.snapshot.tar.gz');
         if (!object) return new Response('No accepted snapshot', {status: 503});
@@ -217,8 +219,8 @@ export default {
         return failure ? Response.json({error: {code: 'CHECKPOINT_OPERATION_FAILED', ...failure}}, {status: failure.phase === 'lease' ? 409 : 500}) : Response.json(receipt);
       }
       if (url.pathname === '/__ops/run' && request.method === 'POST') {
-        const pack = url.searchParams.get('pack') || 'backup';
-        if (!['backup', 'restaurants', 'population', 'all', 'catalogue', 'resources', 'resources-recovery'].includes(pack)) return new Response('Invalid pack', {status: 400});
+        const pack = maintenancePackForRequest(url.searchParams.get('pack') || 'backup');
+        if (!['backup', 'restaurants', 'population', 'all', 'catalogue', 'resources'].includes(pack)) return new Response('Invalid pack', {status: 400});
         return maintenanceResponse(env.APP.get(env.APP.idFromName('production')), pack, error => safeOperationError(error, env.OPS_TOKEN));
       }
       if (url.pathname === '/__ops/publish-overview' && request.method === 'POST') return Response.json(await env.APP.get(env.APP.idFromName('production')).publishOverview());
