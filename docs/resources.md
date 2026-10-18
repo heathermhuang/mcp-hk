@@ -207,3 +207,16 @@ The resulting database checkpoint is saved before the lease is released. Stop
 when the relevant backlog is cleared, the daily budget is exhausted, or remaining
 sources have concrete held/error receipts; do not repeatedly retry unchanged failures.
 Fast-compression checkpoints retain the same checksum and restore validation.
+
+
+Background reviews send accepted ETag/Last-Modified validators even when the small
+row cache has evicted a representation. A 304 refreshes only the exact accepted
+variant's validation time, with hash/schema compare guards; it retains content
+hash, observation/retrieval time and record count and does not fabricate cached
+records. Public record queries without a row cache still read actual source data.
+Changed 200 responses still pass the full parser and schema-drift checks. Heavy
+acceptance serialization and SQLite work run outside the async request loop.
+
+Do not deploy Worker/DO code during an active maintenance lease. Wait for the
+receipt/checkpoint or the bounded lease deadline, reconcile state, then preserve
+completed progress through an operator backup before rolling the container.

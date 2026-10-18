@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 from urllib.parse import parse_qs, quote, unquote, urlencode, urlsplit, urlunsplit
 
-from .catalogue_store import CatalogueStore
+from .catalogue_store import CatalogueStore, unpack
 from .contracts import DomainError
 from . import transport
 from .quality import freshness, semantic_quality
@@ -39,6 +39,19 @@ SUPPORTED = {
     "GTFS",
     "KMZ",
 }
+
+
+class ValidationOnlyRows:
+    """Accepted count for private schema review; never a replacement for records."""
+
+    def __init__(self, count):
+        self.count = count
+
+    def __len__(self):
+        return self.count
+
+    def __iter__(self):
+        raise TypeError("Review metadata does not contain source records")
 
 
 def params_url(url, params):
@@ -530,9 +543,9 @@ class Resources:
                     else:
                         conditional = {}
                         # Only revalidate the exact cached representation.
-                        if cached and check.get("etag"):
+                        if (cached or SOURCE_REVIEW.get()) and check.get("etag"):
                             conditional["If-None-Match"] = check["etag"]
-                        if cached and check.get("modified"):
+                        if (cached or SOURCE_REVIEW.get()) and check.get("modified"):
                             conditional["If-Modified-Since"] = check["modified"]
                         try:
                             if profile and profile.arrivals:
@@ -564,12 +577,37 @@ class Resources:
                                 502,
                             )
                         if status == 304:
+                            if (
+                                SOURCE_REVIEW.get()
+                                and check.get("schema_json")
+                                and check.get("hash")
+                                and check.get("schema_hash")
+                                and isinstance(check.get("rows"), int)
+                                and check.get("status") in {"queryable", "document"}
+                            ):
+                                check = await asyncio.to_thread(
+                                    self.catalogue.revalidate,
+                                    resource_id,
+                                    key,
+                                    check,
+                                    headers,
+                                )
+                                return (
+                                    resource,
+                                    {
+                                        "rows": ValidationOnlyRows(check["rows"]),
+                                        "schema": unpack(check["schema_json"]),
+                                    },
+                                    check,
+                                    False,
+                                )
                             if not cached:
                                 raise DomainError(
                                     "INVALID_SOURCE", "304 without cached records", 502
                                 )
                             value = cached["value"]
-                            check = self.catalogue.accept(
+                            check = await asyncio.to_thread(
+                                self.catalogue.accept,
                                 resource_id,
                                 key,
                                 value["rows"],
@@ -646,8 +684,15 @@ class Resources:
                         else extra.get("sourceContentHash")
                         or hashlib.sha256(body).hexdigest()
                     )
-                    check = self.catalogue.accept(
-                        resource_id, key, rows, schema, digest, headers, fmt == "PDF"
+                    check = await asyncio.to_thread(
+                        self.catalogue.accept,
+                        resource_id,
+                        key,
+                        rows,
+                        schema,
+                        digest,
+                        headers,
+                        fmt == "PDF",
                     )
                 return resource, {"rows": rows, "schema": schema}, check, False
             except Exception as exc:
