@@ -1,7 +1,7 @@
 /* Aggregate accounting: never persist IPs, query text, arguments or record bodies. */
 export const LIMITS = {perMinute: 60, dailyRequests: 50000, dailyAddressRequests: 10000, bodyBytes: 65536, retentionDays: 90};
 const CAPTURE_BYTES = 262144;
-const tools = new Set(['hk_address_search','hk_address_get','hk_restaurant_search','hk_restaurant_get','hk_district_list','hk_district_statistics','hk_data_packs','hk_source_status','hk_plate_search','hk_plate_comparables','hk_plate_datasets','hk_catalogue_search','hk_dataset_resources','hk_resource_schema','hk_resource_query','hk_coverage','list_datasets','get_dataset_details','list_categories','get_category_details','search_datasets','get_supported_formats','search_datasets_with_facets','get_datasets_by_format']);
+const tools = new Set(['hk_address_search','hk_address_get','hk_restaurant_search','hk_restaurant_get','hk_district_list','hk_district_statistics','hk_data_packs','hk_source_status','hk_plate_search','hk_plate_comparables','hk_plate_datasets','hk_property_search','hk_property_building','hk_property_price_history','hk_property_coverage','hk_catalogue_search','hk_dataset_resources','hk_resource_schema','hk_resource_query','hk_coverage','list_datasets','get_dataset_details','list_categories','get_category_details','search_datasets','get_supported_formats','search_datasets_with_facets','get_datasets_by_format']);
 type ObjectValue = Record<string, unknown>;
 const object = (v: unknown): ObjectValue => v !== null && typeof v === 'object' && !Array.isArray(v) ? v as ObjectValue : {};
 const resource = (v: unknown) => typeof v === 'string' && /^[a-f0-9]{32}$/.test(v) ? v : '';
@@ -19,7 +19,7 @@ export function describeRequest(request: Request, body?: Uint8Array): Operation 
     return {protocol:'mcp', operation, resource:resource(args.resourceId), dataset:'', sourceCalls:['hk_address_search','hk_address_get'].includes(operation) ? 1 : 0};
   }
   const match = path.match(/^\/api\/v1\/resources\/([a-f0-9]{32})\/(schema|query|records)$/);
-  const pack = path.match(/^\/api\/v1\/(addresses|restaurants|districts|plates)(?:\/|$)/)?.[1];
+  const pack = path.match(/^\/api\/v1\/(addresses|restaurants|districts|plates|properties)(?:\/|$)/)?.[1];
   const route = match ? 'resource_' + match[2] : pack || ({'/api/v1/coverage':'coverage','/api/v1/resources':'resource_directory','/api/v1/catalogue/datasets':'catalogue_search','/api/v1/datasets':'catalogue_search','/api/v1/packs':'packs','/api/v1/status':'status','/healthz':'health','/readyz':'readiness','/docs':'docs','/openapi.json':'openapi'}[path] || 'other');
   return {protocol:'http', operation:route, resource:match?.[1] || '', dataset:pack || '', sourceCalls:pack === 'addresses' ? 1 : 0};
 }
@@ -95,10 +95,11 @@ export function inspectResponse(raw: string, op: Operation, status: number) {
   if (status >= 400 || payload.error) return {op,outcome:status === 429 ? 'rate_limited' : 'error',items:0};
   const resolved = object(payload.resource);
   const sourceId = Array.isArray(payload.provenance) ? object(payload.provenance[0]).sourceId : '';
-  const pack = ['addresses','restaurants','population','platehk','catalogue'].includes(String(sourceId)) ? String(sourceId) : '';
+  const pack = ['addresses','restaurants','population','platehk','seehouse','catalogue'].includes(String(sourceId)) ? String(sourceId) : '';
   const next = {...op,dataset:dataset(resolved.datasetId) || pack || op.dataset,resource:resource(resolved.id) || op.resource};
   const data = object(payload.data);
-  const items = Array.isArray(data.items) ? data.items.length : Array.isArray(payload.items) ? payload.items.length : payload.data && Array.isArray(payload.provenance) ? 1 : null;
+  const propertyRows = pack === 'seehouse' ? [data.candidates,data.listings,data.events].find(Array.isArray) : undefined;
+  const items = Array.isArray(propertyRows) ? propertyRows.length : Array.isArray(data.items) ? data.items.length : Array.isArray(payload.items) ? payload.items.length : payload.data && Array.isArray(payload.provenance) ? 1 : null;
   return {op:next,outcome:inspected ? 'ok' : 'uninspected',items};
 }
 

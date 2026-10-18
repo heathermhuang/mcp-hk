@@ -11,6 +11,8 @@ The upstream MIT licence and author attribution are preserved.
   queries, stable pagination and full-result summaries.
 - **District population:** all 18 districts, published reference year, population in
   persons, area and density.
+- **SeeHouse / 睇樓:** Hong Kong building search, source-linked sale/rental listings,
+  observed asking-price changes and coverage from our existing pipeline. [Search properties](https://mcp.hk/properties). [Pack contract](docs/seehouse.md).
 - **Plate.hk (first external pack):** independent auction-history index, historical
   comparisons and dataset coverage, with original source links. [Search Plate.hk](https://mcp.hk/coverage?q=Plate.hk&access=all).
 - **Real-time transport:** source-timestamp-validated MTR, bus, green-minibus and ferry arrival adapters, short caches and explicit coverage scope. See [request contracts and live verification](docs/transport.md).

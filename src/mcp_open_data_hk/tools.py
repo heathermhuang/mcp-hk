@@ -6,6 +6,8 @@ from .contracts import (
     PlateComparablesQuery,
     PlateDataset,
     PlateSearchQuery,
+    PropertySearchQuery,
+    PropertyBuildingQuery,
     RestaurantQuery,
 )
 from .services import get_service
@@ -77,8 +79,40 @@ def register_data_tools(server, service=None):
 
     @server.tool(annotations={"readOnlyHint": True, "destructiveHint": False})
     def hk_data_packs() -> dict:
-        """Discover queryable packs, providers and HTTP/MCP interfaces. Plate.hk is independent."""
+        """Discover queryable packs, providers and HTTP/MCP interfaces. Plate.hk and SeeHouse are independent."""
         return current().packs()
+
+    @server.tool(annotations={"readOnlyHint": True, "destructiveHint": False})
+    async def hk_property_search(
+        q: str, limit: int = 10, lang: Literal["en", "zh-Hant"] = "en"
+    ) -> dict:
+        """Search SeeHouse Hong Kong buildings by name, estate or address. Select a buildingId for listings. Limited ranked candidates, not a complete inventory or total. Independent provider; listing freshness is separate from API retrieval."""
+        return await current().properties.search(
+            PropertySearchQuery(q=q, limit=limit, lang=lang)
+        )
+
+    @server.tool(annotations={"readOnlyHint": True, "destructiveHint": False})
+    async def hk_property_building(
+        buildingId: str, lang: Literal["en", "zh-Hant"] = "en"
+    ) -> dict:
+        """Read SeeHouse source-linked sale/rental listings for a buildingId from hk_property_search. Keep mode, HKD asking price, area in ft², freshness, matching and dedupe context. Advertisements are not verified availability, valuations or completed transactions; unit matching is not guaranteed."""
+        return await current().properties.building(
+            PropertyBuildingQuery(buildingId=buildingId, lang=lang)
+        )
+
+    @server.tool(annotations={"readOnlyHint": True, "destructiveHint": False})
+    async def hk_property_price_history(
+        buildingId: str, lang: Literal["en", "zh-Hant"] = "en"
+    ) -> dict:
+        """Observed SeeHouse asking-price changes for a selected building. Preserve source, sourceListingId, observedAt, old/new HKD prices and caveats. These are not Land Registry transactions or a full market history."""
+        return await current().properties.history(
+            PropertyBuildingQuery(buildingId=buildingId, lang=lang)
+        )
+
+    @server.tool(annotations={"readOnlyHint": True, "destructiveHint": False})
+    async def hk_property_coverage() -> dict:
+        """SeeHouse dated building-index and listing-coverage counts, including fresh/aging/stale and unmatched records. Distinguish indexed buildings from buildings with listings; not complete Hong Kong inventory. Metadata read only, no crawler or refresh is triggered."""
+        return await current().properties.query("coverage")
 
     @server.tool(annotations={"readOnlyHint": True, "destructiveHint": False})
     async def hk_plate_search(

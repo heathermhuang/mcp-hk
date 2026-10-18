@@ -1,0 +1,60 @@
+{
+  "buildingId": "hk-csdi-95d9ff45d90eb3f5",
+  "generatedAt": "2026-10-18T03:00:32.420Z",
+  "events": [
+    {
+      "source": "midland",
+      "sourceListingId": "M151951775",
+      "mode": "buy",
+      "observedAt": "2026-08-07T07:33:51+00:00",
+      "oldPriceHkd": 9200000,
+      "newPriceHkd": 10500000
+    },
+    {
+      "source": "midland",
+      "sourceListingId": "M101060430",
+      "mode": "buy",
+      "observedAt": "2026-08-16T07:15:54+00:00",
+      "oldPriceHkd": 9980000,
+      "newPriceHkd": 9880000
+    },
+    {
+      "source": "centaline",
+      "sourceListingId": "1e02dac3-b4ac-c318-f762-08de94848341",
+      "mode": "buy",
+      "observedAt": "2026-09-08T09:19:13+00:00",
+      "oldPriceHkd": 10000000,
+      "newPriceHkd": 9500000
+    },
+    {
+      "source": "midland",
+      "sourceListingId": "M101060430",
+      "mode": "buy",
+      "observedAt": "2026-10-14T09:18:53+00:00",
+      "oldPriceHkd": 9880000,
+      "newPriceHkd": 9780000
+    },
+    {
+      "source": "centaline",
+      "sourceListingId": "9273b9d0-79c0-4fc9-bbde-3f236b58c45a",
+      "mode": "buy",
+      "observedAt": "2026-10-14T16:03:37+00:00",
+      "oldPriceHkd": 8100000,
+      "newPriceHkd": 8500000
+    },
+    {
+      "source": "centaline",
+      "sourceListingId": "c5146e86-f4ab-cc48-1781-08ddf415c711",
+      "mode": "buy",
+      "observedAt": "2026-10-15T16:03:22+00:00",
+      "oldPriceHkd": 8900000,
+      "newPriceHkd": 9100000
+    }
+  ],
+  "eventCount": 6,
+  "unitLevelMatching": "opportunistic_not_guaranteed",
+  "caveats": [
+    "Unit-level matching is not guaranteed.",
+    "Asking-price changes observed on third-party source listings; not Land Registry transaction records."
+  ]
+}

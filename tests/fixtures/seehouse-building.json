@@ -1,0 +1,182 @@
+{
+  "id": "hk-csdi-95d9ff45d90eb3f5",
+  "name": "Heng Shan Mansion",
+  "district": "Eastern",
+  "address": null,
+  "coordinates": {
+    "latitude": 22.2856187,
+    "longitude": 114.2194219
+  },
+  "match": {
+    "level": "building",
+    "confidence": 0.99,
+    "method": "cov_llm_resolver",
+    "evidence": {
+      "sourceListing": {
+        "source": "centaline",
+        "sourceListingId": "1e02dac3-b4ac-c318-f762-08de94848341",
+        "url": "https://hk.centanet.com/findproperty/detail/%E5%A4%AA%E5%8F%A4%E5%9F%8E_DAL537",
+        "observedAt": "2026-10-06T09:20:08+00:00"
+      },
+      "targetBuilding": {
+        "id": "hk-official-8b82f2bcfd131fca",
+        "nameEn": "Heng Shan Mansion",
+        "nameZhHk": "恒山閣",
+        "officialSource": "csdi_landsd_building_wfs",
+        "officialId": "4065216312T20050430"
+      },
+      "identity": {
+        "matchMethod": "cov_llm_resolver",
+        "matchedSignal": null,
+        "matchedTargetName": "Heng Shan Mansion",
+        "nameMethod": "cov_llm_resolver",
+        "distanceMeters": 7.9,
+        "districtStatus": "unknown"
+      },
+      "guardrails": {
+        "detailEnriched": false,
+        "rawArchiveBeforeParse": false,
+        "officialIndexDirectListingMatchAllowed": false,
+        "sourceListingsBuildingIdMutated": false,
+        "unitLevelMatching": "opportunistic_not_guaranteed"
+      }
+    },
+    "unitLevelMatching": "opportunistic_not_guaranteed"
+  },
+  "stats": {
+    "rentCount": 4,
+    "buyCount": 21,
+    "dedupeClusterCount": 25,
+    "duplicateClusterCount": 1,
+    "lastUpdated": "2026-10-17T16:02:51+00:00"
+  },
+  "listingState": {
+    "status": "active_source_listings",
+    "source": "api_buildings",
+    "message": null
+  },
+  "listings": [
+    {
+      "id": "centaline:8984bb2e-ae9f-c747-e444-08df21d4fd67",
+      "source": "centaline",
+      "sourceListingId": "8984bb2e-ae9f-c747-e444-08df21d4fd67",
+      "mode": "buy",
+      "propertyType": "apartment",
+      "title": "Taikoo Shing・Kao Shan Terrace・(T-12)  Heng Shan Mansion",
+      "floorBand": "3 Rooms・(1 Suite)",
+      "priceHkd": 12000000,
+      "saleableAreaFt2": 684,
+      "grossAreaFt2": 779,
+      "pricePerFt2": 17543,
+      "sourceUrl": "https://hk.centanet.com/findproperty/en/detail/%E5%A4%AA%E5%8F%A4%E5%9F%8E_DAJ120",
+      "updatedAt": "2026-10-17T16:02:51+00:00",
+      "freshness": {
+        "status": "fresh",
+        "score": null,
+        "reason": null,
+        "observedAt": "2026-10-17T16:02:51+00:00",
+        "firstSeenAt": "2026-10-04T10:59:12+00:00",
+        "lastSeenAt": "2026-10-17T16:02:51+00:00",
+        "datePublished": null,
+        "dateModified": null,
+        "expiresAt": null
+      },
+      "confidence": {
+        "buildingMatch": 0.99,
+        "parseQualityScore": 0.8,
+        "matchLevel": "building",
+        "towerCount": null
+      },
+      "parseQualityScore": 0.8,
+      "sourceAttribution": {
+        "required": true,
+        "source": "centaline",
+        "sourceListingId": "8984bb2e-ae9f-c747-e444-08df21d4fd67",
+        "url": "https://hk.centanet.com/findproperty/detail/%E5%A4%AA%E5%8F%A4%E5%9F%8E_DAJ120",
+        "observedAt": "2026-10-17T16:02:51+00:00"
+      },
+      "dedupeCluster": {
+        "id": "centaline:8984bb2e-ae9f-c747-e444-08df21d4fd67",
+        "size": 1,
+        "displayRank": 1,
+        "isPrimary": true,
+        "confidence": 0,
+        "reason": "single_listing",
+        "sourceListingRefs": [
+          "centaline:8984bb2e-ae9f-c747-e444-08df21d4fd67"
+        ]
+      },
+      "listingStatus": null,
+      "attributionRequired": true,
+      "trustBadges": [
+        "source_attributed",
+        "residential_filtered",
+        "freshness_observed",
+        "dedupe_context",
+        "pilot_d1"
+      ]
+    },
+    {
+      "id": "centaline:9273b9d0-79c0-4fc9-bbde-3f236b58c45a",
+      "source": "centaline",
+      "sourceListingId": "9273b9d0-79c0-4fc9-bbde-3f236b58c45a",
+      "mode": "buy",
+      "propertyType": "apartment",
+      "title": "Taikoo Shing・Kao Shan Terrace",
+      "floorBand": "Low Floor・FLAT C・3 Rooms",
+      "priceHkd": 8500000,
+      "saleableAreaFt2": 582,
+      "grossAreaFt2": 675,
+      "pricePerFt2": 14604,
+      "sourceUrl": "https://hk.centanet.com/findproperty/en/detail/%E5%A4%AA%E5%8F%A4%E5%9F%8E_DAR410",
+      "updatedAt": "2026-10-17T16:02:51+00:00",
+      "freshness": {
+        "status": "fresh",
+        "score": null,
+        "reason": null,
+        "observedAt": "2026-10-17T16:02:51+00:00",
+        "firstSeenAt": "2026-07-12T09:06:36+00:00",
+        "lastSeenAt": "2026-10-17T16:02:51+00:00",
+        "datePublished": null,
+        "dateModified": null,
+        "expiresAt": null
+      },
+      "confidence": {
+        "buildingMatch": 0.9,
+        "parseQualityScore": 0.8,
+        "matchLevel": "building",
+        "towerCount": null
+      },
+      "parseQualityScore": 0.8,
+      "sourceAttribution": {
+        "required": true,
+        "source": "centaline",
+        "sourceListingId": "9273b9d0-79c0-4fc9-bbde-3f236b58c45a",
+        "url": "https://hk.centanet.com/findproperty/detail/%E5%A4%AA%E5%8F%A4%E5%9F%8E_DAR410",
+        "observedAt": "2026-10-17T16:02:51+00:00"
+      },
+      "dedupeCluster": {
+        "id": "centaline:9273b9d0-79c0-4fc9-bbde-3f236b58c45a",
+        "size": 1,
+        "displayRank": 1,
+        "isPrimary": true,
+        "confidence": 0,
+        "reason": "single_listing",
+        "sourceListingRefs": [
+          "centaline:9273b9d0-79c0-4fc9-bbde-3f236b58c45a"
+        ]
+      },
+      "listingStatus": null,
+      "attributionRequired": true,
+      "trustBadges": [
+        "source_attributed",
+        "residential_filtered",
+        "freshness_observed",
+        "dedupe_context",
+        "pilot_d1"
+      ]
+    }
+  ],
+  "streetViewInteractive": true,
+  "mapInteractive": true
+}

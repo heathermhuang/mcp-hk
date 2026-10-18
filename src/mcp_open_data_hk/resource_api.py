@@ -124,7 +124,7 @@ def register_mcp(server, current):
         offset: int = 0,
         access: Literal["all", "connected", "sources"] = "all",
     ) -> dict:
-        """Search connected query services (including independent Plate.hk) and harvested DATA.GOV.HK/CSDI sources. Connected entries include direct HTTP/MCP actions; source entries require resource inspection. Discovery is not record validation."""
+        """Search connected query services (including independent Plate.hk and SeeHouse) and harvested DATA.GOV.HK/CSDI sources. Connected entries include direct HTTP/MCP actions; source entries require resource inspection. Discovery is not record validation."""
         return current().resources.catalogue.search(q, limit, offset, access)
 
     @server.tool(annotations=annotation)

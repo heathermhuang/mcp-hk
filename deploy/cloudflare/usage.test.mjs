@@ -63,3 +63,16 @@ test('aggregate retention, restart persistence, byte totals and throttles are re
   assert.doesNotMatch(JSON.stringify(report.rows),/private-query|203\.0\.113|test-secret/);
   assert.equal(report.limits.perMinute,LIMITS.perMinute);
 });
+
+test('SeeHouse operations retain only bounded names and count returned rows, never coverage totals',()=>{
+  for(const name of ['hk_property_search','hk_property_building','hk_property_price_history','hk_property_coverage']){
+    const body=new TextEncoder().encode(JSON.stringify({method:'tools/call',params:{name,arguments:{q:'private query',buildingId:'private-id'}}}));
+    const described=describeRequest(new Request('https://mcp.hk/mcp'),body);
+    assert.equal(described.operation,name);assert.doesNotMatch(JSON.stringify(described),/private/);
+  }
+  assert.equal(describeRequest(new Request('https://mcp.hk/api/v1/properties/building?buildingId=private-id')).operation,'properties');
+  for(const key of ['candidates','listings','events']){
+    const result=inspectResponse(JSON.stringify({data:{[key]:[{},{}]},meta:{total:999},provenance:[{sourceId:'seehouse'}]}),{...op,protocol:'http'},200);
+    assert.equal(result.items,2);assert.equal(result.op.dataset,'seehouse');
+  }
+});

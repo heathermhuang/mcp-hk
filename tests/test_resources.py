@@ -900,10 +900,10 @@ def test_connected_views_keep_native_denominators_and_pagination(resource_servic
     before = c.coverage()
     assert {e["packId"] for e in entries()} == {p["id"] for p in PACKS}
     assert c.search(access="sources")["total"] == 1
-    assert c.search(access="connected")["total"] == 4
-    pages = [c.search(limit=1, offset=i) for i in range(5)]
-    assert len({p["items"][0]["id"] for p in pages}) == 5
-    assert pages[-1]["nextOffset"] is None and pages[0]["total"] == 5
+    assert c.search(access="connected")["total"] == 5
+    pages = [c.search(limit=1, offset=i) for i in range(6)]
+    assert len({p["items"][0]["id"] for p in pages}) == 6
+    assert pages[-1]["nextOffset"] is None and pages[0]["total"] == 6
     assert c.coverage()["datasets"] == before["datasets"]
     assert c.search(q="%")["total"] == 0
     assert c.search(q="_")["total"] == 0
