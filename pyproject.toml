@@ -65,4 +65,4 @@ testpaths = ["tests"]
 markers = ["live: optional government network integration probes"]
 
 [tool.setuptools.package-data]
-mcp_open_data_hk = ["web/*.html", "web/*.css", "web/*.js", "web/*.json", "web/*.svg"]
+mcp_open_data_hk = ["web/*.html", "web/*.css", "web/*.js", "web/*.json", "web/*.svg", "source-relay-targets.json"]
