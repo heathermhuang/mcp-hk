@@ -11,7 +11,7 @@ from typing import Annotated, Literal
 from fastapi import FastAPI, Query, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from . import server as catalogue
@@ -292,28 +292,42 @@ def create_app(service=None):
     register_operations(app, service)
     web = Path(__file__).parent / "web"
     if web.exists():
+        from .discovery import INDEX, locale, public_paths, render_page, text_response
 
-        @app.get("/", include_in_schema=False)
-        @app.get("/demo", include_in_schema=False)
-        @app.get("/sources", include_in_schema=False)
-        @app.get("/connect", include_in_schema=False)
-        @app.get("/plates", include_in_schema=False)
-        def homepage():
-            return FileResponse(web / "index.html")
+        def public_page(request: Request):
+            path = request.url.path
+            lang = locale(request.query_params.get("lang"))
+            filtered = path == "/coverage" and any(
+                key != "lang" and not key.startswith("utm_")
+                for key in request.query_params
+            )
+            noindex = filtered or path in {"/terms", "/privacy"}
+            return HTMLResponse(
+                render_page(path, lang, filtered),
+                headers={
+                    "Content-Language": lang,
+                    "X-Robots-Tag": "noindex, follow" if noindex else INDEX,
+                },
+            )
 
-        @app.get("/properties", include_in_schema=False)
-        def properties_page():
-            return FileResponse(web / "properties.html")
+        for path in public_paths():
+            app.add_api_route(
+                path, public_page, methods=["GET", "HEAD"], include_in_schema=False
+            )
 
-        @app.get("/coverage", include_in_schema=False)
+        def discovery_file(request: Request):
+            body, media_type = text_response(request.url.path)
+            return Response(body, media_type=media_type)
+
+        for path in ("/robots.txt", "/sitemap.xml", "/llms.txt"):
+            app.add_api_route(
+                path, discovery_file, methods=["GET", "HEAD"], include_in_schema=False
+            )
+
         @app.get("/data", include_in_schema=False)
-        def coverage_page():
-            return FileResponse(web / "coverage.html")
-
-        @app.get("/terms", include_in_schema=False)
-        @app.get("/privacy", include_in_schema=False)
-        def legal_page():
-            return FileResponse(web / "legal.html")
+        def data_alias(request: Request):
+            suffix = "?" + request.url.query if request.url.query else ""
+            return RedirectResponse("/coverage" + suffix, status_code=308)
 
         app.mount("/assets", StaticFiles(directory=web), name="assets")
     # The MCP app owns /mcp. Mount at root last to avoid /mcp/mcp and keep REST routes.

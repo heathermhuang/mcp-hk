@@ -184,7 +184,7 @@ import {fetchPublicJson} from './http.js';
       if(/SHEET_REQUIRED|INVALID_SHEET|LAYER_REQUIRED|INVALID_RECORD_PATH/.test(e.message))$('query-options').open=true;
     } finally { if(generation===requestGeneration){busy=false;renderQuery();if(datasetId||directoryMode)resources();} }
   }
-  function render() { MhkI18n.apply(); if (!selected) $('resource-code').textContent = t('selectForCode'); document.title = t('coveragePageTitle'); renderCoverage(); renderDatasets(); renderResources(); renderSelection(); renderQuery(); }
+  function render() { MhkI18n.apply(); if (!selected) $('resource-code').textContent = t('selectForCode'); if (document.documentElement?.dataset?.discovery !== 'true') document.title = t('coveragePageTitle'); renderCoverage(); renderDatasets(); renderResources(); renderSelection(); renderQuery(); }
   async function restore() {
     const p=new URL(location.href).searchParams, wantedDataset=p.get('dataset'), wantedResource=p.get('resource'), wantedOffset=Math.min(100000,Math.max(0,Number(p.get('sourceOffset'))||0)),wantedFormat=p.get('format')||'';
     submittedQuery=p.get('q')||'';access=['all','connected','sources'].includes(p.get('access'))?p.get('access'):(submittedQuery||wantedDataset?'all':'connected');searchOffset=Math.min(100000,Math.max(0,Number(p.get('offset'))||0));$('dataset-query').value=submittedQuery;

@@ -3,7 +3,8 @@
   const normalize = value => /^(zh|zh-hant|zh-hk)$/i.test(value || '') ? 'zh' : value === 'en' ? 'en' : null;
   let stored;
   try { stored = localStorage.getItem('mhk-language'); } catch { /* URL locale works without storage. */ }
-  let lang = normalize(new URL(location.href).searchParams.get('lang')) || normalize(stored) || 'en';
+  const serverRendered = document.documentElement.dataset?.discovery === 'true';
+  let lang = normalize(new URL(location.href).searchParams.get('lang')) || (serverRendered ? normalize(document.documentElement.lang) : normalize(stored)) || 'en';
   const t = (key, values = {}) => {
     const text = translations[lang][key] ?? translations.en[key] ?? key;
     return text.replace(/\{(\w+)\}/g, (match, name) => values[name] ?? match);
@@ -29,7 +30,8 @@
     document.querySelectorAll('a[href]').forEach(e => {
       if (e.getAttribute('href').startsWith('#')) return;
       const url = new URL(e.getAttribute('href'), location.href);
-      if (url.origin === location.origin && ['/', '/demo', '/connect', '/sources', '/plates', '/properties', '/coverage', '/data', '/terms', '/privacy'].includes(url.pathname)) {
+      if (e.hasAttribute?.('hreflang')) return;
+      if (url.origin === location.origin && (['/', '/demo', '/connect', '/sources', '/plates', '/properties', '/coverage', '/data', '/terms', '/privacy', '/about', '/guides'].includes(url.pathname) || url.pathname.startsWith('/guides/'))) {
         url.searchParams.set('lang', lang === 'en' ? 'en' : 'zh-Hant');
         e.setAttribute('href', url.pathname + url.search + url.hash);
       }
@@ -40,6 +42,7 @@
     lang = next;
     try { localStorage.setItem('mhk-language', lang); } catch { /* Keep working without storage. */ }
     const url = new URL(location.href); url.searchParams.set('lang', lang === 'en' ? 'en' : 'zh-Hant');
+    if (serverRendered) { location.assign(url.pathname + url.search + url.hash); return; }
     history.replaceState(null, '', url.pathname + url.search + url.hash);
     apply(); window.dispatchEvent(new Event('mhk:language'));
   }
