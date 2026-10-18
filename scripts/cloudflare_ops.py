@@ -117,5 +117,11 @@ except urllib.error.HTTPError as exc:
     except (ValueError, AttributeError, TypeError):
         pass
     retry = exc.headers.get("Retry-After", "")
-    retry_note = "; retry after " + retry + " seconds" if re.fullmatch(r"[0-9]{1,6}", retry) else ""
-    raise SystemExit("Operator endpoint returned HTTP " + str(exc.code) + code + retry_note) from None
+    retry_note = (
+        "; retry after " + retry + " seconds"
+        if re.fullmatch(r"[0-9]{1,6}", retry)
+        else ""
+    )
+    raise SystemExit(
+        "Operator endpoint returned HTTP " + str(exc.code) + code + retry_note
+    ) from None
