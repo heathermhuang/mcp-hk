@@ -171,7 +171,9 @@ def create_app(service=None):
 
     @app.get("/healthz")
     def health():
-        return {"status": "ok"}
+        from .quality import REVISION
+
+        return {"status": "ok", "sourceReviewPolicy": REVISION}
 
     @app.get("/readyz")
     def ready():

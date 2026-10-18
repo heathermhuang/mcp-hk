@@ -182,3 +182,11 @@ A held maintenance lease returns operator HTTP 409 `MAINTENANCE_BUSY` with
 code/deadline without response bodies or credentials. Wait for expiry; never clear
 a lease just because a rollout interrupted an operator response. Other maintenance
 failures return a structured, redacted 503 and retain their owning failure receipt.
+
+
+Maintenance also checks the backend's source-review policy handshake before
+acquiring its lease. A Worker whose matching data image is still rolling out gets
+`SERVICE_RECOVERING`/503 without taking a lease. The Python/Worker policy contract
+is regression-tested, so a source-policy update cannot silently start maintenance
+against the previous image. Active leases still expire naturally and are never
+cleared merely to speed a deployment.

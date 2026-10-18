@@ -188,3 +188,25 @@ async def test_restricted_never_validated_sources_cannot_starve_due_accepted_dat
         )
     q = RefreshQueue(s.resources.catalogue)
     assert q.due(1, now)[0]["id"] == rows[1]["id"]
+
+
+def test_compound_review_cadence_uses_fastest_update_and_closed_archives_are_not_live():
+    assert (
+        review_interval(
+            {"updateCadence": "Monthly, except some columns updated annually"}, {}
+        )
+        == 7 * 86400
+    )
+    assert (
+        review_interval({"updateCadence": "Quarterly and annually"}, {}) == 21 * 86400
+    )
+    assert (
+        review_interval(
+            {
+                "updateCadence": "Only the hourly API of the period from July 1999 to December 2013 is available"
+            },
+            {},
+        )
+        == 90 * 86400
+    )
+    assert review_interval({"updateCadence": "Hourly"}, {}) == 300

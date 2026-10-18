@@ -60,7 +60,7 @@ class RefreshQueue:
                     )
                 )
             db.executemany(
-                "INSERT INTO resource_review_policy(id,interval,cache_ttl,next_due) VALUES (?,?,?,?) ON CONFLICT(id) DO UPDATE SET interval=excluded.interval,cache_ttl=excluded.cache_ttl,next_due=excluded.next_due",
+                "INSERT INTO resource_review_policy(id,interval,cache_ttl,next_due) VALUES (?,?,?,?) ON CONFLICT(id) DO UPDATE SET interval=excluded.interval,cache_ttl=excluded.cache_ttl,next_due=CASE WHEN resource_review_policy.failures>0 THEN max(resource_review_policy.next_due,excluded.next_due) ELSE excluded.next_due END",
                 policies,
             )
             db.execute(
