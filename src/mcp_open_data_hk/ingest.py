@@ -11,14 +11,46 @@ from pathlib import Path
 
 from .contracts import DomainError
 from .http import request_json
+from .resource_fetch import fetch
 from .sources import (
     DISTRICTS,
     POPULATION,
-    RESTAURANTS,
+    RESTAURANTS_SNAPSHOT,
     parse_population,
     parse_restaurant,
 )
 from .storage import Store
+
+
+async def read_restaurant_features():
+    # The paginated CSDI service currently alternates between different source
+    # editions even within one second. Its official GeoJSON file is one complete
+    # response, so rows cannot be assembled from different replicas/editions.
+    body, _, resolved, status = await fetch(RESTAURANTS_SNAPSHOT, maximum=32_000_000)
+    if status != 200 or resolved != RESTAURANTS_SNAPSHOT:
+        raise DomainError("INVALID_SOURCE", "Restaurant snapshot source changed")
+    try:
+        value = json.loads(body)
+        features = value["features"]
+        if (
+            value.get("type") != "FeatureCollection"
+            or value.get("error")
+            or value.get("exceededTransferLimit")
+            or not isinstance(features, list)
+            or not 1 <= len(features) <= 100_000
+            or any(
+                not isinstance(f, dict)
+                or f.get("type") != "Feature"
+                or not isinstance(f.get("properties"), dict)
+                for f in features
+            )
+        ):
+            raise ValueError("Incomplete feature collection")
+        return [{"attributes": f["properties"]} for f in features]
+    except (ValueError, KeyError, TypeError, AttributeError):
+        raise DomainError(
+            "INCOMPLETE_SOURCE", "Official restaurant snapshot is invalid or incomplete"
+        ) from None
 
 
 async def read_features(layer: str):
@@ -82,7 +114,7 @@ async def refresh(store: Store, pack: str):
         )
     try:
         if pack == "restaurants":
-            features = await read_features(RESTAURANTS)
+            features = await read_restaurant_features()
             rows = [parse_restaurant(f) for f in features]
             coverage = sum(r["latitude"] is not None for r in rows) / len(rows)
             if coverage < 0.95:
