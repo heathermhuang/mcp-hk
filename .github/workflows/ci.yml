@@ -25,7 +25,7 @@ jobs:
         pip install -r requirements.lock
         pip install --no-deps -e .
     - name: Run tests
-      run: pytest tests/
+      run: bash scripts/check.sh python
     - name: Build distributable package
       run: |
         pip install build

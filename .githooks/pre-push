@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(git rev-parse --show-toplevel)"
+head=$(git rev-parse HEAD)
+check_required=false
+while read -r local_ref local_sha _remote_ref _remote_sha; do
+    # Deletions need no validation; annotated tags resolve to their commit.
+    if [[ $local_sha =~ ^0+$ ]]; then
+        continue
+    fi
+    if [[ $(git rev-parse "$local_sha^{commit}") != "$head" ]]; then
+        echo "Push blocked: check out $local_ref so checks cover the pushed commit." >&2
+        exit 1
+    fi
+    check_required=true
+done
+
+if [[ $check_required == false ]]; then
+    exit 0
+fi
+if [[ -n $(git status --porcelain --untracked-files=normal) ]]; then
+    echo 'Push blocked: commit changes first so checks cover the exact pushed files.' >&2
+    exit 1
+fi
+bash scripts/check.sh all
+if [[ $(git rev-parse HEAD) != "$head" || -n $(git status --porcelain --untracked-files=normal) ]]; then
+    echo 'Push blocked: files or HEAD changed during validation; commit and retry.' >&2
+    exit 1
+fi

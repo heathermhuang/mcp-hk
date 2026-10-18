@@ -22,6 +22,5 @@ jobs:
           cache: npm
           cache-dependency-path: deploy/cloudflare/package-lock.json
       - run: npm ci --ignore-scripts
-      - run: npm run types
-      - run: npm run check
-      - run: npm test
+      - name: Check Worker types and tests
+        run: bash ../../scripts/check.sh worker
