@@ -272,6 +272,7 @@ async def test_review_pool_bounds_hosts_and_leaves_interactive_context_untouched
     s, rows = service_with_resources(tmp_path, count=18, hosts=3)
     active = Counter()
     peak = Counter()
+    full_pool = asyncio.Event()
     context_seen = []
 
     async def inspect(rid, **kwargs):
@@ -281,7 +282,9 @@ async def test_review_pool_bounds_hosts_and_leaves_interactive_context_untouched
         peak[host] = max(peak[host], active[host])
         peak["total"] = max(peak["total"], active["total"])
         context_seen.append(SOURCE_REVIEW.get())
-        await asyncio.sleep(0.02)
+        if active["total"] == CONCURRENCY:
+            full_pool.set()
+        await full_pool.wait()
         active[host] -= 1
         active["total"] -= 1
 
