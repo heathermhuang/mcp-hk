@@ -257,8 +257,8 @@ Due background reviews always contact the source (including conditional GET), ev
 when a cached body has a longer TTL than the review interval. Normal interactive
 cache reuse is unchanged.
 
-For 33 exact, previously accepted public URLs from Highways, Public Libraries and
-Companies Registry and SmartPLAY, the hosted reader uses the existing authenticated Worker as a
+For 34 exact, previously accepted public URLs from Highways, Public Libraries and
+Companies Registry, SmartPLAY and the Citybus route reference, the hosted reader uses the existing authenticated Worker as a
 streaming HTTPS transport. Native Worker requests reach these origins where the
 container's TCP path times out. The packaged allowlist is finite; callers cannot
 supply a URL, credentials, cookies or request body. Redirects stay on the approved

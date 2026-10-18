@@ -102,3 +102,12 @@ def test_rss_rejects_html_errors_and_exposes_its_flexible_syntax_contract():
         "RSS",
     )
     assert atom["readerContract"] == "rss-feed-root-1"
+
+
+def test_citybus_reference_uses_the_approved_resolved_v2_url(monkeypatch):
+    configure(monkeypatch)
+    url = "https://rt.data.gov.hk/v2/transport/citybus/route/CTB"
+    route, headers = relay_request(url)
+    assert route.endswith("resourceId=2b407d29bdbd9b2760f0d45be844d43a")
+    assert headers == {"Authorization": "Bearer private-token"}
+    assert relay_request(url + "?unapproved=1") is None
