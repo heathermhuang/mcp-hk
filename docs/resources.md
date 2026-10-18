@@ -233,3 +233,10 @@ The hosted reader uses `standard-1` (half a vCPU, 4 GiB) after measured ordinary
 review throughput on `basic` fell below the required review rate. Verify actual
 throughput and interactive latency after a size change; nominal budgets alone
 do not establish sustainable capacity.
+
+
+The container idle timeout is ten minutes, longer than the five-minute review
+cadence. Otherwise each cron can wake a stopped runtime and fail readiness before
+its accepted snapshot restores. Scheduled jobs retry only DATA_RUNTIME_NOT_READY,
+at most twice with 30-second pauses and before acquiring a maintenance lease.
+Held leases and actual review/checkpoint failures are never retried by this wrapper.

@@ -1,6 +1,6 @@
 import { Container } from '@cloudflare/containers';
 import { scheduledPack } from './cron';
-import {maintenanceResponse, maintenanceRuntimeReady} from './maintenance';
+import {maintenanceResponse, maintenanceRuntimeReady, scheduledMaintenance} from './maintenance';
 import {saveOverview, serveOverview} from './overview';
 import {normalizeBackendResponse, recoveringResponse} from './recovery';
 import {saveBackup, requireCheckpoint, safeOperationError} from './backup';
@@ -37,7 +37,8 @@ async function boundedBody(request: Request | Response, limit: number): Promise<
 
 export class McpContainer extends Container<Env> {
   defaultPort = 8000;
-  sleepAfter = '2m';
+  // Keep the runtime warm across the five-minute review cadence.
+  sleepAfter = '10m';
   envVars = {
     MCP_HK_DATABASE: '/data/mcp-hk.sqlite3', HOST: '0.0.0.0', PORT: '8000',
     MCP_HK_OPS_TOKEN: this.env.OPS_TOKEN,
@@ -256,6 +257,6 @@ export default {
   },
   async scheduled(controller: ScheduledController, env: Env, ctx: ExecutionContext) {
     const pack = scheduledPack(controller.cron);
-    ctx.waitUntil(env.APP.get(env.APP.idFromName('production')).maintain(pack));
+    ctx.waitUntil(scheduledMaintenance(env.APP.get(env.APP.idFromName('production')), pack));
   },
 } satisfies ExportedHandler<Env>;
