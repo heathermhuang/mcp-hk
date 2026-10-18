@@ -8,6 +8,21 @@ type Controller = {
   operationDiagnostics(): Promise<{leaseUntil: number | null}>;
 };
 
+/** Cold restore happens before acquiring a lease. Retry readiness only. */
+export async function scheduledMaintenance(
+  app: Pick<Controller, 'maintain'>,
+  pack: string,
+  pause: (ms: number) => Promise<void> = ms => new Promise<void>(resolve => setTimeout(resolve, ms)),
+) {
+  for (let attempt=0; attempt<3; attempt++) {
+    try { return await app.maintain(pack); }
+    catch (error) {
+      if (!(error instanceof Error) || !error.message.includes('DATA_RUNTIME_NOT_READY') || attempt === 2) throw error;
+      await pause(30000);
+    }
+  }
+}
+
 /** Report a held safety lease without clearing it or disguising it as an outage. */
 export async function maintenanceResponse(app: Controller, pack: string, redact: (error: unknown) => string, now = Date.now()) {
   try { return Response.json(await app.maintain(pack)); }
