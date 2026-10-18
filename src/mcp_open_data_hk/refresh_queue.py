@@ -4,10 +4,19 @@ import asyncio
 import json
 import re
 import time
+from collections import deque, Counter
+from urllib.parse import urlsplit
 
 from .catalogue_store import unpack
 from .contracts import DomainError
 from .quality import HELD, REVISION, review_interval
+from .review_config import (
+    CONCURRENCY,
+    PER_HOST_CONCURRENCY,
+    DAILY_REVIEW_BUDGET,
+    RECOVERY_BATCH_SIZE,
+    SOURCE_REVIEW,
+)
 
 
 class RefreshQueue:
@@ -78,9 +87,14 @@ class RefreshQueue:
             held = tuple(sorted(HELD))
             marks = ",".join("?" for _ in held)
             return [
-                dict(r)
+                {
+                    "id": r["id"],
+                    "interval": r["interval"],
+                    "status": r["status"],
+                    "host": urlsplit(unpack(r["payload"])["url"]).hostname,
+                }
                 for r in db.execute(
-                    f"SELECT r.id,p.interval,c.status FROM resource_review_policy p JOIN inventory_resources r ON r.id=p.id LEFT JOIN resource_checks c ON c.id=r.id LEFT JOIN resource_policies t ON t.id=r.id WHERE r.generation=? AND p.next_due<=? AND COALESCE(c.status,'pending') NOT IN ({marks}) AND t.ttl IS NULL ORDER BY CASE WHEN COALESCE(c.status,'pending')='pending' THEN 0 WHEN c.status IN ('queryable','document','stale') THEN 1 ELSE 2 END,(?-COALESCE(c.validated,c.checked,p.next_due-p.interval))/p.interval DESC,p.next_due,r.id LIMIT ?",
+                    f"SELECT r.id,r.payload,p.interval,c.status FROM resource_review_policy p JOIN inventory_resources r ON r.id=p.id LEFT JOIN resource_checks c ON c.id=r.id LEFT JOIN resource_policies t ON t.id=r.id WHERE r.generation=? AND p.next_due<=? AND COALESCE(c.status,'pending') NOT IN ({marks}) AND t.ttl IS NULL ORDER BY CASE WHEN COALESCE(c.status,'pending')='pending' THEN 0 WHEN c.status IN ('queryable','document','stale') THEN 1 ELSE 2 END,(?-COALESCE(c.validated,c.checked,p.next_due-p.interval))/p.interval DESC,p.next_due,r.id LIMIT ?",
                     (self.catalogue.head(), now, *held, now, batch),
                 )
             ]
@@ -109,24 +123,28 @@ class RefreshQueue:
         return args
 
     async def run(self, resources, batch, max_seconds):
-        if not 1 <= batch <= 100:
-            raise ValueError("Audit batch must be 1..100")
+        if not 1 <= batch <= RECOVERY_BATCH_SIZE or not 0 < max_seconds <= 600:
+            raise ValueError("Audit exceeds bounded recovery limits")
         started = time.monotonic()
         selected = self.due(batch, time.time())
         attempted = 0
         failures = 0
         budget_exhausted = False
-        for row in selected:
+        errors = []
+
+        async def inspect(row):
+            nonlocal attempted, failures, budget_exhausted
             remaining = max_seconds - (time.monotonic() - started)
-            if remaining < 1:
-                break
+            if remaining < 1 or budget_exhausted:
+                return
             try:
-                self.store.consume_budget("resource_maintenance", 2400)
+                self.store.consume_budget("resource_maintenance", DAILY_REVIEW_BUDGET)
             except DomainError:
                 budget_exhausted = True
-                break
+                return
             attempted += 1
             error = None
+            token = SOURCE_REVIEW.set(True)
             try:
                 await asyncio.wait_for(
                     resources.schema(
@@ -139,6 +157,13 @@ class RefreshQueue:
                 error = (
                     exc.code if isinstance(exc, DomainError) else "MAINTENANCE_DEADLINE"
                 )
+            except Exception:
+                failures += 1
+                error = "REVIEW_INTERNAL_ERROR"
+            finally:
+                SOURCE_REVIEW.reset(token)
+            if error and len(errors) < 10:
+                errors.append({"resourceId": row["id"], "code": error})
             now = time.time()
             with self.store.connect() as db:
                 old = db.execute(
@@ -157,6 +182,42 @@ class RefreshQueue:
                     "UPDATE resource_review_policy SET next_due=?,last_attempt=?,failures=? WHERE id=?",
                     (now + cooldown, now, count, row["id"]),
                 )
+
+        # Do not occupy global slots with tasks waiting for the same host. Every
+        # started task is awaited before checkpointing, including deadline exits.
+        pending = deque(selected)
+        active = Counter()
+        running = {}
+        try:
+            while pending or running:
+                remaining = max_seconds - (time.monotonic() - started)
+                if remaining < 1 or budget_exhausted:
+                    pending.clear()
+                while pending and len(running) < CONCURRENCY:
+                    row = None
+                    for _ in range(len(pending)):
+                        candidate = pending.popleft()
+                        if active[candidate["host"]] < PER_HOST_CONCURRENCY:
+                            row = candidate
+                            break
+                        pending.append(candidate)
+                    if row is None:
+                        break
+                    active[row["host"]] += 1
+                    running[asyncio.create_task(inspect(row))] = row["host"]
+                if running:
+                    done, _ = await asyncio.wait(
+                        running, return_when=asyncio.FIRST_COMPLETED
+                    )
+                    for task in done:
+                        active[running.pop(task)] -= 1
+                        await task
+        finally:
+            for task in running:
+                task.cancel()
+            if running:
+                await asyncio.gather(*running, return_exceptions=True)
+        elapsed = time.monotonic() - started
         receipt = {
             "generation": self.catalogue.head(),
             "policyVersion": REVISION,
@@ -166,8 +227,12 @@ class RefreshQueue:
             "failed": failures,
             "heldStatuses": sorted(HELD),
             "maxSeconds": max_seconds,
-            "deadlineReached": time.monotonic() - started >= max_seconds,
-            "dailySourceReadBudget": 2400,
+            "deadlineReached": attempted < len(selected) and max_seconds - elapsed < 1,
+            "elapsedSeconds": round(elapsed, 3),
+            "dailySourceReadBudget": DAILY_REVIEW_BUDGET,
+            "concurrency": CONCURRENCY,
+            "perHostConcurrency": PER_HOST_CONCURRENCY,
+            "failureExamples": errors,
             "budgetExhausted": budget_exhausted,
             "cycleComplete": not selected,
         }

@@ -33,7 +33,7 @@ def authorized(value: str | None):
     return bool(token) and hmac.compare_digest(value or "", "Bearer " + token)
 
 
-def checkpoint(database: str) -> tuple[Path, str]:
+def checkpoint(database: str, compresslevel=6) -> tuple[Path, str]:
     """Use SQLite's backup API, never copy a live WAL database file."""
     with checkpoint_lock:
         folder = Path(database).parent
@@ -78,7 +78,7 @@ def checkpoint(database: str) -> tuple[Path, str]:
                     raise ValueError("Checkpoint integrity check failed")
             if raw.stat().st_size > MAX_DATABASE:
                 raise ValueError("Checkpoint exceeds restored database size limit")
-            with tarfile.open(packed, "w:gz", compresslevel=6) as archive:
+            with tarfile.open(packed, "w:gz", compresslevel=compresslevel) as archive:
                 archive.add(raw, arcname="database.sqlite3", recursive=False)
                 for capture in sorted((folder / "captures").glob("*.json")):
                     if (
@@ -194,9 +194,11 @@ def bootstrap():
 
 
 def register_operations(app, service):
-    async def send_checkpoint():
+    async def send_checkpoint(compresslevel=6):
         await asyncio.to_thread(service.store.prune)
-        path, digest = await asyncio.to_thread(checkpoint, service.store.path)
+        path, digest = await asyncio.to_thread(
+            checkpoint, service.store.path, compresslevel
+        )
         return FileResponse(
             path,
             media_type="application/gzip",
@@ -214,7 +216,14 @@ def register_operations(app, service):
     async def refresh_data(request: Request, pack: str):
         if not authorized(request.headers.get("authorization")):
             raise DomainError("NOT_FOUND", "Not found", 404)
-        if pack not in {"restaurants", "population", "all", "catalogue", "resources"}:
+        if pack not in {
+            "restaurants",
+            "population",
+            "all",
+            "catalogue",
+            "resources",
+            "resources-recovery",
+        }:
             raise DomainError("INVALID_PACK", "Unknown pack", 400)
         if refresh_lock.locked():
             raise DomainError("REFRESH_IN_PROGRESS", "Another refresh is running", 409)
@@ -226,9 +235,20 @@ def register_operations(app, service):
 
                 await sync(service.store)
                 return await send_checkpoint()
-            if pack == "resources":
-                await service.resources.audit(100, max_seconds=90)
-                return await send_checkpoint()
+            if pack in {"resources", "resources-recovery"}:
+                from .review_config import (
+                    BATCH_SIZE,
+                    RUN_SECONDS,
+                    RECOVERY_BATCH_SIZE,
+                    RECOVERY_SECONDS,
+                )
+
+                recovery = pack == "resources-recovery"
+                await service.resources.audit(
+                    RECOVERY_BATCH_SIZE if recovery else BATCH_SIZE,
+                    max_seconds=RECOVERY_SECONDS if recovery else RUN_SECONDS,
+                )
+                return await send_checkpoint(compresslevel=1)
             for name in (["population", "restaurants"] if pack == "all" else [pack]):
                 await refresh(service.store, name)
             return await send_checkpoint()

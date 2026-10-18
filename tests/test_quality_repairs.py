@@ -1,5 +1,8 @@
 import json
 import time
+import asyncio
+from collections import Counter
+from urllib.parse import urlsplit
 from datetime import datetime, timezone
 
 import pytest
@@ -41,7 +44,7 @@ def test_validation_ttl_and_source_cadence_are_separate_from_semantic_quality():
     assert q["semanticVerification"] == "not_performed"
 
 
-def service_with_resources(tmp_path, held=0):
+def service_with_resources(tmp_path, held=0, count=2, hosts=1):
     s = Service(Store(str(tmp_path / "db.sqlite3")))
     dataset = {
         "id": "sample",
@@ -56,13 +59,13 @@ def service_with_resources(tmp_path, held=0):
         {
             "id": f"{i:032x}",
             "datasetId": "sample",
-            "url": f"https://example.gov.hk/{i}.csv",
+            "url": f"https://source{i % hosts}.gov.hk/{i}.csv",
             "format": "CSV",
             "catalogue": "DATA.GOV.HK",
             "sourceUrl": "https://data.gov.hk/sample",
             "termsUrl": "https://data.gov.hk/terms",
         }
-        for i in range(held + 2)
+        for i in range(held + count)
     ]
     s.resources.catalogue.publish([dataset], rows, {})
     with s.store.connect() as db:
@@ -210,3 +213,181 @@ def test_compound_review_cadence_uses_fastest_update_and_closed_archives_are_not
         == 90 * 86400
     )
     assert review_interval({"updateCadence": "Hourly"}, {}) == 300
+
+
+def test_review_capacity_rejects_the_production_underprovision_and_future_growth():
+    from mcp_open_data_hk.review_config import capacity
+
+    required = 29569.1  # Confirmed production interval histogram, 2026-10-18.
+    assert capacity(required, budget=2400)["status"] == "insufficient"
+    current = capacity(required)
+    assert current["status"] == "sufficient" and current["headroomRatio"] >= 1.2
+    assert capacity(100000)["status"] == "insufficient"
+
+
+@pytest.mark.asyncio
+async def test_review_pool_bounds_hosts_and_leaves_interactive_context_untouched(
+    tmp_path,
+):
+    from mcp_open_data_hk.review_config import SOURCE_REVIEW, CONCURRENCY
+
+    s, rows = service_with_resources(tmp_path, count=18, hosts=3)
+    active = Counter()
+    peak = Counter()
+    context_seen = []
+
+    async def inspect(rid, **kwargs):
+        host = urlsplit(s.resources.catalogue.resource(rid)["url"]).hostname
+        active[host] += 1
+        active["total"] += 1
+        peak[host] = max(peak[host], active[host])
+        peak["total"] = max(peak["total"], active["total"])
+        context_seen.append(SOURCE_REVIEW.get())
+        await asyncio.sleep(0.02)
+        active[host] -= 1
+        active["total"] -= 1
+
+    s.resources.schema = inspect
+    task = asyncio.create_task(
+        RefreshQueue(s.resources.catalogue).run(s.resources, 18, 5)
+    )
+    await asyncio.sleep(0)
+    assert not SOURCE_REVIEW.get()
+    result = await task
+    assert result["processed"] == len(rows) and result["failed"] == 0
+    assert peak.pop("total") == CONCURRENCY
+    assert max(peak.values()) <= 2
+    assert all(context_seen) and not SOURCE_REVIEW.get()
+    assert s.resources.slots._value == 2  # Interactive admission remains reserved.
+
+
+@pytest.mark.asyncio
+async def test_concurrent_review_stops_at_persisted_daily_budget(tmp_path):
+    from mcp_open_data_hk.review_config import DAILY_REVIEW_BUDGET
+
+    s, _ = service_with_resources(tmp_path, count=12, hosts=3)
+    with s.store.connect() as db:
+        db.execute(
+            "INSERT INTO budgets VALUES (?,?,?)",
+            (
+                "resource_maintenance",
+                int(time.time() // 86400),
+                DAILY_REVIEW_BUDGET - 2,
+            ),
+        )
+
+    async def inspect(*args, **kwargs):
+        await asyncio.sleep(0)
+
+    s.resources.schema = inspect
+    result = await RefreshQueue(s.resources.catalogue).run(s.resources, 12, 5)
+    assert result["processed"] == 2 and result["budgetExhausted"]
+    with s.store.connect() as db:
+        assert (
+            db.execute(
+                "SELECT count FROM budgets WHERE source='resource_maintenance'"
+            ).fetchone()[0]
+            == DAILY_REVIEW_BUDGET
+        )
+
+
+@pytest.mark.asyncio
+async def test_deadline_awaits_started_tasks_and_leaves_unattempted_work_due(tmp_path):
+    s, _ = service_with_resources(tmp_path, count=12, hosts=3)
+    active = 0
+
+    async def inspect(*args, **kwargs):
+        nonlocal active
+        active += 1
+        try:
+            await asyncio.Event().wait()
+        finally:
+            active -= 1
+
+    s.resources.schema = inspect
+    q = RefreshQueue(s.resources.catalogue)
+    result = await q.run(s.resources, 12, 1.1)
+    assert result["deadlineReached"] and result["failed"] == result["processed"]
+    assert active == 0 and len(q.due(12, time.time())) == 12 - result["processed"]
+
+
+def test_failed_previously_accepted_sources_remain_visible_as_overdue(tmp_path):
+    s, rows = service_with_resources(tmp_path)
+    with s.store.connect() as db:
+        db.execute(
+            "INSERT INTO resource_checks(id,status,validated,checked) VALUES (?,?,?,?)",
+            (rows[0]["id"], "unavailable", time.time() - 172800, time.time()),
+        )
+    RefreshQueue(s.resources.catalogue).prepare()
+    state = s.resources.catalogue.coverage()["validationFreshness"]
+    assert state["reviewOverdueCount"] == 0
+    assert state["overdueAcceptedCount"] == 1 and state["health"] == "degraded"
+
+
+@pytest.mark.asyncio
+async def test_cancelled_review_awaits_children_before_releasing_its_caller(tmp_path):
+    s, _ = service_with_resources(tmp_path, count=12, hosts=3)
+    active = 0
+    started = asyncio.Event()
+
+    async def inspect(*args, **kwargs):
+        nonlocal active
+        active += 1
+        started.set()
+        try:
+            await asyncio.Event().wait()
+        finally:
+            active -= 1
+
+    s.resources.schema = inspect
+    task = asyncio.create_task(
+        RefreshQueue(s.resources.catalogue).run(s.resources, 12, 10)
+    )
+    await started.wait()
+    task.cancel()
+    with pytest.raises(asyncio.CancelledError):
+        await task
+    assert active == 0
+
+
+@pytest.mark.asyncio
+async def test_real_reader_reserves_interactive_slots_during_six_background_reads(
+    tmp_path, monkeypatch
+):
+    from mcp_open_data_hk.review_config import SOURCE_REVIEW
+
+    s, rows = service_with_resources(tmp_path, count=20, hosts=3)
+    active = 0
+    full = asyncio.Event()
+    release = asyncio.Event()
+
+    async def source(url, *args, **kwargs):
+        nonlocal active
+        if SOURCE_REVIEW.get():
+            active += 1
+            if active == 6:
+                full.set()
+            try:
+                await release.wait()
+            finally:
+                active -= 1
+        return b"id,value\n1,ok\n", {}, url, 200
+
+    monkeypatch.setattr("mcp_open_data_hk.resources.fetch", source)
+    task = asyncio.create_task(
+        RefreshQueue(s.resources.catalogue).run(s.resources, 18, 5)
+    )
+    try:
+        await asyncio.wait_for(full.wait(), 2)
+        # These resources are outside the selected review batch. Public requests
+        # must finish while all six background downloads are still blocked.
+        results = await asyncio.wait_for(
+            asyncio.gather(
+                *(s.resources.schema(r["id"], require_fresh=True) for r in rows[18:])
+            ),
+            2,
+        )
+        assert all(r["recordCount"] == 1 for r in results) and active == 6
+    finally:
+        release.set()
+        await task

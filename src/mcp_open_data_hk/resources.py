@@ -14,6 +14,7 @@ from .catalogue_store import CatalogueStore
 from .contracts import DomainError
 from . import transport
 from .quality import freshness, semantic_quality
+from .review_config import SOURCE_REVIEW, CONCURRENCY, BATCH_SIZE, RUN_SECONDS
 from .resource_fields import selected, MISSING, inspect_nested
 from .resource_fetch import fetch, fetch_file
 from .resource_stream import FileRows
@@ -407,6 +408,7 @@ class Resources:
     def __init__(self, store):
         self.catalogue = CatalogueStore(store)
         self.slots = asyncio.Semaphore(2)
+        self.review_slots = asyncio.Semaphore(CONCURRENCY)
         self.locks = {}
         self.catalogue.refresh_transport_policies()
 
@@ -501,7 +503,7 @@ class Resources:
                 ):
                     url = template_url(url, parameters or {})
                 extra = {}
-                async with self.slots:
+                async with self.review_slots if SOURCE_REVIEW.get() else self.slots:
                     if (
                         "featureserver" in url.lower()
                         or "mapserver" in url.lower()
@@ -1008,7 +1010,7 @@ class Resources:
             if isinstance(value["rows"], FileRows):
                 value["rows"].close()
 
-    async def audit(self, batch=100, max_seconds=90):
+    async def audit(self, batch=BATCH_SIZE, max_seconds=RUN_SECONDS):
         from .refresh_queue import RefreshQueue
 
         return await RefreshQueue(self.catalogue).run(self, batch, max_seconds)

@@ -9,6 +9,7 @@ import zlib
 from .contracts import DomainError
 from . import transport, connected
 from .quality import REVISION as REVIEW_REVISION, freshness
+from .review_config import capacity
 
 CACHE_BYTES = 4_000_000
 
@@ -584,6 +585,15 @@ class CatalogueStore:
                     state = db.execute(
                         "SELECT receipt FROM resource_review_state WHERE id=1"
                     ).fetchone()
+                    demand = db.execute(
+                        "SELECT COALESCE(sum(86400.0/p.interval),0) demand FROM resource_review_policy p JOIN inventory_resources r ON r.id=p.id JOIN resource_checks c ON c.id=r.id LEFT JOIN resource_policies t ON t.id=r.id WHERE r.generation=? AND c.status IN ('queryable','document') AND t.ttl IS NULL",
+                        (generation,),
+                    ).fetchone()["demand"]
+                    accepted = db.execute(
+                        "SELECT count(*) overdue FROM resource_review_policy p JOIN inventory_resources r ON r.id=p.id JOIN resource_checks c ON c.id=r.id LEFT JOIN resource_policies t ON t.id=r.id WHERE r.generation=? AND c.validated IS NOT NULL AND c.validated+p.interval<=? AND t.ttl IS NULL",
+                        (generation, now),
+                    ).fetchone()["overdue"]
+                    plan = capacity(demand)
                     review.update(
                         status="active",
                         policyVersion=setup["revision"],
@@ -591,6 +601,13 @@ class CatalogueStore:
                         cacheExpiredCount=counts["cache_expired"] or 0,
                         reviewOverdueCount=counts["review_overdue"] or 0,
                         lastMaintenance=json.loads(state[0]) if state else None,
+                        capacity=plan,
+                        overdueAcceptedCount=accepted,
+                        health=(
+                            "degraded"
+                            if accepted or plan["status"] != "sufficient"
+                            else "healthy"
+                        ),
                     )
         receipt = json.loads(meta["receipt"])
         return {
