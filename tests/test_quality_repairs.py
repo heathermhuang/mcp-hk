@@ -744,3 +744,31 @@ async def test_resource_work_keeps_event_loop_responsive_while_sqlite_writer_wai
     assert (
         not blocked_loop.is_set()
     ), "SQLite writer waiting blocked the public event loop"
+
+
+def test_confirmed_source_recovery_removes_obsolete_failure_backoff(tmp_path):
+    s, rows = service_with_resources(tmp_path)
+    q = RefreshQueue(s.resources.catalogue)
+    q.prepare()
+    now = time.time()
+    with s.store.connect() as db:
+        for row, status, validated in zip(
+            rows, ["queryable", "unavailable"], [now, now - 86400]
+        ):
+            db.execute(
+                "INSERT INTO resource_checks(id,status,validated,checked) VALUES (?,?,?,?)",
+                (row["id"], status, validated, now),
+            )
+        db.execute(
+            "UPDATE resource_review_policy SET interval=300,failures=2,last_attempt=?,next_due=?",
+            (now - 600, now + 7200),
+        )
+    assert [row["id"] for row in q.due(10, now + 301)] == [rows[0]["id"]]
+    with s.store.connect() as db:
+        policies = list(
+            db.execute(
+                "SELECT id,failures,next_due FROM resource_review_policy ORDER BY id"
+            )
+        )
+    assert policies[0]["failures"] == 0 and policies[0]["next_due"] == now + 300
+    assert policies[1]["failures"] == 2 and policies[1]["next_due"] == now + 7200

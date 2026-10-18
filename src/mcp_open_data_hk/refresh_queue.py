@@ -89,6 +89,12 @@ class RefreshQueue:
     def due(self, batch, now):
         self.prepare()
         with self.store.connect() as db:
+            # A confirmed source validation after a failed review ends that
+            # failure's cooldown; otherwise a recovered five-minute feed can
+            # become overdue again while an obsolete hour-long backoff remains.
+            db.execute(
+                "UPDATE resource_review_policy SET failures=0,next_due=(SELECT c.validated+resource_review_policy.interval FROM resource_checks c WHERE c.id=resource_review_policy.id) WHERE failures>0 AND EXISTS (SELECT 1 FROM resource_checks c WHERE c.id=resource_review_policy.id AND c.status='queryable' AND c.validated>=resource_review_policy.last_attempt)"
+            )
             # On-demand successful reads satisfy the review deadline too.
             db.execute(
                 "UPDATE resource_review_policy SET next_due=max(next_due,(SELECT validated+interval FROM resource_checks WHERE resource_checks.id=resource_review_policy.id)) WHERE EXISTS (SELECT 1 FROM resource_checks c WHERE c.id=resource_review_policy.id AND c.validated IS NOT NULL AND c.status='queryable')"
