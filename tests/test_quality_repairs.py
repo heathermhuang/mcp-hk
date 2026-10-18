@@ -620,7 +620,7 @@ async def test_hko_documented_empty_warning_adopts_legacy_schema_and_keeps_other
         db.execute("DELETE FROM resource_cache")
     current = await s.resources.query(resource["id"], require_fresh=True)
     assert current["data"]["items"][0]["warningMessage"] == ""
-    assert current["schema"]["sourceContract"]["id"] == "hko-rhrread-warning-1"
+    assert current["schema"]["sourceContract"]["id"] == "hko-rhrread-2"
     assert next(
         f for f in current["schema"]["fields"] if f["name"] == "warningMessage"
     )["types"] == ["string"]

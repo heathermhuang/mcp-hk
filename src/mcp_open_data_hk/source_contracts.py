@@ -6,6 +6,7 @@ from datetime import date
 from .contracts import DomainError
 
 HKO_WARNING = "hko-rhrread-warning-1"
+HKO_CURRENT = "hko-rhrread-2"
 CSV_DATE_PREAMBLE = "csv-date-preamble-1"
 
 
@@ -44,10 +45,20 @@ def annotate(resource, rows, schema):
                 "HKO warningMessage violates its declared array-or-empty-string contract",
                 409,
             )
+        if (
+            "uvindex" in row
+            and row["uvindex"] != ""
+            and not isinstance(row["uvindex"], dict)
+        ):
+            raise DomainError(
+                "SOURCE_SCHEMA_CHANGED",
+                "HKO uvindex violates its object-or-empty-string contract",
+                409,
+            )
     schema["sourceContract"] = {
-        "id": HKO_WARNING,
+        "id": HKO_CURRENT,
         "dictionaryUrl": HKO_DICTIONARY,
-        "scope": "Only warningMessage array/empty-string variation. Other inferred field changes remain subject to drift checks. Raw source values are retained.",
+        "scope": "Only warningMessage array/empty-string and uvindex object/empty-string variations, when present. Other inferred field changes remain subject to drift checks. Raw source values are retained.",
     }
 
 
@@ -63,12 +74,19 @@ def comparable_fields(schema, contract=None):
     for field in schema.get("fields", []):
         types = [t for t in field["types"] if t != "null"]
         if (
-            contract == HKO_WARNING
+            contract in {HKO_WARNING, HKO_CURRENT}
             and field["name"] == "warningMessage"
             and types
             and set(types) <= {"array", "string"}
         ):
             types = ["array", "string"]
+        if (
+            contract == HKO_CURRENT
+            and field["name"] == "uvindex"
+            and types
+            and set(types) <= {"object", "string"}
+        ):
+            types = ["object", "string"]
         fields.append(
             {"name": aliases.get(field["name"], field["name"]), "types": types}
         )

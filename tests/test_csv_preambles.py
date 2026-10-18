@@ -147,3 +147,39 @@ async def test_cancelled_large_download_cleans_a_file_written_after_cancellation
             break
         await asyncio.sleep(0.01)
     assert not paths[0].exists()
+
+
+def test_hko_uv_object_and_observed_empty_string_are_source_scoped_compatible():
+    from mcp_open_data_hk.source_contracts import (
+        annotate,
+        comparable_fields,
+        HKO_CURRENT,
+    )
+
+    resource = {
+        "datasetId": "hk-hko-rss-current-weather-report",
+        "url": "https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=en",
+    }
+    schemas = []
+    for uv in [
+        "",
+        {
+            "data": [{"place": "Kings Park", "value": 2, "desc": "low"}],
+            "recordDesc": "UV index",
+        },
+    ]:
+        rows, schema = parse(
+            json.dumps({"warningMessage": "", "uvindex": uv}).encode(), "JSON"
+        )
+        annotate(resource, rows, schema)
+        assert (
+            rows[0]["uvindex"] == uv and schema["sourceContract"]["id"] == HKO_CURRENT
+        )
+        schemas.append(comparable_fields(schema, HKO_CURRENT))
+    assert schemas[0] == schemas[1]
+    with pytest.raises(DomainError, match="SOURCE_SCHEMA_CHANGED"):
+        annotate(
+            resource,
+            [{"warningMessage": "", "uvindex": []}],
+            {"fields": [{"name": "warningMessage", "types": ["string"]}]},
+        )
