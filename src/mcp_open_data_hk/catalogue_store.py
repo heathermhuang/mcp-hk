@@ -10,6 +10,7 @@ from .contracts import DomainError
 from . import transport, connected
 from .quality import REVISION as REVIEW_REVISION, freshness
 from .review_config import capacity
+from .source_contracts import comparable_fields
 
 CACHE_BYTES = 4_000_000
 
@@ -435,28 +436,16 @@ class CatalogueStore:
         return dict(row)
 
     def accept(self, resource_id, key, rows, schema, digest, headers, document=False):
+        contract = schema.get("sourceContract", {}).get("id")
         schema_hash = hashlib.sha256(
-            json.dumps(
-                [
-                    {"name": f["name"], "types": [t for t in f["types"] if t != "null"]}
-                    for f in schema.get("fields", [])
-                ],
-                sort_keys=True,
-            ).encode()
+            json.dumps(comparable_fields(schema, contract), sort_keys=True).encode()
         ).hexdigest()
         old = self.check(resource_id, key)
         if old.get("schema_json"):
             prior_schema = unpack(old["schema_json"])
             old["schema_hash"] = hashlib.sha256(
                 json.dumps(
-                    [
-                        {
-                            "name": f["name"],
-                            "types": [t for t in f["types"] if t != "null"],
-                        }
-                        for f in prior_schema.get("fields", [])
-                    ],
-                    sort_keys=True,
+                    comparable_fields(prior_schema, contract), sort_keys=True
                 ).encode()
             ).hexdigest()
         arrival_contract = schema.get("transport", {}).get("operation") == "arrivals"

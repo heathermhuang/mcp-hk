@@ -26,7 +26,7 @@
   "containers": [{
     "class_name": "McpContainer",
     "image": "../../Dockerfile",
-    "instance_type": "basic",
+    "instance_type": "standard-1",
     "max_instances": 1
   }],
   "durable_objects": {
