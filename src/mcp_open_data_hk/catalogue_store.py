@@ -8,7 +8,7 @@ import zlib
 
 from .contracts import DomainError
 from . import transport, connected
-from .quality import freshness
+from .quality import REVISION as REVIEW_REVISION, freshness
 
 CACHE_BYTES = 4_000_000
 
@@ -571,7 +571,11 @@ class CatalogueStore:
                 setup = db.execute(
                     "SELECT * FROM resource_review_setup WHERE id=1"
                 ).fetchone()
-                if setup and setup["generation"] == generation:
+                if (
+                    setup
+                    and setup["generation"] == generation
+                    and setup["revision"] == REVIEW_REVISION
+                ):
                     now = time.time()
                     counts = db.execute(
                         "SELECT count(*) total,SUM(CASE WHEN c.validated IS NULL OR c.validated+COALESCE(t.ttl,p.cache_ttl)<=? THEN 1 ELSE 0 END) cache_expired,SUM(CASE WHEN c.validated IS NULL OR c.validated+p.interval<=? THEN 1 ELSE 0 END) review_overdue FROM inventory_resources r JOIN resource_review_policy p ON p.id=r.id JOIN resource_checks c ON c.id=r.id LEFT JOIN resource_policies t ON t.id=r.id WHERE r.generation=? AND c.status='queryable'",

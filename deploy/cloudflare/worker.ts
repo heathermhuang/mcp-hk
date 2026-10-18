@@ -1,5 +1,6 @@
 import { Container } from '@cloudflare/containers';
 import { scheduledPack } from './cron';
+import {maintenanceResponse, maintenanceRuntimeReady} from './maintenance';
 import {saveOverview, serveOverview} from './overview';
 import {normalizeBackendResponse, recoveringResponse} from './recovery';
 import {saveBackup, requireCheckpoint, safeOperationError} from './backup';
@@ -106,6 +107,13 @@ export class McpContainer extends Container<Env> {
     const now = Date.now();
     const lease = await this.ctx.storage.get<number>('maintenanceLease');
     if (lease && lease > now) throw new Error('Maintenance already running');
+    // A rollout can serve the new Worker before the data image is ready. Never
+    // claim a long safety lease for a job that cannot run on that image yet.
+    try {
+      const response = await this.containerFetch(`${this.env.PUBLIC_ORIGIN}/healthz`, {headers:{'x-mcp-edge-token':this.env.OPS_TOKEN},signal:AbortSignal.timeout(15000)});
+      const bytes = await boundedBody(response, 2000);
+      if (!response.ok || !maintenanceRuntimeReady(JSON.parse(new TextDecoder().decode(bytes)))) throw new Error('DATA_RUNTIME_NOT_READY');
+    } catch { throw new Error('DATA_RUNTIME_NOT_READY'); }
     // No await between checking and writing the lease's transaction boundary.
     const acquired = await this.ctx.storage.transaction(async txn => {
       if ((await txn.get<number>('maintenanceLease') || 0) > Date.now()) return false;
@@ -210,7 +218,7 @@ export default {
       if (url.pathname === '/__ops/run' && request.method === 'POST') {
         const pack = url.searchParams.get('pack') || 'backup';
         if (!['backup', 'restaurants', 'population', 'all', 'catalogue', 'resources'].includes(pack)) return new Response('Invalid pack', {status: 400});
-        return Response.json(await env.APP.get(env.APP.idFromName('production')).maintain(pack));
+        return maintenanceResponse(env.APP.get(env.APP.idFromName('production')), pack, error => safeOperationError(error, env.OPS_TOKEN));
       }
       if (url.pathname === '/__ops/publish-overview' && request.method === 'POST') return Response.json(await env.APP.get(env.APP.idFromName('production')).publishOverview());
       if (url.pathname === '/__ops/restart' && request.method === 'POST') return Response.json(await env.APP.get(env.APP.idFromName('production')).restartFromCheckpoint(request.headers.get('x-snapshot-sha256') || ''));

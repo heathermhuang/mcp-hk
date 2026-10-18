@@ -179,3 +179,9 @@ on failed reads. Pending discovery and due accepted sources precede repeated
 failures. Policy, last-run counters and overdue-review counts are public under
 `validationFreshness` in coverage. These budgets bound work; they do not promise
 zero backlog or full semantic qualification of every discovered resource.
+
+
+Compound cadence descriptions use the fastest declared update. A historical-only,
+closed availability period is not classified as a current hourly feed. Policy
+revisions preserve failure cooldowns, and coverage reports the active policy
+revision rather than silently applying older review intervals.
