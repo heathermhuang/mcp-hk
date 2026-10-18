@@ -33,6 +33,7 @@ class CatalogueStore:
             CREATE INDEX IF NOT EXISTS resource_dataset ON inventory_resources(generation,dataset);
             CREATE TABLE IF NOT EXISTS resource_checks (id TEXT PRIMARY KEY, checked REAL, validated REAL, status TEXT, reason TEXT, hash TEXT, schema_hash TEXT, schema_json TEXT, etag TEXT, modified TEXT, retrieved REAL, rows INTEGER);
             CREATE TABLE IF NOT EXISTS resource_variants (key TEXT PRIMARY KEY, resource TEXT, checked REAL, validated REAL, status TEXT, reason TEXT, hash TEXT, schema_hash TEXT, schema_json TEXT, etag TEXT, modified TEXT, retrieved REAL, rows INTEGER);
+            CREATE INDEX IF NOT EXISTS resource_variant_lookup ON resource_variants(resource,validated DESC);
             CREATE TABLE IF NOT EXISTS resource_cache (key TEXT PRIMARY KEY, resource TEXT, hash TEXT, payload BLOB, accessed REAL);
             CREATE TABLE IF NOT EXISTS catalogue_runs (id TEXT PRIMARY KEY, started REAL, finished REAL, status TEXT, receipt TEXT);
             CREATE TABLE IF NOT EXISTS resource_audit_cursor (id INTEGER PRIMARY KEY CHECK(id=1), generation TEXT, cursor TEXT);

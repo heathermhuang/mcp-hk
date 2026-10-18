@@ -240,3 +240,15 @@ cadence. Otherwise each cron can wake a stopped runtime and fail readiness befor
 its accepted snapshot restores. Scheduled jobs retry only DATA_RUNTIME_NOT_READY,
 at most twice with 30-second pauses and before acquiring a maintenance lease.
 Held leases and actual review/checkpoint failures are never retried by this wrapper.
+
+
+Accepted-variant lookup has a `(resource, validated DESC)` index. Both selector
+replay and per-resource variant pruning must search that resource's rows rather
+than scanning the full accepted catalogue. Confirm query plans and benchmark a
+production-checkpoint copy when changing these paths. Legacy reader-version
+variants are not reused to bypass a new parser's required validation.
+
+Operator diagnostics expose the executing Durable Object's `workerRelease` as
+well as its safety lease and accepted receipt. Verify the expected release and
+backend policy before starting recovery after a rollout. The hosted recovery
+window is at most 256 attempts / 90 seconds per checkpointed request.

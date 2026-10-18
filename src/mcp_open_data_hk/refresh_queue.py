@@ -16,6 +16,7 @@ from .review_config import (
     DAILY_REVIEW_BUDGET,
     RECOVERY_BATCH_SIZE,
     SOURCE_REVIEW,
+    RECOVERY_SECONDS,
 )
 
 
@@ -123,7 +124,10 @@ class RefreshQueue:
         return args
 
     async def run(self, resources, batch, max_seconds):
-        if not 1 <= batch <= RECOVERY_BATCH_SIZE or not 0 < max_seconds <= 600:
+        if (
+            not 1 <= batch <= RECOVERY_BATCH_SIZE
+            or not 0 < max_seconds <= RECOVERY_SECONDS
+        ):
             raise ValueError("Audit exceeds bounded recovery limits")
         started = time.monotonic()
         selected = self.due(batch, time.time())
