@@ -462,6 +462,9 @@ class Resources:
                 sort_keys=True,
             ).encode()
         ).hexdigest()
+        previous_key = key if resource.get("format") == "CSV" else None
+        if previous_key:
+            key = hashlib.sha256(("csv-reader-2:" + previous_key).encode()).hexdigest()
         # Per-resource lock coalesces cache misses; locks contain no pending source I/O.
         if len(self.locks) > 1000:
             self.locks = {k: v for k, v in self.locks.items() if v.locked()}
@@ -625,6 +628,7 @@ class Resources:
                                     **headers,
                                 },
                                 fmt == "PDF",
+                                previous_key=previous_key,
                             )
                             return resource, value, check, False
                     if profile and not isinstance(body, Path):
@@ -692,6 +696,12 @@ class Resources:
                         else extra.get("sourceContentHash")
                         or hashlib.sha256(body).hexdigest()
                     )
+                    if fmt == "CSV" and not isinstance(rows, FileRows):
+                        schema["sourceContentHash"] = digest
+                        schema["versionScope"] = "reader_and_source_response"
+                        digest = hashlib.sha256(
+                            ("csv-reader-2:" + digest).encode()
+                        ).hexdigest()
                     check = await asyncio.to_thread(
                         self.catalogue.accept,
                         resource_id,
@@ -701,6 +711,7 @@ class Resources:
                         digest,
                         headers,
                         fmt == "PDF",
+                        previous_key=previous_key,
                     )
                 return resource, {"rows": rows, "schema": schema}, check, False
             except Exception as exc:

@@ -292,3 +292,24 @@ remain responsive through review, cached-read and failure paths.
 A confirmed accepted source validation newer than its last failed review ends the
 obsolete failure cooldown. Its next review follows the source's normal validation
 deadline. Unavailable sources without a new successful validation retain backoff.
+
+CSV rows whose first source row contains only an ISO date use stable
+`_column_N` names. `sourceColumns` retains the original date/header cells, and
+`csv-date-preamble-1` explicitly describes the remaining rows as raw positional
+rows, which may include source header/description rows. Their count is not an
+independently verified entity count. Normal named headers and genuine field/type
+changes retain drift checks. CSV reader version 2 forces physical parsing after
+this grammar change and compares the exact preceding request variant before
+acceptance; new cache keys cannot bypass an actual legacy schema change. The raw
+source hash remains separate from the reader/response pagination version.
+
+Complete-file transfers retain their 128 MB decoded-byte limit and use a finite
+60-second transfer budget, with the existing socket timeouts and 90-second hosted
+review window. Small reads retain their 30-second transfer budget. Cancelling a
+review cleans its temporary download even if its bounded worker finishes writing
+after cancellation. These bounds do not imply that every catalogue file fits the
+reader or that a source's publication/observation date is current.
+The source-scoped HKO current-weather contract also preserves UV-index objects
+and the observed empty-string representation, without
+rewriting source values. The official API dictionary defines the UV object/data
+structure; other inferred field changes remain held for review.
