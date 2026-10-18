@@ -225,6 +225,44 @@ def test_review_capacity_rejects_the_production_underprovision_and_future_growth
     assert capacity(100000)["status"] == "insufficient"
 
 
+def test_variant_review_lookup_uses_index_and_preserves_latest_and_pruning(tmp_path):
+    s, rows = service_with_resources(tmp_path)
+    rid = rows[0]["id"]
+    for index in range(65):
+        schema = {
+            "fields": [{"name": "id", "types": ["string"]}],
+            "recordPath": f"rows{index}",
+        }
+        s.resources.catalogue.accept(
+            rid, f"variant-{index}", [{"id": "source"}], schema, f"hash-{index}", {}
+        )
+    q = RefreshQueue(s.resources.catalogue)
+    assert q.selectors(rid) == {"record_path": "rows64"}
+    with s.store.connect() as db:
+        assert (
+            db.execute(
+                "SELECT count(*) FROM resource_variants WHERE resource=?", (rid,)
+            ).fetchone()[0]
+            == 50
+        )
+        plan = [
+            r[3]
+            for r in db.execute(
+                "EXPLAIN QUERY PLAN SELECT schema_json FROM resource_variants WHERE resource=? AND schema_json IS NOT NULL ORDER BY validated DESC LIMIT 1",
+                (rid,),
+            )
+        ]
+        assert any("SEARCH resource_variants" in detail for detail in plan)
+        assert not any("SCAN resource_variants" in detail for detail in plan)
+
+
+@pytest.mark.asyncio
+async def test_hosted_recovery_limits_reject_uncheckpointed_long_calls(tmp_path):
+    s, _ = service_with_resources(tmp_path)
+    with pytest.raises(ValueError):
+        await RefreshQueue(s.resources.catalogue).run(s.resources, 256, 600)
+
+
 @pytest.mark.asyncio
 async def test_review_pool_bounds_hosts_and_leaves_interactive_context_untouched(
     tmp_path,

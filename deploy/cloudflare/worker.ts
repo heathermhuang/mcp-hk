@@ -183,7 +183,7 @@ export class McpContainer extends Container<Env> {
   }
 
   async operationDiagnostics() {
-    return {leaseUntil: await this.ctx.storage.get<number>('maintenanceLease') || null,
+    return {workerRelease: this.env.RELEASE_COMMIT, leaseUntil: await this.ctx.storage.get<number>('maintenanceLease') || null,
       seedLease: Boolean(await this.ctx.storage.get<string>('seedOwner')),
       now: Date.now(), maintenance: await this.operationsStatus()};
   }
@@ -198,7 +198,10 @@ export default {
     if (url.hostname === 'www.mcp.hk') return Response.redirect(`https://mcp.hk${url.pathname}${url.search}`, 308);
     if (url.pathname.startsWith('/__ops/')) {
       if (!(await authorized(request, env.OPS_TOKEN))) return new Response('Not found', {status: 404});
-      if (url.pathname === '/__ops/source-probe' && request.method === 'GET') return probePublicSource(url.searchParams.get('source') || 'xpms');
+      if (url.pathname === '/__ops/source-probe' && request.method === 'GET') {
+        const response=await probePublicSource(url.searchParams.get('source') || 'xpms');
+        response.headers.set('X-Mcp-Release',env.RELEASE_COMMIT);return response;
+      }
       if (url.pathname === '/__ops/snapshot' && request.method === 'GET') {
         const object = await env.BACKUPS.get('latest.snapshot.tar.gz');
         if (!object) return new Response('No accepted snapshot', {status: 503});
