@@ -293,7 +293,7 @@ A confirmed accepted source validation newer than its last failed review ends th
 obsolete failure cooldown. Its next review follows the source's normal validation
 deadline. Unavailable sources without a new successful validation retain backoff.
 
-CSV rows whose first source row contains only an ISO publication date use stable
+CSV rows whose first source row contains only an ISO date use stable
 `_column_N` names. `sourceColumns` retains the original date/header cells, and
 `csv-date-preamble-1` explicitly describes the remaining rows as raw positional
 rows, which may include source header/description rows. Their count is not an
