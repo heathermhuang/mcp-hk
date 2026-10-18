@@ -467,6 +467,14 @@ class Resources:
         async with lock:
             cached = self.catalogue.cached(key)
             check = self.catalogue.check(resource_id, key)
+            review_validation = (
+                SOURCE_REVIEW.get()
+                and check.get("status") in {"queryable", "document"}
+                and check.get("schema_json")
+                and check.get("hash")
+                and check.get("schema_hash")
+                and isinstance(check.get("rows"), int)
+            )
             if (
                 cached
                 and check.get("status") in {"queryable", "document"}
@@ -543,9 +551,9 @@ class Resources:
                     else:
                         conditional = {}
                         # Only revalidate the exact cached representation.
-                        if (cached or SOURCE_REVIEW.get()) and check.get("etag"):
+                        if (cached or review_validation) and check.get("etag"):
                             conditional["If-None-Match"] = check["etag"]
-                        if (cached or SOURCE_REVIEW.get()) and check.get("modified"):
+                        if (cached or review_validation) and check.get("modified"):
                             conditional["If-Modified-Since"] = check["modified"]
                         try:
                             if profile and profile.arrivals:
@@ -577,14 +585,7 @@ class Resources:
                                 502,
                             )
                         if status == 304:
-                            if (
-                                SOURCE_REVIEW.get()
-                                and check.get("schema_json")
-                                and check.get("hash")
-                                and check.get("schema_hash")
-                                and isinstance(check.get("rows"), int)
-                                and check.get("status") in {"queryable", "document"}
-                            ):
+                            if review_validation:
                                 check = await asyncio.to_thread(
                                     self.catalogue.revalidate,
                                     resource_id,

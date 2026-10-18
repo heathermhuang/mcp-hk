@@ -441,6 +441,19 @@ async def test_review_304_after_eviction_validates_metadata_without_inventing_re
         {"id": "2", "value": "source"},
     ]
     assert requests == [{}, {"If-None-Match": '"accepted"'}, {}]
+    with s.store.connect() as db:
+        db.execute("DELETE FROM resource_cache")
+        key = db.execute(
+            "SELECT key FROM resource_variants WHERE resource=?", (rid,)
+        ).fetchone()[0]
+    s.resources.catalogue.failure(rid, "SOURCE_UNAVAILABLE", "unavailable", key)
+    token = SOURCE_REVIEW.set(True)
+    try:
+        recovered = await s.resources.schema(rid, require_fresh=True)
+    finally:
+        SOURCE_REVIEW.reset(token)
+    assert recovered["recordCount"] == 2 and requests[-1] == {}
+    assert s.resources.catalogue.check(rid)["status"] == "queryable"
 
 
 def test_stale_304_cannot_validate_a_concurrently_changed_representation(tmp_path):
