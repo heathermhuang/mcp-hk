@@ -73,6 +73,13 @@ class RefreshQueue:
                 "INSERT INTO resource_review_policy(id,interval,cache_ttl,next_due) VALUES (?,?,?,?) ON CONFLICT(id) DO UPDATE SET interval=excluded.interval,cache_ttl=excluded.cache_ttl,next_due=CASE WHEN resource_review_policy.failures>0 THEN max(resource_review_policy.next_due,excluded.next_due) ELSE excluded.next_due END",
                 policies,
             )
+            # Older run-budget cancellations added a source-failure cooldown
+            # without recording a source failure. Only recover still-queryable
+            # accepted sources whose last check predates that failed review.
+            # Actual source failures change check status and retain their backoff.
+            db.execute(
+                "UPDATE resource_review_policy SET next_due=min(next_due,(SELECT c.validated+resource_review_policy.interval FROM resource_checks c WHERE c.id=resource_review_policy.id)),failures=0 WHERE failures>0 AND EXISTS (SELECT 1 FROM resource_checks c WHERE c.id=resource_review_policy.id AND c.status='queryable' AND c.validated IS NOT NULL AND c.checked<resource_review_policy.last_attempt)"
+            )
             db.execute(
                 "INSERT OR REPLACE INTO resource_review_setup VALUES (1,?,?)",
                 (generation, REVISION),
@@ -133,11 +140,12 @@ class RefreshQueue:
         selected = self.due(batch, time.time())
         attempted = 0
         failures = 0
+        deferred = 0
         budget_exhausted = False
         errors = []
 
         async def inspect(row):
-            nonlocal attempted, failures, budget_exhausted
+            nonlocal attempted, failures, deferred, budget_exhausted
             remaining = max_seconds - (time.monotonic() - started)
             if remaining < 1 or budget_exhausted:
                 return
@@ -156,11 +164,14 @@ class RefreshQueue:
                     ),
                     timeout=remaining,
                 )
-            except (DomainError, asyncio.TimeoutError) as exc:
+            except asyncio.TimeoutError:
+                # Exhausting this run's time budget says nothing about source
+                # health. Keep the source due for the next bounded batch.
+                deferred += 1
+                return
+            except DomainError as exc:
                 failures += 1
-                error = (
-                    exc.code if isinstance(exc, DomainError) else "MAINTENANCE_DEADLINE"
-                )
+                error = exc.code
             except Exception:
                 failures += 1
                 error = "REVIEW_INTERNAL_ERROR"
@@ -229,9 +240,11 @@ class RefreshQueue:
             "selected": len(selected),
             "processed": attempted,
             "failed": failures,
+            "deferred": deferred,
             "heldStatuses": sorted(HELD),
             "maxSeconds": max_seconds,
-            "deadlineReached": attempted < len(selected) and max_seconds - elapsed < 1,
+            "deadlineReached": bool(deferred)
+            or (attempted < len(selected) and max_seconds - elapsed < 1),
             "elapsedSeconds": round(elapsed, 3),
             "dailySourceReadBudget": DAILY_REVIEW_BUDGET,
             "concurrency": CONCURRENCY,

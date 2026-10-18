@@ -5,7 +5,7 @@ import registry from '../../src/mcp_open_data_hk/source-relay-targets.json' with
 
 const id='8e4b55c8803277a7e109d007bfac4d98';
 test('approved relay targets are finite registered HTTPS government URLs',()=>{
-  assert.equal(Object.keys(registry.targets).length,31);
+  assert.equal(Object.keys(registry.targets).length,33);
   for(const key of Object.keys(registry.targets)){assert.ok(approvedSource(key));assert.equal(new URL(approvedSource(key)).protocol,'https:');}
   for(const key of ['__proto__','constructor','http://127.0.0.1','0'.repeat(32)])assert.equal(approvedSource(key),undefined);
 });

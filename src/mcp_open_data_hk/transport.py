@@ -352,6 +352,18 @@ def validate(body, p, parameters, headers, now=None):
     elif p.kind == "mtrbus":
         stops = data.get("busStop")
         if (
+            stops == []
+            and data.get("routeName") == parameters["routeName"]
+            and str(data.get("status")) == "0"
+            and isinstance(data.get("routeStatusRemarkTitle"), str)
+            and data["routeStatusRemarkTitle"].strip()
+        ):
+            raise DomainError(
+                "SOURCE_UNAVAILABLE",
+                "MTR Bus: " + data["routeStatusRemarkTitle"].strip()[:200],
+                502,
+            )
+        if (
             not isinstance(stops, list)
             or not stops
             or data.get("routeName") != parameters["routeName"]
