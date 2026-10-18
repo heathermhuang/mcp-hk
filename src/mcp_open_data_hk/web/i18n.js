@@ -52,6 +52,7 @@
       number.textContent = value.toLocaleString(lang === 'en' ? 'en-HK' : 'zh-HK'); label.textContent = t(key); item.append(number, label); counts.append(item);
     }
     const note = document.createElement('p'); note.className = 'mhk-note'; note.textContent = t('coverageClaim'); box.append(counts, note);
+    if (coverage.validationFreshness?.status === 'active') { const p=document.createElement('p');p.className='mhk-note';p.textContent=t('validationCounts',{expired:coverage.validationFreshness.cacheExpiredCount,due:coverage.validationFreshness.reviewOverdueCount});box.append(p); }
     if (coverage.asOf) {
       const stamp = document.createElement('p'); stamp.className = 'mhk-small';
       stamp.textContent = t('coverageAsOf') + ' · ' + new Date(coverage.asOf).toLocaleString(lang === 'en' ? 'en-HK' : 'zh-HK', {timeZone: 'Asia/Hong_Kong', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'}) + ' (HKT)'; box.append(stamp);

@@ -50,7 +50,7 @@ class Profile:
         return self.kind in {"mtr", "lrt", "mtrbus", "eta", "gmb", "nlb", "ferry"}
 
     def describe(self):
-        return dict(
+        result = dict(
             operator=self.operator,
             mode=self.mode,
             operation="arrivals" if self.arrivals else "reference",
@@ -62,6 +62,30 @@ class Profile:
             validationScope="last_selected_route_or_stop",
             policyVersion=REVISION,
         )
+        if self.operator in {"Fortune Ferry", "Water Taxi"}:
+            result["knownSourceIssue"] = {
+                "observedAt": "2026-10-18",
+                "reason": "Published ETA endpoint returned HTTP 404. A new successful source read is required to restore live coverage.",
+            }
+            result["alternative"] = {
+                **(
+                    {
+                        "resourceId": "2c3ad746961a833f59740f4abbf26644",
+                        "http": "/api/v1/resources/2c3ad746961a833f59740f4abbf26644/records",
+                        "mcpTool": "hk_resource_query",
+                    }
+                    if self.operator == "Water Taxi"
+                    else {}
+                ),
+                "kind": "published_timetable",
+                "realtime": False,
+                "url": (
+                    "https://www.fortuneferry.com.hk/zh/route-and-fare"
+                    if self.operator == "Fortune Ferry"
+                    else "https://www.td.gov.hk/en/transport_in_hong_kong/public_transport/ferries/service_details/index_t.html"
+                ),
+            }
+        return result
 
 
 def profile(resource):

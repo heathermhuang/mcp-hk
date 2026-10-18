@@ -247,6 +247,15 @@ def parse(body, fmt, record_path="", sheet=""):
             and "code" in value["error"]
         ):
             invalid("Source API returned an error envelope", "SOURCE_API_ERROR")
+        if (
+            isinstance(value, dict)
+            and set(value) == {"message"}
+            and str(value["message"]).strip().casefold()
+            in {"no record found", "no records found", "no data found", "no data"}
+        ):
+            info["sourceContext"] = dict(value)
+            info["sourceResult"] = "empty"
+            value = []
         calendar = value.get("vcalendar") if isinstance(value, dict) else None
         calendar = (
             calendar[0]

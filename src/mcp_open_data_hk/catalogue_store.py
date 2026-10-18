@@ -8,6 +8,7 @@ import zlib
 
 from .contracts import DomainError
 from . import transport, connected
+from .quality import freshness
 
 CACHE_BYTES = 4_000_000
 
@@ -346,6 +347,13 @@ class CatalogueStore:
             )
         for item in items:
             p = transport.profile(item)
+            item["validation"]["freshness"] = freshness(
+                self.dataset(item["datasetId"]),
+                item,
+                item["validation"]["lastValidatedAt"],
+                p.ttl if p else None,
+            )
+            item["validation"]["semanticVerification"] = "not_performed"
             if p:
                 item["transport"] = p.describe()
                 item["validation"]["scope"] = "last_selected_route_or_stop"
@@ -552,9 +560,38 @@ class CatalogueStore:
                     (generation,),
                 )
             ]
+        review = {
+            "status": "not_initialized",
+            "scope": "Validation recency is not observation age or semantic verification.",
+        }
+        with self.store.connect() as db:
+            if db.execute(
+                "SELECT 1 FROM sqlite_master WHERE type='table' AND name='resource_review_policy'"
+            ).fetchone():
+                setup = db.execute(
+                    "SELECT * FROM resource_review_setup WHERE id=1"
+                ).fetchone()
+                if setup and setup["generation"] == generation:
+                    now = time.time()
+                    counts = db.execute(
+                        "SELECT count(*) total,SUM(CASE WHEN c.validated IS NULL OR c.validated+COALESCE(t.ttl,p.cache_ttl)<=? THEN 1 ELSE 0 END) cache_expired,SUM(CASE WHEN c.validated IS NULL OR c.validated+p.interval<=? THEN 1 ELSE 0 END) review_overdue FROM inventory_resources r JOIN resource_review_policy p ON p.id=r.id JOIN resource_checks c ON c.id=r.id LEFT JOIN resource_policies t ON t.id=r.id WHERE r.generation=? AND c.status='queryable'",
+                        (now, now, generation),
+                    ).fetchone()
+                    state = db.execute(
+                        "SELECT receipt FROM resource_review_state WHERE id=1"
+                    ).fetchone()
+                    review.update(
+                        status="active",
+                        policyVersion=setup["revision"],
+                        queryableCount=counts["total"],
+                        cacheExpiredCount=counts["cache_expired"] or 0,
+                        reviewOverdueCount=counts["review_overdue"] or 0,
+                        lastMaintenance=json.loads(state[0]) if state else None,
+                    )
         receipt = json.loads(meta["receipt"])
         return {
             "generation": generation,
+            "validationFreshness": review,
             "realtimeTransport": {
                 "resources": live,
                 "scope": "Last tested route/stop selections only; not every route or operator. Expired checks require a new source read. Scheduled departures remain labelled by the provider.",

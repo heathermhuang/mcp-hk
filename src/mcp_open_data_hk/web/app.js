@@ -48,7 +48,7 @@
       const row = document.createElement('div'); row.className = 'mhk-result';
       const index = document.createElement('span'); index.className = 'mhk-index'; index.textContent = String(i + 1).padStart(2, '0');
       const names = document.createElement('div');
-      const name = document.createElement('div'); name.className = 'mhk-result-name'; name.textContent = label(record.name);
+      const name = document.createElement('div'); name.className = 'mhk-result-name'; name.textContent = record.quality?.sourceNameMissing ? `${MhkI18n.t('sourceNameMissing')} · ${record.id}` : label(record.name);
       const detail = document.createElement('div'); detail.className = 'mhk-result-sub'; detail.textContent = `${record.licenceType} · ${label(record.address)}`;
       names.append(name, detail);
       const d = document.createElement('span'); d.className = 'mhk-distance'; d.textContent = record.distanceM == null ? '—' : `${Math.round(record.distanceM)} m`;
@@ -213,7 +213,7 @@
     for (const source of sourceStatus.sources) {
       const item = document.createElement('article');
       const name = document.createElement('h2'); name.textContent = `${MhkI18n.t('source_' + source.sourceId)} · ${MhkI18n.t(source.providerType === 'independent' ? 'independent' : 'government')}`;
-      const status = document.createElement('p'); status.textContent = MhkI18n.t(source.stale ? 'noRecentCheck' : 'recentCheck') + (source.recordCount ? ` · ${source.recordCount.toLocaleString()} ${MhkI18n.t('records')}` : '');
+      const status = document.createElement('p'); status.textContent = MhkI18n.t(source.refreshHealth?.state === 'degraded' ? 'refreshDegraded' : source.stale ? 'noRecentCheck' : 'recentCheck') + (source.recordCount ? ` · ${source.recordCount.toLocaleString()} ${MhkI18n.t('records')}` : '');
       const detail = document.createElement('p'); detail.className = 'mhk-small'; detail.textContent = `${MhkI18n.t('lastSuccess')}: ${source.lastSuccess || MhkI18n.t('notChecked')} · ${MhkI18n.t('lastError')}: ${source.lastError || MhkI18n.t('none')}`;
       const link = document.createElement('a'); link.href = source.sourceUrl; link.textContent = MhkI18n.t(source.providerType === 'independent' ? 'providerData' : 'officialDataset'); link.rel = 'noreferrer';
       item.append(name, status, detail, link); box.append(item);

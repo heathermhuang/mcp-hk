@@ -109,7 +109,7 @@ retain older recovery points. Metadata payloads and schemas are compressed separ
 from the bounded record cache. Full raw files are not committed or put in the image.
 
 Hosted operator commands add `catalogue` and `resources` to `scripts/cloudflare_ops.py`.
-Catalogue sync runs Sunday 12:00 HK; a resource batch runs hourly at minute 20. These
+Catalogue sync runs Sunday 12:00 HK; a cadence-aware resource batch runs hourly at minute 20. These
 are ordinary deterministic jobs with persisted cursors and a maintenance lease.
 This bounded schedule does not promise that all discovered resources are fresh;
 coverage and timestamps expose the actual progress. Structural/schema failures are
@@ -152,3 +152,30 @@ Catalogue jobs have a ten-minute overall deadline and cancel/drain outstanding s
 Template discovery accepts `{name}`, `<name>` and bracketed query-value format hints such as HKO `date=[YYYY-MM-DD]`. Bracket hints use the actual query parameter name (`date`), preserve independent start/end values and leave numeric array literals unchanged. Provenance links to the resolved request URL and retains the original inventoried resource URL. Credential parameter names remain rejected.
 
 Dataset resource lists accept exact `format` and optional validation `status` filters over both HTTP and MCP. The explorer offers a format selector, so clients can select JSON APIs without paging through hundreds of workbook resources.
+
+
+## Validation freshness and semantic quality
+
+A prior successful read is access evidence, not current observations or a verified
+analytical table. Directory entries expose `validation.freshness`; query/schema
+responses expose `validationFreshness` and `quality`. Cache TTL, review cadence,
+publication dates and reference periods remain separate. Generic source headers,
+units and grain are explicitly unverified; positional columns remain labelled.
+A lone exact no-record message becomes zero observations with its source context
+retained. Other messages and genuine error envelopes keep their own meanings.
+
+The scheduled queue selects due eligible resources before limiting the batch. It
+uses the dataset's declared cadence (annual: 90-day review, quarterly: 21 days,
+monthly: seven days, weekly: one day, daily: six hours; explicit one-off/retired:
+one year; unknown: one day or one hour for APIs). These are review targets, not
+claims that source observations are new. Interactive cache TTL remains five
+minutes for APIs and one day for other files; arrival feeds retain 10/20 seconds.
+
+Each hourly run is capped at 100 actual eligible reads, 90 seconds, and a persisted
+2,400 maintenance-read daily budget. Held structural/selection failures and arrival
+feeds do not consume scan slots. The queue reuses accepted sheet, record-path and
+ArcGIS layer selectors, respects successful interactive validations and backs off
+on failed reads. Pending discovery and due accepted sources precede repeated
+failures. Policy, last-run counters and overdue-review counts are public under
+`validationFreshness` in coverage. These budgets bound work; they do not promise
+zero backlog or full semantic qualification of every discovered resource.

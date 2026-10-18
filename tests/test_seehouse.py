@@ -290,3 +290,27 @@ def test_invalid_prices_and_unsafe_source_urls_fail_closed(bad_price):
     payload["listings"][0]["sourceUrl"] = "javascript:alert(1)"
     with pytest.raises(ValueError):
         parse("building", payload)
+
+
+@pytest.mark.asyncio
+async def test_expired_advert_link_keeps_other_listings_and_never_reconstructs_link(
+    service, monkeypatch
+):
+    payload = fixture("expired-link")
+
+    async def upstream(*args):
+        return payload
+
+    monkeypatch.setattr("mcp_open_data_hk.seehouse.request_json", upstream)
+    with TestClient(create_app(service)) as http:
+        response = http.get(
+            "/api/v1/properties/building", params={"buildingId": payload["id"]}
+        )
+        assert response.status_code == 200
+        rows = response.json()["data"]["listings"]
+        assert len(rows) == 6
+        expired = next(r for r in rows if r["id"] == "28hse:4012077")
+        assert expired["sourceUrl"] is None
+        assert expired["freshness"]["status"] == "stale"
+        assert expired["sourceAttribution"]["url"]
+        assert rows[0]["sourceUrl"].startswith("https://")

@@ -76,3 +76,20 @@ status is optional for government-pack readiness.
 `UPSTREAM_TIMEOUT` 504; source/schema/budget failures are 503. Failures are never
 cached as successful empty results. A valid empty result remains a successful
 empty result and does not prove that no relevant properties exist.
+
+
+## Listing qualification
+
+`hk_property_building` and `/api/v1/properties/building` accept `quality=all`
+(default, the complete returned provider page) or `quality=current`. The current
+view requires an observation within 48 hours, a building-level match, an unexpired
+usable source link and no source hide flag. It does not verify availability or
+scan beyond the provider's 50-card cap. `listingQuality` preserves provider-returned
+and qualified counts; provider statistics continue to describe their own scope.
+Every card carries qualification reasons. The browser defaults to this qualified
+view and lets readers choose all source adverts, with estate/tower uncertainty shown.
+
+Expired source links remain null and disabled. Their historical attribution URL
+is retained for provenance and is never reconstructed into a clickable advert link.
+District correctness is repaired in the owning SeeHouse pipeline using official
+district polygons; mcp.hk preserves the source's location rather than guessing it.

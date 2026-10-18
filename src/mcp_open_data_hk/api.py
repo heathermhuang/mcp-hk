@@ -21,6 +21,7 @@ from .contracts import (
     PlateSearchQuery,
     PropertySearchQuery,
     PropertyBuildingQuery,
+    PropertyListingsQuery,
     RestaurantQuery,
 )
 from .services import get_service
@@ -191,7 +192,7 @@ def create_app(service=None):
         return await service.properties.search(query)
 
     @app.get("/api/v1/properties/building")
-    async def property_building(query: Annotated[PropertyBuildingQuery, Query()]):
+    async def property_building(query: Annotated[PropertyListingsQuery, Query()]):
         return await service.properties.building(query)
 
     @app.get("/api/v1/properties/price-history")

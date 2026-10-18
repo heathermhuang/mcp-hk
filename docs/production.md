@@ -49,7 +49,7 @@ maintenance lease:
 | Restaurant refresh + backup | `0 2 * * *` | Daily 10:00 |
 | Population check + backup | `0 3 * * SUN` | Sunday 11:00 |
 | Reconciled catalogue sync + backup | `0 4 * * SUN` | Sunday 12:00 |
-| Bounded resource validation + backup | `20 * * * *` | Hourly at minute 20 |
+| Cadence-aware resource review + backup | `20 * * * *` | Hourly at minute 20 |
 
 Every successful operation stores an immutable version under `backups/`, then
 publishes `latest.snapshot.tar.gz` and a manifest. Only complete, validated imports
@@ -168,3 +168,10 @@ manually, run `python scripts/cloudflare_ops.py publish-overview` from the proje
 environment. No browser request triggers publication or warms the container. Source
 status is requested only when the Sources page is opened. Actual resource queries
 and the detailed coverage explorer still use the backend.
+
+
+The resource maintenance job now chooses due eligible sources rather than advancing
+through held IDs. It has a 100-read/90-second run bound and a persisted 2,400-read
+UTC-day maintenance budget. Query-cache expiry and cadence-based review debt are
+reported separately. Source status also exposes failed/overdue government refreshes
+while retaining accepted snapshots and source-label quality counts.
