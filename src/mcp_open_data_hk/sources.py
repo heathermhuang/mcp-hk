@@ -7,6 +7,10 @@ from .contracts import Address, DistrictStatistics, DomainError, Name, Restauran
 
 PORTAL = "https://portal.csdi.gov.hk/server/rest/services/common/"
 RESTAURANTS = PORTAL + "fehd_rcd_1630036390312_58893/FeatureServer/0"
+RESTAURANTS_SNAPSHOT = (
+    "https://portal.csdi.gov.hk/csdi-webpage/file-api?"
+    "dataset_id=fehd_rcd_1630036390312_58893&format=geojson&layer_name=FEHD_RL"
+)
 POPULATION = PORTAL + "censtatd_rcd_1635934215448_25451/FeatureServer/0"
 SOURCES = {
     "addresses": {
@@ -16,6 +20,7 @@ SOURCES = {
     },
     "restaurants": {
         "sourceUrl": "https://data.gov.hk/en-data/dataset/hk-fehd-fehdlmis-restaurant-licences",
+        "sourceResponseUrl": RESTAURANTS_SNAPSHOT,
         "attribution": "Food and Environmental Hygiene Department, HKSAR Government, DATA.GOV.HK / CSDI",
         "freshnessSeconds": 129600,
     },

@@ -335,6 +335,8 @@ class Service:
                     "nextDueAt": iso(next_due) if next_due else None,
                     "acceptedSnapshotRetained": bool(sid),
                 }
+            if source.get("sourceResponseUrl"):
+                item["sourceResponseUrl"] = source["sourceResponseUrl"]
             if sid:
                 snap, rows = self.store.snapshot(pack)
                 item.update(

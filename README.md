@@ -8,7 +8,12 @@ The upstream MIT licence and author attribution are preserved.
 
 - **Addresses:** bilingual DPO ALS lookup and candidate selection.
 - **Restaurants:** complete validated FEHD/CSDI licence snapshots, text/district/radius
-  queries, stable pagination and full-result summaries.
+  queries, stable pagination and full-result summaries. Imports use CSDI's official
+  single-response GeoJSON download because its paginated API can serve mixed
+  source editions. Source record dates remain separate from validation time;
+  source status exposes the actual download URL. Invalid collections, duplicate
+  licence IDs, low coordinate coverage and large row-count drops retain the
+  previously accepted snapshot.
 - **District population:** all 18 districts, published reference year, population in
   persons, area and density.
 - **SeeHouse / 睇樓:** Hong Kong building search, source-linked sale/rental listings,

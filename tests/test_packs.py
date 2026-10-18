@@ -246,6 +246,70 @@ async def test_incomplete_feature_page_is_rejected(monkeypatch):
 
 
 @pytest.mark.asyncio
+async def test_restaurant_import_uses_one_atomic_official_response(
+    service, monkeypatch
+):
+    from mcp_open_data_hk import ingest
+    from mcp_open_data_hk.sources import RESTAURANTS_SNAPSHOT
+
+    features = [
+        {"type": "Feature", "properties": f["attributes"]}
+        for f in fixture("restaurants")["features"]
+    ]
+    calls = []
+
+    async def download(url, **kwargs):
+        calls.append((url, kwargs))
+        return (
+            json.dumps({"type": "FeatureCollection", "features": features}).encode(),
+            {},
+            url,
+            200,
+        )
+
+    async def mixed_replicas(*args, **kwargs):
+        raise AssertionError("Paginated restaurant replicas must not be mixed")
+
+    monkeypatch.setattr(ingest, "fetch", download)
+    monkeypatch.setattr(ingest, "read_features", mixed_replicas)
+    result = await refresh(service.store, "restaurants")
+    assert result["records"] == len(features)
+    assert calls == [(RESTAURANTS_SNAPSHOT, {"maximum": 32_000_000})]
+    source = next(
+        s for s in service.status()["sources"] if s["sourceId"] == "restaurants"
+    )
+    assert source["sourceResponseUrl"] == RESTAURANTS_SNAPSHOT
+    assert source["refreshHealth"]["state"] == "healthy"
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {"type": "FeatureCollection", "features": []},
+        {"type": "FeatureCollection", "features": [{"type": "Feature"}]},
+        {"type": "FeatureCollection", "features": [], "exceededTransferLimit": True},
+        {"type": "FeatureCollection", "features": [], "error": {"code": 500}},
+        {"type": "Feature", "features": []},
+    ],
+)
+async def test_bad_atomic_restaurant_response_retains_snapshot(
+    service, monkeypatch, payload
+):
+    from mcp_open_data_hk import ingest
+
+    old = service.store.active("restaurants")
+
+    async def download(url, **kwargs):
+        return json.dumps(payload).encode(), {}, url, 200
+
+    monkeypatch.setattr(ingest, "fetch", download)
+    with pytest.raises(DomainError):
+        await refresh(service.store, "restaurants")
+    assert service.store.active("restaurants") == old
+
+
+@pytest.mark.asyncio
 async def test_schema_failure_persists_receipt_and_keeps_active(service, monkeypatch):
     old = service.store.active("population")
 
