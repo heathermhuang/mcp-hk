@@ -310,6 +310,6 @@ review cleans its temporary download even if its bounded worker finishes writing
 after cancellation. These bounds do not imply that every catalogue file fits the
 reader or that a source's publication/observation date is current.
 The source-scoped HKO current-weather contract also preserves UV-index objects
-and the observed observed empty-string representation, without
+and the observed empty-string representation, without
 rewriting source values. The official API dictionary defines the UV object/data
 structure; other inferred field changes remain held for review.

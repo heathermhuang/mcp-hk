@@ -169,7 +169,17 @@ def test_hko_uv_object_and_observed_empty_string_are_source_scoped_compatible():
         },
     ]:
         rows, schema = parse(
-            json.dumps({"warningMessage": "", "uvindex": uv}).encode(), "JSON"
+            json.dumps(
+                {
+                    "warningMessage": "",
+                    "uvindex": uv,
+                    "icon": [50],
+                    "temperature": {
+                        "data": [{"place": "HK", "value": 25, "unit": "C"}]
+                    },
+                }
+            ).encode(),
+            "JSON",
         )
         annotate(resource, rows, schema)
         assert (
