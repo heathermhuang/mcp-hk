@@ -192,3 +192,26 @@ acquiring its lease. A Worker whose matching data image is still rolling out get
 is regression-tested, so a source-policy update cannot silently start maintenance
 against the previous image. Active leases still expire naturally and are never
 cleared merely to speed a deployment.
+
+## Coordinating container and controller releases
+
+Pause the resource cron using `wrangler triggers deploy` with a temporary config
+that removes only that cron; preserve the other four schedules. Cloudflare cron
+changes can take up to 15 minutes to propagate. Wait for both propagation and any
+existing job's accepted checkpoint/lease release before replacing Worker or
+Durable Object code. Never clear a lease after an interrupted response.
+
+Static `X-Mcp-Release` headers do not prove controller adoption. Read the private
+controller diagnostics and the actual backend `/healthz` policy. A controller can
+continue executing an older release after the public Worker changes. A matching
+policy guard protects maintenance only after that controller version is active.
+Keep the temporary four-cron configuration throughout the Worker/container rollout,
+verify both versions, and then restore the original five schedules using
+`wrangler triggers deploy` with the checked-in configuration.
+
+Retain uncertain/failed receipts and the last accepted R2 checkpoint. Do not label
+a completed source-review phase as a saved checkpoint. After adoption, resume only
+the missing bounded review work and test a fresh accepted snapshot's checksum,
+SQLite integrity, accepted packs and source registry in isolation.
+
+Reference: https://developers.cloudflare.com/workers/configuration/cron-triggers/
