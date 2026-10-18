@@ -289,3 +289,6 @@ receipt writes, cache LRU touches and failure recording. Even a cache read updat
 its LRU timestamp; waiting for another SQLite writer must not stall health or MCP
 requests. Regression tests hold a real writer lock and require the event loop to
 remain responsive through review, cached-read and failure paths.
+A confirmed accepted source validation newer than its last failed review ends the
+obsolete failure cooldown. Its next review follows the source's normal validation
+deadline. Unavailable sources without a new successful validation retain backoff.
