@@ -1,0 +1,179 @@
+"""Bounded cadence-aware due queue. Skipped/held IDs never consume read slots."""
+
+import asyncio
+import json
+import re
+import time
+
+from .catalogue_store import unpack
+from .contracts import DomainError
+from .quality import HELD, REVISION, review_interval
+
+
+class RefreshQueue:
+    def __init__(self, catalogue):
+        self.catalogue = catalogue
+        self.store = catalogue.store
+        with self.store.connect() as db:
+            db.executescript(
+                """
+            CREATE TABLE IF NOT EXISTS resource_review_policy (id TEXT PRIMARY KEY, interval INTEGER NOT NULL, cache_ttl INTEGER NOT NULL, next_due REAL NOT NULL, last_attempt REAL, failures INTEGER NOT NULL DEFAULT 0);
+            CREATE INDEX IF NOT EXISTS review_due ON resource_review_policy(next_due);
+            CREATE TABLE IF NOT EXISTS resource_review_state (id INTEGER PRIMARY KEY CHECK(id=1), receipt TEXT NOT NULL);
+            CREATE TABLE IF NOT EXISTS resource_review_setup (id INTEGER PRIMARY KEY CHECK(id=1), generation TEXT NOT NULL, revision TEXT NOT NULL);
+            """
+            )
+
+    def prepare(self):
+        generation = self.catalogue.head()
+        with self.store.connect() as db:
+            setup = db.execute(
+                "SELECT * FROM resource_review_setup WHERE id=1"
+            ).fetchone()
+            if (
+                setup
+                and setup["generation"] == generation
+                and setup["revision"] == REVISION
+            ):
+                return
+            datasets = {
+                r["id"]: unpack(r["payload"])
+                for r in db.execute(
+                    "SELECT id,payload FROM inventory_datasets WHERE generation=?",
+                    (generation,),
+                )
+            }
+            rows = db.execute(
+                "SELECT r.id,r.dataset,r.payload,c.validated FROM inventory_resources r LEFT JOIN resource_checks c ON c.id=r.id WHERE r.generation=?",
+                (generation,),
+            ).fetchall()
+            policies = []
+            for row in rows:
+                resource = unpack(row["payload"])
+                interval = review_interval(datasets[row["dataset"]], resource)
+                policies.append(
+                    (
+                        row["id"],
+                        interval,
+                        300 if resource.get("isApi") else 86400,
+                        (row["validated"] or 0) + interval,
+                    )
+                )
+            db.executemany(
+                "INSERT INTO resource_review_policy(id,interval,cache_ttl,next_due) VALUES (?,?,?,?) ON CONFLICT(id) DO UPDATE SET interval=excluded.interval,cache_ttl=excluded.cache_ttl,next_due=excluded.next_due",
+                policies,
+            )
+            db.execute(
+                "INSERT OR REPLACE INTO resource_review_setup VALUES (1,?,?)",
+                (generation, REVISION),
+            )
+
+    def due(self, batch, now):
+        self.prepare()
+        with self.store.connect() as db:
+            # On-demand successful reads satisfy the review deadline too.
+            db.execute(
+                "UPDATE resource_review_policy SET next_due=max(next_due,(SELECT validated+interval FROM resource_checks WHERE resource_checks.id=resource_review_policy.id)) WHERE EXISTS (SELECT 1 FROM resource_checks c WHERE c.id=resource_review_policy.id AND c.validated IS NOT NULL AND c.status='queryable')"
+            )
+            held = tuple(sorted(HELD))
+            marks = ",".join("?" for _ in held)
+            return [
+                dict(r)
+                for r in db.execute(
+                    f"SELECT r.id,p.interval,c.status FROM resource_review_policy p JOIN inventory_resources r ON r.id=p.id LEFT JOIN resource_checks c ON c.id=r.id LEFT JOIN resource_policies t ON t.id=r.id WHERE r.generation=? AND p.next_due<=? AND COALESCE(c.status,'pending') NOT IN ({marks}) AND t.ttl IS NULL ORDER BY CASE WHEN COALESCE(c.status,'pending')='pending' THEN 0 WHEN c.status IN ('queryable','document','stale') THEN 1 ELSE 2 END,(?-COALESCE(c.validated,c.checked,p.next_due-p.interval))/p.interval DESC,p.next_due,r.id LIMIT ?",
+                    (self.catalogue.head(), now, *held, now, batch),
+                )
+            ]
+
+    def selectors(self, rid):
+        with self.store.connect() as db:
+            row = db.execute(
+                "SELECT schema_json FROM resource_variants WHERE resource=? AND schema_json IS NOT NULL ORDER BY validated DESC LIMIT 1",
+                (rid,),
+            ).fetchone()
+        if not row:
+            return {}
+        schema = unpack(row[0])
+        args = {}
+        if schema.get("recordPath"):
+            args["record_path"] = schema["recordPath"]
+        if schema.get("sheet"):
+            args["sheet"] = schema["sheet"]
+        if schema.get("apiFamily") == "ArcGIS":
+            m = re.search(
+                r"/(?:FeatureServer|MapServer)/(\d+)",
+                schema.get("resolvedSourceUrl", ""),
+            )
+            if m:
+                args["layer"] = int(m.group(1))
+        return args
+
+    async def run(self, resources, batch, max_seconds):
+        if not 1 <= batch <= 100:
+            raise ValueError("Audit batch must be 1..100")
+        started = time.monotonic()
+        selected = self.due(batch, time.time())
+        attempted = 0
+        failures = 0
+        budget_exhausted = False
+        for row in selected:
+            remaining = max_seconds - (time.monotonic() - started)
+            if remaining < 1:
+                break
+            try:
+                self.store.consume_budget("resource_maintenance", 2400)
+            except DomainError:
+                budget_exhausted = True
+                break
+            attempted += 1
+            error = None
+            try:
+                await asyncio.wait_for(
+                    resources.schema(
+                        row["id"], require_fresh=True, **self.selectors(row["id"])
+                    ),
+                    timeout=remaining,
+                )
+            except (DomainError, asyncio.TimeoutError) as exc:
+                failures += 1
+                error = (
+                    exc.code if isinstance(exc, DomainError) else "MAINTENANCE_DEADLINE"
+                )
+            now = time.time()
+            with self.store.connect() as db:
+                old = db.execute(
+                    "SELECT failures FROM resource_review_policy WHERE id=?",
+                    (row["id"],),
+                ).fetchone()[0]
+                count = old + 1 if error else 0
+                cooldown = (
+                    min(86400, 3600 * 2 ** min(count - 1, 5))
+                    if error
+                    else row["interval"]
+                )
+                if error in {"ACCESS_RESTRICTED", "SOURCE_NOT_FOUND"}:
+                    cooldown = 86400
+                db.execute(
+                    "UPDATE resource_review_policy SET next_due=?,last_attempt=?,failures=? WHERE id=?",
+                    (now + cooldown, now, count, row["id"]),
+                )
+        receipt = {
+            "generation": self.catalogue.head(),
+            "policyVersion": REVISION,
+            "selection": "due_eligible_resources_by_relative_deadline",
+            "selected": len(selected),
+            "processed": attempted,
+            "failed": failures,
+            "heldStatuses": sorted(HELD),
+            "maxSeconds": max_seconds,
+            "deadlineReached": time.monotonic() - started >= max_seconds,
+            "dailySourceReadBudget": 2400,
+            "budgetExhausted": budget_exhausted,
+            "cycleComplete": not selected,
+        }
+        with self.store.connect() as db:
+            db.execute(
+                "INSERT OR REPLACE INTO resource_review_state VALUES (1,?)",
+                (json.dumps({**receipt, "completedAt": time.time()}),),
+            )
+        return receipt

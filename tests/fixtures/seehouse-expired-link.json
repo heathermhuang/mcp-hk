@@ -1,0 +1,391 @@
+{
+  "id": "hk-csdi-a451ea26d4256c72",
+  "name": "觀潮閣",
+  "district": "中西區",
+  "address": null,
+  "coordinates": {
+    "latitude": 22.2478457,
+    "longitude": 114.154428
+  },
+  "match": {
+    "level": "building",
+    "confidence": 0.99,
+    "method": "cov_llm_resolver",
+    "unitLevelMatching": "opportunistic_not_guaranteed"
+  },
+  "stats": {
+    "rentCount": 0,
+    "buyCount": 6,
+    "dedupeClusterCount": 6,
+    "duplicateClusterCount": 1,
+    "lastUpdated": "2026-10-17T16:02:51+00:00"
+  },
+  "listingState": {
+    "status": "active_source_listings",
+    "source": "api_buildings",
+    "message": null
+  },
+  "listings": [
+    {
+      "id": "centaline:80f860d2-225e-c192-21d4-08de03b9f652",
+      "source": "centaline",
+      "sourceListingId": "80f860d2-225e-c192-21d4-08de03b9f652",
+      "mode": "buy",
+      "propertyType": "apartment",
+      "title": "香港仔中心 觀潮閣 (T座)",
+      "floorBand": "高層 1室 3房 (1套房)",
+      "priceHkd": 11000000,
+      "saleableAreaFt2": 721,
+      "grossAreaFt2": null,
+      "pricePerFt2": 15256,
+      "sourceUrl": "https://hk.centanet.com/findproperty/detail/%E9%A6%99%E6%B8%AF%E4%BB%94%E4%B8%AD%E5%BF%83_TIM862",
+      "updatedAt": "2026-10-17T16:02:51+00:00",
+      "parseQualityScore": 0.8,
+      "attributionRequired": true,
+      "freshness": {
+        "status": "fresh",
+        "score": null,
+        "reason": null,
+        "observedAt": "2026-10-17T16:02:51+00:00",
+        "firstSeenAt": "2026-10-06T16:03:40+00:00",
+        "lastSeenAt": "2026-10-17T16:02:51+00:00",
+        "datePublished": null,
+        "dateModified": null,
+        "expiresAt": null
+      },
+      "confidence": {
+        "buildingMatch": 0.99,
+        "parseQualityScore": 0.8,
+        "matchLevel": "building",
+        "towerCount": null
+      },
+      "sourceAttribution": {
+        "required": true,
+        "source": "centaline",
+        "sourceListingId": "80f860d2-225e-c192-21d4-08de03b9f652",
+        "url": "https://hk.centanet.com/findproperty/detail/%E9%A6%99%E6%B8%AF%E4%BB%94%E4%B8%AD%E5%BF%83_TIM862",
+        "observedAt": "2026-10-17T16:02:51+00:00"
+      },
+      "dedupeCluster": {
+        "id": "centaline:80f860d2-225e-c192-21d4-08de03b9f652",
+        "size": 2,
+        "displayRank": 1,
+        "isPrimary": true,
+        "confidence": 0,
+        "reason": "same_mode_price_area",
+        "sourceListingRefs": [
+          "centaline:80f860d2-225e-c192-21d4-08de03b9f652",
+          "midland:M152006457"
+        ]
+      },
+      "listingStatus": null,
+      "trustBadges": [
+        "source_attributed",
+        "residential_filtered",
+        "freshness_observed",
+        "dedupe_context",
+        "pilot_d1"
+      ]
+    },
+    {
+      "id": "centaline:f6dc568f-ea33-c1bb-70e3-08dec60498bb",
+      "source": "centaline",
+      "sourceListingId": "f6dc568f-ea33-c1bb-70e3-08dec60498bb",
+      "mode": "buy",
+      "propertyType": "apartment",
+      "title": "香港仔中心 觀潮閣 (T座)",
+      "floorBand": "中層 1室 3房",
+      "priceHkd": 11000000,
+      "saleableAreaFt2": 721,
+      "grossAreaFt2": 915,
+      "pricePerFt2": 15256,
+      "sourceUrl": "https://hk.centanet.com/findproperty/detail/%E9%A6%99%E6%B8%AF%E4%BB%94%E4%B8%AD%E5%BF%83_TIR396",
+      "updatedAt": "2026-10-06T16:03:40+00:00",
+      "parseQualityScore": 0.8,
+      "attributionRequired": true,
+      "freshness": {
+        "status": "stale",
+        "score": null,
+        "reason": null,
+        "observedAt": "2026-10-06T16:03:40+00:00",
+        "firstSeenAt": "2026-10-06T16:03:40+00:00",
+        "lastSeenAt": "2026-10-06T16:03:40+00:00",
+        "datePublished": null,
+        "dateModified": null,
+        "expiresAt": null
+      },
+      "confidence": {
+        "buildingMatch": 0.99,
+        "parseQualityScore": 0.8,
+        "matchLevel": "building",
+        "towerCount": null
+      },
+      "sourceAttribution": {
+        "required": true,
+        "source": "centaline",
+        "sourceListingId": "f6dc568f-ea33-c1bb-70e3-08dec60498bb",
+        "url": "https://hk.centanet.com/findproperty/detail/%E9%A6%99%E6%B8%AF%E4%BB%94%E4%B8%AD%E5%BF%83_TIR396",
+        "observedAt": "2026-10-06T16:03:40+00:00"
+      },
+      "dedupeCluster": {
+        "id": "centaline:f6dc568f-ea33-c1bb-70e3-08dec60498bb",
+        "size": 1,
+        "displayRank": 1,
+        "isPrimary": true,
+        "confidence": 0,
+        "reason": "single_listing",
+        "sourceListingRefs": [
+          "centaline:f6dc568f-ea33-c1bb-70e3-08dec60498bb"
+        ]
+      },
+      "listingStatus": null,
+      "trustBadges": [
+        "source_attributed",
+        "residential_filtered",
+        "freshness_observed",
+        "dedupe_context",
+        "pilot_d1"
+      ]
+    },
+    {
+      "id": "centaline:7c0db795-0c8a-c68c-3a37-08df120fb634",
+      "source": "centaline",
+      "sourceListingId": "7c0db795-0c8a-c68c-3a37-08df120fb634",
+      "mode": "buy",
+      "propertyType": "apartment",
+      "title": "香港仔中心 觀潮閣 (T座)",
+      "floorBand": "高層 3室 3房 (1套房)",
+      "priceHkd": 12000000,
+      "saleableAreaFt2": 723,
+      "grossAreaFt2": 902,
+      "pricePerFt2": 16597,
+      "sourceUrl": "https://hk.centanet.com/findproperty/detail/%E9%A6%99%E6%B8%AF%E4%BB%94%E4%B8%AD%E5%BF%83_TIA208",
+      "updatedAt": "2026-10-04T10:59:12+00:00",
+      "parseQualityScore": 0.8,
+      "attributionRequired": true,
+      "freshness": {
+        "status": "stale",
+        "score": null,
+        "reason": null,
+        "observedAt": "2026-10-04T10:59:12+00:00",
+        "firstSeenAt": "2026-10-04T10:59:12+00:00",
+        "lastSeenAt": "2026-10-04T10:59:12+00:00",
+        "datePublished": null,
+        "dateModified": null,
+        "expiresAt": null
+      },
+      "confidence": {
+        "buildingMatch": 0.98,
+        "parseQualityScore": 0.8,
+        "matchLevel": "building",
+        "towerCount": null
+      },
+      "sourceAttribution": {
+        "required": true,
+        "source": "centaline",
+        "sourceListingId": "7c0db795-0c8a-c68c-3a37-08df120fb634",
+        "url": "https://hk.centanet.com/findproperty/detail/%E9%A6%99%E6%B8%AF%E4%BB%94%E4%B8%AD%E5%BF%83_TIA208",
+        "observedAt": "2026-10-04T10:59:12+00:00"
+      },
+      "dedupeCluster": {
+        "id": "centaline:7c0db795-0c8a-c68c-3a37-08df120fb634",
+        "size": 1,
+        "displayRank": 1,
+        "isPrimary": true,
+        "confidence": 0,
+        "reason": "single_listing",
+        "sourceListingRefs": [
+          "centaline:7c0db795-0c8a-c68c-3a37-08df120fb634"
+        ]
+      },
+      "listingStatus": null,
+      "trustBadges": [
+        "source_attributed",
+        "residential_filtered",
+        "freshness_observed",
+        "dedupe_context",
+        "pilot_d1"
+      ]
+    },
+    {
+      "id": "28hse:4012077",
+      "source": "28hse",
+      "sourceListingId": "4012077",
+      "mode": "buy",
+      "propertyType": "apartment",
+      "title": "香港仔中心K座 (海晶閣)中層5室",
+      "floorBand": "中層",
+      "priceHkd": 6200000,
+      "saleableAreaFt2": 572,
+      "grossAreaFt2": null,
+      "pricePerFt2": 10839,
+      "sourceUrl": null,
+      "updatedAt": "2026-09-12T12:11:04+08:00",
+      "parseQualityScore": 1,
+      "attributionRequired": true,
+      "freshness": {
+        "status": "stale",
+        "score": null,
+        "reason": null,
+        "observedAt": "2026-10-06T01:09:59+00:00",
+        "firstSeenAt": "2026-09-12T07:16:04+00:00",
+        "lastSeenAt": "2026-10-06T01:09:59+00:00",
+        "datePublished": "2026-09-12T12:11:04+08:00",
+        "dateModified": "2026-09-12T12:11:04+08:00",
+        "expiresAt": "2026-10-12T12:11:04+08:00"
+      },
+      "confidence": {
+        "buildingMatch": 0.82,
+        "parseQualityScore": 1,
+        "matchLevel": "estate",
+        "towerCount": 20
+      },
+      "sourceAttribution": {
+        "required": true,
+        "source": "28hse",
+        "sourceListingId": "4012077",
+        "url": "https://www.28hse.com/en/buy/apartment/property-4012077",
+        "observedAt": "2026-10-06T01:09:59+00:00"
+      },
+      "dedupeCluster": {
+        "id": "28hse:4012077",
+        "size": 1,
+        "displayRank": 1,
+        "isPrimary": true,
+        "confidence": 0,
+        "reason": "single_listing",
+        "sourceListingRefs": [
+          "28hse:4012077"
+        ]
+      },
+      "listingStatus": null,
+      "trustBadges": [
+        "source_attributed",
+        "residential_filtered",
+        "freshness_observed",
+        "dedupe_context",
+        "pilot_d1"
+      ]
+    },
+    {
+      "id": "squarefoot:103532",
+      "source": "squarefoot",
+      "sourceListingId": "103532",
+      "mode": "buy",
+      "propertyType": "apartment",
+      "title": "香港仔中心K座 (海晶閣)中層5室",
+      "floorBand": "中層",
+      "priceHkd": 6200000,
+      "saleableAreaFt2": null,
+      "grossAreaFt2": null,
+      "pricePerFt2": 10839,
+      "sourceUrl": "https://www.squarefoot.com.hk/buy/apartment/property-103532",
+      "updatedAt": "2026-09-15T11:33:22+08:00",
+      "parseQualityScore": 1,
+      "attributionRequired": true,
+      "freshness": {
+        "status": "stale",
+        "score": null,
+        "reason": null,
+        "observedAt": "2026-10-04T09:09:17+00:00",
+        "firstSeenAt": "2026-09-12T07:16:04+00:00",
+        "lastSeenAt": "2026-10-04T09:09:17+00:00",
+        "datePublished": "2026-09-12T12:11:08+08:00",
+        "dateModified": "2026-09-15T11:33:22+08:00",
+        "expiresAt": "2026-11-11T12:11:08+08:00"
+      },
+      "confidence": {
+        "buildingMatch": 0.83,
+        "parseQualityScore": 1,
+        "matchLevel": "estate",
+        "towerCount": null
+      },
+      "sourceAttribution": {
+        "required": true,
+        "source": "squarefoot",
+        "sourceListingId": "103532",
+        "url": "https://www.squarefoot.com.hk/en/buy/apartment/property-103532",
+        "observedAt": "2026-10-04T09:09:17+00:00"
+      },
+      "dedupeCluster": {
+        "id": "squarefoot:103532",
+        "size": 1,
+        "displayRank": 1,
+        "isPrimary": true,
+        "confidence": 0,
+        "reason": "single_listing",
+        "sourceListingRefs": [
+          "squarefoot:103532"
+        ]
+      },
+      "listingStatus": null,
+      "trustBadges": [
+        "source_attributed",
+        "residential_filtered",
+        "freshness_observed",
+        "dedupe_context",
+        "pilot_d1"
+      ]
+    },
+    {
+      "id": "midland:M100381186",
+      "source": "midland",
+      "sourceListingId": "M100381186",
+      "mode": "buy",
+      "propertyType": "apartment",
+      "title": "香港仔中心",
+      "floorBand": "1室",
+      "priceHkd": 9000000,
+      "saleableAreaFt2": 721,
+      "grossAreaFt2": 915,
+      "pricePerFt2": 12483,
+      "sourceUrl": "https://www.midland.com.hk/zh-hk/property/Hong-Kong-Island-Aberdeen-Tin-Wan-Aberdeen-Centre-Kwun-Chiu-Court-Lower-Floor-Flat-1-M100381186",
+      "updatedAt": "2026-09-06T07:06:01.000Z",
+      "parseQualityScore": 1,
+      "attributionRequired": true,
+      "freshness": {
+        "status": "stale",
+        "score": null,
+        "reason": null,
+        "observedAt": "2026-09-29T09:20:15+00:00",
+        "firstSeenAt": "2026-09-29T09:20:15+00:00",
+        "lastSeenAt": "2026-09-29T09:20:15+00:00",
+        "datePublished": null,
+        "dateModified": "2026-09-06T07:06:01.000Z",
+        "expiresAt": null
+      },
+      "confidence": {
+        "buildingMatch": 0.91,
+        "parseQualityScore": 1,
+        "matchLevel": "estate",
+        "towerCount": 20
+      },
+      "sourceAttribution": {
+        "required": true,
+        "source": "midland",
+        "sourceListingId": "M100381186",
+        "url": "https://www.midland.com.hk/en/property/Hong-Kong-Island-Aberdeen-Tin-Wan-Aberdeen-Centre-Kwun-Chiu-Court-Lower-Floor-Flat-1-M100381186",
+        "observedAt": "2026-09-29T09:20:15+00:00"
+      },
+      "dedupeCluster": {
+        "id": "midland:M100381186",
+        "size": 1,
+        "displayRank": 1,
+        "isPrimary": true,
+        "confidence": 0,
+        "reason": "single_listing",
+        "sourceListingRefs": [
+          "midland:M100381186"
+        ]
+      },
+      "listingStatus": null,
+      "trustBadges": [
+        "source_attributed",
+        "residential_filtered",
+        "freshness_observed",
+        "dedupe_context",
+        "pilot_d1"
+      ]
+    }
+  ]
+}

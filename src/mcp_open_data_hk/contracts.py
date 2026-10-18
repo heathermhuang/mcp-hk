@@ -102,6 +102,10 @@ class PropertyBuildingQuery(Model):
     lang: Literal["en", "zh-Hant"] = "en"
 
 
+class PropertyListingsQuery(PropertyBuildingQuery):
+    quality: Literal["all", "current"] = "all"
+
+
 PlateDataset = Literal["all", "pvrm", "tvrm_physical", "tvrm_eauction", "tvrm_legacy"]
 
 

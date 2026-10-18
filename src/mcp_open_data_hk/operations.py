@@ -227,7 +227,7 @@ def register_operations(app, service):
                 await sync(service.store)
                 return await send_checkpoint()
             if pack == "resources":
-                await service.resources.audit(20)
+                await service.resources.audit(100, max_seconds=90)
                 return await send_checkpoint()
             for name in (["population", "restaurants"] if pack == "all" else [pack]):
                 await refresh(service.store, name)

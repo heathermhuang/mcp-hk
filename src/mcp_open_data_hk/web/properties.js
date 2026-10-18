@@ -17,18 +17,20 @@ function show() {
   const d = result.data;
   if (kind === 'building') {
     $('property-building-name').textContent = d.name || d.id;
-    $('property-building-state').textContent = `${t('propertyReturned', {count:d.listings.length})} · ${d.listingState.message || ''} · ${d.stats.lastUpdated || '—'}`;
+    $('property-building-state').textContent = `${t('propertyReturned', {count:d.listings.length})} · ${d.listingState.message || ''} · ${d.stats.lastUpdated || '—'} · ${t('propertyQualifiedSummary',{qualified:d.listingQuality.currentQualifiedCount,total:d.listingQuality.providerReturnedCount})}`;
     for (const listing of d.listings) {
       const row = node('article', ''); row.className = 'mhk-pack';
       row.append(node('h3', listing.title || listing.id));
       const price = listing.priceHkd == null ? '—' : `HK$${listing.priceHkd.toLocaleString(MhkI18n.locale)}`;
       row.append(node('p', `${t(listing.mode === 'rent' ? 'propertyRent' : 'propertyBuy')} · ${price} · ${listing.saleableAreaFt2 ?? '—'} ft²`));
       row.append(node('p', `${listing.source} · ${{fresh:t('propertyFresh'),recent:t('propertyRecent'),stale:t('propertyStale')}[listing.freshness.status] || listing.freshness.status} · ${listing.freshness.observedAt || listing.updatedAt || '—'}`));
-      const url = new URL(listing.sourceUrl);
-      if (url.protocol === 'https:' && !url.username && !url.password) { const a = node('a', t('propertySource')); a.href = url.href; a.rel = 'noreferrer'; row.append(a); }
+      row.append(node('p', t(listing.quality.matchLevel === 'building' ? 'propertyBuildingMatch' : listing.quality.matchLevel === 'estate' ? 'propertyEstateMatch' : 'propertyUnknownMatch')));
+      const url = listing.sourceUrl ? new URL(listing.sourceUrl) : null;
+      if (url && url.protocol === 'https:' && !url.username && !url.password) { const a = node('a', t('propertySource')); a.href = url.href; a.rel = 'noreferrer'; row.append(a); }
+      else row.append(node('span', t('propertySourceUnavailable')));
       $('property-records').append(row);
     }
-    if (!d.listings.length) $('property-records').append(node('p', t('propertyEmpty')));
+    if (!d.listings.length) $('property-records').append(node('p', t(d.listingQuality.selection === 'current' ? 'propertyNoQualified' : 'propertyEmpty')));
   } else if (kind === 'price-history') {
     $('property-building-name').textContent = t('propertyHistory');
     $('property-building-state').textContent = `${d.buildingId} · ${d.generatedAt}`;
@@ -45,7 +47,7 @@ async function read(operation, params = {}) {
   $('property-response').hidden = true;
   if (operation === 'search') { candidates = []; buildingId = null; }
   show();
-  const args = operation === 'coverage' ? {} : {...params, lang:MhkI18n.locale};
+  const args = operation === 'coverage' ? {} : {...params, lang:MhkI18n.locale, ...(operation === 'building' ? {quality:$('property-quality').value} : {})};
   const path = '/api/v1/properties/' + operation + (Object.keys(args).length ? '?' + new URLSearchParams(args) : '');
   $('property-code').textContent = `GET ${path}\n\nMCP: ${{search:'hk_property_search',building:'hk_property_building','price-history':'hk_property_price_history',coverage:'hk_property_coverage'}[operation]}(${JSON.stringify(args)})`;
   try {
@@ -59,6 +61,7 @@ async function read(operation, params = {}) {
 }
 $('property-search').addEventListener('submit', event => { event.preventDefault(); if ($('property-query').value.trim()) read('search', {q:$('property-query').value.trim()}); });
 $('property-listings').addEventListener('click', () => { if (buildingId) read('building', {buildingId}); });
+$('property-quality').addEventListener('change', () => { if(buildingId) read('building', {buildingId}); });
 $('property-history').addEventListener('click', () => { if (buildingId) read('price-history', {buildingId}); });
 $('property-coverage').addEventListener('click', () => read('coverage'));
 window.addEventListener('mhk:language', () => {

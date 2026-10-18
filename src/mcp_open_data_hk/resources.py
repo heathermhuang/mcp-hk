@@ -13,6 +13,7 @@ from urllib.parse import parse_qs, quote, unquote, urlencode, urlsplit, urlunspl
 from .catalogue_store import CatalogueStore
 from .contracts import DomainError
 from . import transport
+from .quality import freshness, semantic_quality
 from .resource_fields import selected, MISSING, inspect_nested
 from .resource_fetch import fetch, fetch_file
 from .resource_stream import FileRows
@@ -438,7 +439,7 @@ class Resources:
             require_fresh = require_fresh or profile.arrivals
         key = hashlib.sha256(
             json.dumps(
-                ["structured-reader-2", resource_id, record_path, sheet, layer]
+                ["structured-reader-3", resource_id, record_path, sheet, layer]
                 + ([transport.REVISION] if profile else [])
                 + ([parameters] if parameters else []),
                 sort_keys=True,
@@ -724,6 +725,13 @@ class Resources:
             "resource": resource,
             "dataset": dataset,
             "schema": value["schema"],
+            "quality": semantic_quality(value["schema"]),
+            "validationFreshness": freshness(
+                dataset,
+                resource,
+                check.get("validated"),
+                live.get("cacheTTLSeconds") if live else None,
+            ),
             "provenance": [
                 {
                     "sourceUrl": value["schema"].get("resolvedSourceUrl")
@@ -1000,52 +1008,7 @@ class Resources:
             if isinstance(value["rows"], FileRows):
                 value["rows"].close()
 
-    async def audit(self, batch=20):
-        if not 1 <= batch <= 100:
-            raise ValueError("Audit batch must be 1..100")
-        generation = self.catalogue.head()
-        with self.catalogue.store.connect() as db:
-            prior = db.execute(
-                "SELECT * FROM resource_audit_cursor WHERE id=1"
-            ).fetchone()
-            cursor = (
-                prior["cursor"] if prior and prior["generation"] == generation else ""
-            )
-            ids = [
-                r[0]
-                for r in db.execute(
-                    "SELECT id FROM inventory_resources WHERE generation=? AND id>? ORDER BY id LIMIT ?",
-                    (generation, cursor, batch),
-                )
-            ]
-        for rid in ids:
-            resource = self.catalogue.resource(rid)
-            check = self.catalogue.check(rid)
-            # Do not repeat unchanged structural failures; metadata change produces a new audit generation.
-            if check.get("status") in {
-                "unsupported",
-                "schema_drift",
-                "capacity_limited",
-                "needs_selection",
-                "needs_adapter",
-            }:
-                continue
-            if check.get("validated") and time.time() - check["validated"] < (
-                300 if resource.get("isApi") else 86400
-            ):
-                continue
-            try:
-                await self.schema(rid, require_fresh=True)
-            except DomainError:
-                pass
-        with self.catalogue.store.connect() as db:
-            db.execute(
-                "INSERT OR REPLACE INTO resource_audit_cursor VALUES (1,?,?)",
-                (generation, ids[-1] if ids else ""),
-            )
-        return {
-            "generation": generation,
-            "processed": len(ids),
-            "cursor": ids[-1] if ids else None,
-            "cycleComplete": not ids,
-        }
+    async def audit(self, batch=100, max_seconds=90):
+        from .refresh_queue import RefreshQueue
+
+        return await RefreshQueue(self.catalogue).run(self, batch, max_seconds)

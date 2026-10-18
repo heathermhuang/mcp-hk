@@ -4,6 +4,8 @@ import asyncio
 import hashlib
 import json
 import math
+import time
+from datetime import datetime
 from urllib.parse import urlsplit
 
 from .contracts import DomainError
@@ -155,7 +157,6 @@ def parse(kind, payload):
                 source=str,
                 sourceListingId=str,
                 mode=str,
-                sourceUrl=str,
                 freshness=dict,
                 sourceAttribution=dict,
             )
@@ -164,7 +165,10 @@ def parse(kind, payload):
             if "priceHkd" not in row:
                 raise ValueError("Missing asking price")
             amount(row["priceHkd"])
-            source_url(row["sourceUrl"])
+            if "sourceUrl" not in row:
+                raise ValueError("Missing original source URL field")
+            if row["sourceUrl"] is not None:
+                source_url(row["sourceUrl"])
             required(row["freshness"], status=str)
             required(row["sourceAttribution"], url=str, source=str, sourceListingId=str)
             if (
@@ -211,6 +215,50 @@ def parse(kind, payload):
     return project(payload, SCHEMAS[kind])
 
 
+def listing_quality(row, now):
+    observed = row.get("freshness", {}).get("observedAt") or row.get(
+        "freshness", {}
+    ).get("lastSeenAt")
+
+    def timestamp(value):
+        try:
+            parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+            return parsed.timestamp() if parsed.tzinfo else None
+        except (TypeError, ValueError, AttributeError):
+            return None
+
+    checked = timestamp(observed)
+    expiry = timestamp(row.get("freshness", {}).get("expiresAt"))
+    expired = bool(
+        expiry is not None and expiry < now and (checked is None or checked <= expiry)
+    )
+    recent = bool(
+        checked is not None
+        and -300 <= now - checked <= 172800
+        and row.get("freshness", {}).get("status") not in {"stale", "expired"}
+    )
+    level = row.get("confidence", {}).get("matchLevel")
+    visible = row.get("listingStatus") or {}
+    reasons = []
+    if not recent:
+        reasons.append("observation_not_recent")
+    if expired or row.get("sourceUrl") is None:
+        reasons.append("source_link_unavailable_or_expired")
+    if level != "building":
+        reasons.append("building_match_not_confirmed")
+    if visible.get("showInApp") is False:
+        reasons.append("hidden_at_source")
+    return {
+        "eligibleForCurrentView": not reasons,
+        "observedAt": observed,
+        "observationWindowSeconds": 172800,
+        "matchLevel": level,
+        "expired": expired,
+        "reasons": reasons,
+        "availabilityVerified": False,
+    }
+
+
 class SeeHouse:
     def __init__(self, service):
         self.service = service
@@ -227,7 +275,7 @@ class SeeHouse:
         key = (
             "seehouse:"
             + hashlib.sha256(
-                json.dumps([path, params], sort_keys=True).encode()
+                json.dumps(["seehouse-reader-2", path, params], sort_keys=True).encode()
             ).hexdigest()
         )
         cached = self.service.store.cache_get(key, ttl=300)
@@ -289,11 +337,37 @@ class SeeHouse:
         )
 
     async def building(self, query):
-        return await self.query(
+        envelope = await self.query(
             "building",
             {"locale": "zh-HK" if query.lang == "zh-Hant" else "en-HK"},
             query.buildingId,
         )
+        rows = envelope["data"]["listings"]
+        for row in rows:
+            row["quality"] = listing_quality(row, time.time())
+        eligible = sum(r["quality"]["eligibleForCurrentView"] for r in rows)
+        selection = getattr(query, "quality", "all")
+        envelope["data"]["listingQuality"] = {
+            "selection": selection,
+            "providerReturnedCount": len(rows),
+            "currentQualifiedCount": eligible,
+            "unqualifiedCount": len(rows) - eligible,
+            "scope": "Filters the returned provider cards only, not the complete building inventory. Current means observed within 48 hours with a building-level match and an unexpired link; availability is not verified.",
+        }
+        if selection == "current":
+            envelope["data"]["listings"] = [
+                r for r in rows if r["quality"]["eligibleForCurrentView"]
+            ]
+        envelope["meta"]["returnedCount"] = len(envelope["data"]["listings"])
+        if eligible != len(rows):
+            envelope["warnings"].append(
+                {
+                    "code": "PROPERTY_QUALIFICATION_LIMITS",
+                    "message": "Some returned advertisements are old, expired or not matched to a confirmed building. Use quality=current for the qualified subset; no advertisement verifies availability.",
+                    "affectedSourceId": "seehouse",
+                }
+            )
+        return envelope
 
     async def history(self, query):
         return await self.query(

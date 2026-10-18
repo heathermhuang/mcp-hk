@@ -92,7 +92,10 @@ import {fetchPublicJson} from './http.js';
         if (r.transport.requiredParameters.length) row.append(node('p',t('transportInputs',{parameters:r.transport.requiredParameters.join(', ')})));
       }
       const reason = r.transport && v.reason === 'SOURCE_NOT_FOUND' ? t('transportEndpointMissing') : v.reason;
-      row.append(button, node('p', `${r.catalogue} · ${t(r.transport?.operation === 'arrivals' && (v.status === 'stale' || expired) ? 'transportRefreshDue' : v.status)}${reason ? ' · ' + reason : ''} · ${t('lastCheck')}: ${v.lastCheckedAt ? new Date(v.lastCheckedAt*1000).toLocaleString(MhkI18n.locale,{timeZone:'Asia/Hong_Kong',hour12:false})+' HKT' : t('pending')}`), link(r.url, t('sourceLink'))); $('resources').append(row);
+      row.append(button, node('p', `${r.catalogue} · ${t(r.transport?.operation === 'arrivals' && (v.status === 'stale' || expired) ? 'transportRefreshDue' : v.status)}${reason ? ' · ' + reason : ''} · ${t('lastCheck')}: ${v.lastCheckedAt ? new Date(v.lastCheckedAt*1000).toLocaleString(MhkI18n.locale,{timeZone:'Asia/Hong_Kong',hour12:false})+' HKT' : t('pending')}`), link(r.url, t('sourceLink')));
+      if(r.validation.freshness?.cacheExpired && r.validation.status==='queryable')row.append(node('p',t('validationRefreshDue')));
+      if(r.transport?.alternative){const alt=r.transport.alternative;row.append(alt.resourceId ? internalLink('/coverage?'+new URLSearchParams({dataset:'hk-td-wcms_8-ferry-services-tt-ft',resource:alt.resourceId,access:'sources'}),t('publishedTimetable')) : link(alt.url,t('publishedTimetable')));}
+      $('resources').append(row);
     }
     $('resources-next').hidden = resourceList.nextOffset == null; $('resources-next').dataset.offset = resourceList.nextOffset;
     const deadlines = resourceList.items.filter(r => r.transport?.operation === 'arrivals' && r.validation.status === 'queryable').map(r => (r.validation.lastValidatedAt + r.transport.cacheTTLSeconds) * 1000 - Date.now()).filter(ms => ms > 0);
@@ -153,6 +156,7 @@ import {fetchPublicJson} from './http.js';
       $('query-message').textContent = t('matchedRecords',{total:result.meta.total,shown:items.length}) + (!items.length ? ' · '+t('noMatches') : '') + (result.meta.structuredQueryable ? '' : ' · '+t('unverifiedText')) + (result.warnings.length ? ' · '+result.warnings.map(w=>w.code).join(', ') : '');
     } else { $('query-message').textContent = t('schemaSummary',{total:result.recordCount,scope:result.schema.scope,fields:result.schema.fields.map(f=>f.name).join(', ')}); }
     renderRecordPaths();
+    if (result.quality?.semanticVerification==='not_performed') $('resource-citations').append(node('p',t('rawSourceQualification')));
     if (result.schema?.transport?.sourceTimestamp) $('resource-citations').append(node('p',t('transportSnapshot',{time:result.schema.transport.sourceTimestamp})));
     for (const p of result.provenance) $('resource-citations').append(link(p.sourceUrl,p.attribution+' ↗'),node('p',`${t('validated')}: ${new Date(p.lastValidatedAt*1000).toLocaleString(MhkI18n.locale,{timeZone:'Asia/Hong_Kong',hour12:false})+' HKT'} · ${t('publication')}: ${p.publicationDate || t('notSupplied')} · ${t('referencePeriod')}: ${p.referencePeriod || t('notSupplied')}`),link(p.termsUrl,t('sourceTerms')));
     $('records-next').hidden = !nextRecords;

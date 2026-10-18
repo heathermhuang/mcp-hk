@@ -8,6 +8,7 @@ from .contracts import (
     PlateSearchQuery,
     PropertySearchQuery,
     PropertyBuildingQuery,
+    PropertyListingsQuery,
     RestaurantQuery,
 )
 from .services import get_service
@@ -93,11 +94,13 @@ def register_data_tools(server, service=None):
 
     @server.tool(annotations={"readOnlyHint": True, "destructiveHint": False})
     async def hk_property_building(
-        buildingId: str, lang: Literal["en", "zh-Hant"] = "en"
+        buildingId: str,
+        lang: Literal["en", "zh-Hant"] = "en",
+        quality: Literal["all", "current"] = "all",
     ) -> dict:
-        """Read SeeHouse source-linked sale/rental listings for a buildingId from hk_property_search. Keep mode, HKD asking price, area in ft², freshness, matching and dedupe context. Advertisements are not verified availability, valuations or completed transactions; unit matching is not guaranteed."""
+        """Read SeeHouse source-linked sale/rental listings for a buildingId from hk_property_search. Keep mode, HKD asking price, area in ft², freshness, matching and dedupe context. Advertisements are not verified availability, valuations or completed transactions; unit matching is not guaranteed. quality=current filters returned cards to observations within 48 hours, building-level matches and unexpired links; availability is not verified."""
         return await current().properties.building(
-            PropertyBuildingQuery(buildingId=buildingId, lang=lang)
+            PropertyListingsQuery(buildingId=buildingId, lang=lang, quality=quality)
         )
 
     @server.tool(annotations={"readOnlyHint": True, "destructiveHint": False})

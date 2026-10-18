@@ -127,3 +127,11 @@ retrying. A stale timestamp, provider error or changed field contract cannot
 advance a success receipt. Release rollback uses the prior verified Worker/image
 and the accepted R2 checkpoint; no catalogue re-import is required. Test restore
 and republish the dated overview after releasing the new validation policy.
+
+
+The unavailable Fortune/Water Taxi ETA profiles expose a clearly labelled published
+timetable alternative. Water Taxi additionally links the accepted Transport
+Department resource `2c3ad746961a833f59740f4abbf26644`, readable through the ordinary
+resource query API. Its departures are schedules, never live ETA predictions.
+The broken operator ETA endpoints remain unavailable until a successful real-source
+read qualifies a restored or officially replaced endpoint.

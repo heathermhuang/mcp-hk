@@ -32,6 +32,23 @@ def distance(lat, lon, rlat, rlon):
     return 6371000 * 2 * math.asin(min(1, math.sqrt(h)))
 
 
+def restaurant_quality(row):
+    missing_name = not any(row["name"].values())
+    return {
+        **row,
+        "quality": {
+            "sourceNameMissing": missing_name,
+            "missingNameLanguages": [
+                lang for lang, value in row["name"].items() if not value
+            ],
+            "missingAddressLanguages": [
+                lang for lang, value in row["address"].items() if not value
+            ],
+            "tradingStatusVerified": False,
+        },
+    }
+
+
 class Service:
     def __init__(self, store: Store):
         from .platehk import PlateHK
@@ -205,7 +222,7 @@ class Service:
             if end < len(results)
             else None
         )
-        data = {"items": results[offset:end]}
+        data = {"items": [restaurant_quality(r) for r in results[offset:end]]}
         if query.includeSummary:
             groups = {}
             for r in results:
@@ -236,7 +253,9 @@ class Service:
         snapshot, rows = self.store.snapshot("restaurants")
         for row in rows:
             if row["id"] == licence_id:
-                return self.envelope(row, "restaurants", snapshot=snapshot)
+                return self.envelope(
+                    restaurant_quality(row), "restaurants", snapshot=snapshot
+                )
         raise DomainError(
             "NOT_FOUND", "Licence is not present in the accepted snapshot", 404
         )
@@ -301,6 +320,21 @@ class Service:
                 "stale": not check.get("success")
                 or time.time() - check["success"] > source["freshnessSeconds"],
             }
+            if pack in {"restaurants", "population"}:
+                interval = 86400 if pack == "restaurants" else 7 * 86400
+                next_due = check["success"] + interval if check.get("success") else None
+                missed = next_due is None or time.time() > next_due
+                failed = bool(
+                    check.get("failure")
+                    and check["failure"] > (check.get("success") or 0)
+                )
+                item["refreshHealth"] = {
+                    "state": "degraded" if missed or failed else "healthy",
+                    "overdue": missed,
+                    "latestAttemptFailed": failed,
+                    "nextDueAt": iso(next_due) if next_due else None,
+                    "acceptedSnapshotRetained": bool(sid),
+                }
             if sid:
                 snap, rows = self.store.snapshot(pack)
                 item.update(
@@ -308,6 +342,15 @@ class Service:
                     snapshotRetrievedAt=iso(snap["retrieved"]),
                 )
                 if pack == "restaurants":
+                    item["quality"] = {
+                        "sourceNamesMissingBothLanguages": sum(
+                            not any(r.get("name", {}).values()) for r in rows
+                        ),
+                        "chineseAddressesMissing": sum(
+                            not r.get("address", {}).get("zhHant") for r in rows
+                        ),
+                        "scope": "Complete accepted licence snapshot; missing source labels are not invented.",
+                    }
                     item["spatialCoverage"] = {
                         "locatedCount": sum(r["latitude"] is not None for r in rows),
                         "totalCount": len(rows),

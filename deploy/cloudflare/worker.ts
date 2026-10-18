@@ -235,7 +235,7 @@ export default {
     }
     if (url.pathname === '/api/v1/operations') {
       const manifest = await env.BACKUPS.get('latest.json');
-      return Response.json({backup: manifest ? await manifest.json() : null, maintenance: await env.APP.get(env.APP.idFromName('production')).operationsStatus(), schedules: {catalogue: 'Sunday 12:00 Asia/Hong_Kong', resources: 'every hour at minute 20, 20 resources per batch', restaurants: 'daily 10:00 Asia/Hong_Kong', population: 'Sunday 11:00 Asia/Hong_Kong', backup: 'daily 09:00 Asia/Hong_Kong'}, retentionDays: 30});
+      return Response.json({backup: manifest ? await manifest.json() : null, maintenance: await env.APP.get(env.APP.idFromName('production')).operationsStatus(), schedules: {catalogue: 'Sunday 12:00 Asia/Hong_Kong', resources: 'hourly at minute 20; up to 100 due eligible sources, 90-second deadline and 2400 maintenance reads/day', restaurants: 'daily 10:00 Asia/Hong_Kong', population: 'Sunday 11:00 Asia/Hong_Kong', backup: 'daily 09:00 Asia/Hong_Kong'}, retentionDays: 30});
     }
     const headers = new Headers(request.headers);
     headers.set('x-mcp-client-ip', request.headers.get('cf-connecting-ip') || 'unknown');
