@@ -17,6 +17,7 @@ from .review_config import (
     RECOVERY_BATCH_SIZE,
     SOURCE_REVIEW,
     RECOVERY_SECONDS,
+    SCHEDULE_SECONDS,
 )
 
 
@@ -102,8 +103,15 @@ class RefreshQueue:
                     "host": urlsplit(unpack(r["payload"])["url"]).hostname,
                 }
                 for r in db.execute(
-                    f"SELECT r.id,r.payload,p.interval,c.status FROM resource_review_policy p JOIN inventory_resources r ON r.id=p.id LEFT JOIN resource_checks c ON c.id=r.id LEFT JOIN resource_policies t ON t.id=r.id WHERE r.generation=? AND p.next_due<=? AND COALESCE(c.status,'pending') NOT IN ({marks}) AND t.ttl IS NULL ORDER BY CASE WHEN COALESCE(c.status,'pending')='pending' THEN 0 WHEN c.status IN ('queryable','document','stale') THEN 1 ELSE 2 END,(?-COALESCE(c.validated,c.checked,p.next_due-p.interval))/p.interval DESC,p.next_due,r.id LIMIT ?",
-                    (self.catalogue.head(), now, *held, now, batch),
+                    f"SELECT r.id,r.payload,p.interval,c.status FROM resource_review_policy p JOIN inventory_resources r ON r.id=p.id LEFT JOIN resource_checks c ON c.id=r.id LEFT JOIN resource_policies t ON t.id=r.id WHERE r.generation=? AND (p.next_due<=? OR (p.next_due<=? AND c.status IN ('queryable','document') AND p.failures=0)) AND COALESCE(c.status,'pending') NOT IN ({marks}) AND t.ttl IS NULL ORDER BY CASE WHEN COALESCE(c.status,'pending')='pending' THEN 0 WHEN c.status IN ('queryable','document','stale') THEN 1 ELSE 2 END,(?-COALESCE(c.validated,c.checked,p.next_due-p.interval))/p.interval DESC,p.next_due,r.id LIMIT ?",
+                    (
+                        self.catalogue.head(),
+                        now,
+                        now + SCHEDULE_SECONDS,
+                        *held,
+                        now,
+                        batch,
+                    ),
                 )
             ]
 

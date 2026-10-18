@@ -652,3 +652,22 @@ def test_hko_warning_contract_is_source_scoped_and_rejects_invalid_warning_value
             annotate(
                 resource, [{"warningMessage": value}], json.loads(json.dumps(schema))
             )
+
+
+def test_review_looks_ahead_one_schedule_for_healthy_sources_only(tmp_path):
+    s, rows = service_with_resources(tmp_path)
+    q = RefreshQueue(s.resources.catalogue)
+    q.prepare()
+    now = time.time()
+    with s.store.connect() as db:
+        for row, status in zip(rows, ["queryable", "restricted"]):
+            db.execute(
+                "INSERT INTO resource_checks(id,status,validated,checked) VALUES (?,?,?,?)",
+                (row["id"], status, now - 21600 + 60, now - 21600 + 60),
+            )
+        db.execute("UPDATE resource_review_policy SET next_due=?", (now + 60,))
+        db.execute(
+            "UPDATE resource_review_policy SET failures=1 WHERE id=?",
+            (rows[1]["id"],),
+        )
+    assert [row["id"] for row in q.due(10, now)] == [rows[0]["id"]]

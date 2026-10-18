@@ -278,3 +278,7 @@ accepted sources that are still queryable and whose last source check predates
 the failed review. Real unavailable/restricted/schema failures retain backoff.
 MTR Bus's explicit status-0 temporary-unavailability advisory remains an error,
 with the provider's message, rather than becoming a successful empty arrivals list.
+Healthy accepted sources can be selected up to one five-minute schedule interval
+before their validation deadline, so a cron need not wait until they are already
+overdue. Failed-source cooldowns are never shortened by this lookahead. Reported
+validation deadlines and original source cadence remain unchanged.
