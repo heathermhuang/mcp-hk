@@ -222,8 +222,8 @@ export default {
     if (url.pathname === '/api/v1/limits') return Response.json({...LIMITS,window:'UTC fixed minute/day',dailyBudgets:'shared across all clients',mcpBatch:'one JSON-RPC operation per request'},{headers:{'Cache-Control':'public, max-age=300'}});
     if (url.pathname === '/assets/site-config.json') return Response.json({googleAnalyticsId:/^G-[A-Z0-9]{4,20}$/.test(env.GA_MEASUREMENT_ID) ? env.GA_MEASUREMENT_ID : ''},{headers:{'Cache-Control':'no-store'}});
     if (url.pathname === '/assets/overview.json') return serveOverview(env, request);
-    if (['/', '/demo', '/sources', '/connect', '/plates', '/coverage', '/data', '/terms', '/privacy'].includes(url.pathname) || url.pathname.startsWith('/assets/')) {
-      url.pathname = url.pathname.startsWith('/assets/') ? url.pathname.slice(7) : ['/coverage','/data'].includes(url.pathname) ? '/coverage.html' : ['/terms','/privacy'].includes(url.pathname) ? '/legal.html' : '/index.html';
+    if (['/', '/demo', '/sources', '/connect', '/plates', '/properties', '/coverage', '/data', '/terms', '/privacy'].includes(url.pathname) || url.pathname.startsWith('/assets/')) {
+      url.pathname = url.pathname.startsWith('/assets/') ? url.pathname.slice(7) : ['/coverage','/data'].includes(url.pathname) ? '/coverage.html' : url.pathname === '/properties' ? '/properties.html' : ['/terms','/privacy'].includes(url.pathname) ? '/legal.html' : '/index.html';
       const response = await env.ASSETS.fetch(new Request(url, request));
       const secured = new Response(response.body, response);
       secured.headers.set('Content-Security-Policy', "default-src 'self'; script-src 'self' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com; img-src 'self' data: https://www.google-analytics.com; frame-ancestors 'none'; base-uri 'none'");

@@ -269,15 +269,16 @@ class Store:
                 "INSERT OR REPLACE INTO address_cache VALUES (?,?,?)",
                 (key, json.dumps(data, ensure_ascii=False), now),
             )
-            if source == "platehk":
+            if source in {"platehk", "seehouse"}:
                 # Keep a live query cache bounded; it is not a bulk data mirror.
                 db.execute(
-                    "DELETE FROM address_cache WHERE key LIKE 'platehk:%' AND retrieved<?",
-                    (now - 300,),
+                    "DELETE FROM address_cache WHERE key LIKE ? AND retrieved<?",
+                    (source + ":%", now - 300),
                 )
                 db.execute(
                     "DELETE FROM address_cache WHERE key IN (SELECT key FROM address_cache "
-                    "WHERE key LIKE 'platehk:%' ORDER BY retrieved DESC LIMIT -1 OFFSET 200)"
+                    "WHERE key LIKE ? ORDER BY retrieved DESC LIMIT -1 OFFSET 200)",
+                    (source + ":%",),
                 )
         self.check(source)
         return now

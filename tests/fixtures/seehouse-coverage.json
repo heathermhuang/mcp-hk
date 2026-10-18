@@ -1,0 +1,75 @@
+{
+  "generatedAt": "2026-10-17T21:31:58.607Z",
+  "fetchPolicy": "metadata_only_does_not_fetch_pages",
+  "officialIndex": {
+    "available": true,
+    "totals": {
+      "officialBuildings": 167131,
+      "indexedDistricts": 18,
+      "namedBuildings": 50876,
+      "missingCoordinates": 0,
+      "apiFacingOfficialRows": 10899,
+      "latestObservedAt": "2026-07-20T02:26:39+00:00"
+    }
+  },
+  "productionCoverage": {
+    "available": true,
+    "computedAt": "2026-10-17T21:31:52.206Z",
+    "totals": {
+      "officialIndexedDistricts": 18,
+      "queuedDistricts": 19,
+      "sourceBackedDistricts": 18,
+      "launchReadyDistricts": 18,
+      "districtSourceRows": 74,
+      "activeSourceListings": 162348,
+      "matchedSourceListings": 119000,
+      "unmatchedSourceListings": 43348,
+      "activeListingBuildings": 29883,
+      "identityMatchedBuildingRefs": 29883,
+      "freshListings": 25420,
+      "agingListings": 36186,
+      "staleListings": 100742,
+      "fetchedPages": 24575,
+      "rawFetchesArchived": 44092,
+      "avgMatchConfidence": 0.927,
+      "knownGapRows": 74
+    },
+    "districts": [
+      {
+        "key": "central-and-western",
+        "nameEn": "Central and Western",
+        "officialBuildings": 9859,
+        "officialNamedBuildings": 5601,
+        "activeSourceListings": 13052,
+        "matchedSourceListings": 9181,
+        "unmatchedSourceListings": 3871,
+        "activeListingBuildings": 3204,
+        "identityMatchedBuildingRefs": 3204,
+        "freshListings": 2091,
+        "staleListings": 8239,
+        "sourcesWithListings": [
+          "28hse",
+          "centaline",
+          "midland",
+          "squarefoot"
+        ],
+        "sourcesWithQueue": [
+          "28hse",
+          "squarefoot"
+        ],
+        "sourceHealthCounts": {
+          "source_backed_matched": 4
+        },
+        "knownGaps": [
+          "low_match_confidence",
+          "not_in_coverage_queue",
+          "review_queue_open",
+          "stale_source_listings",
+          "unmatched_source_listings"
+        ],
+        "latestSeenAt": "2026-10-17T19:21:10+00:00",
+        "readyForLaunchReview": true
+      }
+    ]
+  }
+}

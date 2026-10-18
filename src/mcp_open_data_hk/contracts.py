@@ -82,6 +82,26 @@ class Envelope(Model):
     warnings: list[dict[str, Any]] = Field(default_factory=list)
 
 
+class PropertySearchQuery(Model):
+    q: str = Field(min_length=1, max_length=200)
+    limit: int = Field(default=10, ge=1, le=20)
+    lang: Literal["en", "zh-Hant"] = "en"
+
+    @model_validator(mode="after")
+    def nonblank(self):
+        self.q = self.q.strip()
+        if not self.q:
+            raise ValueError("Provide a building, estate or address")
+        return self
+
+
+class PropertyBuildingQuery(Model):
+    buildingId: str = Field(
+        min_length=1, max_length=160, pattern=r"^[A-Za-z0-9][A-Za-z0-9:_-]*$"
+    )
+    lang: Literal["en", "zh-Hant"] = "en"
+
+
 PlateDataset = Literal["all", "pvrm", "tvrm_physical", "tvrm_eauction", "tvrm_legacy"]
 
 

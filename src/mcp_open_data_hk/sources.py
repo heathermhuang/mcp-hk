@@ -29,6 +29,15 @@ SOURCES = {
         "attribution": "DATA.GOV.HK and the respective data providers",
         "freshnessSeconds": 172800,
     },
+    "seehouse": {
+        "sourceUrl": "https://see.house/",
+        "attribution": "SeeHouse / 睇樓; original listing providers retain their rights and attribution",
+        "freshnessSeconds": 3600,
+        "provider": "SeeHouse",
+        "providerType": "independent",
+        "accessMode": "live_api",
+        "termsUrl": "https://see.house/",
+    },
     "platehk": {
         "sourceUrl": "https://plate.hk/api.html",
         "attribution": "Plate.hk, independent index of Transport Department auction publications",
@@ -77,6 +86,25 @@ PACKS = [
             "/api/v1/plates/datasets",
         ],
         "tools": ["hk_plate_search", "hk_plate_comparables", "hk_plate_datasets"],
+    },
+    {
+        "id": "seehouse",
+        "title": "SeeHouse Hong Kong buildings and property listings",
+        "provider": "SeeHouse / 睇樓",
+        "providerType": "independent",
+        "accessMode": "live_api",
+        "http": [
+            "/api/v1/properties/search",
+            "/api/v1/properties/building",
+            "/api/v1/properties/price-history",
+            "/api/v1/properties/coverage",
+        ],
+        "tools": [
+            "hk_property_search",
+            "hk_property_building",
+            "hk_property_price_history",
+            "hk_property_coverage",
+        ],
     },
 ]
 

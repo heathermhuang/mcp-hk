@@ -7,7 +7,7 @@ import httpx
 
 from .contracts import DomainError
 
-HOSTS = {"data.gov.hk", "www.als.gov.hk", "portal.csdi.gov.hk", "plate.hk"}
+HOSTS = {"data.gov.hk", "www.als.gov.hk", "portal.csdi.gov.hk", "plate.hk", "see.house"}
 
 
 async def request_json(url: str, params: dict | None = None):
@@ -32,6 +32,19 @@ async def request_json(url: str, params: dict | None = None):
                     if response.status_code == 400:
                         raise DomainError(
                             "INVALID_QUERY", "Plate.hk rejected this query or page", 400
+                        )
+                if urlsplit(url).hostname == "see.house":
+                    if response.status_code == 429:
+                        raise DomainError(
+                            "SEEHOUSE_RATE_LIMITED", "SeeHouse rate limit reached", 429
+                        )
+                    if response.status_code == 400:
+                        raise DomainError(
+                            "INVALID_QUERY", "SeeHouse rejected this query", 400
+                        )
+                    if response.status_code == 404:
+                        raise DomainError(
+                            "NOT_FOUND", "SeeHouse building was not found", 404
                         )
                 response.raise_for_status()
                 body = bytearray()

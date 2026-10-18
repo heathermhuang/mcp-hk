@@ -1,0 +1,178 @@
+{
+  "query": {
+    "q": "Taikoo Shing",
+    "latitude": null,
+    "longitude": null,
+    "limit": 10
+  },
+  "candidates": [
+    {
+      "id": "hk-csdi-95d9ff45d90eb3f5",
+      "name": "Heng Shan Mansion",
+      "district": "Eastern",
+      "address": null,
+      "coordinates": {
+        "latitude": 22.2856187,
+        "longitude": 114.2194219
+      },
+      "distanceMeters": null,
+      "bearingDegrees": null,
+      "heightMeters": null,
+      "storeys": null,
+      "builtYear": null,
+      "thumbnailUrl": "https://hkvrdata.centanet.com/CNHK-50023_8df5965b167a461c82dbdf4b49efe97a/CoverImage/Cover.jpg?x-oss-process=style/master",
+      "match": {
+        "level": "building",
+        "confidence": 0.99,
+        "method": "canonical_building_search",
+        "evidence": {
+          "officialSource": "csdi_landsd_building_wfs",
+          "listingCount": 26
+        },
+        "unitLevelMatching": "opportunistic_not_guaranteed"
+      },
+      "stats": {
+        "rentCount": 4,
+        "buyCount": 21,
+        "lastUpdated": "2026-10-17T16:02:51+00:00"
+      },
+      "listingState": {
+        "status": "active_source_listings",
+        "source": "api_buildings",
+        "message": null
+      }
+    },
+    {
+      "id": "hk-csdi-ca841446747d4172",
+      "name": "Tung Hoi Mansion",
+      "district": "Eastern",
+      "address": null,
+      "coordinates": {
+        "latitude": 22.2864065,
+        "longitude": 114.2205897
+      },
+      "distanceMeters": null,
+      "bearingDegrees": null,
+      "heightMeters": null,
+      "storeys": null,
+      "builtYear": null,
+      "thumbnailUrl": "https://hkais.centanet.com/PostImagesNew/79/98/F96CD4EC4832B1D4ABF8CBADA003.jpeg?d=1",
+      "match": {
+        "level": "building",
+        "confidence": 0.99,
+        "method": "canonical_building_search",
+        "evidence": {
+          "officialSource": "csdi_landsd_building_wfs",
+          "listingCount": 21
+        },
+        "unitLevelMatching": "opportunistic_not_guaranteed"
+      },
+      "stats": {
+        "rentCount": 3,
+        "buyCount": 13,
+        "lastUpdated": "2026-10-17T16:02:51+00:00"
+      },
+      "listingState": {
+        "status": "active_source_listings",
+        "source": "api_buildings",
+        "message": null
+      }
+    }
+  ],
+  "releaseScope": {
+    "allowedMode": "constrained_preview",
+    "supportedDistricts": [
+      {
+        "key": "central-and-western",
+        "nameEn": "Central and Western",
+        "nameZhHk": "中西區"
+      },
+      {
+        "key": "eastern",
+        "nameEn": "Eastern",
+        "nameZhHk": "東區"
+      },
+      {
+        "key": "islands",
+        "nameEn": "Islands",
+        "nameZhHk": "離島"
+      },
+      {
+        "key": "kowloon-city",
+        "nameEn": "Kowloon City",
+        "nameZhHk": "九龍城"
+      },
+      {
+        "key": "kwai-tsing",
+        "nameEn": "Kwai Tsing",
+        "nameZhHk": "葵青"
+      },
+      {
+        "key": "kwun-tong",
+        "nameEn": "Kwun Tong",
+        "nameZhHk": "觀塘"
+      },
+      {
+        "key": "north",
+        "nameEn": "North",
+        "nameZhHk": "北區"
+      },
+      {
+        "key": "sai-kung",
+        "nameEn": "Sai Kung",
+        "nameZhHk": "西貢"
+      },
+      {
+        "key": "sha-tin",
+        "nameEn": "Sha Tin",
+        "nameZhHk": "沙田"
+      },
+      {
+        "key": "sham-shui-po",
+        "nameEn": "Sham Shui Po",
+        "nameZhHk": "深水埗"
+      },
+      {
+        "key": "southern",
+        "nameEn": "Southern",
+        "nameZhHk": "南區"
+      },
+      {
+        "key": "tai-po",
+        "nameEn": "Tai Po",
+        "nameZhHk": "大埔"
+      },
+      {
+        "key": "tsuen-wan",
+        "nameEn": "Tsuen Wan",
+        "nameZhHk": "荃灣"
+      },
+      {
+        "key": "tuen-mun",
+        "nameEn": "Tuen Mun",
+        "nameZhHk": "屯門"
+      },
+      {
+        "key": "wan-chai",
+        "nameEn": "Wan Chai",
+        "nameZhHk": "灣仔"
+      },
+      {
+        "key": "wong-tai-sin",
+        "nameEn": "Wong Tai Sin",
+        "nameZhHk": "黃大仙"
+      },
+      {
+        "key": "yau-tsim-mong",
+        "nameEn": "Yau Tsim Mong",
+        "nameZhHk": "油尖旺"
+      },
+      {
+        "key": "yuen-long",
+        "nameEn": "Yuen Long",
+        "nameZhHk": "元朗"
+      }
+    ]
+  },
+  "unitLevelMatching": "opportunistic_not_guaranteed"
+}

@@ -35,6 +35,16 @@ DISPLAY = {
         "Explore district statistics",
         "查看地區統計",
     ),
+    "seehouse": (
+        "SeeHouse Hong Kong buildings and property listings",
+        "SeeHouse 睇樓：香港大廈及樓盤資料",
+        "Search buildings, read source-linked sale and rental listings, and inspect observed asking-price changes and coverage.",
+        "搜尋大廈、查看附原始來源的買賣及租盤，以及叫價變動紀錄和資料覆蓋範圍。",
+        "seehouse see.house seehouse.hk 睇樓 睇楼 樓盤 楼盘 地產 地产 物業 物业 大廈 大厦 買樓 买楼 租樓 租楼 property properties housing buildings sale rental asking prices",
+        "/properties",
+        "Search buildings and listings",
+        "搜尋大廈及樓盤",
+    ),
     "platehk": (
         "Plate.hk vehicle registration auction history",
         "Plate.hk 車牌拍賣紀錄",

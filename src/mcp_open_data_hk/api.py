@@ -19,6 +19,8 @@ from .contracts import (
     DomainError,
     PlateComparablesQuery,
     PlateSearchQuery,
+    PropertySearchQuery,
+    PropertyBuildingQuery,
     RestaurantQuery,
 )
 from .services import get_service
@@ -184,6 +186,22 @@ def create_app(service=None):
         """Queryable packs, including independent external providers."""
         return service.packs()
 
+    @app.get("/api/v1/properties/search")
+    async def property_search(query: Annotated[PropertySearchQuery, Query()]):
+        return await service.properties.search(query)
+
+    @app.get("/api/v1/properties/building")
+    async def property_building(query: Annotated[PropertyBuildingQuery, Query()]):
+        return await service.properties.building(query)
+
+    @app.get("/api/v1/properties/price-history")
+    async def property_history(query: Annotated[PropertyBuildingQuery, Query()]):
+        return await service.properties.history(query)
+
+    @app.get("/api/v1/properties/coverage")
+    async def property_coverage():
+        return await service.properties.query("coverage")
+
     @app.get("/api/v1/plates/search")
     async def plate_search(query: Annotated[PlateSearchQuery, Query()]):
         """Historical Plate.hk auction records; exact match by default."""
@@ -279,6 +297,10 @@ def create_app(service=None):
         @app.get("/plates", include_in_schema=False)
         def homepage():
             return FileResponse(web / "index.html")
+
+        @app.get("/properties", include_in_schema=False)
+        def properties_page():
+            return FileResponse(web / "properties.html")
 
         @app.get("/coverage", include_in_schema=False)
         @app.get("/data", include_in_schema=False)

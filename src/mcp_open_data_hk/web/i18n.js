@@ -12,7 +12,7 @@
     document.documentElement.lang = lang === 'en' ? 'en' : 'zh-Hant';
     document.querySelectorAll('.mhk-navbutton').forEach(link => {
       const path = new URL(link.getAttribute('href'), location.href).pathname;
-      if (path === location.pathname || (path === '/coverage' && ['/data','/plates','/demo'].includes(location.pathname))) link.setAttribute('aria-current', 'page');
+      if (path === location.pathname || (path === '/coverage' && ['/data','/plates','/properties','/demo'].includes(location.pathname))) link.setAttribute('aria-current', 'page');
       else link.removeAttribute('aria-current');
     });
     document.querySelectorAll('[data-i18n]').forEach(e => { e.textContent = t(e.dataset.i18n); });
@@ -29,7 +29,7 @@
     document.querySelectorAll('a[href]').forEach(e => {
       if (e.getAttribute('href').startsWith('#')) return;
       const url = new URL(e.getAttribute('href'), location.href);
-      if (url.origin === location.origin && ['/', '/demo', '/connect', '/sources', '/plates', '/coverage', '/data', '/terms', '/privacy'].includes(url.pathname)) {
+      if (url.origin === location.origin && ['/', '/demo', '/connect', '/sources', '/plates', '/properties', '/coverage', '/data', '/terms', '/privacy'].includes(url.pathname)) {
         url.searchParams.set('lang', lang === 'en' ? 'en' : 'zh-Hant');
         e.setAttribute('href', url.pathname + url.search + url.hash);
       }

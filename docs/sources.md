@@ -64,7 +64,7 @@ Attribution: Census and Statistics Department, HKSAR Government, DATA.GOV.HK / C
 
 The inherited tools use the DATA.GOV.HK CKAN metadata APIs. The HTTP catalogue
 currently searches live metadata; it is not an offline complete catalogue index.
-The government packs and the independent Plate.hk pack query records. The compatibility catalogue response marks entries as catalogue-only. The separate reconciled inventory and generic record layer are described in [resource contracts](resources.md); validation and failure counts are public at `/coverage`.
+The government packs and independent Plate.hk and SeeHouse packs query records. The compatibility catalogue response marks entries as catalogue-only. The separate reconciled inventory and generic record layer are described in [resource contracts](resources.md); validation and failure counts are public at `/coverage`.
 
 [DATA.GOV.HK terms](https://data.gov.hk/en/terms-and-conditions),
 [reuse FAQ](https://data.gov.hk/en/faq), [CSDI](https://portal.csdi.gov.hk/geoportal/).
@@ -81,3 +81,12 @@ for five minutes. It does not import a second full archive. Original source link
 plate layout, disposition, year ranges and provider attribution accompany records.
 Read the [pack contract](platehk.md) and [provider guide](https://plate.hk/about.html).
 The MIT software licence does not relicense provider or underlying source data.
+
+## SeeHouse / 睇樓: independent property pack
+
+[SeeHouse](https://see.house/) exposes our existing Hong Kong building and listing
+pipeline through read-only public APIs. mcp.hk adds building search, attributed
+sale/rental listings, observed asking-price changes and dated coverage.
+Listing freshness and API retrieval remain separate. These advertisements are
+not verified availability, achieved transaction prices or complete market coverage.
+Read the [pack contract](seehouse.md) for examples, limits and source semantics.

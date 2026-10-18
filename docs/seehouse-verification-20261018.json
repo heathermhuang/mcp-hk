@@ -1,0 +1,48 @@
+{
+  "buildingId": "hk-csdi-95d9ff45d90eb3f5",
+  "candidates": 2,
+  "returnedListings": 25,
+  "priceEvents": 6,
+  "listingObservedAt": "2026-10-17T16:02:51+00:00",
+  "retrievedAt": "2026-10-18T03:04:38.501464+00:00",
+  "coverageGeneratedAt": "2026-10-17T21:31:58.607Z",
+  "coverageTotals": {
+    "officialIndexedDistricts": 18,
+    "queuedDistricts": 19,
+    "sourceBackedDistricts": 18,
+    "launchReadyDistricts": 18,
+    "activeSourceListings": 162348,
+    "matchedSourceListings": 119000,
+    "unmatchedSourceListings": 43348,
+    "activeListingBuildings": 29883,
+    "identityMatchedBuildingRefs": 29883,
+    "freshListings": 25420,
+    "agingListings": 36186,
+    "staleListings": 100742,
+    "avgMatchConfidence": 0.927
+  },
+  "observedDate": "2026-10-18",
+  "sourceRepositoryCommit": "7cbecf25a6ce2d4252e58f8421c62bf0fc345570",
+  "verificationScope": "Adapter live reads against SeeHouse; not a production mcp.hk release receipt",
+  "pythonTests": {
+    "passed": 118,
+    "skippedOptionalLiveProbes": 7
+  },
+  "workerTests": {
+    "passed": 45
+  },
+  "otherChecks": [
+    "black",
+    "flake8",
+    "TypeScript",
+    "sdist and wheel build",
+    "Cloudflare container deployment dry run"
+  ],
+  "browser": [
+    "live building search",
+    "building listings",
+    "asking-price changes",
+    "English and Traditional Chinese",
+    "no console errors observed"
+  ]
+}
