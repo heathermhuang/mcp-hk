@@ -252,3 +252,21 @@ Operator diagnostics expose the executing Durable Object's `workerRelease` as
 well as its safety lease and accepted receipt. Verify the expected release and
 backend policy before starting recovery after a rollout. The hosted recovery
 window is at most 256 attempts / 90 seconds per checkpointed request.
+
+Due background reviews always contact the source (including conditional GET), even
+when a cached body has a longer TTL than the review interval. Normal interactive
+cache reuse is unchanged.
+
+For 31 exact, previously accepted public URLs from Highways, Public Libraries and
+Companies Registry, the hosted reader uses the existing authenticated Worker as a
+streaming HTTPS transport. Native Worker requests reach these origins where the
+container's TCP path times out. The packaged allowlist is finite; callers cannot
+supply a URL, credentials, cookies or request body. Redirects stay on the approved
+HTTPS host. Original government source URLs and bytes remain the data provenance;
+`sourceTransport` discloses this transport. The reader still enforces public DNS
+addresses and decoded response limits.
+
+RSS acceptance verifies RSS, Atom or RSS 1.0 root structure, rejecting HTML error
+pages. Optional feed fields are extensible. Rows preserve the selected raw XML
+structure: the default channel count is not a count of books. Select
+`recordPath=channel/item` for RSS item rows when the actual feed exposes that path.

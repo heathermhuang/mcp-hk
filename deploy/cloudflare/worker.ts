@@ -1,7 +1,8 @@
 import { Container } from '@cloudflare/containers';
 import { scheduledPack } from './cron';
-import {maintenanceResponse, maintenanceRuntimeReady, scheduledMaintenance, maintenancePackForRequest} from './maintenance';
+import {maintenanceResponse, maintenanceRuntimeReady, scheduledMaintenance, maintenancePackForRequest, EXPECTED_REVIEW_POLICY} from './maintenance';
 import {probePublicSource} from './source-probe';
+import {relayApprovedSource} from './source-relay';
 import {saveOverview, serveOverview} from './overview';
 import {normalizeBackendResponse, recoveringResponse} from './recovery';
 import {saveBackup, requireCheckpoint, safeOperationError} from './backup';
@@ -183,7 +184,7 @@ export class McpContainer extends Container<Env> {
   }
 
   async operationDiagnostics() {
-    return {workerRelease: this.env.RELEASE_COMMIT, leaseUntil: await this.ctx.storage.get<number>('maintenanceLease') || null,
+    return {workerRelease: this.env.RELEASE_COMMIT || null, maintenancePolicy: EXPECTED_REVIEW_POLICY, idleTimeout: this.sleepAfter, leaseUntil: await this.ctx.storage.get<number>('maintenanceLease') || null,
       seedLease: Boolean(await this.ctx.storage.get<string>('seedOwner')),
       now: Date.now(), maintenance: await this.operationsStatus()};
   }
@@ -198,6 +199,7 @@ export default {
     if (url.hostname === 'www.mcp.hk') return Response.redirect(`https://mcp.hk${url.pathname}${url.search}`, 308);
     if (url.pathname.startsWith('/__ops/')) {
       if (!(await authorized(request, env.OPS_TOKEN))) return new Response('Not found', {status: 404});
+      if (url.pathname === '/__ops/source-relay') return relayApprovedSource(request);
       if (url.pathname === '/__ops/source-probe' && request.method === 'GET') {
         const response=await probePublicSource(url.searchParams.get('source') || 'xpms');
         response.headers.set('X-Mcp-Release',env.RELEASE_COMMIT);return response;

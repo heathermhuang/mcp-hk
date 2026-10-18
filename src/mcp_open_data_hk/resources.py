@@ -456,6 +456,7 @@ class Resources:
         key = hashlib.sha256(
             json.dumps(
                 ["structured-reader-3", resource_id, record_path, sheet, layer]
+                + (["rss-feed-root-1"] if resource.get("format") == "RSS" else [])
                 + ([transport.REVISION] if profile else [])
                 + ([parameters] if parameters else []),
                 sort_keys=True,
@@ -478,6 +479,7 @@ class Resources:
             )
             if (
                 cached
+                and not SOURCE_REVIEW.get()
                 and check.get("status") in {"queryable", "document"}
                 and check.get("hash") == cached["hash"]
                 and check.get("validated")
@@ -670,6 +672,9 @@ class Resources:
 
                     annotate_source_contract(resource, rows, schema)
                     schema.update(extra)
+                    schema["sourceTransport"] = headers.get(
+                        "_mcp_source_transport", "direct"
+                    )
                     schema["sourceResponseComplete"] = True
                     schema["cacheTTLSeconds"] = ttl
                     schema.setdefault(

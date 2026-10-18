@@ -450,8 +450,10 @@ class CatalogueStore:
                 ).encode()
             ).hexdigest()
         arrival_contract = schema.get("transport", {}).get("operation") == "arrivals"
+        flexible_feed = schema.get("readerContract") == "rss-feed-root-1"
         if (
             not arrival_contract
+            and not flexible_feed
             and old.get("schema_hash")
             and old["schema_hash"] != schema_hash
         ):

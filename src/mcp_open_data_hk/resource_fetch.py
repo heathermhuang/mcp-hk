@@ -14,6 +14,7 @@ import zlib
 from urllib.parse import quote, urljoin, urlsplit
 
 from .contracts import DomainError
+from .source_relay import relay_request
 
 MAX_BYTES = 8_000_000
 
@@ -85,9 +86,15 @@ def fetch_sync(url, headers=None, maximum=MAX_BYTES, destination=None, payload=N
             raise DomainError(
                 "SOURCE_TIMEOUT", "Source exceeded download deadline", 504
             )
-        p = validate_url(url)
+        original = validate_url(url)
+        relay = relay_request(url, headers, payload)
+        if relay:
+            # The approved source is public too. Never turn this into a route
+            # around the reader's private-address rejection.
+            public_addresses(original.hostname, original.port or 443)
+        p = validate_url(relay[0] if relay else url)
         connection = (PinnedHTTPS if p.scheme == "https" else PinnedHTTP)(
-            p.hostname, port=p.port, timeout=10
+            p.hostname, port=p.port, timeout=30 if relay else 10
         )
         output = None
         try:
@@ -102,11 +109,23 @@ def fetch_sync(url, headers=None, maximum=MAX_BYTES, destination=None, payload=N
                     "User-Agent": "mcp.hk-resources/0.4 (+https://mcp.hk)",
                     "Accept-Encoding": "identity" if identity_retry else "gzip",
                     **(headers or {}),
+                    **(relay[1] if relay else {}),
                 },
             )
             response = connection.getresponse()
             meta = {k.lower(): v for k, v in response.getheaders()}
+            if relay and meta.get("x-mcp-source-transport") != "approved-worker-relay":
+                raise DomainError(
+                    "SOURCE_UNAVAILABLE", "Approved source relay was unavailable", 502
+                )
+            meta["_mcp_source_transport"] = (
+                "approved-worker-relay" if relay else "direct"
+            )
             if response.status in {301, 302, 303, 307, 308}:
+                if relay:
+                    raise DomainError(
+                        "UNSAFE_SOURCE", "Source relay redirect rejected", 422
+                    )
                 if payload is not None:
                     raise DomainError(
                         "UNSAFE_SOURCE", "Transport POST redirects are not allowed", 422

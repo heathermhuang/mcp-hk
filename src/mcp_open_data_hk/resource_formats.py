@@ -350,6 +350,35 @@ def parse(body, fmt, record_path="", sheet=""):
     elif fmt in {"XML", "RSS", "GML", "KML"}:
         root = ElementTree.fromstring(body)
         info["rootTag"] = root.tag
+        if fmt == "RSS":
+            local = root.tag.rsplit("}", 1)[-1]
+            valid = (
+                (
+                    local == "rss"
+                    and any(e.tag.rsplit("}", 1)[-1] == "channel" for e in root)
+                )
+                or root.tag == "{http://www.w3.org/2005/Atom}feed"
+                or (
+                    root.tag == "{http://www.w3.org/1999/02/22-rdf-syntax-ns#}RDF"
+                    and any(
+                        e.tag
+                        in {
+                            "{http://purl.org/rss/1.0/}channel",
+                            "{http://purl.org/rss/1.0/}item",
+                        }
+                        for e in root
+                    )
+                )
+            )
+            if not valid:
+                invalid("Published RSS source returned a non-feed document")
+            info["readerContract"] = "rss-feed-root-1"
+            info["fieldCompatibility"] = (
+                "RSS/Atom fields are optional and extensible; observed types are retained, not a fixed analytical schema."
+            )
+            info["rowMeaning"] = (
+                "Raw XML elements under the selected path; default selection is the direct feed container, not a count of all catalogue books."
+            )
 
         def node(e):
             if not len(e) and not e.attrib:

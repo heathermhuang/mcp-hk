@@ -494,6 +494,35 @@ async def test_review_304_after_eviction_validates_metadata_without_inventing_re
     assert s.resources.catalogue.check(rid)["status"] == "queryable"
 
 
+@pytest.mark.asyncio
+async def test_due_review_revalidates_even_when_cached_body_is_inside_request_ttl(
+    tmp_path, monkeypatch
+):
+    s, rows = service_with_resources(tmp_path, count=1)
+    rid = rows[0]["id"]
+    calls = []
+
+    async def source(url, headers=None, **kwargs):
+        calls.append(headers or {})
+        if (headers or {}).get("If-None-Match") == '"actual-source"':
+            return b"", {"etag": '"actual-source"'}, url, 304
+        return b"id,value\n1,actual\n", {"etag": '"actual-source"'}, url, 200
+
+    monkeypatch.setattr("mcp_open_data_hk.resources.fetch", source)
+    await s.resources.schema(rid)
+    old = time.time() - 7 * 3600  # Daily source review is 6h; file cache TTL is 24h.
+    with s.store.connect() as db:
+        db.execute("UPDATE resource_checks SET validated=? WHERE id=?", (old, rid))
+        db.execute(
+            "UPDATE resource_variants SET validated=? WHERE resource=?", (old, rid)
+        )
+    q = RefreshQueue(s.resources.catalogue)
+    result = await q.run(s.resources, 1, 5)
+    assert result["processed"] == 1 and result["failed"] == 0
+    assert calls == [{}, {"If-None-Match": '"actual-source"'}]
+    assert s.resources.catalogue.check(rid)["validated"] > old
+
+
 def test_stale_304_cannot_validate_a_concurrently_changed_representation(tmp_path):
     s, rows = service_with_resources(tmp_path)
     rid = rows[0]["id"]
