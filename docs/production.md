@@ -2,8 +2,8 @@
 
 The Python service remains the data/MCP implementation. A small Cloudflare Worker
 serves static assets and forwards API/MCP traffic to one named Durable Object and
-one `basic` container (1 GiB memory, maximum one instance). It sleeps after two idle
-minutes. All state needed to recover accepted data is restored from a private R2
+one `standard-1` container (half a vCPU, 4 GiB memory, maximum one instance). It
+sleeps after ten idle minutes, longer than the five-minute resource review cadence. All state needed to recover accepted data is restored from a private R2
 checkpoint on startup; the container's local disk is not considered durable.
 
 ## Deploy
@@ -49,7 +49,7 @@ maintenance lease:
 | Restaurant refresh + backup | `0 2 * * *` | Daily 10:00 |
 | Population check + backup | `0 3 * * SUN` | Sunday 11:00 |
 | Reconciled catalogue sync + backup | `0 4 * * SUN` | Sunday 12:00 |
-| Cadence-aware resource review + backup | `20 * * * *` | Hourly at minute 20 |
+| Cadence-aware resource review + backup | `2-59/5 * * * *` | Every five minutes at minutes 2,7,...57 |
 
 Every successful operation stores an immutable version under `backups/`, then
 publishes `latest.snapshot.tar.gz` and a manifest. Only complete, validated imports
@@ -112,7 +112,7 @@ An expired query cache never disguises a provider failure as an empty result.
 
 Expanded inventory recovery uses streamed R2 checkpoints, capped at 150 MB compressed, 500 MB SQLite and 750 MB total restored bytes. Checkpoints carry the authenticated producer checksum; bootstrap independently verifies it. Fixed-length streaming rejects truncated/overflowed uploads before recovery pointers advance. The first expanded restore test recovered a 55 MB checkpoint; see resource contracts for cache and query bounds.
 
-The full audit grew its restore-tested checkpoint to 71 MB before finishing. Streaming remains bounded without holding the archive in Worker memory; the larger bound accommodates full receipts and two metadata generations. The host remains one basic container with no new infrastructure.
+The full audit grew its restore-tested checkpoint to 71 MB before finishing. Streaming remains bounded without holding the archive in Worker memory; the larger bound accommodates full receipts and two metadata generations. The host remains one container; its current size is `standard-1`.
 
 After uploading a restore-tested operator seed, `scripts/cloudflare_ops.py restart`
 restarts only the named mcp.hk container against the exact accepted checkpoint SHA.
@@ -171,8 +171,10 @@ and the detailed coverage explorer still use the backend.
 
 
 The resource maintenance job now chooses due eligible sources rather than advancing
-through held IDs. It has a 100-read/90-second run bound and a persisted 2,400-read
-UTC-day maintenance budget. Query-cache expiry and cadence-based review debt are
+through held IDs. Each run has a 256-attempt/90-second bound, six concurrent reviews (two per host),
+and a persisted 50,000-attempt UTC-day maintenance budget. Two independent source
+slots remain available to interactive reads. Short recovery batches save an accepted
+checkpoint after each run; the legacy recovery name is an alias for one such batch. Query-cache expiry and cadence-based review debt are
 reported separately. Source status also exposes failed/overdue government refreshes
 while retaining accepted snapshots and source-label quality counts.
 
