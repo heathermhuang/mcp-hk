@@ -83,7 +83,9 @@ request = urllib.request.Request(
     args.origin + path, data=data, method=method, headers=headers
 )
 try:
-    with urllib.request.build_opener(NoRedirect).open(request, timeout=600) as response:
+    # Recovery can spend ten minutes reviewing before saving its checkpoint.
+    timeout = 900 if args.action == "resources-recovery" else 600
+    with urllib.request.build_opener(NoRedirect).open(request, timeout=timeout) as response:
         if args.action == "restore-test":
             packed = response.read(MAX_BACKUP + 1)
             with tempfile.TemporaryDirectory() as directory:
