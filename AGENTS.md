@@ -15,3 +15,5 @@
 - Completion requires live HTTP/MCP regressions and an isolated restore of a fresh
   accepted backup. Distinguish source validation from observation age, semantic
   qualification and upstream availability; never turn source failures into empty data.
+- Offload blocking SQLite work from async reader/review paths, including cache LRU
+  touches and failure writes. Preserve the real-lock event-loop regression tests.

@@ -1,4 +1,4 @@
-export const EXPECTED_REVIEW_POLICY = 'source-review-8';
+export const EXPECTED_REVIEW_POLICY = 'source-review-9';
 export function maintenanceRuntimeReady(value: unknown): boolean {
   return value !== null && typeof value === 'object' && 'sourceReviewPolicy' in value && value.sourceReviewPolicy === EXPECTED_REVIEW_POLICY;
 }

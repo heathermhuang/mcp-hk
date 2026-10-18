@@ -467,7 +467,7 @@ class Resources:
             self.locks = {k: v for k, v in self.locks.items() if v.locked()}
         lock = self.locks.setdefault(key, asyncio.Lock())
         async with lock:
-            cached = self.catalogue.cached(key)
+            cached = await asyncio.to_thread(self.catalogue.cached, key)
             check = self.catalogue.check(resource_id, key)
             review_validation = (
                 SOURCE_REVIEW.get()
@@ -750,7 +750,9 @@ class Resources:
                         )
                     )
                 )
-                self.catalogue.failure(resource_id, code, status, key)
+                await asyncio.to_thread(
+                    self.catalogue.failure, resource_id, code, status, key
+                )
                 if cached and not require_fresh:
                     return (
                         resource,
@@ -845,14 +847,20 @@ class Resources:
             )
         except DomainError as exc:
             if self.catalogue.check(resource_id).get("checked", 0) < started:
-                self.catalogue.failure(
+                await asyncio.to_thread(
+                    self.catalogue.failure,
                     resource_id,
                     exc.code,
                     "restricted" if exc.code == "ACCESS_RESTRICTED" else "unavailable",
                 )
             raise
         except Exception:
-            self.catalogue.failure(resource_id, "SOURCE_PARSE_ERROR", "needs_adapter")
+            await asyncio.to_thread(
+                self.catalogue.failure,
+                resource_id,
+                "SOURCE_PARSE_ERROR",
+                "needs_adapter",
+            )
             raise DomainError(
                 "SOURCE_PARSE_ERROR",
                 "Source schema inspection failed; receipt recorded",
@@ -884,8 +892,11 @@ class Resources:
             # Parameter discovery is not a new source observation. Preserve an
             # upstream failure until another actual request succeeds or fails.
             if not check or check.get("status") in {"pending", "needs_selection"}:
-                self.catalogue.failure(
-                    resource_id, "PARAMETERS_REQUIRED", "needs_selection"
+                await asyncio.to_thread(
+                    self.catalogue.failure,
+                    resource_id,
+                    "PARAMETERS_REQUIRED",
+                    "needs_selection",
                 )
             return {
                 "resource": resource,
@@ -914,7 +925,12 @@ class Resources:
                 for e in root.iter()
                 if e.tag.rsplit("}", 1)[-1] == "Name" and e.text
             ]
-            self.catalogue.failure(resource_id, "TYPE_NAME_REQUIRED", "needs_selection")
+            await asyncio.to_thread(
+                self.catalogue.failure,
+                resource_id,
+                "TYPE_NAME_REQUIRED",
+                "needs_selection",
+            )
             return {
                 "resource": resource,
                 "selectionRequired": "recordPath",
@@ -932,7 +948,12 @@ class Resources:
         ):
             value, _, _, _ = await read_json(resource["url"], {"f": "json"})
             if not self.catalogue.check(resource_id).get("validated"):
-                self.catalogue.failure(resource_id, "LAYER_REQUIRED", "needs_selection")
+                await asyncio.to_thread(
+                    self.catalogue.failure,
+                    resource_id,
+                    "LAYER_REQUIRED",
+                    "needs_selection",
+                )
             return {
                 "resource": resource,
                 "selectionRequired": "layer",
@@ -1066,4 +1087,5 @@ class Resources:
     async def audit(self, batch=BATCH_SIZE, max_seconds=RUN_SECONDS):
         from .refresh_queue import RefreshQueue
 
-        return await RefreshQueue(self.catalogue).run(self, batch, max_seconds)
+        queue = await asyncio.to_thread(RefreshQueue, self.catalogue)
+        return await queue.run(self, batch, max_seconds)

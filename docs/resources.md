@@ -282,3 +282,10 @@ Healthy accepted sources can be selected up to one five-minute schedule interval
 before their validation deadline, so a cron need not wait until they are already
 overdue. Failed-source cooldowns are never shortened by this lookahead. Reported
 validation deadlines and original source cadence remain unchanged.
+
+SQLite work in the asynchronous reader/review path runs off the public request
+loop, including queue setup/selection, budget claims, selector lookup, attempt and
+receipt writes, cache LRU touches and failure recording. Even a cache read updates
+its LRU timestamp; waiting for another SQLite writer must not stall health or MCP
+requests. Regression tests hold a real writer lock and require the event loop to
+remain responsive through review, cached-read and failure paths.
