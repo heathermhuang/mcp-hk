@@ -671,3 +671,73 @@ def test_review_looks_ahead_one_schedule_for_healthy_sources_only(tmp_path):
             (rows[1]["id"],),
         )
     assert [row["id"] for row in q.due(10, now)] == [rows[0]["id"]]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("operation", ["review", "cached_read", "failure"])
+async def test_resource_work_keeps_event_loop_responsive_while_sqlite_writer_waits(
+    tmp_path, monkeypatch, operation
+):
+    import threading
+
+    s, rows = service_with_resources(tmp_path, count=1)
+    rid = rows[0]["id"]
+
+    async def source(url, headers=None, **kwargs):
+        return b"id,value\n1,actual\n", {}, url, 200
+
+    monkeypatch.setattr("mcp_open_data_hk.resources.fetch", source)
+    await s.resources.schema(rid)
+    q = RefreshQueue(s.resources.catalogue)
+    q.prepare()
+    if operation == "review":
+        with s.store.connect() as db:
+            db.execute(
+                "UPDATE resource_checks SET validated=?", (time.time() - 172800,)
+            )
+            db.execute("UPDATE resource_review_policy SET next_due=0")
+    elif operation == "failure":
+        with s.store.connect() as db:
+            db.execute("DELETE FROM resource_cache")
+
+        async def failed_source(*args, **kwargs):
+            raise DomainError("SOURCE_UNAVAILABLE", "Actual upstream failure", 502)
+
+        monkeypatch.setattr("mcp_open_data_hk.resources.fetch", failed_source)
+    held, release, blocked_loop = (
+        threading.Event(),
+        threading.Event(),
+        threading.Event(),
+    )
+
+    def writer():
+        with s.store.connect() as db:
+            db.execute("UPDATE resource_checks SET checked=checked WHERE id=?", (rid,))
+            held.set()
+            if not release.wait(2):
+                blocked_loop.set()
+
+    thread = threading.Thread(target=writer)
+    thread.start()
+    assert await asyncio.to_thread(held.wait, 3)
+
+    async def pulse():
+        await asyncio.sleep(0.01)
+        release.set()
+
+    heartbeat = asyncio.create_task(pulse())
+    try:
+        if operation == "review":
+            await q.run(s.resources, 1, 5)
+        elif operation == "failure":
+            with pytest.raises(DomainError, match="SOURCE_UNAVAILABLE"):
+                await s.resources.schema(rid, require_fresh=True)
+        else:
+            await s.resources.schema(rid)
+        await heartbeat
+    finally:
+        release.set()
+        await asyncio.to_thread(thread.join, 3)
+    assert (
+        not blocked_loop.is_set()
+    ), "SQLite writer waiting blocked the public event loop"

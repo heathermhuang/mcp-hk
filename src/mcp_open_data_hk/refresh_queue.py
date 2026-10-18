@@ -145,7 +145,7 @@ class RefreshQueue:
         ):
             raise ValueError("Audit exceeds bounded recovery limits")
         started = time.monotonic()
-        selected = self.due(batch, time.time())
+        selected = await asyncio.to_thread(self.due, batch, time.time())
         attempted = 0
         failures = 0
         deferred = 0
@@ -158,7 +158,11 @@ class RefreshQueue:
             if remaining < 1 or budget_exhausted:
                 return
             try:
-                self.store.consume_budget("resource_maintenance", DAILY_REVIEW_BUDGET)
+                await asyncio.to_thread(
+                    self.store.consume_budget,
+                    "resource_maintenance",
+                    DAILY_REVIEW_BUDGET,
+                )
             except DomainError:
                 budget_exhausted = True
                 return
@@ -166,10 +170,13 @@ class RefreshQueue:
             error = None
             token = SOURCE_REVIEW.set(True)
             try:
+                selectors = await asyncio.to_thread(self.selectors, row["id"])
+                remaining = max_seconds - (time.monotonic() - started)
+                if remaining <= 0:
+                    deferred += 1
+                    return
                 await asyncio.wait_for(
-                    resources.schema(
-                        row["id"], require_fresh=True, **self.selectors(row["id"])
-                    ),
+                    resources.schema(row["id"], require_fresh=True, **selectors),
                     timeout=remaining,
                 )
             except asyncio.TimeoutError:
@@ -187,24 +194,7 @@ class RefreshQueue:
                 SOURCE_REVIEW.reset(token)
             if error and len(errors) < 10:
                 errors.append({"resourceId": row["id"], "code": error})
-            now = time.time()
-            with self.store.connect() as db:
-                old = db.execute(
-                    "SELECT failures FROM resource_review_policy WHERE id=?",
-                    (row["id"],),
-                ).fetchone()[0]
-                count = old + 1 if error else 0
-                cooldown = (
-                    min(86400, 3600 * 2 ** min(count - 1, 5))
-                    if error
-                    else row["interval"]
-                )
-                if error in {"ACCESS_RESTRICTED", "SOURCE_NOT_FOUND"}:
-                    cooldown = 86400
-                db.execute(
-                    "UPDATE resource_review_policy SET next_due=?,last_attempt=?,failures=? WHERE id=?",
-                    (now + cooldown, now, count, row["id"]),
-                )
+            await asyncio.to_thread(self.record_attempt, row, error, time.time())
 
         # Do not occupy global slots with tasks waiting for the same host. Every
         # started task is awaited before checkpointing, including deadline exits.
@@ -261,9 +251,28 @@ class RefreshQueue:
             "budgetExhausted": budget_exhausted,
             "cycleComplete": not selected,
         }
+        await asyncio.to_thread(self.record_receipt, receipt)
+        return receipt
+
+    def record_attempt(self, row, error, now):
+        with self.store.connect() as db:
+            old = db.execute(
+                "SELECT failures FROM resource_review_policy WHERE id=?", (row["id"],)
+            ).fetchone()[0]
+            count = old + 1 if error else 0
+            cooldown = (
+                min(86400, 3600 * 2 ** min(count - 1, 5)) if error else row["interval"]
+            )
+            if error in {"ACCESS_RESTRICTED", "SOURCE_NOT_FOUND"}:
+                cooldown = 86400
+            db.execute(
+                "UPDATE resource_review_policy SET next_due=?,last_attempt=?,failures=? WHERE id=?",
+                (now + cooldown, now, count, row["id"]),
+            )
+
+    def record_receipt(self, receipt):
         with self.store.connect() as db:
             db.execute(
                 "INSERT OR REPLACE INTO resource_review_state VALUES (1,?)",
                 (json.dumps({**receipt, "completedAt": time.time()}),),
             )
-        return receipt
