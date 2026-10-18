@@ -1,5 +1,6 @@
 import { Container } from '@cloudflare/containers';
 import { scheduledPack } from './cron';
+import {maintenanceResponse} from './maintenance';
 import {saveOverview, serveOverview} from './overview';
 import {normalizeBackendResponse, recoveringResponse} from './recovery';
 import {saveBackup, requireCheckpoint, safeOperationError} from './backup';
@@ -210,7 +211,7 @@ export default {
       if (url.pathname === '/__ops/run' && request.method === 'POST') {
         const pack = url.searchParams.get('pack') || 'backup';
         if (!['backup', 'restaurants', 'population', 'all', 'catalogue', 'resources'].includes(pack)) return new Response('Invalid pack', {status: 400});
-        return Response.json(await env.APP.get(env.APP.idFromName('production')).maintain(pack));
+        return maintenanceResponse(env.APP.get(env.APP.idFromName('production')), pack, error => safeOperationError(error, env.OPS_TOKEN));
       }
       if (url.pathname === '/__ops/publish-overview' && request.method === 'POST') return Response.json(await env.APP.get(env.APP.idFromName('production')).publishOverview());
       if (url.pathname === '/__ops/restart' && request.method === 'POST') return Response.json(await env.APP.get(env.APP.idFromName('production')).restartFromCheckpoint(request.headers.get('x-snapshot-sha256') || ''));

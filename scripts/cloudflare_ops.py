@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import re
 import tempfile
 import urllib.error
 import urllib.request
@@ -107,4 +108,14 @@ try:
                 response.read(2_000_000 if args.action == "usage" else 10000).decode()
             )
 except urllib.error.HTTPError as exc:
-    raise SystemExit("Operator endpoint returned HTTP " + str(exc.code)) from None
+    code = ""
+    try:
+        payload = json.loads(exc.read(10000))
+        value = payload.get("error", {}).get("code", "")
+        if isinstance(value, str) and re.fullmatch(r"[A-Z0-9_]{1,80}", value):
+            code = " (" + value + ")"
+    except (ValueError, AttributeError, TypeError):
+        pass
+    retry = exc.headers.get("Retry-After", "")
+    retry_note = "; retry after " + retry + " seconds" if re.fullmatch(r"[0-9]{1,6}", retry) else ""
+    raise SystemExit("Operator endpoint returned HTTP " + str(exc.code) + code + retry_note) from None

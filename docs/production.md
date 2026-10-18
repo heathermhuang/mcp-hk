@@ -175,3 +175,10 @@ through held IDs. It has a 100-read/90-second run bound and a persisted 2,400-re
 UTC-day maintenance budget. Query-cache expiry and cadence-based review debt are
 reported separately. Source status also exposes failed/overdue government refreshes
 while retaining accepted snapshots and source-label quality counts.
+
+
+A held maintenance lease returns operator HTTP 409 `MAINTENANCE_BUSY` with
+`Retry-After`, rather than a generic Worker 500. The helper prints the bounded
+code/deadline without response bodies or credentials. Wait for expiry; never clear
+a lease just because a rollout interrupted an operator response. Other maintenance
+failures return a structured, redacted 503 and retain their owning failure receipt.
