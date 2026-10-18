@@ -391,3 +391,81 @@ async def test_real_reader_reserves_interactive_slots_during_six_background_read
     finally:
         release.set()
         await task
+
+
+@pytest.mark.asyncio
+async def test_review_304_after_eviction_validates_metadata_without_inventing_records(
+    tmp_path, monkeypatch
+):
+    import threading
+    from mcp_open_data_hk.review_config import SOURCE_REVIEW
+
+    s, rows = service_with_resources(tmp_path)
+    rid = rows[0]["id"]
+    requests = []
+    accept_calls = []
+    original = s.resources.catalogue.accept
+
+    def accept(*args, **kwargs):
+        assert threading.current_thread() is not threading.main_thread()
+        accept_calls.append(True)
+        return original(*args, **kwargs)
+
+    async def source(url, headers=None, **kwargs):
+        requests.append(headers or {})
+        if (headers or {}).get("If-None-Match") == '"accepted"':
+            return b"", {"etag": '"accepted"'}, url, 304
+        return b"id,value\n1,actual\n2,source\n", {"etag": '"accepted"'}, url, 200
+
+    monkeypatch.setattr(s.resources.catalogue, "accept", accept)
+    monkeypatch.setattr("mcp_open_data_hk.resources.fetch", source)
+    first = await s.resources.schema(rid, require_fresh=True)
+    old = s.resources.catalogue.check(rid)
+    with s.store.connect() as db:
+        db.execute("DELETE FROM resource_cache")
+    token = SOURCE_REVIEW.set(True)
+    try:
+        reviewed = await s.resources.schema(rid, require_fresh=True)
+    finally:
+        SOURCE_REVIEW.reset(token)
+    assert reviewed["recordCount"] == first["recordCount"] == 2
+    assert len(accept_calls) == 1
+    check = s.resources.catalogue.check(rid)
+    assert check["hash"] == old["hash"] and check["retrieved"] == old["retrieved"]
+    assert check["validated"] >= old["validated"]
+    with s.store.connect() as db:
+        assert db.execute("SELECT count(*) FROM resource_cache").fetchone()[0] == 0
+    actual = await s.resources.query(rid, require_fresh=True)
+    assert actual["data"]["items"] == [
+        {"id": "1", "value": "actual"},
+        {"id": "2", "value": "source"},
+    ]
+    assert requests == [{}, {"If-None-Match": '"accepted"'}, {}]
+    with s.store.connect() as db:
+        db.execute("DELETE FROM resource_cache")
+        key = db.execute(
+            "SELECT key FROM resource_variants WHERE resource=?", (rid,)
+        ).fetchone()[0]
+    s.resources.catalogue.failure(rid, "SOURCE_UNAVAILABLE", "unavailable", key)
+    token = SOURCE_REVIEW.set(True)
+    try:
+        recovered = await s.resources.schema(rid, require_fresh=True)
+    finally:
+        SOURCE_REVIEW.reset(token)
+    assert recovered["recordCount"] == 2 and requests[-1] == {}
+    assert s.resources.catalogue.check(rid)["status"] == "queryable"
+
+
+def test_stale_304_cannot_validate_a_concurrently_changed_representation(tmp_path):
+    s, rows = service_with_resources(tmp_path)
+    rid = rows[0]["id"]
+    schema = {"fields": [{"name": "id", "types": ["string"]}]}
+    prior = s.resources.catalogue.accept(
+        rid, "exact-key", [{"id": "1"}], schema, "old", {"etag": '"old"'}
+    )
+    with s.store.connect() as db:
+        db.execute("UPDATE resource_variants SET hash='new' WHERE key='exact-key'")
+    with pytest.raises(DomainError, match="CONCURRENT_RESOURCE_CHANGE"):
+        s.resources.catalogue.revalidate(rid, "exact-key", prior, {})
+    current = s.resources.catalogue.check(rid, "exact-key")
+    assert current["hash"] == "new" and current["validated"] == prior["validated"]

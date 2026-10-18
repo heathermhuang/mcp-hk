@@ -79,7 +79,12 @@ class PinnedHTTPS(PinnedHTTP):
 
 def fetch_sync(url, headers=None, maximum=MAX_BYTES, destination=None, payload=None):
     started = time.monotonic()
+    identity_retry = False
     for _ in range(4):
+        if time.monotonic() - started > 30:
+            raise DomainError(
+                "SOURCE_TIMEOUT", "Source exceeded download deadline", 504
+            )
         p = validate_url(url)
         connection = (PinnedHTTPS if p.scheme == "https" else PinnedHTTP)(
             p.hostname, port=p.port, timeout=10
@@ -95,7 +100,7 @@ def fetch_sync(url, headers=None, maximum=MAX_BYTES, destination=None, payload=N
                 body=payload,
                 headers={
                     "User-Agent": "mcp.hk-resources/0.4 (+https://mcp.hk)",
-                    "Accept-Encoding": "gzip",
+                    "Accept-Encoding": "identity" if identity_retry else "gzip",
                     **(headers or {}),
                 },
             )
@@ -156,6 +161,17 @@ def fetch_sync(url, headers=None, maximum=MAX_BYTES, destination=None, payload=N
                         "Decoded source exceeds download budget",
                         422,
                     )
+            # Some public APIs (observed HKSTP, 2026-10-18) advertise a successful
+            # empty response only when gzip is requested. Retry the identical GET
+            # once without compression; keep all URL, size and time guards.
+            if (
+                not length
+                and not identity_retry
+                and payload is None
+                and not any(k.lower() == "accept-encoding" for k in (headers or {}))
+            ):
+                identity_retry = True
+                continue
             if decoder and (not decoder.eof or decoder.unused_data):
                 raise DomainError(
                     "INVALID_SOURCE",

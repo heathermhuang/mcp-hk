@@ -607,6 +607,60 @@ def test_streamed_fetch_redirect_keeps_private_temp_destination(tmp_path, monkey
     assert responses == ["/start", "/data.csv"]
 
 
+@pytest.mark.parametrize("streamed", [False, True])
+def test_empty_gzip_negotiation_retries_identity_once_without_changing_source(
+    tmp_path, monkeypatch, streamed
+):
+    from mcp_open_data_hk import resource_fetch as fetcher
+
+    requests = []
+
+    class Reply:
+        status = 200
+
+        def __init__(self, body):
+            self.body = body
+
+        def getheaders(self):
+            return [("content-length", str(len(self.body)))]
+
+        def read1(self, n):
+            data, self.body = self.body, b""
+            return data
+
+    class Connection:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def request(self, method, path, body, headers):
+            requests.append((method, path, headers["Accept-Encoding"]))
+            self.encoding = headers["Accept-Encoding"]
+
+        def getresponse(self):
+            return Reply(b'{"value":[]}' if self.encoding == "identity" else b"")
+
+        def close(self):
+            pass
+
+    monkeypatch.setattr(fetcher, "PinnedHTTPS", Connection)
+    destination = tmp_path / "data.json" if streamed else None
+    body, _, url, status = fetcher.fetch_sync(
+        "https://example.gov.hk/data.json", destination=destination
+    )
+    assert (body.read_bytes() if streamed else body) == b'{"value":[]}'
+    assert url == "https://example.gov.hk/data.json" and status == 200
+    assert requests == [
+        ("GET", "/data.json", "gzip"),
+        ("GET", "/data.json", "identity"),
+    ]
+
+    requests.clear()
+    body, _, _, _ = fetcher.fetch_sync(
+        "https://example.gov.hk/data.json", payload=b"{}"
+    )
+    assert body == b"" and requests == [("POST", "/data.json", "gzip")]
+
+
 @pytest.mark.asyncio
 async def test_hkma_family_reconciles_pages_and_rejects_repeated_pages(monkeypatch):
     from mcp_open_data_hk.resources import hkma_records

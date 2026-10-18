@@ -391,6 +391,49 @@ class CatalogueStore:
                     (time.time(), status, code, key),
                 )
 
+    def revalidate(self, resource_id, key, prior, headers):
+        """A 304 validates this exact accepted representation, without new rows."""
+        now = time.time()
+        with self.store.connect() as db:
+            changed = db.execute(
+                "UPDATE resource_variants SET checked=?,validated=?,reason=NULL,etag=COALESCE(?,etag),modified=COALESCE(?,modified) WHERE key=? AND resource=? AND hash=? AND schema_hash=? AND status IN ('queryable','document')",
+                (
+                    now,
+                    now,
+                    headers.get("etag"),
+                    headers.get("last-modified"),
+                    key,
+                    resource_id,
+                    prior["hash"],
+                    prior["schema_hash"],
+                ),
+            ).rowcount
+            if changed != 1:
+                raise DomainError(
+                    "CONCURRENT_RESOURCE_CHANGE",
+                    "Accepted source changed during revalidation",
+                    409,
+                )
+            row = db.execute(
+                "SELECT * FROM resource_variants WHERE key=?", (key,)
+            ).fetchone()
+            db.execute(
+                "UPDATE resource_checks SET checked=?,validated=?,status=?,reason=NULL,hash=?,schema_hash=?,schema_json=NULL,etag=?,modified=?,retrieved=?,rows=? WHERE id=?",
+                (
+                    now,
+                    now,
+                    row["status"],
+                    row["hash"],
+                    row["schema_hash"],
+                    row["etag"],
+                    row["modified"],
+                    row["retrieved"],
+                    row["rows"],
+                    resource_id,
+                ),
+            )
+        return dict(row)
+
     def accept(self, resource_id, key, rows, schema, digest, headers, document=False):
         schema_hash = hashlib.sha256(
             json.dumps(
