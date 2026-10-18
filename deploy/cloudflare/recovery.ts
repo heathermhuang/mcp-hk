@@ -4,7 +4,7 @@ export function recoveringResponse(release: string): Response {
 
 export async function normalizeBackendResponse(response: Response, release: string): Promise<Response> {
   const type=response.headers.get('content-type') || '';
-  if ([502,503,504].includes(response.status) && !type.includes('application/json') && !type.includes('text/event-stream')) {
+  if ([500,502,503,504].includes(response.status) && !type.includes('application/json') && !type.includes('text/event-stream')) {
     await response.body?.cancel();
     return recoveringResponse(release);
   }
