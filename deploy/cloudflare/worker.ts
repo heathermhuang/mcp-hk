@@ -217,7 +217,7 @@ export default {
       }
       if (url.pathname === '/__ops/run' && request.method === 'POST') {
         const pack = url.searchParams.get('pack') || 'backup';
-        if (!['backup', 'restaurants', 'population', 'all', 'catalogue', 'resources'].includes(pack)) return new Response('Invalid pack', {status: 400});
+        if (!['backup', 'restaurants', 'population', 'all', 'catalogue', 'resources', 'resources-recovery'].includes(pack)) return new Response('Invalid pack', {status: 400});
         return maintenanceResponse(env.APP.get(env.APP.idFromName('production')), pack, error => safeOperationError(error, env.OPS_TOKEN));
       }
       if (url.pathname === '/__ops/publish-overview' && request.method === 'POST') return Response.json(await env.APP.get(env.APP.idFromName('production')).publishOverview());
@@ -243,7 +243,7 @@ export default {
     }
     if (url.pathname === '/api/v1/operations') {
       const manifest = await env.BACKUPS.get('latest.json');
-      return Response.json({backup: manifest ? await manifest.json() : null, maintenance: await env.APP.get(env.APP.idFromName('production')).operationsStatus(), schedules: {catalogue: 'Sunday 12:00 Asia/Hong_Kong', resources: 'hourly at minute 20; up to 100 due eligible sources, 90-second deadline and 2400 maintenance reads/day', restaurants: 'daily 10:00 Asia/Hong_Kong', population: 'Sunday 11:00 Asia/Hong_Kong', backup: 'daily 09:00 Asia/Hong_Kong'}, retentionDays: 30});
+      return Response.json({backup: manifest ? await manifest.json() : null, maintenance: await env.APP.get(env.APP.idFromName('production')).operationsStatus(), schedules: {catalogue: 'Sunday 12:00 Asia/Hong_Kong', resources: 'every five minutes at minutes 2,7,...57; up to 256 reviews, 90 seconds, six concurrent/two per host, 50000 review attempts/day', restaurants: 'daily 10:00 Asia/Hong_Kong', population: 'Sunday 11:00 Asia/Hong_Kong', backup: 'daily 09:00 Asia/Hong_Kong'}, retentionDays: 30});
     }
     const headers = new Headers(request.headers);
     headers.set('x-mcp-client-ip', request.headers.get('cf-connecting-ip') || 'unknown');

@@ -109,7 +109,7 @@ retain older recovery points. Metadata payloads and schemas are compressed separ
 from the bounded record cache. Full raw files are not committed or put in the image.
 
 Hosted operator commands add `catalogue` and `resources` to `scripts/cloudflare_ops.py`.
-Catalogue sync runs Sunday 12:00 HK; a cadence-aware resource batch runs hourly at minute 20. These
+Catalogue sync runs Sunday 12:00 HK; a cadence-aware resource batch runs every five minutes at minutes 2,7,...57. These
 are ordinary deterministic jobs with persisted cursors and a maintenance lease.
 This bounded schedule does not promise that all discovered resources are fresh;
 coverage and timestamps expose the actual progress. Structural/schema failures are
@@ -171,8 +171,10 @@ one year; unknown: one day or one hour for APIs). These are review targets, not
 claims that source observations are new. Interactive cache TTL remains five
 minutes for APIs and one day for other files; arrival feeds retain 10/20 seconds.
 
-Each hourly run is capped at 100 actual eligible reads, 90 seconds, and a persisted
-2,400 maintenance-read daily budget. Held structural/selection failures and arrival
+Each scheduled run is capped at 256 eligible review attempts, 90 seconds, six concurrent
+reviews (at most two per source host), and a persisted 50,000-attempt daily budget.
+Interactive reads retain their separate two-slot pool. Review attempts may involve
+multiple bounded HTTP requests; the budget does not count individual HTTP calls. Held structural/selection failures and arrival
 feeds do not consume scan slots. The queue reuses accepted sheet, record-path and
 ArcGIS layer selectors, respects successful interactive validations and backs off
 on failed reads. Pending discovery and due accepted sources precede repeated
@@ -185,3 +187,23 @@ Compound cadence descriptions use the fastest declared update. A historical-only
 closed availability period is not classified as a current hourly feed. Policy
 revisions preserve failure cooldowns, and coverage reports the active policy
 revision rather than silently applying older review intervals.
+
+
+### Sustainable capacity and recovery
+
+`validationFreshness.capacity` compares the accepted inventory's review demand with
+both the daily budget and the deployed five-minute batch capacity, with 20% minimum
+headroom. It reports an insufficient plan as degraded. Configured capacity is
+separate from measured run throughput and actual backlog. `overdueAcceptedCount`
+keeps previously accepted sources visible even after a new source read fails;
+failures cannot make the backlog disappear by leaving the queryable denominator.
+Source cadence, cache TTL and semantic qualifications are unchanged.
+
+For an operator-controlled catch-up, run `PYTHONPATH=src .venv/bin/python
+scripts/cloudflare_ops.py resources-recovery` from the repository root. It permits
+up to 2,048 eligible reviews over ten minutes within the same daily budget, host
+limits, failure cooldowns and maintenance lease. Ordinary runs remain 90 seconds.
+The resulting database checkpoint is saved before the lease is released. Stop
+when the relevant backlog is cleared, the daily budget is exhausted, or remaining
+sources have concrete held/error receipts; do not repeatedly retry unchanged failures.
+Fast-compression checkpoints retain the same checksum and restore validation.

@@ -31,6 +31,7 @@ parser.add_argument(
         "all",
         "catalogue",
         "resources",
+        "resources-recovery",
         "restore-test",
         "restart",
         "publish-overview",

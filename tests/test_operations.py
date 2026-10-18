@@ -34,8 +34,11 @@ def operational(tmp_path):
     return store
 
 
-def test_checkpoint_restore_recovers_database_and_captures(operational, tmp_path):
-    path, digest = checkpoint(operational.path)
+@pytest.mark.parametrize("compression", [1, 6])
+def test_checkpoint_restore_recovers_database_and_captures(
+    operational, tmp_path, compression
+):
+    path, digest = checkpoint(operational.path, compresslevel=compression)
     target = tmp_path / "restored" / "app.sqlite3"
     restore(path.read_bytes(), digest, str(target))
     assert Service(Store(str(target))).status()["ready"]
