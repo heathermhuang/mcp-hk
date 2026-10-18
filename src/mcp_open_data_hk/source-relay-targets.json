@@ -12,6 +12,7 @@
     "5007f7933e55f480838cf355b7ce432a": "https://xpms.hyd.gov.hk/psi/datasets/XP_DATA_EXTN.json",
     "59638c1168b508f17bb7b4c883e46725": "https://webcat.hkpl.gov.hk/search/syndication?facet_format=sound_recording.cd&facet_item_class=7&facet_lang=chi&sort=dateNewest&syndication=true&theme=WEB",
     "6135048db44a46416850f286c6efecf9": "https://webcat.hkpl.gov.hk/search/syndication?match_1=PHRASE&field_1&term_1=%E5%B0%8F%E8%AA%AA&facet_format=book&facet_item_class=11&facet_lang=chi&sort=dateNewest&syndication=true&theme=WEB",
+    "6ecbdf3ee463606a5b55f59a34f5a3ce": "https://data.smartplay.lcsd.gov.hk/rest/cms/api/v1/publ/contents/open-data/activity-prog/file",
     "7189cf0704e5e8640807da1d4d8864d9": "https://webcat.hkpl.gov.hk/search/syndication?facet_lang=eng&filter_collection_group=SC:HKI_Hong+Kong+Information+%E9%A6%99%E6%B8%AF%E8%B3%87%E6%96%99&sort=dateNewest&syndication=true&theme=WEB",
     "71c13f9d6b8e57b8f848d3ebdd5b06e1": "https://webcat.hkpl.gov.hk/search/syndication?facet_format=book&facet_item_class=11&facet_lang=eng&sort=dateNewest&syndication=true&theme=WEB",
     "722da8748a01331113d1e0ad4902e510": "https://webcat.hkpl.gov.hk/search/syndication?match_1=PHRASE&field_1&term_1=fiction&facet_format=book&facet_item_class=11&facet_lang=eng&sort=dateNewest&syndication=true&theme=WEB",
@@ -31,6 +32,7 @@
     "cc97fdc5f48920f2160a545162a60276": "https://webcat.hkpl.gov.hk/search/syndication?facet_format=sound_recording.cd&facet_item_class=7&facet_lang=eng&sort=dateNewest&syndication=true&theme=WEB",
     "d8fd040e0193e42ebd32357a4570cfd9": "https://webcat.hkpl.gov.hk/search/syndication?facet_item_class=32&facet_lang=eng&filter_collection_group=EAR+English+Adult+Reference+%E8%8B%B1%E6%96%87%E6%88%90%E4%BA%BA%E5%8F%83%E8%80%83&sort=dateNewest&syndication=true&theme=WEB",
     "ddac745769218fccdde9edbee87cb2a1": "https://webcat.hkpl.gov.hk/search/syndication?match_1=PHRASE&field_1&term_1=fiction&facet_format=book&facet_item_class=3&facet_lang=eng&sort=dateNewest&syndication=true&theme=WEB",
-    "e1205cc110e6d56456b944e797aa1041": "https://webcat.hkpl.gov.hk/search/syndication?facet_format=sound_recording.cd&facet_item_class=15&facet_lang=chi&sort=dateNewest&syndication=true&theme=WEB"
+    "e1205cc110e6d56456b944e797aa1041": "https://webcat.hkpl.gov.hk/search/syndication?facet_format=sound_recording.cd&facet_item_class=15&facet_lang=chi&sort=dateNewest&syndication=true&theme=WEB",
+    "fb1573c72a9f046d46bdffba1f97b216": "https://data.smartplay.lcsd.gov.hk/rest/cms/api/v1/publ/contents/open-data/volleyball/file"
   }
 }

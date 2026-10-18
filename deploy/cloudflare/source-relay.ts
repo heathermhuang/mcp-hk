@@ -1,7 +1,7 @@
 import registry from '../../src/mcp_open_data_hk/source-relay-targets.json' with {type:'json'};
 
 const targets: Readonly<Record<string,string>>=Object.freeze(registry.targets);
-const hosts=new Set(['xpms.hyd.gov.hk','webcat.hkpl.gov.hk','data.cr.gov.hk']);
+const hosts=new Set(['xpms.hyd.gov.hk','webcat.hkpl.gov.hk','data.cr.gov.hk','data.smartplay.lcsd.gov.hk']);
 export function approvedSource(resourceId: string): string | undefined {
   if(!/^[a-f0-9]{32}$/.test(resourceId)||!Object.hasOwn(targets,resourceId))return;
   const target=targets[resourceId],url=new URL(target);

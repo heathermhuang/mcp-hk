@@ -257,8 +257,8 @@ Due background reviews always contact the source (including conditional GET), ev
 when a cached body has a longer TTL than the review interval. Normal interactive
 cache reuse is unchanged.
 
-For 31 exact, previously accepted public URLs from Highways, Public Libraries and
-Companies Registry, the hosted reader uses the existing authenticated Worker as a
+For 33 exact, previously accepted public URLs from Highways, Public Libraries and
+Companies Registry and SmartPLAY, the hosted reader uses the existing authenticated Worker as a
 streaming HTTPS transport. Native Worker requests reach these origins where the
 container's TCP path times out. The packaged allowlist is finite; callers cannot
 supply a URL, credentials, cookies or request body. Redirects stay on the approved
@@ -270,3 +270,15 @@ RSS acceptance verifies RSS, Atom or RSS 1.0 root structure, rejecting HTML erro
 pages. Optional feed fields are extensible. Rows preserve the selected raw XML
 structure: the default channel count is not a count of books. Select
 `recordPath=channel/item` for RSS item rows when the actual feed exposes that path.
+
+Exhausting a review run's time budget defers unfinished attempts; it does not
+classify the source as failed or impose a provider cooldown. Deferred sources
+remain due for the next bounded batch. Policy 8 repairs legacy cooldowns only for
+accepted sources that are still queryable and whose last source check predates
+the failed review. Real unavailable/restricted/schema failures retain backoff.
+MTR Bus's explicit status-0 temporary-unavailability advisory remains an error,
+with the provider's message, rather than becoming a successful empty arrivals list.
+Healthy accepted sources can be selected up to one five-minute schedule interval
+before their validation deadline, so a cron need not wait until they are already
+overdue. Failed-source cooldowns are never shortened by this lookahead. Reported
+validation deadlines and original source cadence remain unchanged.

@@ -345,8 +345,42 @@ async def test_deadline_awaits_started_tasks_and_leaves_unattempted_work_due(tmp
     s.resources.schema = inspect
     q = RefreshQueue(s.resources.catalogue)
     result = await q.run(s.resources, 12, 1.1)
-    assert result["deadlineReached"] and result["failed"] == result["processed"]
-    assert active == 0 and len(q.due(12, time.time())) == 12 - result["processed"]
+    assert result["deadlineReached"] and result["failed"] == 0
+    assert result["deferred"] == result["processed"]
+    assert active == 0 and len(q.due(12, time.time())) == 12
+    with s.store.connect() as db:
+        assert (
+            db.execute("SELECT sum(failures) FROM resource_review_policy").fetchone()[0]
+            == 0
+        )
+
+
+def test_policy_upgrade_recovers_non_source_cooldowns_only(tmp_path):
+    s, rows = service_with_resources(tmp_path)
+    q = RefreshQueue(s.resources.catalogue)
+    q.prepare()
+    now = time.time()
+    with s.store.connect() as db:
+        for row, status in zip(rows, ["queryable", "restricted"]):
+            db.execute(
+                "INSERT INTO resource_checks(id,status,validated,checked) VALUES (?,?,?,?)",
+                (row["id"], status, now - 172800, now - 100),
+            )
+        db.execute(
+            "UPDATE resource_review_policy SET failures=1,last_attempt=?,next_due=?",
+            (now - 10, now + 3600),
+        )
+        db.execute("UPDATE resource_review_setup SET revision='source-review-7'")
+    q.prepare()
+    assert [row["id"] for row in q.due(10, now)] == [rows[0]["id"]]
+    with s.store.connect() as db:
+        policies = list(
+            db.execute(
+                "SELECT id,failures,next_due FROM resource_review_policy ORDER BY id"
+            )
+        )
+    assert policies[0]["failures"] == 0
+    assert policies[1]["failures"] == 1 and policies[1]["next_due"] > now
 
 
 def test_failed_previously_accepted_sources_remain_visible_as_overdue(tmp_path):
@@ -618,3 +652,22 @@ def test_hko_warning_contract_is_source_scoped_and_rejects_invalid_warning_value
             annotate(
                 resource, [{"warningMessage": value}], json.loads(json.dumps(schema))
             )
+
+
+def test_review_looks_ahead_one_schedule_for_healthy_sources_only(tmp_path):
+    s, rows = service_with_resources(tmp_path)
+    q = RefreshQueue(s.resources.catalogue)
+    q.prepare()
+    now = time.time()
+    with s.store.connect() as db:
+        for row, status in zip(rows, ["queryable", "restricted"]):
+            db.execute(
+                "INSERT INTO resource_checks(id,status,validated,checked) VALUES (?,?,?,?)",
+                (row["id"], status, now - 21600 + 60, now - 21600 + 60),
+            )
+        db.execute("UPDATE resource_review_policy SET next_due=?", (now + 60,))
+        db.execute(
+            "UPDATE resource_review_policy SET failures=1 WHERE id=?",
+            (rows[1]["id"],),
+        )
+    assert [row["id"] for row in q.due(10, now)] == [rows[0]["id"]]

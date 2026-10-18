@@ -508,3 +508,35 @@ async def test_arrival_selectors_are_not_silently_ignored(transport_service):
         await transport_service.resources.query(
             "mtr", record_path="UP", parameters={"line": "TWL", "sta": "CEN"}
         )
+
+
+@pytest.mark.parametrize(
+    "route,advisory,code",
+    [
+        ("K12", "Arrival time temporarily not available", "SOURCE_UNAVAILABLE"),
+        ("wrong", "Arrival time temporarily not available", "SOURCE_RESPONSE_ERROR"),
+        ("K12", "", "SOURCE_RESPONSE_ERROR"),
+    ],
+)
+def test_mtr_bus_explicit_outage_is_not_empty_arrivals(route, advisory, code):
+    from mcp_open_data_hk import transport
+
+    p = transport.profile(
+        {
+            "datasetId": "mtr-mtr_bus-mtr-bus-eta-data",
+            "url": "https://rt.data.gov.hk/v1/transport/mtr/bus/getSchedule",
+        }
+    )
+    body = json.dumps(
+        {
+            "routeName": route,
+            "busStop": [],
+            "status": "0",
+            "routeStatusRemarkTitle": advisory,
+            "routeStatusTime": "2026/10/18 23:16",
+        }
+    ).encode()
+    with pytest.raises(DomainError, match=code) as error:
+        transport.validate(body, p, {"routeName": "K12"}, {})
+    if code == "SOURCE_UNAVAILABLE":
+        assert advisory in str(error.value)
