@@ -3,6 +3,7 @@
 import io
 import json
 import socket
+import ssl
 
 import pytest
 from fastapi.testclient import TestClient
@@ -659,6 +660,31 @@ def test_empty_gzip_negotiation_retries_identity_once_without_changing_source(
         "https://example.gov.hk/data.json", payload=b"{}"
     )
     assert body == b"" and requests == [("POST", "/data.json", "gzip")]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "failure,expected",
+    [
+        (ssl.SSLCertVerificationError(1, "private-detail"), "certificate"),
+        (ssl.SSLError(1, "private-detail"), "negotiation"),
+        (socket.gaierror(1, "private-detail"), "DNS"),
+        (TimeoutError("private-detail"), "timed out"),
+    ],
+)
+async def test_source_connection_diagnostics_keep_code_and_do_not_expose_raw_errors(
+    monkeypatch, failure, expected
+):
+    from mcp_open_data_hk import resource_fetch as fetcher
+
+    def fail(*args, **kwargs):
+        raise failure
+
+    monkeypatch.setattr(fetcher, "fetch_sync", fail)
+    with pytest.raises(DomainError) as caught:
+        await fetcher.fetch("https://example.gov.hk/data.json")
+    assert caught.value.code == "SOURCE_UNAVAILABLE"
+    assert expected in str(caught.value) and "private-detail" not in str(caught.value)
 
 
 @pytest.mark.asyncio

@@ -220,3 +220,16 @@ acceptance serialization and SQLite work run outside the async request loop.
 Do not deploy Worker/DO code during an active maintenance lease. Wait for the
 receipt/checkpoint or the bounded lease deadline, reconcile state, then preserve
 completed progress through an operator backup before rolling the container.
+
+
+The HKO current-weather `warningMessage` contract permits a string array or an
+empty string when no warning is present, as specified in the [official API
+dictionary](https://www.hko.gov.hk/tc/weatherAPI/doc/files/HKO_Open_Data_API_Documentation.pdf).
+That source-scoped representation change is compatible across accepted snapshots;
+raw values and observed types remain unchanged. Other field drift and malformed
+warning values still require review.
+
+The hosted reader uses `standard-1` (half a vCPU, 4 GiB) after measured ordinary
+review throughput on `basic` fell below the required review rate. Verify actual
+throughput and interactive latency after a size change; nominal budgets alone
+do not establish sustainable capacity.

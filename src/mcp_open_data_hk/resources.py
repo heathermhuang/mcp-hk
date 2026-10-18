@@ -15,6 +15,7 @@ from .contracts import DomainError
 from . import transport
 from .quality import freshness, semantic_quality
 from .review_config import SOURCE_REVIEW, CONCURRENCY, BATCH_SIZE, RUN_SECONDS
+from .source_contracts import annotate as annotate_source_contract
 from .resource_fields import selected, MISSING, inspect_nested
 from .resource_fetch import fetch, fetch_file
 from .resource_stream import FileRows
@@ -667,6 +668,7 @@ class Resources:
                             parse, body, fmt, record_path, sheet
                         )
 
+                    annotate_source_contract(resource, rows, schema)
                     schema.update(extra)
                     schema["sourceResponseComplete"] = True
                     schema["cacheTTLSeconds"] = ttl

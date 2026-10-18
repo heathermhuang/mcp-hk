@@ -469,3 +469,85 @@ def test_stale_304_cannot_validate_a_concurrently_changed_representation(tmp_pat
         s.resources.catalogue.revalidate(rid, "exact-key", prior, {})
     current = s.resources.catalogue.check(rid, "exact-key")
     assert current["hash"] == "new" and current["validated"] == prior["validated"]
+
+
+@pytest.mark.asyncio
+async def test_hko_documented_empty_warning_adopts_legacy_schema_and_keeps_other_drift_held(
+    tmp_path, monkeypatch
+):
+    from mcp_open_data_hk.source_contracts import annotate
+
+    s = Service(Store(str(tmp_path / "weather.sqlite3")))
+    dataset = {
+        "id": "hk-hko-rss-current-weather-report",
+        "title": "Current weather",
+        "provider": "HKO",
+        "catalogue": "DATA.GOV.HK",
+        "sourceUrl": "https://data.gov.hk/",
+    }
+    resource = {
+        "id": "a" * 32,
+        "datasetId": dataset["id"],
+        "url": "https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=en",
+        "format": "JSON",
+        "catalogue": "DATA.GOV.HK",
+        "sourceUrl": "https://data.gov.hk/",
+        "termsUrl": "https://data.gov.hk/en/terms-and-conditions",
+    }
+    s.resources.catalogue.publish([dataset], [resource], {})
+    payload = {
+        "warningMessage": ["a warning"],
+        "temperature": {"data": []},
+        "icon": [54],
+    }
+
+    async def source(url, *args, **kwargs):
+        return json.dumps(payload).encode(), {}, url, 200
+
+    monkeypatch.setattr("mcp_open_data_hk.resources.fetch", source)
+    monkeypatch.setattr(
+        "mcp_open_data_hk.resources.annotate_source_contract", lambda *args: None
+    )
+    old = await s.resources.schema(resource["id"], require_fresh=True)
+    assert "sourceContract" not in old["schema"]
+    monkeypatch.setattr("mcp_open_data_hk.resources.annotate_source_contract", annotate)
+    payload["warningMessage"] = ""
+    with s.store.connect() as db:
+        db.execute("DELETE FROM resource_cache")
+    current = await s.resources.query(resource["id"], require_fresh=True)
+    assert current["data"]["items"][0]["warningMessage"] == ""
+    assert current["schema"]["sourceContract"]["id"] == "hko-rhrread-warning-1"
+    assert next(
+        f for f in current["schema"]["fields"] if f["name"] == "warningMessage"
+    )["types"] == ["string"]
+    payload["warningMessage"] = ["another warning"]
+    with s.store.connect() as db:
+        db.execute("DELETE FROM resource_cache")
+    await s.resources.schema(resource["id"], require_fresh=True)
+    payload["temperature"] = "unexpected changed field"
+    with s.store.connect() as db:
+        db.execute("DELETE FROM resource_cache")
+    with pytest.raises(DomainError, match="SCHEMA_DRIFT"):
+        await s.resources.schema(resource["id"], require_fresh=True)
+
+
+def test_hko_warning_contract_is_source_scoped_and_rejects_invalid_warning_values():
+    from mcp_open_data_hk.source_contracts import annotate
+
+    resource = {
+        "datasetId": "hk-hko-rss-current-weather-report",
+        "url": "https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread",
+    }
+    schema = {"fields": [{"name": "warningMessage", "types": ["string"]}]}
+    for wrong in [
+        {**resource, "datasetId": "another-source"},
+        {**resource, "url": "https://example.gov.hk/weather.php?dataType=rhrread"},
+    ]:
+        candidate = json.loads(json.dumps(schema))
+        annotate(wrong, [{"warningMessage": ""}], candidate)
+        assert "sourceContract" not in candidate
+    for value in ["non-empty string", None, 3, ["text", 4]]:
+        with pytest.raises(DomainError, match="SOURCE_SCHEMA_CHANGED"):
+            annotate(
+                resource, [{"warningMessage": value}], json.loads(json.dumps(schema))
+            )

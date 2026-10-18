@@ -199,8 +199,22 @@ async def fetch(url, headers=None, maximum=MAX_BYTES, payload=None):
         http.client.HTTPException,
         gzip.BadGzipFile,
         zlib.error,
-    ):
-        raise DomainError("SOURCE_UNAVAILABLE", "Source download failed", 502) from None
+    ) as exc:
+        raise source_failure(exc) from None
+
+
+def source_failure(exc):
+    if isinstance(exc, ssl.SSLCertVerificationError):
+        message = "Source TLS certificate could not be verified"
+    elif isinstance(exc, ssl.SSLError):
+        message = "Source TLS negotiation failed"
+    elif isinstance(exc, socket.gaierror):
+        message = "Source DNS lookup failed"
+    elif isinstance(exc, TimeoutError):
+        message = "Source connection timed out"
+    else:
+        message = "Source download failed"
+    return DomainError("SOURCE_UNAVAILABLE", message, 502)
 
 
 async def fetch_file(url, maximum=128_000_000):
@@ -213,6 +227,4 @@ async def fetch_file(url, maximum=128_000_000):
         path.unlink(missing_ok=True)
         if isinstance(exc, DomainError):
             raise
-        raise DomainError(
-            "SOURCE_UNAVAILABLE", "Streamed source download failed", 502
-        ) from None
+        raise source_failure(exc) from None
