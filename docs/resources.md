@@ -199,13 +199,13 @@ keeps previously accepted sources visible even after a new source read fails;
 failures cannot make the backlog disappear by leaving the queryable denominator.
 Source cadence, cache TTL and semantic qualifications are unchanged.
 
-For an operator-controlled catch-up, run `PYTHONPATH=src .venv/bin/python
-scripts/cloudflare_ops.py resources-recovery` from the repository root. It permits
-up to 2,048 eligible reviews over ten minutes within the same daily budget, host
-limits, failure cooldowns and maintenance lease. Ordinary runs remain 90 seconds.
-The resulting database checkpoint is saved before the lease is released. Stop
-when the relevant backlog is cleared, the daily budget is exhausted, or remaining
-sources have concrete held/error receipts; do not repeatedly retry unchanged failures.
+For operator-controlled catch-up, repeat short `resources` batches, preserving
+each accepted checkpoint. The hosted `resources-recovery` name is a compatibility
+alias for one ordinary 90-second batch, not a ten-minute HTTP operation. Long
+synchronous catch-up calls returned before their checkpoint while server work
+continued; bounded calls avoid that uncertain transport lifetime. Stop when the
+relevant debt is cleared, the daily budget is exhausted, or the next unchanged
+failure needs investigation. Never bypass a held lease.
 Fast-compression checkpoints retain the same checksum and restore validation.
 
 

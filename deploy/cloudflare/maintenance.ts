@@ -8,6 +8,11 @@ type Controller = {
   operationDiagnostics(): Promise<{leaseUntil: number | null}>;
 };
 
+/** Keep HTTP operator calls within the known-working, checkpointed batch window. */
+export function maintenancePackForRequest(pack: string): string {
+  return pack === 'resources-recovery' ? 'resources' : pack;
+}
+
 /** Cold restore happens before acquiring a lease. Retry readiness only. */
 export async function scheduledMaintenance(
   app: Pick<Controller, 'maintain'>,
