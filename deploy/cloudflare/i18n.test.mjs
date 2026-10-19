@@ -20,15 +20,17 @@ function browser(url='https://mcp.hk/',saved=null,denied=false,server=false) {
   const link=new Element({href:'/coverage?q=weather#results'}),skip=new Element({href:'#main-content'}),external=new Element({href:'https://data.gov.hk/en/'}),api=new Element({href:'/api/v1/coverage'});
   const nav=['/','/coverage','/connect','/sources'].map(href=>new Element({href}));
   const location=new URL(url),events=[],navigations=[];
-  location.assign=value=>navigations.push(value);
+  location.assign=value=>navigations.push(value);location.replace=value=>navigations.push(value);
   const document={documentElement:server?{dataset:{discovery:'true'},lang:url.includes('lang=zh-Hant')?'zh-Hant':'en'}:{},createElement:()=>new Element(),querySelectorAll:selector=>({'.mhk-navbutton':nav,'[data-i18n]':[label],'[data-i18n-placeholder]':[placeholder],'.mhk-language':[button],'a[href]':[link,skip,external,api]}[selector] || [])};
   const context=vm.createContext({document,location,URL,Event,history:{replaceState:(_a,_b,value)=>{location.href=new URL(value,location.href).href;}},localStorage:{getItem(){if(denied)throw Error('denied');return stored;},setItem(_key,value){if(denied)throw Error('denied');stored=value;}},addEventListener(){},dispatchEvent:event=>events.push(event.type)});
   context.window=context;vm.runInContext(read('translations.js')+'\n'+read('i18n.js'),context);
   return {context,document,label,placeholder,button,link,skip,external,api,location,events,nav,navigations,stored:()=>stored};
 }
 test('server-rendered pages retain their canonical locale and switch using a complete document',()=>{
-  const en=browser('https://mcp.hk/guides','zh',false,true);
+  const en=browser('https://mcp.hk/guides?lang=en','zh',false,true);
   assert.equal(en.label.textContent,'Browse data');
+  const saved=browser('https://mcp.hk/guides','zh',false,true);
+  assert.deepEqual(saved.navigations,['/guides?lang=zh-Hant']);
   en.button.listeners.click();assert.deepEqual(en.navigations,['/guides?lang=zh-Hant']);
   const zh=browser('https://mcp.hk/guides?lang=zh-Hant','en',false,true);
   zh.button.listeners.click();assert.deepEqual(zh.navigations,['/guides?lang=en']);
