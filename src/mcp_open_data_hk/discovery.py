@@ -113,10 +113,10 @@ def public_paths():
 def text_response(path):
     if path == "/robots.txt":
         return (
-            "User-agent: *\nDisallow: /__ops/\n"
+            "User-agent: *\nContent-Signal: search=yes, ai-input=yes, ai-train=no\nDisallow: /__ops/\n"
             "Disallow: /api/\nDisallow: /mcp\nDisallow: /healthz\nDisallow: /readyz\n"
             "Disallow: /assets/discovery/\nDisallow: /*?*q=\n"
-            f"\nSitemap: {ORIGIN}/sitemap.xml\n",
+            f"\nSitemap: {ORIGIN}/sitemap.xml\nAgentmap: {ORIGIN}/.well-known/ai-catalog.json\n",
             "text/plain",
         )
     if path == "/sitemap.xml":
@@ -156,6 +156,10 @@ def text_response(path):
             "- MCP: https://mcp.hk/mcp (Streamable HTTP; public read-only access; no API key)\n"
             "- OpenAPI: https://mcp.hk/openapi.json\n"
             "- Source code: https://github.com/heathermhuang/mcp-hk\n\n"
+            "- Expanded documentation: https://mcp.hk/llms-full.txt\n"
+            "- Public access instructions: https://mcp.hk/auth.md\n"
+            "- API catalog: https://mcp.hk/.well-known/api-catalog\n"
+            "- MCP server card: https://mcp.hk/.well-known/mcp/server-card.json\n\n"
             "## Citation and limits\n"
             "Cite original provider URLs and attribution from response provenance. Check source "
             "status, retrieval/check timestamps, reference period, warnings and stale flags. "
@@ -354,6 +358,33 @@ def render_page(path, lang="en", filtered=False):
         )
     )
     head = next(n for n in nodes if n.tag == "head")
+    head.children.append(
+        Element("script", [("src", "/assets/webmcp.js"), ("defer", None)])
+    )
+    head.children.append(
+        Element(
+            "link",
+            [("rel", "api-catalog"), ("href", ORIGIN + "/.well-known/api-catalog")],
+        )
+    )
+    head.children.append(
+        Element(
+            "link",
+            [("rel", "ai-catalog"), ("href", ORIGIN + "/.well-known/ai-catalog.json")],
+        )
+    )
+    if not page.get("noindex"):
+        md_path = "/index.md" if path == "/" else path + ".md"
+        head.children.append(
+            Element(
+                "link",
+                [
+                    ("rel", "alternate"),
+                    ("type", "text/markdown"),
+                    ("href", canonical(md_path, lang)),
+                ],
+            )
+        )
     if not any(n.tag == "meta" and n.attrs.get("name") == "description" for n in nodes):
         head.children.append(
             Element("meta", [("name", "description"), ("content", copy["description"])])

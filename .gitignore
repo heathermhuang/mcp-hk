@@ -150,3 +150,4 @@ src/mcp_open_data_hk/web/robots.txt
 src/mcp_open_data_hk/web/sitemap.xml
 src/mcp_open_data_hk/web/llms.txt
 deploy/cloudflare/discovery-routes.json
+deploy/cloudflare/agent-routes.json

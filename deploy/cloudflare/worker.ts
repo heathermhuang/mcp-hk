@@ -1,5 +1,5 @@
 import { Container } from '@cloudflare/containers';
-import {discoveryTarget} from './discovery';
+import {discoveryTarget,discoveryLinks} from './discovery';
 import { scheduledPack } from './cron';
 import {maintenanceResponse, maintenanceRuntimeReady, scheduledMaintenance, maintenancePackForRequest, EXPECTED_REVIEW_POLICY} from './maintenance';
 import {probePublicSource} from './source-probe';
@@ -239,7 +239,7 @@ export default {
     if (url.pathname === '/api/v1/limits') return Response.json({...LIMITS,window:'UTC fixed minute/day',dailyBudgets:'shared across all clients',mcpBatch:'one JSON-RPC operation per request'},{headers:{'Cache-Control':'public, max-age=300'}});
     if (url.pathname === '/assets/site-config.json') return Response.json({googleAnalyticsId:/^G-[A-Z0-9]{4,20}$/.test(env.GA_MEASUREMENT_ID) ? env.GA_MEASUREMENT_ID : ''},{headers:{'Cache-Control':'no-store'}});
     if (url.pathname === '/assets/overview.json') return serveOverview(env, request);
-    const discovery = discoveryTarget(url);
+    const discovery = discoveryTarget(url,request.headers.get('Accept') || '');
     if (discovery.redirect) return Response.redirect(url.origin + discovery.redirect, 308);
     if (discovery.asset || url.pathname.startsWith('/assets/')) {
       const rawAsset = url.pathname.startsWith('/assets/');
@@ -248,8 +248,17 @@ export default {
       url.search = '';
       const response = await env.ASSETS.fetch(new Request(url, request));
       const secured = new Response(response.body, response);
+      if (discovery.contentType) secured.headers.set('Content-Type',discovery.contentType+'; charset=utf-8');
+      if (discovery.asset) {
+        secured.headers.set('Link',discoveryLinks);
+        secured.headers.set('Access-Control-Allow-Origin','*');
+      }
+      if (discovery.page) {
+        const vary=secured.headers.get('Vary');
+        secured.headers.set('Vary',vary ? vary+', Accept' : 'Accept');
+        secured.headers.set('Content-Language',discovery.language || 'en');
+      }
       if (discovery.noindex || (rawAsset && /\.(html|json)$/.test(url.pathname))) secured.headers.set('X-Robots-Tag', 'noindex, follow');
-      if (discovery.asset?.endsWith('.html')) secured.headers.set('Content-Language', url.pathname.includes('/zh-Hant/') ? 'zh-Hant' : 'en');
       secured.headers.set('Content-Security-Policy', "default-src 'self'; script-src 'self' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com; img-src 'self' data: https://www.google-analytics.com; frame-ancestors 'none'; base-uri 'none'");
       secured.headers.set('X-Content-Type-Options', 'nosniff');
       secured.headers.set('Referrer-Policy', 'no-referrer');

@@ -93,4 +93,8 @@ source citations and freshness in English and Traditional Chinese. See the
 [search and AI discovery contract](docs/search-and-ai-discovery.md) for canonical
 pages, the sitemap, crawler checks and owner indexing/citation measurement.
 
+Agents can discover the existing MCP and HTTP services through well-known
+catalogues, request Markdown representations and use read-only browser tools.
+See [agent discovery contracts and validation](docs/agent-readiness.md).
+
 The detailed expansion plan and acceptance criteria are in [the engineering plan](docs/plans/government-expansion.md). Inventory discovery is not full government data onboarding; consult live coverage for validation, failures and remaining work.
