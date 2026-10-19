@@ -115,12 +115,12 @@ export class AgentAuthService {
     const signature=await crypto.subtle.sign({name:'ECDSA',hash:'SHA-256'},this.privateKey,encoder.encode(signing));
     this.put(typ,payload.jti,{registration:reg.id},payload.exp);return signing+'.'+base64(new Uint8Array(signature));
   }
-  private async verify(token: string,typ: string,aud: string): Promise<{reg: Registration; jti: string}> {
+  private async verify(token: string,typ: string,aud: string|string[]): Promise<{reg: Registration; jti: string}> {
     let claims: {sub:string;jti:string;version:unknown};
     try {
       if(token.length>4096)throw new Error();const parts=token.split('.');if(parts.length!==3)throw new Error();
       const h=JSON.parse(new TextDecoder().decode(decode(parts[0]))),p=JSON.parse(new TextDecoder().decode(decode(parts[1])));
-      if(h.alg!=='ES256'||h.typ!==typ||h.kid!==this.kid||p.iss!==this.origin||p.aud!==aud||typeof p.exp!=='number'||p.exp<=this.now()||typeof p.iat!=='number'||p.iat>this.now()+30||p.scope!==READ_SCOPE||typeof p.sub!=='string'||typeof p.jti!=='string')throw new Error();
+      if(h.alg!=='ES256'||h.typ!==typ||h.kid!==this.kid||p.iss!==this.origin||!(Array.isArray(aud)?aud.includes(p.aud):p.aud===aud)||typeof p.exp!=='number'||p.exp<=this.now()||typeof p.iat!=='number'||p.iat>this.now()+30||p.scope!==READ_SCOPE||typeof p.sub!=='string'||typeof p.jti!=='string')throw new Error();
       if(!await crypto.subtle.verify({name:'ECDSA',hash:'SHA-256'},this.publicKey,decode(parts[2]),encoder.encode(parts[0]+'.'+parts[1])))throw new Error();
       claims={sub:p.sub,jti:p.jti,version:p.v};
     } catch {throw new AuthError('invalid_grant');}
@@ -132,9 +132,9 @@ export class AgentAuthService {
     const ttl=Math.min(86400,reg.expires-this.now());if(ttl<=0)throw new AuthError('invalid_grant');
     return {identity_assertion:await this.sign(reg,'oauth-id-jag+jwt',this.origin,ttl),assertion_expires:new Date((this.now()+ttl)*1000).toISOString()};
   }
-  private async access(reg: Registration): Promise<RecordValue> {
+  private async access(reg: Registration,resource=this.origin): Promise<RecordValue> {
     const ttl=Math.min(900,reg.expires-this.now());if(ttl<=0)throw new AuthError('invalid_grant');
-    const token=await this.sign(reg,'at+jwt',this.origin+'/agent/data',ttl);
+    const token=await this.sign(reg,'at+jwt',resource,ttl);
     // Signing awaits crypto; recheck durable revocation/version after it completes.
     const current=this.registration(reg.id);if(current.version!==reg.version)throw new AuthError('invalid_grant');
     this.audit('token.issued',reg.id);return {access_token:token,token_type:'Bearer',expires_in:ttl,scope:READ_SCOPE};
@@ -247,21 +247,22 @@ export class AgentAuthService {
     return new Response(null,{status:303,headers:{...commonHeaders,Location:target.href}});
   }
   private async token(data: RecordValue): Promise<Response> {
-    if(data.resource!==undefined&&data.resource!==this.origin+'/agent/data')throw new AuthError('invalid_target');scope(data.scope);
+    const resource=data.resource===undefined?this.origin:field(data.resource);
+    if(![this.origin,this.origin+'/agent/data'].includes(resource))throw new AuthError('invalid_target');scope(data.scope);
     if(data.grant_type===JWT_GRANT) {
-      const {reg}=await this.verify(field(data.assertion),'oauth-id-jag+jwt',this.origin);return json(await this.access(reg));
+      const {reg}=await this.verify(field(data.assertion),'oauth-id-jag+jwt',this.origin);return json(await this.access(reg,resource));
     }
     if(data.grant_type===CLAIM_GRANT) {
       const key=await digest(field(data.claim_token,100)),c=this.get<Claim>('claim',key);if(!c||c.consumed)throw new AuthError('expired_token');
       if(c.poll&&this.now()-c.poll<5)throw new AuthError('slow_down');c.poll=this.now();this.put('claim',key,c,c.expires);
       const reg=this.registration(c.registration);if(!reg.owner)throw new AuthError('authorization_pending');
-      c.consumed=true;this.put('claim',key,c,c.expires);return json({...await this.access(reg),...await this.assertion(reg)});
+      c.consumed=true;this.put('claim',key,c,c.expires);return json({...await this.access(reg,resource),...await this.assertion(reg)});
     }
     if(data.grant_type==='authorization_code') {
       const key=await digest(field(data.code,100)),code=this.get<Code>('code',key),verifier=field(data.code_verifier,128);
       if(!/^[A-Za-z0-9._~-]{43,128}$/.test(verifier)||!code||code.client!==data.client_id||code.redirect!==data.redirect_uri||code.challenge!==await digest(verifier))throw new AuthError('invalid_grant');
       // Crypto above can yield. Atomically consume the exact stored code afterwards.
-      if(!this.get('code',key))throw new AuthError('invalid_grant');this.remove('code',key);return json(await this.access(this.registration(code.registration)));
+      if(!this.get('code',key))throw new AuthError('invalid_grant');this.remove('code',key);return json(await this.access(this.registration(code.registration),resource));
     }
     throw new AuthError('unsupported_grant_type');
   }
@@ -271,13 +272,13 @@ export class AgentAuthService {
       this.cleanup();
       if(request.method==='OPTIONS')return new Response(null,{status:204,headers:{...commonHeaders,'Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'GET, HEAD, POST, OPTIONS','Access-Control-Allow-Headers':'Authorization, Content-Type'}});
       if(path==='/.well-known/oauth-authorization-server'&&['GET','HEAD'].includes(request.method))return json({issuer:this.origin,authorization_endpoint:this.origin+'/oauth2/authorize',token_endpoint:this.origin+'/oauth2/token',jwks_uri:this.origin+'/oauth2/jwks',registration_endpoint:this.origin+'/oauth2/register',revocation_endpoint:this.origin+'/oauth2/revoke',response_types_supported:['code'],grant_types_supported:[JWT_GRANT,CLAIM_GRANT,'authorization_code'],token_endpoint_auth_methods_supported:['none'],code_challenge_methods_supported:['S256'],scopes_supported:[READ_SCOPE],agent_auth:{skill:this.origin+'/auth.md',register_uri:this.origin+'/agent/identity',identity_endpoint:this.origin+'/agent/identity',claim_uri:this.origin+'/agent/identity/claim',claim_endpoint:this.origin+'/agent/identity/claim',identity_types_supported:['anonymous'],anonymous:{credential_types_supported:['identity_assertion']}}});
-      if((path==='/.well-known/oauth-protected-resource'||path==='/.well-known/oauth-protected-resource/agent/data')&&['GET','HEAD'].includes(request.method))return json({resource:this.origin+'/agent/data',resource_name:'mcp.hk optional authenticated public-data reads',authorization_servers:[this.origin],scopes_supported:[READ_SCOPE],bearer_methods_supported:['header'],resource_documentation:this.origin+'/auth.md'});
+      if((path==='/.well-known/oauth-protected-resource'||path==='/.well-known/oauth-protected-resource/agent/data')&&['GET','HEAD'].includes(request.method))return json({resource:path==='/.well-known/oauth-protected-resource'?this.origin:this.origin+'/agent/data',resource_name:'mcp.hk optional authenticated public-data reads',authorization_servers:[this.origin],scopes_supported:[READ_SCOPE],bearer_methods_supported:['header'],resource_documentation:this.origin+'/auth.md'});
       if(path==='/oauth2/jwks'&&['GET','HEAD'].includes(request.method))return json({keys:[{...this.jwk,kid:this.kid,alg:'ES256',use:'sig',key_ops:['verify']}]});
       this.limit('request:'+request.headers.get('x-auth-client-key'),60,60);this.limit('requests-global',10000,86400);
       if(path.startsWith('/agent/data')) {
         if(!['GET','HEAD'].includes(request.method))throw new AuthError('method_not_allowed',405);
         if(path!=='/agent/data'&&!protectedDataPath(path))throw new AuthError('not_found',404);
-        try {const {reg}=await this.verify(field(request.headers.get('Authorization')?.replace(/^Bearer /,'')),'at+jwt',this.origin+'/agent/data');return json({registration_id:reg.id,scope:READ_SCOPE,interfaces:['/agent/data/packs','/agent/data/catalogue/datasets','/agent/data/status']});}
+        try {const {reg}=await this.verify(field(request.headers.get('Authorization')?.replace(/^Bearer /,'')),'at+jwt',[this.origin,this.origin+'/agent/data']);return json({registration_id:reg.id,scope:READ_SCOPE,interfaces:['/agent/data/packs','/agent/data/catalogue/datasets','/agent/data/status']});}
         catch(error) {if(!(error instanceof AuthError))throw error;return json({error:'invalid_token'},401,{'WWW-Authenticate':`Bearer resource_metadata="${this.origin}/.well-known/oauth-protected-resource", error="invalid_token"`});}
       }
       if(path==='/agent/account')return await this.browserAccount(request);
@@ -301,7 +302,8 @@ export class AgentAuthService {
         this.put('client',id,{redirects,name},this.now()+30*86400);return json({client_id:id,client_id_issued_at:this.now(),client_name:name,redirect_uris:redirects,token_endpoint_auth_method:'none',grant_types:['authorization_code'],response_types:['code']},201);
       }
       if(path==='/oauth2/revoke') {
-        const token=field(data.token);for(const [typ,aud] of [['at+jwt',this.origin+'/agent/data'],['oauth-id-jag+jwt',this.origin]]) {
+        const token=field(data.token);for(const typ of ['at+jwt','oauth-id-jag+jwt']) {
+          const aud=typ==='at+jwt'?[this.origin,this.origin+'/agent/data']:this.origin;
           try{const {reg,jti}=await this.verify(token,typ,aud);if(typ==='at+jwt'){this.remove(typ,jti);this.audit('token.revoked',reg.id);}else this.revokeRegistration(reg);break;}catch(error){if(!(error instanceof AuthError))throw error;/* RFC 7009: unknown/expired tokens still return 200. */}
         }return json({});
       }

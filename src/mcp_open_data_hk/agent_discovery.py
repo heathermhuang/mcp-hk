@@ -238,6 +238,10 @@ or OAuth scope is needed for those interfaces. Existing quotas still apply.
 The managed https://mcp.hk service also offers optional read-only agent accounts.
 This hosted edge feature is separate from self-hosted Python/stdio installations.
 Discovery: https://mcp.hk/.well-known/oauth-protected-resource
+Root resource identifier: https://mcp.hk. The path-specific metadata at
+https://mcp.hk/.well-known/oauth-protected-resource/agent/data identifies
+https://mcp.hk/agent/data. Both identify the same finite read-only interfaces;
+the token endpoint honors either exact resource indicator and binds aud to it.
 Authorization server: https://mcp.hk/.well-known/oauth-authorization-server
 Registration endpoint: POST https://mcp.hk/agent/identity
 Supported method: anonymous registration only. Send application/json:

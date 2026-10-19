@@ -81,7 +81,8 @@ test('PKCE consent requires a signed-in owner, exact redirect and CSRF; codes ar
 test('metadata only advertises implemented flows, body/scope bounds and durable registration caps',async()=>{
   const f=await fixture(),metadata=await (await f.req('/.well-known/oauth-authorization-server')).json();
   assert.deepEqual(metadata.agent_auth.identity_types_supported,['anonymous']);assert.equal(metadata.issuer,'https://mcp.hk');assert.equal(metadata.agent_auth.register_uri,'https://mcp.hk/agent/identity');
-  const resource=await (await f.req('/.well-known/oauth-protected-resource')).json();assert.equal(resource.resource,'https://mcp.hk/agent/data');assert.deepEqual(resource.scopes_supported,['data.read']);
+  const resource=await (await f.req('/.well-known/oauth-protected-resource')).json();assert.equal(resource.resource,'https://mcp.hk');assert.deepEqual(resource.scopes_supported,['data.read']);
+  const pathResource=await (await f.req('/.well-known/oauth-protected-resource/agent/data')).json();assert.equal(pathResource.resource,'https://mcp.hk/agent/data');
   const unauthorized=await f.req('/agent/data');assert.match(unauthorized.headers.get('WWW-Authenticate'),/resource_metadata/);
   assert.equal((await f.req('/agent/identity',{type:'identity_assertion'})).status,400);
   assert.equal((await f.req('/agent/identity',{type:'anonymous',scope:'admin'})).status,400);
@@ -90,6 +91,16 @@ test('metadata only advertises implemented flows, body/scope bounds and durable 
   f.advance(3600);assert.equal((await f.req('/agent/identity',{type:'anonymous'})).status,201);
   assert.equal(protectedDataPath('/agent/data/__ops/snapshot'),undefined);assert.equal(protectedDataPath('/agent/data/packs'),'/api/v1/packs');assert.equal(isAgentAuthPath('/__ops/status'),false);
   assert.equal((await f.req('/agent/data/__ops/status')).status,404);assert.equal((await f.req('/agent/data',{})).status,405);
+});
+test('root and path discovery issue usable audience-bound read tokens; unrelated audiences stay rejected',async()=>{
+  const f=await fixture(),reg=await f.register();
+  for(const path of ['/.well-known/oauth-protected-resource','/.well-known/oauth-protected-resource/agent/data']){
+    const metadata=await (await f.req(path)).json();const response=await f.form('/oauth2/token',{grant_type:JWT_GRANT,assertion:reg.identity_assertion,resource:metadata.resource});assert.equal(response.status,200);
+    const token=(await response.json()).access_token;assert.equal(JSON.parse(Buffer.from(token.split('.')[1],'base64url')).aud,metadata.resource);
+    assert.equal((await f.req('/agent/data',undefined,{Authorization:'Bearer '+token})).status,200);
+    await f.form('/oauth2/revoke',{token});assert.equal((await f.req('/agent/data',undefined,{Authorization:'Bearer '+token})).status,401);
+  }
+  assert.equal((await f.form('/oauth2/token',{grant_type:JWT_GRANT,assertion:reg.identity_assertion,resource:'https://mcp.hk/__ops'})).status,400);
 });
 test('owner recovery and logout authenticate without collecting a user identity',async()=>{
   const f=await fixture(),owner=await f.owner();

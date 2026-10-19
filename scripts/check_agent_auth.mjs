@@ -22,7 +22,7 @@ const exchange=async assertion=>(await call('/oauth2/token',{form:{grant_type:gr
 try {
   const metadata=(await call('/.well-known/oauth-authorization-server')).json;
   assert.equal(metadata.issuer,origin);assert.deepEqual(metadata.agent_auth.identity_types_supported,['anonymous']);
-  const resource=(await call('/.well-known/oauth-protected-resource')).json;assert.equal(resource.resource,origin+'/agent/data');
+  const resource=(await call('/.well-known/oauth-protected-resource')).json;assert.equal(resource.resource,origin);
   const jwks=(await call('/oauth2/jwks')).json;assert.equal(jwks.keys[0].d,undefined);
   await call('/agent/data',{expected:401});
   const registration=(await call('/agent/identity',{data:{type:'anonymous',scopes:['data.read'],name:'Synthetic release verification'},expected:201})).json;
@@ -31,6 +31,9 @@ try {
   assert.equal(await crypto.subtle.verify({name:'ECDSA',hash:'SHA-256'},key,Buffer.from(s,'base64url'),Buffer.from(h+'.'+p)),true);
   assert.equal(JSON.parse(Buffer.from(p,'base64url')).aud,origin+'/agent/data');
   await call('/agent/data',{headers:bearer(tokens.access_token)});
+  const rootToken=(await call('/oauth2/token',{form:{grant_type:grant,assertion:registration.identity_assertion,resource:resource.resource}})).json;
+  assert.equal(JSON.parse(Buffer.from(rootToken.access_token.split('.')[1],'base64url')).aud,resource.resource);
+  await call('/agent/data',{headers:bearer(rootToken.access_token)});await call('/oauth2/revoke',{form:{token:rootToken.access_token}});
   if(values['public-data']) {
     const packs=await call('/agent/data/packs',{headers:bearer(tokens.access_token)});assert.ok(packs.json&&packs.text.length>100);
     const catalogue=await call('/agent/data/catalogue/datasets?q=public%20holidays&limit=2&access=all',{headers:bearer(tokens.access_token)});assert.ok(catalogue.json&&catalogue.text.includes('data'));
