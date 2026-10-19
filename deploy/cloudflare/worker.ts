@@ -1,6 +1,6 @@
 import { Container } from '@cloudflare/containers';
 import { DurableObject } from 'cloudflare:workers';
-import {AgentAuthService,isAgentAuthPath,protectedDataPath} from './agent-auth';
+import {AgentAuthService,isAgentAuthPath,protectedDataPath,dataRequestHeaders} from './agent-auth';
 import {discoveryTarget,discoveryLinks} from './discovery';
 import { scheduledPack } from './cron';
 import {maintenanceResponse, maintenanceRuntimeReady, scheduledMaintenance, maintenancePackForRequest, EXPECTED_REVIEW_POLICY} from './maintenance';
@@ -228,9 +228,7 @@ export default {
       if(!target||!response.ok){const result=new Response(response.body,response);result.headers.set('X-Mcp-Release',env.RELEASE_COMMIT);return result;}
       // Auth is checked durably on every request. Keep existing IP/shared data budgets.
       await response.body?.cancel();url.pathname=target;
-      headers.delete('Authorization');headers.delete('Cookie');headers.delete('x-auth-client-key');
-      headers.set('x-mcp-client-ip',request.headers.get('cf-connecting-ip')||'unknown');
-      const result=await env.APP.get(env.APP.idFromName('production')).fetch(new Request(url,{method:request.method,headers,redirect:'manual'}));
+      const result=await env.APP.get(env.APP.idFromName('production')).fetch(new Request(url,{method:request.method,headers:dataRequestHeaders(request),redirect:'manual'}));
       return normalizeBackendResponse(result,env.RELEASE_COMMIT);
     }
     if (url.pathname.startsWith('/__ops/')) {
@@ -309,8 +307,7 @@ export default {
       const manifest = await env.BACKUPS.get('latest.json');
       return Response.json({backup: manifest ? await manifest.json() : null, maintenance: await env.APP.get(env.APP.idFromName('production')).operationsStatus(), schedules: {catalogue: 'Sunday 12:00 Asia/Hong_Kong', resources: 'every five minutes at minutes 2,7,...57; up to 256 reviews, 90 seconds, six concurrent/two per host, 50000 review attempts/day', restaurants: 'daily 10:00 Asia/Hong_Kong', population: 'Sunday 11:00 Asia/Hong_Kong', backup: 'daily 09:00 Asia/Hong_Kong'}, retentionDays: 30});
     }
-    const headers = new Headers(request.headers);
-    headers.set('x-mcp-client-ip', request.headers.get('cf-connecting-ip') || 'unknown');
+    const headers = dataRequestHeaders(request);
     try {
       const response = await env.APP.get(env.APP.idFromName('production')).fetch(new Request(request, {headers}));
       return normalizeBackendResponse(response, env.RELEASE_COMMIT);

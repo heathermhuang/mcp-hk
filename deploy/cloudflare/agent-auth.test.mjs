@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {DatabaseSync} from 'node:sqlite';
 import {test} from 'node:test';
-import {AgentAuthService,digest,JWT_GRANT,CLAIM_GRANT,protectedDataPath,isAgentAuthPath} from './agent-auth.ts';
+import {AgentAuthService,digest,JWT_GRANT,CLAIM_GRANT,protectedDataPath,isAgentAuthPath,dataRequestHeaders} from './agent-auth.ts';
 
 async function fixture(){
   const db=new DatabaseSync(':memory:');let now=Date.UTC(2026,9,19,12);
@@ -123,4 +123,9 @@ test('a failed revocation write reports failure without exposing storage errors 
   const failed=await f.form('/oauth2/revoke',{token:t.access_token});assert.equal(failed.status,503);assert.equal((await failed.json()).error,'temporarily_unavailable');
   f.sql.exec=original;assert.equal((await f.req('/agent/data',undefined,{Authorization:'Bearer '+t.access_token})).status,200);
   await f.form('/oauth2/revoke',{token:t.access_token});assert.equal((await f.req('/agent/data',undefined,{Authorization:'Bearer '+t.access_token})).status,401);
+});
+test('both public and protected data forwarding omit credentials and retain the actual caller quota identity',()=>{
+  const headers=dataRequestHeaders(new Request('https://mcp.hk/api/v1/packs',{headers:{Authorization:'Bearer private-token',Cookie:'__Host-mcp_owner=private-session','x-auth-client-key':'forged-auth-key','x-mcp-client-ip':'forged-ip','cf-connecting-ip':'203.0.113.8',Accept:'application/json','Mcp-Session-Id':'public-mcp-session'}}));
+  for(const name of ['Authorization','Cookie','x-auth-client-key'])assert.equal(headers.has(name),false);
+  assert.equal(headers.get('x-mcp-client-ip'),'203.0.113.8');assert.equal(headers.get('Mcp-Session-Id'),'public-mcp-session');assert.equal(headers.get('Accept'),'application/json');
 });
