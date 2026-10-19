@@ -11,7 +11,7 @@ from typing import Annotated, Literal
 from fastapi import FastAPI, Query, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
+from fastapi.responses import JSONResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from . import server as catalogue
@@ -292,34 +292,66 @@ def create_app(service=None):
     register_operations(app, service)
     web = Path(__file__).parent / "web"
     if web.exists():
+        from . import discovery
+        from .agent_discovery import (
+            LINKS,
+            agent_documents,
+            markdown_document,
+            markdown_path,
+            prefers_markdown,
+        )
         from .discovery import INDEX, locale, public_paths, render_page, text_response
 
+        documents = agent_documents(discovery)
+        markdown_pages = {
+            markdown_path(path): path
+            for path in public_paths()
+            if not discovery.content()["pages"][path].get("noindex")
+        }
+
         def public_page(request: Request):
-            path = request.url.path
+            alias = request.url.path in markdown_pages
+            path = markdown_pages.get(request.url.path, request.url.path)
             lang = locale(request.query_params.get("lang"))
             filtered = path == "/coverage" and any(
                 key != "lang" and not key.startswith("utm_")
                 for key in request.query_params
             )
-            noindex = filtered or path in {"/terms", "/privacy"}
-            return HTMLResponse(
-                render_page(path, lang, filtered),
+            noindex = alias or filtered or path in {"/terms", "/privacy"}
+            markdown = path not in {"/terms", "/privacy"} and (
+                alias or prefers_markdown(request.headers.get("accept", ""))
+            )
+            return Response(
+                (
+                    markdown_document(discovery, path, lang, filtered)
+                    if markdown
+                    else render_page(path, lang, filtered)
+                ),
+                media_type="text/markdown" if markdown else "text/html",
                 headers={
                     "Content-Language": lang,
                     "X-Robots-Tag": "noindex, follow" if noindex else INDEX,
+                    "Vary": "Accept",
+                    "Link": LINKS,
                 },
             )
 
-        for path in public_paths():
+        for path in public_paths() + list(markdown_pages):
             app.add_api_route(
                 path, public_page, methods=["GET", "HEAD"], include_in_schema=False
             )
 
         def discovery_file(request: Request):
-            body, media_type = text_response(request.url.path)
-            return Response(body, media_type=media_type)
+            body, media_type = documents.get(request.url.path) or text_response(
+                request.url.path
+            )
+            return Response(
+                body,
+                media_type=media_type,
+                headers={"Link": LINKS, "Access-Control-Allow-Origin": "*"},
+            )
 
-        for path in ("/robots.txt", "/sitemap.xml", "/llms.txt"):
+        for path in ["/robots.txt", "/sitemap.xml", "/llms.txt", *documents]:
             app.add_api_route(
                 path, discovery_file, methods=["GET", "HEAD"], include_in_schema=False
             )
