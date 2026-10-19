@@ -31,6 +31,9 @@ Hosted service: **https://mcp.hk** · [Browse data](https://mcp.hk/coverage) · 
 
 Remote MCP: `https://mcp.hk/mcp` (Streamable HTTP, public read-only, no server API key).
 See [client connection examples](docs/connect.md) and [production recovery/schedules](docs/production.md).
+Optional hosted agent registration, read-only credentials and owner-controlled revocation
+are documented in [auth.md](https://mcp.hk/auth.md) and [the auth runbook](docs/agent-auth.md).
+Anonymous public MCP/API access remains available.
 Importing data locally does not modify the hosted service.
 No model key or Cloudflare account is required. Runtime databases/captures are not
 bundled or relicensed as MIT data.
