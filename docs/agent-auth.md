@@ -11,7 +11,10 @@ The standalone Python/stdio server does not run an authorization server; its
 ## Agent journey
 
 1. Read `/.well-known/oauth-protected-resource` and the advertised authorization
-   server metadata. The resource identifier is `https://mcp.hk/agent/data`.
+   server metadata. Root metadata identifies `https://mcp.hk`; path-specific
+   `/.well-known/oauth-protected-resource/agent/data` identifies
+   `https://mcp.hk/agent/data`. Both describe the same finite read-only mirrors.
+   Request the exact advertised resource; tokens bind their audience to it.
 2. POST JSON `{"type":"anonymous","scopes":["data.read"]}` to `/agent/identity`.
    Save the returned identity assertion and claim token privately. The assertion
    is signed with ES256 and the key published at `/oauth2/jwks`.
