@@ -4,7 +4,13 @@
   let stored;
   try { stored = localStorage.getItem('mhk-language'); } catch { /* URL locale works without storage. */ }
   const serverRendered = document.documentElement.dataset?.discovery === 'true';
-  let lang = normalize(new URL(location.href).searchParams.get('lang')) || (serverRendered ? normalize(document.documentElement.lang) : normalize(stored)) || 'en';
+  const requested = normalize(new URL(location.href).searchParams.get('lang'));
+  const preferred = normalize(stored);
+  let lang = requested || (serverRendered ? normalize(document.documentElement.lang) : preferred) || 'en';
+  if (serverRendered && !requested && preferred && preferred !== lang) {
+    const url = new URL(location.href); url.searchParams.set('lang', preferred === 'en' ? 'en' : 'zh-Hant');
+    location.replace(url.pathname + url.search + url.hash); return;
+  }
   const t = (key, values = {}) => {
     const text = translations[lang][key] ?? translations.en[key] ?? key;
     return text.replace(/\{(\w+)\}/g, (match, name) => values[name] ?? match);
