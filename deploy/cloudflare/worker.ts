@@ -1,4 +1,6 @@
 import { Container } from '@cloudflare/containers';
+import { DurableObject } from 'cloudflare:workers';
+import {AgentAuthService,isAgentAuthPath,protectedDataPath} from './agent-auth';
 import {discoveryTarget,discoveryLinks} from './discovery';
 import { scheduledPack } from './cron';
 import {maintenanceResponse, maintenanceRuntimeReady, scheduledMaintenance, maintenancePackForRequest, EXPECTED_REVIEW_POLICY} from './maintenance';
@@ -36,6 +38,24 @@ async function boundedBody(request: Request | Response, limit: number): Promise<
   const result = new Uint8Array(length); let offset = 0;
   for (const p of parts) { result.set(p, offset); offset += p.length; }
   return result;
+}
+
+export class AgentAuth extends DurableObject<Env> {
+  private service: AgentAuthService;
+  constructor(ctx: DurableObjectState, env: Env) {
+    super(ctx,env);
+    this.service=new AgentAuthService(ctx.storage.sql,env.PUBLIC_ORIGIN);
+    ctx.blockConcurrencyWhile(()=>this.service.init());
+  }
+  async fetch(request: Request): Promise<Response> {
+    if(!await this.ctx.storage.getAlarm())await this.ctx.storage.setAlarm(Date.now()+3600000);
+    return this.service.handle(request);
+  }
+  async alarm(): Promise<void> {
+    this.service.cleanup();
+    if(this.service.hasExpiringRecords())await this.ctx.storage.setAlarm(Date.now()+3600000);
+  }
+  async revokeAll(): Promise<void> {this.service.revokeAll();}
 }
 
 export class McpContainer extends Container<Env> {
@@ -196,10 +216,29 @@ export class McpContainer extends Container<Env> {
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
+    if(isAgentAuthPath(url.pathname)&&url.origin!==env.PUBLIC_ORIGIN)return new Response('Use the canonical mcp.hk origin',{status:400,headers:{'Cache-Control':'no-store'}});
     if (url.protocol !== 'https:' && !['localhost', '127.0.0.1'].includes(url.hostname)) return Response.redirect(`https://${url.host}${url.pathname}${url.search}`, 308);
     if (url.hostname === 'www.mcp.hk') return Response.redirect(`https://mcp.hk${url.pathname}${url.search}`, 308);
+    if (isAgentAuthPath(url.pathname)) {
+      // Credentials/cookies belong only to the canonical host. Never redirect POST secrets.
+      const headers=new Headers(request.headers);
+      headers.set('x-auth-client-key',await clientKey(request.headers.get('cf-connecting-ip')||'unknown',env.OPS_TOKEN));
+      const response=await env.AGENT_AUTH.get(env.AGENT_AUTH.idFromName('production')).fetch(new Request(request,{headers}));
+      const target=protectedDataPath(url.pathname);
+      if(!target||!response.ok){const result=new Response(response.body,response);result.headers.set('X-Mcp-Release',env.RELEASE_COMMIT);return result;}
+      // Auth is checked durably on every request. Keep existing IP/shared data budgets.
+      await response.body?.cancel();url.pathname=target;
+      headers.delete('Authorization');headers.delete('Cookie');headers.delete('x-auth-client-key');
+      headers.set('x-mcp-client-ip',request.headers.get('cf-connecting-ip')||'unknown');
+      const result=await env.APP.get(env.APP.idFromName('production')).fetch(new Request(url,{method:request.method,headers,redirect:'manual'}));
+      return normalizeBackendResponse(result,env.RELEASE_COMMIT);
+    }
     if (url.pathname.startsWith('/__ops/')) {
       if (!(await authorized(request, env.OPS_TOKEN))) return new Response('Not found', {status: 404});
+      if(url.pathname==='/__ops/agent-auth/revoke-all'&&request.method==='POST') {
+        await env.AGENT_AUTH.get(env.AGENT_AUTH.idFromName('production')).revokeAll();
+        return Response.json({revoked:true},{headers:{'Cache-Control':'no-store'}});
+      }
       if (url.pathname === '/__ops/source-relay') return relayApprovedSource(request);
       if (url.pathname === '/__ops/source-probe' && request.method === 'GET') {
         const response=await probePublicSource(url.searchParams.get('source') || 'xpms');

@@ -115,7 +115,7 @@ def text_response(path):
         return (
             "User-agent: *\nContent-Signal: search=yes, ai-input=yes, ai-train=no\nDisallow: /__ops/\n"
             "Disallow: /api/\nDisallow: /mcp\nDisallow: /healthz\nDisallow: /readyz\n"
-            "Disallow: /assets/discovery/\nDisallow: /*?*q=\n"
+            "Disallow: /assets/discovery/\nDisallow: /agent/\nDisallow: /oauth2/\nDisallow: /*?*q=\n"
             f"\nSitemap: {ORIGIN}/sitemap.xml\nAgentmap: {ORIGIN}/.well-known/ai-catalog.json\n",
             "text/plain",
         )

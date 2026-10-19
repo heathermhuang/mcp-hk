@@ -216,3 +216,12 @@ the missing bounded review work and test a fresh accepted snapshot's checksum,
 SQLite integrity, accepted packs and source registry in isolation.
 
 Reference: https://developers.cloudflare.com/workers/configuration/cron-triggers/
+
+## Optional agent authorization state
+
+The `AgentAuth` SQLite Durable Object, bound as `AGENT_AUTH`, is separate from the
+data container and R2 backups. Its durable signing key and revocation/claim state
+survive Worker changes. Deploy migration `v2-agent-auth` once; retain that migration
+and namespace in later rollouts. Anonymous public reads remain available if the
+optional auth service is unavailable. See [agent-auth.md](agent-auth.md) for
+credential lifetimes, private bulk revocation, recovery caveats and smoke checks.

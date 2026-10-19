@@ -1,8 +1,9 @@
 # Agent discovery and content delivery
 
 mcp.hk is a public, read-only MCP/HTTP data service. Discovery documents describe
-interfaces that actually work. OAuth, A2A, personal-agent identity and payment
-protocols are not offered and must not be fabricated for a scanner score.
+interfaces that actually work. Optional hosted anonymous-start registration, OAuth
+and revocable read-only credentials are described in [agent-auth.md](agent-auth.md).
+A2A, personal-agent identity and payment protocols are not offered.
 
 | Path | Contract |
 | --- | --- |
@@ -10,7 +11,7 @@ protocols are not offered and must not be fabricated for a scanner score.
 | `/.well-known/api-catalog` | RFC 9727 `application/linkset+json` with HTTP/OpenAPI and MCP description/documentation links |
 | `/.well-known/agent-skills/index.json` | Agent Skills Discovery 0.2.0 index with a real SKILL.md and SHA-256 digest |
 | `/.well-known/ai-catalog.json` | ARD draft catalogue for implemented MCP/HTTP services; stable identifiers and representative queries |
-| `/auth.md` | Anonymous public access instructions; no public registration, token or OAuth endpoint |
+| `/auth.md` | Anonymous public access plus optional hosted registration, claim, OAuth exchange and revocation instructions |
 | `/llms.txt`, `/llms-full.txt` | Compact navigation and expanded first-party documentation, not a copy of third-party source records |
 
 The MCP card is a draft interoperability document, not a claim that SEP-1649/2127
@@ -81,8 +82,9 @@ Content-Type: application/json
 ```
 
 Retain the raw result and check messages. A level measures scanner criteria, not
-indexing or AI citations. Auth/A2A/personal-agent findings remain explicit
-non-applicable capabilities for this public data service. Verify real browser tool
+indexing or AI citations. OAuth discovery, protected-resource metadata and anonymous-start registration are
+backed by real hosted handlers. A2A/personal-agent findings remain unsupported
+capabilities. Verify real browser tool
 invocations and MCP/HTTP requests, not just manifests. Follow `production.md` for
 cron pause, adoption, fresh checkpoint restore and schedule recovery.
 

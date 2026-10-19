@@ -1,4 +1,4 @@
-"""Public, read-only agent discovery. No new authentication or agent protocols."""
+"""Public discovery and instructions for optional hosted read-only credentials."""
 
 import hashlib
 import json
@@ -231,9 +231,66 @@ Client setup: https://mcp.hk/connect
 ## Agent audience and access
 Public data agents can use https://mcp.hk/mcp (Streamable HTTP) or the HTTP API.
 Authentication method: none. Account registration and credential provisioning:
-not required and not offered for public reads. There is no public registration,
-claim, token or OAuth endpoint to call. Do not invent a sign-up step or send an
-Authorization header. No API key, bearer token or OAuth scope is needed.
+not required for existing /mcp and /api/v1 public reads. No API key, bearer token
+or OAuth scope is needed for those interfaces. Existing quotas still apply.
+
+## Optional hosted agent registration (anonymous start)
+The managed https://mcp.hk service also offers optional read-only agent accounts.
+This hosted edge feature is separate from self-hosted Python/stdio installations.
+Discovery: https://mcp.hk/.well-known/oauth-protected-resource
+Authorization server: https://mcp.hk/.well-known/oauth-authorization-server
+Registration endpoint: POST https://mcp.hk/agent/identity
+Supported method: anonymous registration only. Send application/json:
+{"type":"anonymous","scopes":["data.read"]}
+The response contains registration_id, a service-signed identity_assertion and
+a private claim_token. Keep assertions, tokens, recovery keys and claim links
+out of prompts, logs, URLs shared with others and public support requests.
+
+Exchange the assertion at POST https://mcp.hk/oauth2/token using
+application/x-www-form-urlencoded with grant_type equal to
+urn:ietf:params:oauth:grant-type:jwt-bearer, assertion equal to the returned
+identity_assertion, and resource=https://mcp.hk/agent/data.
+The bearer access_token expires in at most 900 seconds. The assertion can be
+exchanged again until its expiry (at most 24 hours). No refresh token is issued.
+Only scope data.read is available; no writes, private data or operator access.
+
+Use Authorization: Bearer <access_token> with GET https://mcp.hk/agent/data/packs,
+/agent/data/catalogue/datasets or /agent/data/status. The same IP/shared quotas
+apply as for anonymous public reads; registration does not bypass a limit.
+
+## Claim, manage and revoke
+For a user-controlled registration, the user first creates or signs in to a
+recovery-key account at https://mcp.hk/agent/account. No email, name or provider
+identity assertion is needed. The user saves the recovery key privately and
+gives only the displayed owner account ID to their agent.
+POST https://mcp.hk/agent/identity/claim with claim_token and owner_id as JSON.
+Show the returned private verification_uri and six-digit user_code to that user.
+The user signs in and enters the code on the service-owned page. The agent polls
+the token endpoint every five seconds with grant_type equal to
+urn:workos:agent-auth:grant-type:claim and the claim_token. authorization_pending
+and slow_down are normal pending responses. Claims expire after ten minutes.
+On completion the agent receives a new identity_assertion and access_token;
+all earlier pre-claim credentials are invalidated. Read-only scope is unchanged.
+Claimed registrations last up to 30 days, bounded by their owner's account expiry;
+unclaimed registrations last up to one day. Owner accounts expire after 90 days.
+The signed-in user can revoke a claimed registration from the account page.
+
+POST https://mcp.hk/oauth2/revoke with form field token=<access_token> revokes
+that access token immediately. Revoking token=<identity_assertion> revokes the
+whole registration and all its access tokens. Unknown tokens return HTTP 200.
+Identity-provider assertions, email-verified provisioning and provider revocation
+events are not supported and are not advertised.
+
+## OAuth browser clients
+POST https://mcp.hk/oauth2/register with client_name, redirect_uris and
+token_endpoint_auth_method=none to register a public OAuth client. HTTPS exact
+redirect URIs are required (HTTP numeric loopback is allowed for local clients).
+Authorization-code requests use https://mcp.hk/oauth2/authorize and mandatory
+PKCE S256. The user signs in to the same recovery-key account and explicitly
+approves data.read. Exchange the single-use code with its original client_id,
+redirect_uri and code_verifier. Dynamic clients expire after 30 days.
+Terms: https://mcp.hk/terms. Privacy/retention: https://mcp.hk/privacy.
+Integration questions: https://github.com/heathermhuang/mcp-hk (do not post secrets).
 
 ## Public interfaces
 - MCP: https://mcp.hk/mcp

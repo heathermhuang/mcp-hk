@@ -30,9 +30,9 @@
     "max_instances": 1
   }],
   "durable_objects": {
-    "bindings": [{ "name": "APP", "class_name": "McpContainer" }]
+    "bindings": [{ "name": "APP", "class_name": "McpContainer" }, { "name": "AGENT_AUTH", "class_name": "AgentAuth" }]
   },
-  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["McpContainer"] }],
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["McpContainer"] }, { "tag": "v2-agent-auth", "new_sqlite_classes": ["AgentAuth"] }],
   "r2_buckets": [{ "binding": "BACKUPS", "bucket_name": "mcp-hk-backups" }],
   "triggers": { "crons": ["0 2 * * *", "0 3 * * SUN", "0 1 * * *", "0 4 * * SUN", "2-59/5 * * * *"] },
   "observability": { "enabled": true, "head_sampling_rate": 0.1, "logs": { "enabled": true, "invocation_logs": false } },
