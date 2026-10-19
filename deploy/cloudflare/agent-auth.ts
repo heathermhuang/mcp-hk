@@ -55,10 +55,10 @@ export function isAgentAuthPath(path: string): boolean {
 export function protectedDataPath(path: string): string | undefined {
   return ({'/agent/data/packs':'/api/v1/packs','/agent/data/catalogue/datasets':'/api/v1/catalogue/datasets','/agent/data/status':'/api/v1/status'} as Record<string,string>)[path];
 }
-export function dataRequestHeaders(request: Request): Headers {
+export function dataRequestHeaders(request: Request,clientIP=request.headers.get('cf-connecting-ip')||'unknown'): Headers {
   const headers=new Headers(request.headers);
   headers.delete('Authorization');headers.delete('Cookie');headers.delete('x-auth-client-key');
-  headers.set('x-mcp-client-ip',request.headers.get('cf-connecting-ip')||'unknown');
+  headers.set('x-mcp-client-ip',clientIP);
   return headers;
 }
 

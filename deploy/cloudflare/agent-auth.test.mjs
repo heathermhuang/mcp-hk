@@ -139,4 +139,6 @@ test('both public and protected data forwarding omit credentials and retain the 
   const headers=dataRequestHeaders(new Request('https://mcp.hk/api/v1/packs',{headers:{Authorization:'Bearer private-token',Cookie:'__Host-mcp_owner=private-session','x-auth-client-key':'forged-auth-key','x-mcp-client-ip':'forged-ip','cf-connecting-ip':'203.0.113.8',Accept:'application/json','Mcp-Session-Id':'public-mcp-session'}}));
   for(const name of ['Authorization','Cookie','x-auth-client-key'])assert.equal(headers.has(name),false);
   assert.equal(headers.get('x-mcp-client-ip'),'203.0.113.8');assert.equal(headers.get('Mcp-Session-Id'),'public-mcp-session');assert.equal(headers.get('Accept'),'application/json');
+  const controller=dataRequestHeaders(new Request('https://mcp.hk/api/v1/packs',{headers:{Cookie:'owner-secret',Authorization:'Bearer owner-secret','x-mcp-client-ip':'203.0.113.8'}}),'203.0.113.8');
+  assert.equal(controller.get('x-mcp-client-ip'),'203.0.113.8');assert.equal(controller.has('Cookie'),false);assert.equal(controller.has('Authorization'),false);
 });

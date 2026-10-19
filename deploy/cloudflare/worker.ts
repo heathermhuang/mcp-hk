@@ -112,7 +112,9 @@ export class McpContainer extends Container<Env> {
         this.ctx.waitUntil(metered.done); return metered.response;
       }
     }
-    const headers = new Headers(request.headers);
+    // Repeat the boundary at the data-controller hop, retaining only the identity
+    // already replaced by the trusted edge Worker for quota accounting.
+    const headers = dataRequestHeaders(request,request.headers.get('x-mcp-client-ip')||'unknown');
     headers.set('x-mcp-edge-token', this.env.OPS_TOKEN);
     const forwarded = new Request(request.url, {method: request.method, headers, body: body ?? request.body, redirect:'manual'});
     let response: Response;
@@ -205,7 +207,7 @@ export class McpContainer extends Container<Env> {
   }
 
   async operationDiagnostics() {
-    return {workerRelease: this.env.RELEASE_COMMIT || null, maintenancePolicy: EXPECTED_REVIEW_POLICY, idleTimeout: this.sleepAfter, leaseUntil: await this.ctx.storage.get<number>('maintenanceLease') || null,
+    return {workerRelease: this.env.RELEASE_COMMIT || null, credentialBoundary:'edge-and-controller-v1', maintenancePolicy: EXPECTED_REVIEW_POLICY, idleTimeout: this.sleepAfter, leaseUntil: await this.ctx.storage.get<number>('maintenanceLease') || null,
       seedLease: Boolean(await this.ctx.storage.get<string>('seedOwner')),
       now: Date.now(), maintenance: await this.operationsStatus()};
   }
