@@ -143,3 +143,10 @@ node_modules/
 deploy/cloudflare/.ops-secrets.json
 
 deploy/cloudflare/worker-configuration.d.ts
+
+# Deterministic discovery assets; build before Worker checks/deployment.
+src/mcp_open_data_hk/web/discovery/
+src/mcp_open_data_hk/web/robots.txt
+src/mcp_open_data_hk/web/sitemap.xml
+src/mcp_open_data_hk/web/llms.txt
+deploy/cloudflare/discovery-routes.json

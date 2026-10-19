@@ -13,6 +13,7 @@ cd deploy/cloudflare
 npm ci
 npm run types
 npm run check
+python3 ../../scripts/build_discovery.py
 wrangler deploy --secrets-file .ops-secrets.json --var RELEASE_COMMIT:<verified-git-sha>
 ```
 

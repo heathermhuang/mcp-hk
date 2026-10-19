@@ -88,4 +88,9 @@ HTTP/MCP methods; native source results include resource capability summaries.
 The pack-only `/api/v1/packs` and `hk_data_packs` remain available.
 See [the discovery UX contract and next onboarding priorities](docs/discovery-ux.md).
 
+Public [developer guides](https://mcp.hk/guides) cover the HTTP API, MCP connections,
+source citations and freshness in English and Traditional Chinese. See the
+[search and AI discovery contract](docs/search-and-ai-discovery.md) for canonical
+pages, the sitemap, crawler checks and owner indexing/citation measurement.
+
 The detailed expansion plan and acceptance criteria are in [the engineering plan](docs/plans/government-expansion.md). Inventory discovery is not full government data onboarding; consult live coverage for validation, failures and remaining work.

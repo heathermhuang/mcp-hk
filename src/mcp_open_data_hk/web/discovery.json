@@ -1,0 +1,691 @@
+{
+  "pages": {
+    "/": {
+      "en": {
+        "title": "Hong Kong open data MCP server and HTTP API · mcp.hk",
+        "heading": "Hong Kong open data MCP server and HTTP API",
+        "description": "Find Hong Kong public datasets, inspect supported records, and connect apps and AI through a free, read-only MCP server and HTTP API with original source links."
+      },
+      "zh-Hant": {
+        "title": "香港開放數據 MCP 伺服器及 HTTP API · mcp.hk",
+        "heading": "香港開放數據 MCP 伺服器及 HTTP API",
+        "description": "搜尋香港公共數據集、預覽支援的記錄，透過免費、唯讀的 MCP 伺服器及 HTTP API 連接應用程式與 AI，並保留原始來源連結。"
+      },
+      "template": "index.html"
+    },
+    "/connect": {
+      "en": {
+        "title": "Connect your AI to Hong Kong data · mcp.hk",
+        "heading": "Connect your AI to Hong Kong data",
+        "description": "Connect an MCP client to https://mcp.hk/mcp. Public read-only access needs no mcp.hk API key. Includes client settings and HTTP API examples."
+      },
+      "zh-Hant": {
+        "title": "連接 AI 至香港數據 · mcp.hk",
+        "heading": "連接 AI 至香港數據",
+        "description": "將 MCP 客戶端連接至 https://mcp.hk/mcp。公共唯讀存取毋須 mcp.hk API 密鑰，附有連接設定及 HTTP API 範例。"
+      },
+      "template": "index.html"
+    },
+    "/coverage": {
+      "en": {
+        "title": "Browse Hong Kong public datasets · mcp.hk",
+        "heading": "Browse Hong Kong public datasets",
+        "description": "Search government and independent source catalogues. Inspect formats, source links and access status before previewing supported records. Catalogue coverage is not full query coverage."
+      },
+      "zh-Hant": {
+        "title": "瀏覽香港公共數據集 · mcp.hk",
+        "heading": "瀏覽香港公共數據集",
+        "description": "搜尋政府及獨立供應者的數據目錄，查看格式、來源連結和存取狀態，再預覽支援的記錄。收錄於目錄並不代表所有記錄均可查詢。"
+      },
+      "template": "coverage.html"
+    },
+    "/demo": {
+      "en": {
+        "title": "Hong Kong address and restaurant data · mcp.hk",
+        "heading": "Hong Kong address and restaurant data",
+        "description": "Look up an address, find nearby licensed restaurant records and inspect district population statistics with source attribution and reference periods."
+      },
+      "zh-Hant": {
+        "title": "香港地址及食肆數據 · mcp.hk",
+        "heading": "香港地址及食肆數據",
+        "description": "搜尋地址、查閱附近持牌食肆記錄及所屬地區的人口統計，並查看來源及統計參考期。"
+      },
+      "template": "index.html"
+    },
+    "/plates": {
+      "en": {
+        "title": "Hong Kong vehicle registration mark auction history · mcp.hk",
+        "heading": "Hong Kong vehicle registration mark auction history",
+        "description": "Search historical Hong Kong plate auction results and comparisons from independent provider Plate.hk. Historical results are not current valuations, ownership or availability."
+      },
+      "zh-Hant": {
+        "title": "香港車牌拍賣歷史紀錄 · mcp.hk",
+        "heading": "香港車牌拍賣歷史紀錄",
+        "description": "透過獨立供應者 Plate.hk 查閱香港車牌拍賣紀錄及歷史比較。過往結果不代表現時估值、擁有權或可供出售狀態。"
+      },
+      "template": "index.html"
+    },
+    "/properties": {
+      "en": {
+        "title": "Hong Kong building and property listing data · mcp.hk",
+        "heading": "Hong Kong building and property listing data",
+        "description": "Search SeeHouse / 睇樓 building information, property listings and asking-price changes. Listing asking prices are not completed transactions or valuations."
+      },
+      "zh-Hant": {
+        "title": "香港大廈及放盤數據 · mcp.hk",
+        "heading": "香港大廈及放盤數據",
+        "description": "搜尋 SeeHouse／睇樓的大廈資料、物業放盤及叫價變動。放盤叫價並非成交價或估值。"
+      },
+      "template": "properties.html"
+    },
+    "/sources": {
+      "en": {
+        "title": "Hong Kong data source status and freshness · mcp.hk",
+        "heading": "Hong Kong data source status and freshness",
+        "description": "Check source read status, retained snapshots and transport-source checks. Retrieval time, validation time and the age of underlying observations are separate."
+      },
+      "zh-Hant": {
+        "title": "香港數據來源狀態及更新情況 · mcp.hk",
+        "heading": "香港數據來源狀態及更新情況",
+        "description": "查看來源讀取狀態、保留的快照及交通來源檢查。擷取時間、驗證時間與原始數據的觀測時間並不相同。"
+      },
+      "template": "index.html"
+    },
+    "/terms": {
+      "en": {
+        "title": "Terms of use · mcp.hk",
+        "heading": "Terms of use",
+        "description": "Read mcp.hk service limits, software licensing and source attribution requirements. Original government and independent-provider data terms continue to apply."
+      },
+      "zh-Hant": {
+        "title": "使用條款 · mcp.hk",
+        "heading": "使用條款",
+        "description": "了解 mcp.hk 的服務限制、軟件授權及來源標示要求。政府及獨立供應者的原始數據條款仍然適用。"
+      },
+      "template": "legal.html",
+      "noindex": true
+    },
+    "/privacy": {
+      "en": {
+        "title": "Privacy policy · mcp.hk",
+        "heading": "Privacy policy",
+        "description": "Read how mcp.hk handles public-data queries, operational counters and optional consent-based analytics. No analytics consent is needed to use the public data service."
+      },
+      "zh-Hant": {
+        "title": "私隱政策 · mcp.hk",
+        "heading": "私隱政策",
+        "description": "了解 mcp.hk 如何處理公共數據查詢、營運計數及須經同意才啟用的分析功能。使用公共數據服務毋須同意分析。"
+      },
+      "template": "legal.html",
+      "noindex": true
+    },
+    "/about": {
+      "en": {
+        "title": "About mcp.hk · mcp.hk",
+        "heading": "About mcp.hk",
+        "description": "mcp.hk is independent, open-source infrastructure for Hong Kong public data, extending mcp-open-data-hk with MCP, HTTP APIs and source-linked data workflows.",
+        "sections": [
+          {
+            "heading": "What is mcp.hk?",
+            "paragraphs": [
+              "mcp.hk gives apps and AI assistants a shared, read-only interface to Hong Kong public data. Developers can discover datasets, inspect source resources and query supported records through MCP or HTTP. Public access is free and does not require an mcp.hk account or API key. Rate limits and provider availability apply."
+            ],
+            "links": [
+              [
+                "Connect to the service",
+                "/connect"
+              ],
+              [
+                "Browse the data catalogue",
+                "/coverage"
+              ]
+            ]
+          },
+          {
+            "heading": "Independent software, original sources",
+            "paragraphs": [
+              "mcp.hk is not a Hong Kong Government service and is not endorsed by every data provider. It extends the open-source mcp-open-data-hk project. Government data and independent packs such as Plate.hk and SeeHouse retain their own identity, attribution and terms. The MIT licence covers the software, not all underlying data."
+            ],
+            "links": [
+              [
+                "mcp.hk source code and licence",
+                "https://github.com/heathermhuang/mcp-hk"
+              ],
+              [
+                "Upstream mcp-open-data-hk",
+                "https://github.com/mcp-open-data-hk/mcp-open-data-hk"
+              ],
+              [
+                "DATA.GOV.HK terms",
+                "https://data.gov.hk/en/terms-and-conditions"
+              ]
+            ]
+          },
+          {
+            "heading": "Corrections and contributions",
+            "paragraphs": [
+              "Report a broken source, unclear field or software issue in the public repository. Include the dataset or resource identifier and a reproducible example. Do not post credentials, private queries or personal information. Source providers remain the authority for the original records."
+            ],
+            "links": [
+              [
+                "Report an issue",
+                "https://github.com/heathermhuang/mcp-hk/issues"
+              ],
+              [
+                "Understand sources and freshness",
+                "/guides/data-sources-and-freshness"
+              ]
+            ]
+          }
+        ]
+      },
+      "zh-Hant": {
+        "title": "關於 mcp.hk · mcp.hk",
+        "heading": "關於 mcp.hk",
+        "description": "mcp.hk 是獨立的香港公共數據開源基建，在 mcp-open-data-hk 的基礎上提供 MCP、HTTP API 及附有來源連結的數據查詢。",
+        "sections": [
+          {
+            "heading": "mcp.hk 是甚麼？",
+            "paragraphs": [
+              "mcp.hk 為應用程式及 AI 助手提供統一、唯讀的香港公共數據介面。開發者可透過 MCP 或 HTTP 搜尋數據集、查看來源檔案及查詢支援的記錄。公共存取免費，毋須 mcp.hk 帳戶或 API 密鑰，惟設有請求限制，亦受來源的可用情況影響。"
+            ],
+            "links": [
+              [
+                "連接服務",
+                "/connect"
+              ],
+              [
+                "瀏覽數據目錄",
+                "/coverage"
+              ]
+            ]
+          },
+          {
+            "heading": "獨立軟件，保留原始來源",
+            "paragraphs": [
+              "mcp.hk 並非香港政府服務，亦不代表已獲所有數據供應者認可。本項目在開源 mcp-open-data-hk 的基礎上擴充。政府數據及 Plate.hk、SeeHouse 等獨立數據包各有其來源、標示及使用條款。MIT 授權只涵蓋軟件，並非所有原始數據。"
+            ],
+            "links": [
+              [
+                "mcp.hk 原始碼及授權",
+                "https://github.com/heathermhuang/mcp-hk"
+              ],
+              [
+                "上游 mcp-open-data-hk",
+                "https://github.com/mcp-open-data-hk/mcp-open-data-hk"
+              ],
+              [
+                "DATA.GOV.HK 使用條款",
+                "https://data.gov.hk/tc/terms-and-conditions"
+              ]
+            ]
+          },
+          {
+            "heading": "更正及參與開發",
+            "paragraphs": [
+              "如發現來源無法讀取、欄位意思不清或軟件問題，可於公開儲存庫回報。請提供數據集或來源識別碼及可重現的範例，切勿發布憑證、私人查詢或個人資料。原始記錄應以供應者發布的內容為準。"
+            ],
+            "links": [
+              [
+                "回報問題",
+                "https://github.com/heathermhuang/mcp-hk/issues"
+              ],
+              [
+                "了解來源及數據時效",
+                "/guides/data-sources-and-freshness"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "/guides": {
+      "en": {
+        "title": "Hong Kong data guides for developers and AI · mcp.hk",
+        "heading": "Hong Kong data guides for developers and AI",
+        "description": "Practical guides to the Hong Kong open data API, MCP connections, source attribution and freshness checks."
+      },
+      "zh-Hant": {
+        "title": "開發者及 AI 的香港數據指南 · mcp.hk",
+        "heading": "開發者及 AI 的香港數據指南",
+        "description": "了解香港開放數據 API、MCP 連接、來源標示及數據時效檢查。"
+      }
+    },
+    "/guides/hong-kong-open-data-api": {
+      "en": {
+        "title": "How to use a Hong Kong open data API · mcp.hk",
+        "heading": "How to use a Hong Kong open data API",
+        "description": "Discover a dataset, inspect its source and read supported records through mcp.hk. Keep catalogue metadata, query access and source reliability distinct.",
+        "sections": [
+          {
+            "heading": "1. Find the dataset",
+            "paragraphs": [
+              "Start with the catalogue and choose the dataset that matches the question. A catalogue entry describes a resource; it does not prove that its rows can be read through mcp.hk. A source may require parameters, a worksheet, a JSON record path or an adapter."
+            ],
+            "links": [
+              [
+                "Search the catalogue",
+                "/coverage"
+              ],
+              [
+                "HTTP API reference",
+                "/docs"
+              ]
+            ],
+            "code": "curl \"https://mcp.hk/api/v1/catalogue/datasets?q=public%20holidays\""
+          },
+          {
+            "heading": "2. Inspect the resource before querying",
+            "paragraphs": [
+              "List the dataset resources and check format, access status, provider and source URL. Use the schema endpoint to inspect supported fields, then query only the records needed. Do not treat a blocked, unsupported, held or failed source as an empty dataset."
+            ],
+            "links": [
+              [
+                "Resource API contracts",
+                "https://github.com/heathermhuang/mcp-hk/blob/main/docs/resources.md"
+              ]
+            ],
+            "code": "GET /api/v1/resources?datasetId=DATASET_ID\nPOST /api/v1/resources/RESOURCE_ID/schema\nPOST /api/v1/resources/RESOURCE_ID/query"
+          },
+          {
+            "heading": "3. Preserve the evidence",
+            "paragraphs": [
+              "Retain original source URLs, attribution, reference periods, warnings, retrieval/check timestamps and snapshot identifiers where supplied. A source read can succeed while its observations are old. Validate field meaning and units before using the records in an answer or analysis."
+            ],
+            "links": [
+              [
+                "Source and freshness guide",
+                "/guides/data-sources-and-freshness"
+              ],
+              [
+                "Current source status",
+                "/sources"
+              ]
+            ]
+          }
+        ]
+      },
+      "zh-Hant": {
+        "title": "如何使用香港開放數據 API · mcp.hk",
+        "heading": "如何使用香港開放數據 API",
+        "description": "透過 mcp.hk 搜尋數據集、檢查來源及讀取支援的記錄，並分清目錄資料、查詢能力及來源可靠程度。",
+        "sections": [
+          {
+            "heading": "1. 找到合適的數據集",
+            "paragraphs": [
+              "先搜尋目錄，選擇與問題相關的數據集。目錄項目只描述來源，並不代表 mcp.hk 一定能讀取當中的記錄。部分來源須指定參數、工作表、JSON 記錄路徑，或另行開發轉接器。"
+            ],
+            "links": [
+              [
+                "搜尋目錄",
+                "/coverage"
+              ],
+              [
+                "HTTP API 文件",
+                "/docs"
+              ]
+            ],
+            "code": "curl \"https://mcp.hk/api/v1/catalogue/datasets?q=public%20holidays\""
+          },
+          {
+            "heading": "2. 查詢前先檢查來源",
+            "paragraphs": [
+              "列出數據集的來源，查看格式、存取狀態、供應者及來源網址。先用 schema 端點檢查支援的欄位，再查詢所需記錄。來源被拒絕存取、尚未支援、暫停或讀取失敗，都不代表數據集沒有記錄。"
+            ],
+            "links": [
+              [
+                "來源 API 規格",
+                "https://github.com/heathermhuang/mcp-hk/blob/main/docs/resources.md"
+              ]
+            ],
+            "code": "GET /api/v1/resources?datasetId=DATASET_ID\nPOST /api/v1/resources/RESOURCE_ID/schema\nPOST /api/v1/resources/RESOURCE_ID/query"
+          },
+          {
+            "heading": "3. 保留查證依據",
+            "paragraphs": [
+              "保留回應提供的原始來源網址、標示、參考期、警告、擷取及檢查時間，以及快照識別碼。即使成功讀取來源，當中的觀測數據仍可能過時。用於回答或分析前，應先確認欄位意思及單位。"
+            ],
+            "links": [
+              [
+                "來源及數據時效指南",
+                "/guides/data-sources-and-freshness"
+              ],
+              [
+                "目前來源狀態",
+                "/sources"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "/guides/connect-ai-to-hong-kong-data": {
+      "en": {
+        "title": "Connect an AI assistant to Hong Kong data with MCP · mcp.hk",
+        "heading": "Connect an AI assistant to Hong Kong data with MCP",
+        "description": "Use the mcp.hk Streamable HTTP endpoint to discover Hong Kong datasets and request source-linked records from an MCP client.",
+        "sections": [
+          {
+            "heading": "Use the public endpoint",
+            "paragraphs": [
+              "The remote MCP endpoint is https://mcp.hk/mcp. Public data access is read-only and requires no mcp.hk API key. Set a startup timeout of 120 seconds where supported because the data container may need to start. Your AI client or model provider may have its own charges."
+            ],
+            "links": [
+              [
+                "Client connection settings",
+                "/connect"
+              ],
+              [
+                "Connection documentation",
+                "https://github.com/heathermhuang/mcp-hk/blob/main/docs/connect.md"
+              ]
+            ],
+            "code": "https://mcp.hk/mcp"
+          },
+          {
+            "heading": "Ask for discovery, records and citations",
+            "paragraphs": [
+              "Try: “Find Hong Kong public holiday data, inspect the available sources and show the supported records with original source links.” Ask the assistant to report access limitations, source dates and warnings. Do not infer that all catalogue resources are queryable."
+            ],
+            "links": [
+              [
+                "Browse available sources",
+                "/coverage"
+              ]
+            ]
+          },
+          {
+            "heading": "Use HTTP when your client does not support MCP",
+            "paragraphs": [
+              "The same service exposes an HTTP API and OpenAPI description. Use the connection page and API reference for current request contracts. Never paste operator credentials into an AI connection; public reads do not need them."
+            ],
+            "links": [
+              [
+                "HTTP API reference",
+                "/docs"
+              ],
+              [
+                "OpenAPI description",
+                "/openapi.json"
+              ]
+            ]
+          }
+        ]
+      },
+      "zh-Hant": {
+        "title": "透過 MCP 讓 AI 助手讀取香港數據 · mcp.hk",
+        "heading": "透過 MCP 讓 AI 助手讀取香港數據",
+        "description": "使用 mcp.hk 的 Streamable HTTP 端點，讓 MCP 客戶端搜尋香港數據集及讀取附有來源連結的記錄。",
+        "sections": [
+          {
+            "heading": "使用公共端點",
+            "paragraphs": [
+              "遠端 MCP 端點是 https://mcp.hk/mcp。公共數據存取為唯讀，毋須 mcp.hk API 密鑰。如客戶端支援，可將啟動逾時設為 120 秒，因為數據容器可能需要啟動。AI 客戶端或模型供應者可能另有收費。"
+            ],
+            "links": [
+              [
+                "客戶端連接設定",
+                "/connect"
+              ],
+              [
+                "連接文件",
+                "https://github.com/heathermhuang/mcp-hk/blob/main/docs/connect.md"
+              ]
+            ],
+            "code": "https://mcp.hk/mcp"
+          },
+          {
+            "heading": "要求搜尋、讀取記錄及提供來源",
+            "paragraphs": [
+              "可試問：「找出香港公眾假期數據，檢查可用來源，再列出支援的記錄及原始來源連結。」請 AI 說明存取限制、來源日期及警告，切勿假設目錄中的所有來源都能查詢。"
+            ],
+            "links": [
+              [
+                "瀏覽可用來源",
+                "/coverage"
+              ]
+            ]
+          },
+          {
+            "heading": "客戶端不支援 MCP 時可使用 HTTP",
+            "paragraphs": [
+              "同一服務亦提供 HTTP API 及 OpenAPI 描述。最新請求規格可參閱連接頁及 API 文件。切勿將營運憑證貼入 AI 連接設定；公共讀取並不需要這些憑證。"
+            ],
+            "links": [
+              [
+                "HTTP API 文件",
+                "/docs"
+              ],
+              [
+                "OpenAPI 描述",
+                "/openapi.json"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "/guides/data-sources-and-freshness": {
+      "en": {
+        "title": "How to cite Hong Kong data and check freshness · mcp.hk",
+        "heading": "How to cite Hong Kong data and check freshness",
+        "description": "Use original provider citations, inspect timestamps and reference periods, and distinguish catalogue coverage from validated and semantically qualified records.",
+        "sections": [
+          {
+            "heading": "Cite the original provider",
+            "paragraphs": [
+              "mcp.hk is an access layer. Cite original provider URLs and attribution from the response provenance, and add the mcp.hk query or guide as the access method when useful. DATA.GOV.HK and CSDI are discovery portals; the dataset publisher is the authority for the underlying records."
+            ],
+            "links": [
+              [
+                "DATA.GOV.HK",
+                "https://data.gov.hk/en/"
+              ],
+              [
+                "CSDI portal",
+                "https://portal.csdi.gov.hk/geoportal/"
+              ],
+              [
+                "DATA.GOV.HK reuse terms",
+                "https://data.gov.hk/en/terms-and-conditions"
+              ]
+            ]
+          },
+          {
+            "heading": "Three different clocks",
+            "paragraphs": [
+              "A catalogue sync time describes metadata discovery. A retrieval or validation time describes a source read or check. The observation time or reference period describes when the underlying event or statistic applies. A recent read does not turn an old statistic into current data. Inspect stale flags, warnings and the original source before making a time-sensitive claim."
+            ],
+            "links": [
+              [
+                "Source status",
+                "/sources"
+              ],
+              [
+                "Source documentation",
+                "https://github.com/heathermhuang/mcp-hk/blob/main/docs/sources.md"
+              ]
+            ]
+          },
+          {
+            "heading": "Interpret each data pack within its limits",
+            "paragraphs": [
+              "Restaurant licence records are not reviews or a guarantee that a venue is currently open. District population is a district statistic, not population within a restaurant search radius. Plate.hk provides historical auction results, not current ownership, availability or valuations. SeeHouse listing asking prices and their changes are not completed transactions. Transport checks apply to the requested source, route and stop; a timetable is not a live arrival prediction."
+            ],
+            "links": [
+              [
+                "Neighbourhood example",
+                "/demo"
+              ],
+              [
+                "Plate.hk history",
+                "/plates"
+              ],
+              [
+                "SeeHouse listings",
+                "/properties"
+              ]
+            ]
+          },
+          {
+            "heading": "Coverage and failure states",
+            "paragraphs": [
+              "A catalogue entry may be metadata-only. Sources can be unsupported, restricted, unavailable, require selection, exceed capacity or have schema drift. Preserve those states in applications and AI answers. A successful raw read still needs semantic checks for units, field meaning and suitability."
+            ],
+            "links": [
+              [
+                "Browse source access states",
+                "/coverage"
+              ],
+              [
+                "Software and data terms",
+                "/terms"
+              ]
+            ]
+          }
+        ]
+      },
+      "zh-Hant": {
+        "title": "如何引用香港數據及檢查時效 · mcp.hk",
+        "heading": "如何引用香港數據及檢查時效",
+        "description": "引用原始供應者、檢查時間及參考期，並分清目錄收錄、來源驗證與數據含義的確認。",
+        "sections": [
+          {
+            "heading": "引用原始供應者",
+            "paragraphs": [
+              "mcp.hk 是存取介面。引用回應來源資料中的原始供應者網址及標示；如有需要，可補充 mcp.hk 查詢或指南作為存取方法。DATA.GOV.HK 及 CSDI 是數據發現入口，原始記錄仍應以發布者為準。"
+            ],
+            "links": [
+              [
+                "DATA.GOV.HK",
+                "https://data.gov.hk/tc/"
+              ],
+              [
+                "CSDI 入門網站",
+                "https://portal.csdi.gov.hk/geoportal/"
+              ],
+              [
+                "DATA.GOV.HK 使用條款",
+                "https://data.gov.hk/tc/terms-and-conditions"
+              ]
+            ]
+          },
+          {
+            "heading": "分清三種時間",
+            "paragraphs": [
+              "目錄同步時間表示何時取得目錄資料；擷取或驗證時間表示何時讀取或檢查來源；觀測時間或統計參考期則表示事件或統計適用的時段。最近讀取的舊統計，不會因此變成最新數據。作出具時效性的判斷前，應檢查 stale 標記、警告及原始來源。"
+            ],
+            "links": [
+              [
+                "來源狀態",
+                "/sources"
+              ],
+              [
+                "來源文件",
+                "https://github.com/heathermhuang/mcp-hk/blob/main/docs/sources.md"
+              ]
+            ]
+          },
+          {
+            "heading": "按數據包的限制解讀",
+            "paragraphs": [
+              "食肆牌照記錄不是食評，亦不保證店舖現正營業。地區人口屬全區統計，不是食肆搜尋半徑內的人口。Plate.hk 提供過往拍賣結果，並非現時擁有權、出售狀態或估值。SeeHouse 的放盤叫價及變動不是成交紀錄。交通檢查只適用於所查詢的來源、路綫及車站；時間表不等於即時到站預測。"
+            ],
+            "links": [
+              [
+                "地區資料範例",
+                "/demo"
+              ],
+              [
+                "Plate.hk 歷史紀錄",
+                "/plates"
+              ],
+              [
+                "SeeHouse 放盤",
+                "/properties"
+              ]
+            ]
+          },
+          {
+            "heading": "覆蓋範圍及失敗狀態",
+            "paragraphs": [
+              "目錄項目可能只有描述資料。來源可能尚未支援、受存取限制、暫時不可用、須先選擇設定、超出容量，或出現結構變更。應用程式及 AI 回答必須保留這些狀態。即使成功讀取原始回應，仍須檢查單位、欄位意思及是否適合用途。"
+            ],
+            "links": [
+              [
+                "瀏覽來源存取狀態",
+                "/coverage"
+              ],
+              [
+                "軟件及數據條款",
+                "/terms"
+              ]
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "faq": {
+    "en": [
+      [
+        "What is mcp.hk?",
+        "mcp.hk is an independent, open-source Hong Kong public data service for apps and AI. It provides a read-only MCP server and HTTP API with original source links."
+      ],
+      [
+        "Is mcp.hk free, and do I need an API key?",
+        "Public read-only access is free and needs no mcp.hk account or API key. Request limits and source availability apply. Your AI client or model provider may charge separately."
+      ],
+      [
+        "How do I connect an AI assistant?",
+        "Use https://mcp.hk/mcp as the Streamable HTTP MCP endpoint. Open the Connect page for client settings. Allow a 120-second startup timeout where supported."
+      ],
+      [
+        "Can I query every Hong Kong government dataset?",
+        "No. Catalogue discovery, supported record queries and semantic verification are different. Check each source’s format, access state, warnings and original terms."
+      ],
+      [
+        "How should I cite data returned by mcp.hk?",
+        "Cite the original provider URLs and attribution from response provenance. Keep source dates, reference periods, warnings and stale flags. mcp.hk is the access method; it is not the publisher of every underlying dataset."
+      ]
+    ],
+    "zh-Hant": [
+      [
+        "mcp.hk 是甚麼？",
+        "mcp.hk 是獨立的香港公共數據開源服務，供應用程式及 AI 使用，提供唯讀 MCP 伺服器及 HTTP API，並保留原始來源連結。"
+      ],
+      [
+        "mcp.hk 是否免費？需要 API 密鑰嗎？",
+        "公共唯讀存取免費，毋須 mcp.hk 帳戶或 API 密鑰，但設有請求限制，亦受來源可用情況影響。AI 客戶端或模型供應者可能另行收費。"
+      ],
+      [
+        "如何連接 AI 助手？",
+        "使用 https://mcp.hk/mcp 作為 Streamable HTTP MCP 端點。連接頁提供客戶端設定；如支援，可將啟動逾時設為 120 秒。"
+      ],
+      [
+        "是否可以查詢所有香港政府數據集？",
+        "不可以。目錄搜尋、支援的記錄查詢及數據含義驗證是不同層次。請逐一檢查來源的格式、存取狀態、警告及原始條款。"
+      ],
+      [
+        "應如何引用 mcp.hk 回傳的數據？",
+        "請引用回應來源資料中的原始供應者網址及標示，並保留來源日期、參考期、警告及 stale 標記。mcp.hk 是存取方法，並非每個原始數據集的發布者。"
+      ]
+    ]
+  },
+  "faqLabel": {
+    "en": "Common questions",
+    "zh-Hant": "常見問題"
+  },
+  "homeLabel": {
+    "en": "Home",
+    "zh-Hant": "首頁"
+  },
+  "guidesLabel": {
+    "en": "Guides",
+    "zh-Hant": "使用指南"
+  },
+  "aboutLabel": {
+    "en": "About",
+    "zh-Hant": "關於"
+  }
+}

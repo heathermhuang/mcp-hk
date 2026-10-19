@@ -3,9 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build:discovery": "python3 ../../scripts/build_discovery.py",
+    "pretypes": "npm run build:discovery",
     "types": "wrangler types",
     "check": "tsc --noEmit",
-    "deploy": "wrangler deploy",
+    "deploy": "npm run build:discovery && wrangler deploy",
     "test": "node --experimental-strip-types --test *.test.mjs"
   },
   "dependencies": {

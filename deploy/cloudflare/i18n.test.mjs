@@ -13,18 +13,26 @@ class Element {
   append(...nodes) {this.children.push(...nodes);}
   replaceChildren(...nodes) {this.children=[...nodes];this.textContent='';}
 }
-function browser(url='https://mcp.hk/',saved=null,denied=false) {
+function browser(url='https://mcp.hk/',saved=null,denied=false,server=false) {
   let stored=saved;
   const label=new Element();label.dataset.i18n='navData';
   const placeholder=new Element({'data-i18n-placeholder':'datasetPlaceholder'}),button=new Element();
   const link=new Element({href:'/coverage?q=weather#results'}),skip=new Element({href:'#main-content'}),external=new Element({href:'https://data.gov.hk/en/'}),api=new Element({href:'/api/v1/coverage'});
   const nav=['/','/coverage','/connect','/sources'].map(href=>new Element({href}));
-  const location=new URL(url),events=[];
-  const document={documentElement:{},createElement:()=>new Element(),querySelectorAll:selector=>({'.mhk-navbutton':nav,'[data-i18n]':[label],'[data-i18n-placeholder]':[placeholder],'.mhk-language':[button],'a[href]':[link,skip,external,api]}[selector] || [])};
+  const location=new URL(url),events=[],navigations=[];
+  location.assign=value=>navigations.push(value);
+  const document={documentElement:server?{dataset:{discovery:'true'},lang:url.includes('lang=zh-Hant')?'zh-Hant':'en'}:{},createElement:()=>new Element(),querySelectorAll:selector=>({'.mhk-navbutton':nav,'[data-i18n]':[label],'[data-i18n-placeholder]':[placeholder],'.mhk-language':[button],'a[href]':[link,skip,external,api]}[selector] || [])};
   const context=vm.createContext({document,location,URL,Event,history:{replaceState:(_a,_b,value)=>{location.href=new URL(value,location.href).href;}},localStorage:{getItem(){if(denied)throw Error('denied');return stored;},setItem(_key,value){if(denied)throw Error('denied');stored=value;}},addEventListener(){},dispatchEvent:event=>events.push(event.type)});
   context.window=context;vm.runInContext(read('translations.js')+'\n'+read('i18n.js'),context);
-  return {context,document,label,placeholder,button,link,skip,external,api,location,events,nav,stored:()=>stored};
+  return {context,document,label,placeholder,button,link,skip,external,api,location,events,nav,navigations,stored:()=>stored};
 }
+test('server-rendered pages retain their canonical locale and switch using a complete document',()=>{
+  const en=browser('https://mcp.hk/guides','zh',false,true);
+  assert.equal(en.label.textContent,'Browse data');
+  en.button.listeners.click();assert.deepEqual(en.navigations,['/guides?lang=zh-Hant']);
+  const zh=browser('https://mcp.hk/guides?lang=zh-Hant','en',false,true);
+  zh.button.listeners.click();assert.deepEqual(zh.navigations,['/guides?lang=en']);
+});
 test('language selection updates UI, accessible labels, URL and persistent navigation',()=>{
   const b=browser();b.button.listeners.click();
   assert.equal(b.document.documentElement.lang,'zh-Hant');assert.equal(b.label.textContent,'瀏覽數據');
