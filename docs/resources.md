@@ -240,6 +240,9 @@ cadence. Otherwise each cron can wake a stopped runtime and fail readiness befor
 its accepted snapshot restores. Scheduled jobs retry only DATA_RUNTIME_NOT_READY,
 at most twice with 30-second pauses and before acquiring a maintenance lease.
 Held leases and actual review/checkpoint failures are never retried by this wrapper.
+Infrequent cron jobs that encounter a held lease remain in the controller's
+durable pending schedule and are serviced by a later resource tick. Known
+source/checkpoint failures are settled and are not requeued by those ticks.
 
 
 Accepted-variant lookup has a `(resource, validated DESC)` index. Both selector

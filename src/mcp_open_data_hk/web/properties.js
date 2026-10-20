@@ -3,21 +3,27 @@ import {fetchPublicJson} from './http.js';
 const $ = id => document.getElementById(id), t = (key, values) => MhkI18n.t(key, values);
 const node = (tag, text) => { const e = document.createElement(tag); e.textContent = text; return e; };
 let sequence = 0, candidates = [], buildingId = null, result = null, kind = null;
+let renderedCandidates = null;
 function show() {
-  $('property-candidates').replaceChildren();
-  for (const candidate of candidates) {
-    const button = node('button', `${candidate.name || candidate.id} · ${candidate.district || ''}`);
-    button.type = 'button'; button.className = 'mhk-button mhk-secondary';
-    button.addEventListener('click', () => { buildingId = candidate.id; read('building', {buildingId}); });
-    $('property-candidates').append(button);
+  // Keep activated candidate nodes alive during loading and result rendering.
+  if (renderedCandidates !== candidates) {
+    $('property-candidates').replaceChildren();
+    for (const candidate of candidates) {
+      const button = node('button', `${candidate.name || candidate.id} · ${candidate.district || ''}`);
+      button.type = 'button'; button.className = 'mhk-button mhk-secondary';
+      button.addEventListener('click', () => { buildingId = candidate.id; read('building', {buildingId}); });
+      $('property-candidates').append(button);
+    }
+    renderedCandidates = candidates;
   }
+  Array.from($('property-candidates').children).forEach((button,index)=>button.setAttribute('aria-pressed',String(candidates[index].id===buildingId)));
   $('property-records').replaceChildren();
   $('property-building').hidden = !result || !['building', 'price-history'].includes(kind);
   if (!result) return;
   const d = result.data;
   if (kind === 'building') {
     $('property-building-name').textContent = d.name || d.id;
-    $('property-building-state').textContent = `${t('propertyReturned', {count:d.listings.length})} · ${d.listingState.message || ''} · ${d.stats.lastUpdated || '—'} · ${t('propertyQualifiedSummary',{qualified:d.listingQuality.currentQualifiedCount,total:d.listingQuality.providerReturnedCount})}`;
+    $('property-building-state').textContent = [t('propertyReturned', {count:d.listings.length}),d.listingState.message,d.stats.lastUpdated,t('propertyQualifiedSummary',{qualified:d.listingQuality.currentQualifiedCount,total:d.listingQuality.providerReturnedCount})].filter(Boolean).join(' · ');
     for (const listing of d.listings) {
       const row = node('article', ''); row.className = 'mhk-pack';
       row.append(node('h3', listing.title || listing.id));

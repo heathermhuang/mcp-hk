@@ -4,7 +4,8 @@ import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 const flush=()=>new Promise(resolve=>setImmediate(resolve));
 class Element {
-  constructor(tag='div'){this.tagName=tag;this.children=[];this.listeners={};this.value='';this.hidden=false;this.textContent='';}
+  constructor(tag='div'){this.tagName=tag;this.children=[];this.listeners={};this.attrs={};this.value='';this.hidden=false;this.textContent='';}
+  setAttribute(name,value){this.attrs[name]=value;}
   append(...items){this.children.push(...items);}
   replaceChildren(...items){this.children=[...items];}
   addEventListener(name,fn){this.listeners[name]=fn;}
@@ -19,7 +20,12 @@ test('expired advert links remain disabled and listing qualification is visible'
   const context=vm.createContext({document:{getElementById:el,createElement:t=>new Element(t)},URL,URLSearchParams,MhkI18n:{locale:'en',t:key=>key},fetchPublicJson});context.window=context;context.addEventListener=()=>{};
   vm.runInContext(readFileSync(new URL('../../src/mcp_open_data_hk/web/properties.js',import.meta.url),'utf8').replace(/^import .*\n/,''),context);
   el('property-search').listeners.submit({preventDefault(){}});await flush();
-  el('property-candidates').children[0].listeners.click();await flush();
+  const candidate=el('property-candidates').children[0];
+  candidate.listeners.click();
+  assert.equal(el('property-candidates').children[0],candidate,'loading must retain the activated node');
+  assert.equal(candidate.attrs['aria-pressed'],'true');
+  await flush();
+  assert.equal(el('property-candidates').children[0],candidate,'results must retain the activated node');
   assert.match(requests[1],/quality=current/);
   const cards=el('property-records').children;
   assert.equal(cards.length,2);

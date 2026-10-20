@@ -3,6 +3,44 @@ export function maintenanceRuntimeReady(value: unknown): boolean {
   return value !== null && typeof value === 'object' && 'sourceReviewPolicy' in value && value.sourceReviewPolicy === EXPECTED_REVIEW_POLICY;
 }
 
+type ScheduledJob = {pack: string; scheduledAt: number; state: 'pending' | 'success' | 'failed'};
+type ScheduledJobs = Record<string, ScheduledJob>;
+const scheduledKey = 'scheduledMaintenance';
+const retainedPacks = ['restaurants', 'population', 'catalogue', 'backup'];
+
+/** Retain infrequent cron work before attempting the shared maintenance lease. */
+export async function enqueueScheduled(storage: DurableObjectStorage, pack: string, scheduledAt: number) {
+  if (!retainedPacks.includes(pack)) return;
+  await storage.transaction(async txn => {
+    const jobs = await txn.get<ScheduledJobs>(scheduledKey) || {};
+    if (!jobs[pack] || jobs[pack].scheduledAt < scheduledAt) {
+      jobs[pack] = {pack, scheduledAt, state:'pending'};
+      await txn.put(scheduledKey, jobs);
+    }
+  });
+}
+
+/** Called only after the controller has acquired its existing exclusive lease. */
+export async function nextScheduled(storage: DurableObjectStorage): Promise<ScheduledJob | undefined> {
+  return Object.values(await storage.get<ScheduledJobs>(scheduledKey) || {})
+    .filter(job=>job.state==='pending')
+    .sort((a,b)=>a.scheduledAt-b.scheduledAt)[0];
+}
+
+export async function settleScheduled(storage: DurableObjectStorage, job: ScheduledJob, state: 'success' | 'failed') {
+  await storage.transaction(async txn => {
+    const jobs = await txn.get<ScheduledJobs>(scheduledKey) || {};
+    if (jobs[job.pack]?.scheduledAt === job.scheduledAt) {
+      jobs[job.pack] = {...job, state};
+      await txn.put(scheduledKey, jobs);
+    }
+  });
+}
+
+export async function scheduledStatus(storage: DurableObjectStorage) {
+  return Object.values(await storage.get<ScheduledJobs>(scheduledKey) || {});
+}
+
 type Controller = {
   maintain(pack: string): Promise<unknown>;
   operationDiagnostics(): Promise<{leaseUntil: number | null}>;

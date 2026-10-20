@@ -1,6 +1,7 @@
 import json
 import time
 import traceback
+from html.parser import HTMLParser
 from pathlib import Path
 
 import pytest
@@ -46,6 +47,43 @@ def test_population_units_and_reference_period():
     assert row["areaKm2"] == 12.55
     assert row["populationDensity"] == 18510
     assert row["referencePeriod"] == 2024
+
+
+def test_api_docs_assets_work_with_the_actual_security_policy(service):
+    class Assets(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.urls = []
+            self.inline_scripts = 0
+
+        def handle_starttag(self, tag, attrs):
+            attrs = dict(attrs)
+            if tag == "script":
+                if "src" in attrs:
+                    self.urls.append(attrs["src"])
+                else:
+                    self.inline_scripts += 1
+            if tag == "link":
+                self.urls.append(attrs["href"])
+
+    with TestClient(create_app(service)) as client:
+        response = client.get("/docs")
+        assert response.status_code == 200
+        assert "script-src 'self'" in response.headers["content-security-policy"]
+        assets = Assets()
+        assets.feed(response.text)
+        assert assets.urls
+        assert assets.inline_scripts == 0
+        for url in assets.urls:
+            assert url.startswith("/assets/")
+            asset = client.get(url)
+            assert asset.status_code == 200
+            assert len(asset.content) > 0
+        assert "/openapi.json" in client.get("/assets/api-docs.js").text
+        assert "/api/v1/districts" in client.get("/openapi.json").json()["paths"]
+        assert (
+            client.get("/redoc", follow_redirects=False).headers["location"] == "/docs"
+        )
 
 
 def test_als_bilingual_coordinates_not_grid_values():

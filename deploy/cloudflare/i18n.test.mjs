@@ -7,6 +7,7 @@ const read = name => readFileSync(new URL(name,web),'utf8');
 class Element {
   constructor(attrs={}) {this.attrs={...attrs};this.dataset={};this.children=[];this.listeners={};this.textContent='';}
   getAttribute(name) {return this.attrs[name] ?? null;}
+  hasAttribute(name) {return Object.hasOwn(this.attrs,name);}
   setAttribute(name,value) {this.attrs[name]=value;}
   removeAttribute(name) {delete this.attrs[name];}
   addEventListener(name,fn) {this.listeners[name]=fn;}
@@ -17,15 +18,22 @@ function browser(url='https://mcp.hk/',saved=null,denied=false,server=false) {
   let stored=saved;
   const label=new Element();label.dataset.i18n='navData';
   const placeholder=new Element({'data-i18n-placeholder':'datasetPlaceholder'}),button=new Element();
-  const link=new Element({href:'/coverage?q=weather#results'}),skip=new Element({href:'#main-content'}),external=new Element({href:'https://data.gov.hk/en/'}),api=new Element({href:'/api/v1/coverage'});
+  const link=new Element({href:'/coverage?q=weather#results'}),skip=new Element({href:'#main-content'}),external=new Element({href:'https://data.gov.hk/en/'}),api=new Element({href:'/api/v1/coverage'}),localeLink=new Element({href:'https://mcp.hk/coverage?lang=zh-Hant',hreflang:'zh-Hant'});
   const nav=['/','/coverage','/connect','/sources'].map(href=>new Element({href}));
   const location=new URL(url),events=[],navigations=[];
   location.assign=value=>navigations.push(value);location.replace=value=>navigations.push(value);
-  const document={documentElement:server?{dataset:{discovery:'true'},lang:url.includes('lang=zh-Hant')?'zh-Hant':'en'}:{},createElement:()=>new Element(),querySelectorAll:selector=>({'.mhk-navbutton':nav,'[data-i18n]':[label],'[data-i18n-placeholder]':[placeholder],'.mhk-language':[button],'a[href]':[link,skip,external,api]}[selector] || [])};
+  const document={documentElement:server?{dataset:{discovery:'true'},lang:url.includes('lang=zh-Hant')?'zh-Hant':'en'}:{},createElement:()=>new Element(),querySelectorAll:selector=>({'.mhk-navbutton':nav,'[data-i18n]':[label],'[data-i18n-placeholder]':[placeholder],'.mhk-language':[button],'a[href]':[link,skip,external,api,localeLink]}[selector] || [])};
   const context=vm.createContext({document,location,URL,Event,history:{replaceState:(_a,_b,value)=>{location.href=new URL(value,location.href).href;}},localStorage:{getItem(){if(denied)throw Error('denied');return stored;},setItem(_key,value){if(denied)throw Error('denied');stored=value;}},addEventListener(){},dispatchEvent:event=>events.push(event.type)});
   context.window=context;vm.runInContext(read('translations.js')+'\n'+read('i18n.js'),context);
-  return {context,document,label,placeholder,button,link,skip,external,api,location,events,nav,navigations,stored:()=>stored};
+  return {context,document,label,placeholder,button,link,skip,external,api,localeLink,location,events,nav,navigations,stored:()=>stored};
 }
+test('one interactive language switch preserves discovery state without query-bearing canonical links',()=>{
+  const b=browser('https://mcp.hk/coverage?lang=en&q=holidays&access=sources&dataset=calendar&resource=json&directory=1&status=queryable',null,false,true);
+  assert.equal(b.localeLink.hidden,true);assert.equal(b.localeLink.attrs.href,'https://mcp.hk/coverage?lang=zh-Hant');
+  b.button.listeners.click();const next=new URL(b.navigations[0],b.location);
+  assert.equal(next.searchParams.get('lang'),'zh-Hant');
+  for(const key of ['q','access','dataset','resource','directory','status'])assert.equal(next.searchParams.get(key),b.location.searchParams.get(key));
+});
 test('server-rendered pages retain their canonical locale and switch using a complete document',()=>{
   const en=browser('https://mcp.hk/guides?lang=en','zh',false,true);
   assert.equal(en.label.textContent,'Browse data');
