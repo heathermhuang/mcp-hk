@@ -10,7 +10,7 @@ import {fetchPublicJson} from './http.js';
   const api = fetchPublicJson;
   const node = (tag, text) => { const e = document.createElement(tag); e.textContent = text; return e; };
   function link(url, title) { const a = node('a', title); if (/^https?:\/\//i.test(url)) { a.href = url; a.rel = 'noreferrer'; } return a; }
-  function failure(error) { const code=error.message.split(':')[0];const known={SOURCE_NOT_FOUND:'sourceUnavailablePlain',ACCESS_RESTRICTED:'sourceDeniedPlain',STALE_TRANSPORT_DATA:'sourceStalePlain',PARAMETERS_REQUIRED:'sourceSettingsPlain'}[code];if(known)return t(known);return MhkI18n.lang === 'en' ? error.message : `${t(error instanceof SyntaxError ? 'invalidJson' : 'sourceError')} (${error.message.split(':')[0].slice(0,80)})`; }
+  function failure(error) { if(error.code==='INVALID_JSON')return t('invalidJsonField',{field:t(error.field)});const code=error.message.split(':')[0];const known={SOURCE_NOT_FOUND:'sourceUnavailablePlain',ACCESS_RESTRICTED:'sourceDeniedPlain',STALE_TRANSPORT_DATA:'sourceStalePlain',PARAMETERS_REQUIRED:'sourceSettingsPlain'}[code];if(known)return t(known);return MhkI18n.lang === 'en' ? error.message : `${t(error instanceof SyntaxError ? 'invalidJson' : 'sourceError')} (${error.message.split(':')[0].slice(0,80)})`; }
   function renderCoverage() {
     MhkI18n.coverageSummary($('coverage-summary'), inventory, inventoryFailed);
     if (inventory) $('coverage-detail').textContent = JSON.stringify(inventory, null, 2);
@@ -24,7 +24,7 @@ import {fetchPublicJson} from './http.js';
   function focusSection(id) { const e=$(id);e.focus({preventScroll:true});e.scrollIntoView({behavior:window.matchMedia?.('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'}); }
   function syncUrl(push=true) {
     const u=new URL(location.href);u.searchParams.set('q',submittedQuery);u.searchParams.set('access',access);u.searchParams.set('lang',MhkI18n.locale);
-    for(const [key,value] of [['dataset',datasetId],['resource',selected?.id],['offset',searchOffset||null],['sourceOffset',resourceOffset||null],['format',$('resource-format').value||null]]) {if(value!=null)u.searchParams.set(key,value);else u.searchParams.delete(key);}
+    for(const [key,value] of [['dataset',datasetId],['resource',selected?.id],['offset',searchOffset||null],['sourceOffset',resourceOffset||null],['format',$('resource-format').value||null],['directory',directoryMode?'1':null],['status',directoryMode?$('coverage-status').value||null:null]]) {if(value!=null)u.searchParams.set(key,value);else u.searchParams.delete(key);}
     history[push?'pushState':'replaceState'](null,'',u.pathname+u.search+u.hash);
   }
   function resetPreview() {
@@ -126,6 +126,7 @@ import {fetchPublicJson} from './http.js';
     $('record-path-choices').querySelectorAll('select').forEach(e=>e.disabled=busy);
     $('record-query').querySelectorAll('button').forEach(button => { button.disabled = !selected || busy; });
     $('record-table').replaceChildren(); $('resource-citations').replaceChildren();
+    $('record-response').textContent = '';
     if (queryError) { $('query-message').textContent = failure(queryError); return; }
     if (busy) { $('query-message').textContent = t('readingSource'); return; }
     if (!result) { $('query-message').textContent = selected ? t('inspectHint') : ''; return; }
@@ -165,14 +166,21 @@ import {fetchPublicJson} from './http.js';
     const box=$('record-path-choices');box.replaceChildren();const paths=result?.schema?.availableRecordPaths||[];if(paths.length<2||selected?.transport?.operation==='arrivals')return;
     const label=node('label',t('recordListChoice')),select=node('select','');select.setAttribute('aria-label',t('recordListChoice'));for(const path of paths){const option=node('option',path||t('wholeSource'));option.value=path;option.selected=path===result.schema.recordPath;select.append(option);}label.append(select);box.append(label);select.addEventListener('change',()=>{$('record-query').elements.recordPath.value=select.value;query('query');});
   }
+  function jsonObject(value, field) {
+    try {
+      const parsed=JSON.parse(value);
+      if(parsed===null || typeof parsed!=='object' || Array.isArray(parsed))throw new Error();
+      return parsed;
+    } catch { const error=new Error('INVALID_JSON');error.code='INVALID_JSON';error.field=field;throw error; }
+  }
   async function query(kind, continuation = false) {
     if (!selected || busy) { if (!selected) $('query-message').textContent = t('selectFirst'); return; }
     const generation = ++requestGeneration; busy = true; queryError = null; $('records-next').hidden = true; renderQuery();
     try {
       const form = new FormData($('record-query')), selectors = {recordPath:form.get('recordPath'),sheet:form.get('sheet')};
       if (form.get('layer') !== '') selectors.layer = Number(form.get('layer'));
-      const parameters=JSON.parse(form.get('parameters'));$('source-inputs').querySelectorAll('[data-source-parameter]').forEach(e=>parameters[e.dataset.sourceParameter]=e.value);
-      const body = kind === 'schema' ? {...selectors,parameters} : continuation ? {...lastQuery,offset:nextRecords.offset,version:nextRecords.version} : {...selectors,parameters,filters:JSON.parse(form.get('filters')),fields:String(form.get('fields')).split(',').map(s=>s.trim()).filter(Boolean),limit:20};
+      const parameters=jsonObject(form.get('parameters'),'parameters');$('source-inputs').querySelectorAll('[data-source-parameter]').forEach(e=>parameters[e.dataset.sourceParameter]=e.value);
+      const body = kind === 'schema' ? {...selectors,parameters} : continuation ? {...lastQuery,offset:nextRecords.offset,version:nextRecords.version} : {...selectors,parameters,filters:jsonObject(form.get('filters'),'filters'),fields:String(form.get('fields')).split(',').map(s=>s.trim()).filter(Boolean),limit:20};
       const path = `/api/v1/resources/${selected.id}/` + (kind === 'schema' ? 'schema' : 'query');
       const data = await api(path,body);
       if (generation !== requestGeneration) return;
@@ -186,11 +194,14 @@ import {fetchPublicJson} from './http.js';
   }
   function render() { MhkI18n.apply(); if (!selected) $('resource-code').textContent = t('selectForCode'); if (document.documentElement?.dataset?.discovery !== 'true') document.title = t('coveragePageTitle'); renderCoverage(); renderDatasets(); renderResources(); renderSelection(); renderQuery(); }
   async function restore() {
-    const p=new URL(location.href).searchParams, wantedDataset=p.get('dataset'), wantedResource=p.get('resource'), wantedOffset=Math.min(100000,Math.max(0,Number(p.get('sourceOffset'))||0)),wantedFormat=p.get('format')||'';
+    const p=new URL(location.href).searchParams, wantedDataset=p.get('dataset'), wantedResource=p.get('resource'), wantedOffset=Math.min(100000,Math.max(0,Number(p.get('sourceOffset'))||0)),wantedFormat=p.get('format')||'',wantedDirectory=p.get('directory')==='1',wantedStatus=p.get('status')||'';
     submittedQuery=p.get('q')||'';access=['all','connected','sources'].includes(p.get('access'))?p.get('access'):(submittedQuery||wantedDataset?'all':'connected');searchOffset=Math.min(100000,Math.max(0,Number(p.get('offset'))||0));$('dataset-query').value=submittedQuery;
     const pending=search({readInput:false,push:false}),sequence=searchSequence;await pending;
-    if(sequence!==searchSequence||!wantedDataset)return;
-    try{const d=await api('/api/v1/catalogue/datasets/'+encodeURIComponent(wantedDataset));if(sequence!==searchSequence)return;datasetId=d.id;datasetTitle=title(d);resourceOffset=wantedOffset;$('resource-format').value=wantedFormat;$('resource-step').hidden=false;await resources();if(sequence!==searchSequence)return;
+    if(sequence!==searchSequence||(!wantedDataset&&!wantedDirectory))return;
+    try{
+      if(wantedDirectory){directoryMode=true;$('coverage-status').value=wantedStatus;}
+      else {const d=await api('/api/v1/catalogue/datasets/'+encodeURIComponent(wantedDataset));if(sequence!==searchSequence)return;datasetId=d.id;datasetTitle=title(d);}
+      resourceOffset=wantedOffset;$('resource-format').value=wantedFormat;$('resource-step').hidden=false;await resources();if(sequence!==searchSequence)return;
       if(wantedResource){const r=resourceList?.items.find(r=>r.id===wantedResource);if(r)selectResource(r,false);}syncUrl(false);renderDatasets();
     }catch(e){if(sequence===searchSequence){resourceError=e;$('resource-step').hidden=false;renderResources();}}
   }

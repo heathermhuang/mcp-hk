@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
-import {maintenanceResponse, maintenanceRuntimeReady, EXPECTED_REVIEW_POLICY, scheduledMaintenance} from './maintenance.ts';
+import {maintenanceResponse, maintenanceRuntimeReady, EXPECTED_REVIEW_POLICY, scheduledMaintenance, enqueueScheduled, nextScheduled, settleScheduled, scheduledStatus} from './maintenance.ts';
 import {readFileSync} from 'node:fs';
 import {safeOperationError} from './backup.ts';
 const redact=error=>safeOperationError(error,'test-token');
@@ -43,4 +43,30 @@ test('scheduled maintenance never retries a held lease or a source/checkpoint fa
 test('idle timeout spans at least two review periods to avoid cold restore on every cron',()=>{
   const source=readFileSync(new URL('./worker.ts',import.meta.url),'utf8');const minutes=Number(source.match(/sleepAfter = '(\d+)m'/)[1]);
   const config=readFileSync(new URL('../../src/mcp_open_data_hk/review_config.py',import.meta.url),'utf8');const period=Number(config.match(/SCHEDULE_SECONDS = (\d+)/)[1]);assert.ok(minutes*60>=period*2);
+});
+
+function queueStore() {
+  const values=new Map();
+  const storage={async get(key){return structuredClone(values.get(key));},async put(key,value){values.set(key,structuredClone(value));},async transaction(fn){return fn(storage);}};
+  return storage;
+}
+test('a busy daily refresh remains pending for the next resource tick',async()=>{
+  const storage=queueStore();await enqueueScheduled(storage,'restaurants',1000);
+  await assert.rejects(scheduledMaintenance({async maintain(){throw Error('Maintenance already running');}},'scheduled'),/Maintenance already running/);
+  // A new caller with the same durable storage can drain after acquiring the lease.
+  await enqueueScheduled(storage,'resources',2000);
+  assert.deepEqual(await nextScheduled(storage),{pack:'restaurants',scheduledAt:1000,state:'pending'});
+  await settleScheduled(storage,await nextScheduled(storage),'success');
+  assert.equal(await nextScheduled(storage),undefined);
+  await enqueueScheduled(storage,'restaurants',1000);
+  assert.equal(await nextScheduled(storage),undefined,'duplicate event must not requeue a settled refresh');
+});
+test('known source failures settle once; newer schedules survive an older completion',async()=>{
+  const storage=queueStore();await enqueueScheduled(storage,'restaurants',1000);
+  const first=await nextScheduled(storage);await settleScheduled(storage,first,'failed');
+  await enqueueScheduled(storage,'resources',2000);assert.equal(await nextScheduled(storage),undefined);
+  await enqueueScheduled(storage,'restaurants',3000);await settleScheduled(storage,first,'success');
+  assert.equal((await nextScheduled(storage)).scheduledAt,3000);
+  await enqueueScheduled(storage,'population',2500);assert.equal((await nextScheduled(storage)).pack,'population');
+  assert.equal((await scheduledStatus(storage)).length,2);
 });

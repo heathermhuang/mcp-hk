@@ -3,7 +3,7 @@ import { DurableObject } from 'cloudflare:workers';
 import {AgentAuthService,isAgentAuthPath,protectedDataPath,dataRequestHeaders} from './agent-auth';
 import {discoveryTarget,discoveryLinks} from './discovery';
 import { scheduledPack } from './cron';
-import {maintenanceResponse, maintenanceRuntimeReady, scheduledMaintenance, maintenancePackForRequest, EXPECTED_REVIEW_POLICY} from './maintenance';
+import {maintenanceResponse, maintenanceRuntimeReady, scheduledMaintenance, maintenancePackForRequest, EXPECTED_REVIEW_POLICY, enqueueScheduled, nextScheduled, settleScheduled, scheduledStatus} from './maintenance';
 import {probePublicSource} from './source-probe';
 import {relayApprovedSource} from './source-relay';
 import {saveOverview, serveOverview} from './overview';
@@ -73,6 +73,11 @@ export class McpContainer extends Container<Env> {
   entrypoint = ['mcp-hk-container'];
 
   usageReport(days: number) { return new UsageStore(this.ctx.storage.sql).report(days); }
+
+  async runScheduled(pack: string, scheduledAt: number) {
+    await enqueueScheduled(this.ctx.storage, pack, scheduledAt);
+    return scheduledMaintenance(this, 'scheduled');
+  }
 
   async fetch(request: Request): Promise<Response> {
     const started = Date.now(), url = new URL(request.url);
@@ -147,7 +152,12 @@ export class McpContainer extends Container<Env> {
       await txn.put('maintenanceLease', Date.now() + 15 * 60000); return true;
     });
     if (!acquired) throw new Error('Maintenance already running');
+    let scheduled;
     try {
+      if (pack === 'scheduled') {
+        scheduled = await nextScheduled(this.ctx.storage);
+        pack = scheduled?.pack || 'resources';
+      }
       const path = pack === 'backup' ? '/__ops/backup' : `/__ops/refresh?pack=${pack}`;
       const response = await this.containerFetch(`${this.env.PUBLIC_ORIGIN}${path}`, {method: 'POST', headers: {'Authorization': `Bearer ${this.env.OPS_TOKEN}`, 'x-mcp-edge-token': this.env.OPS_TOKEN}});
       if (!response.ok) throw new Error(`Maintenance source returned ${response.status}`);
@@ -156,12 +166,14 @@ export class McpContainer extends Container<Env> {
       try { overview = await this.publishOverview(); }
       catch (error) { overview = {status: 'failed', error: safeOperationError(error, this.env.OPS_TOKEN)}; }
       await this.ctx.storage.put('maintenanceStatus', {status: 'success', ...receipt, overview});
+      if (scheduled) await settleScheduled(this.ctx.storage, scheduled, 'success');
       const cutoff = Date.now() - 30 * 86400000;
       const versions = await this.env.BACKUPS.list({prefix: 'backups/'});
       const expired = versions.objects.filter(object => object.uploaded.getTime() < cutoff).map(object => object.key);
       if (expired.length) await this.env.BACKUPS.delete(expired);
       return receipt;
     } catch (error) {
+      if (scheduled) await settleScheduled(this.ctx.storage, scheduled, 'failed');
       await this.ctx.storage.put('maintenanceStatus', {status: 'failed', attemptedAt: new Date().toISOString(), pack, error: safeOperationError(error, this.env.OPS_TOKEN)});
       throw new Error('Maintenance failed; previous backup retained');
     } finally { await this.ctx.storage.delete('maintenanceLease'); }
@@ -209,7 +221,7 @@ export class McpContainer extends Container<Env> {
   async operationDiagnostics() {
     return {workerRelease: this.env.RELEASE_COMMIT || null, credentialBoundary:'edge-and-controller-v1', maintenancePolicy: EXPECTED_REVIEW_POLICY, idleTimeout: this.sleepAfter, leaseUntil: await this.ctx.storage.get<number>('maintenanceLease') || null,
       seedLease: Boolean(await this.ctx.storage.get<string>('seedOwner')),
-      now: Date.now(), maintenance: await this.operationsStatus()};
+      now: Date.now(), maintenance: await this.operationsStatus(), scheduled: await scheduledStatus(this.ctx.storage)};
   }
 
   async operationsStatus() { return await this.ctx.storage.get('maintenanceStatus') || {status: 'not_run'}; }
@@ -319,6 +331,6 @@ export default {
   },
   async scheduled(controller: ScheduledController, env: Env, ctx: ExecutionContext) {
     const pack = scheduledPack(controller.cron);
-    ctx.waitUntil(scheduledMaintenance(env.APP.get(env.APP.idFromName('production')), pack));
+    ctx.waitUntil(env.APP.get(env.APP.idFromName('production')).runScheduled(pack, controller.scheduledTime));
   },
 } satisfies ExportedHandler<Env>;

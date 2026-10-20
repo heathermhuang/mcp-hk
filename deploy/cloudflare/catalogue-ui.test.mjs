@@ -58,3 +58,27 @@ test('back/refresh URL state restores the selected dataset and source',async()=>
   b.location.href=saved;await b.listeners.popstate();await flush();
   assert.equal(b.el('preview-step').hidden,false);assert.equal(b.location.searchParams.get('dataset'),'alpha');assert.equal(b.location.searchParams.get('resource'),b.second.id);
 });
+test('replacement query loading and malformed objects never retain prior response JSON',async()=>{
+  const b=await browser();b.button('datasets','Alpha').listeners.click();await flush();b.el('resources').querySelectorAll('button')[1].listeners.click();
+  b.form.listeners.submit({preventDefault(){},submitter:{value:'query'}});
+  b.resolve({data:{items:[{row:'old response'}]},schema:{fields:[]},meta:{total:1,structuredQueryable:true},warnings:[],provenance:[]});await flush();await flush();
+  assert.match(b.el('record-response').textContent,/old response/);
+  b.form.listeners.submit({preventDefault(){},submitter:{value:'query'}});
+  assert.equal(b.el('record-response').textContent,'');
+  b.resolve({data:{items:[]},schema:{fields:[]},meta:{total:0,structuredQueryable:true},warnings:[],provenance:[]});await flush();await flush();
+  for(const value of ['{','null','[]','"text"']){
+    b.form.elements.parameters.value=value;b.form.listeners.submit({preventDefault(){},submitter:{value:'query'}});await flush();
+    assert.equal(b.el('record-response').textContent,'');assert.equal(b.el('record-table').children.length,0);assert.equal(b.el('query-message').textContent,'invalidJsonField');assert.equal(b.queryButton.disabled,false);
+  }
+});
+test('resource directory status, format, page and selection survive URL restoration',async()=>{
+  const b=await browser();b.el('coverage-status').value='queryable';b.el('directory').listeners.click();await flush();
+  b.el('resource-format').value='JSON';b.el('resource-format').listeners.change();await flush();
+  b.el('resources-next').listeners.click({target:{dataset:{offset:'15'}}});await flush();
+  b.el('resources').querySelectorAll('button')[1].listeners.click();const saved=b.location.href;
+  assert.equal(b.location.searchParams.get('directory'),'1');assert.equal(b.location.searchParams.get('status'),'queryable');
+  b.el('dataset-query').value='Beta';b.el('dataset-search').listeners.submit({preventDefault(){}});await flush();
+  b.el('coverage-status').value='unavailable';b.location.href=saved;await b.listeners.popstate();await flush();
+  assert.equal(b.el('resource-step').hidden,false);assert.equal(b.el('coverage-status').value,'queryable');assert.equal(b.el('resource-format').value,'JSON');
+  assert.equal(b.location.searchParams.get('sourceOffset'),'15');assert.equal(b.location.searchParams.get('resource'),b.second.id);assert.equal(b.el('preview-step').hidden,false);
+});

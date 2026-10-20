@@ -11,7 +11,7 @@ from typing import Annotated, Literal
 from fastapi import FastAPI, Query, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, RedirectResponse, Response
+from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from . import server as catalogue
@@ -37,7 +37,13 @@ def create_app(service=None):
         async with mcp_app.lifespan(app):
             yield
 
-    app = FastAPI(title="mcp.hk HTTP API", version="0.1.0", lifespan=lifespan)
+    app = FastAPI(
+        title="mcp.hk HTTP API",
+        version="0.1.0",
+        lifespan=lifespan,
+        docs_url=None,
+        redoc_url=None,
+    )
     app.state.service = service
     app.state.mcp = mcp
     app.add_middleware(
@@ -360,6 +366,14 @@ def create_app(service=None):
         def data_alias(request: Request):
             suffix = "?" + request.url.query if request.url.query else ""
             return RedirectResponse("/coverage" + suffix, status_code=308)
+
+        @app.get("/docs", include_in_schema=False)
+        def api_docs():
+            return FileResponse(web / "api-docs.html", media_type="text/html")
+
+        @app.get("/redoc", include_in_schema=False)
+        def docs_alias():
+            return RedirectResponse("/docs", status_code=308)
 
         app.mount("/assets", StaticFiles(directory=web), name="assets")
     # The MCP app owns /mcp. Mount at root last to avoid /mcp/mcp and keep REST routes.

@@ -36,7 +36,9 @@
     document.querySelectorAll('a[href]').forEach(e => {
       if (e.getAttribute('href').startsWith('#')) return;
       const url = new URL(e.getAttribute('href'), location.href);
-      if (e.hasAttribute?.('hreflang')) return;
+      // The canonical locale link is a no-JS fallback. With JS, the single
+      // language button preserves the current same-origin discovery state.
+      if (e.hasAttribute?.('hreflang')) { e.hidden = true; return; }
       if (url.origin === location.origin && (['/', '/demo', '/connect', '/sources', '/plates', '/properties', '/coverage', '/data', '/terms', '/privacy', '/about', '/guides'].includes(url.pathname) || url.pathname.startsWith('/guides/'))) {
         url.searchParams.set('lang', lang === 'en' ? 'en' : 'zh-Hant');
         e.setAttribute('href', url.pathname + url.search + url.hash);

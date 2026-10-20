@@ -58,6 +58,16 @@ can advance an accepted generation. A failed refresh retains the prior data and
 backup, and records failure in the durable maintenance status. Re-run only after
 investigating a changed condition. There is no model-based recurring automation.
 
+Daily/weekly jobs are recorded durably before attempting the shared lease. If
+another job holds the lease, the next resource tick services the oldest pending
+job instead of starting another resource batch. Selection happens only after
+acquiring the normal lease. Each of the four infrequent jobs retains its latest
+scheduled time and pending/success/failed state in private diagnostics. Duplicate
+cron delivery does not requeue a settled job. Known source/checkpoint failures
+settle as failed and are not retried by resource ticks; the next regular schedule
+or an investigated operator action is required. Interrupted requests never clear
+leases, and a newer schedule cannot be erased by an older completion.
+
 R2 versions are retained for 30 days. Local pruning retains active and previous
 generations, all recently retired generations for a 48-hour pagination window,
 associated source captures, and unexpired address cache entries. Full R2 checkpoints
@@ -148,6 +158,16 @@ with at most three attempts; out-of-order searches/resource lists cannot replace
 newer selections. It never retries unchanged provider or schema failures.
 
 ### Public pages and language
+
+`/docs` serves Swagger UI 5.34.0 from the same-origin `/assets` paths, with its
+initializer in `api-docs.js`. The API's `script-src 'self'` policy remains intact;
+no runtime CDN, inline-script allowance or external schema validator is needed.
+`/redoc` redirects to this reference. Vendored files originate from the npm
+`swagger-ui-dist@5.34.0` archive (Apache-2.0, license alongside the assets).
+SHA-256: bundle `3f6abf70480db7e07914df4c98a77385f22ea585eaf457a3e6415ba0eae2d167`;
+CSS `c3cfe8248c4b0b89673600fb829924eafbac6de4bc4b2b06f5f5243483074d0a`.
+For upgrades, obtain a pinned package, preserve its license, update these hashes,
+and verify a real docs request under the production security headers.
 
 The homepage reads `/assets/overview.json` for dated catalogue, resource and
 validated-queryable counts. The Worker serves a compact R2 summary without calling
