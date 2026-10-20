@@ -163,7 +163,8 @@ newer selections. It never retries unchanged provider or schema failures.
 initializer in `api-docs.js`. The API's `script-src 'self'` policy remains intact;
 no runtime CDN, inline-script allowance or external schema validator is needed.
 `/redoc` redirects to this reference. Vendored files originate from the npm
-`swagger-ui-dist@5.34.0` archive (Apache-2.0, license alongside the assets).
+`swagger-ui-dist@5.34.0` archive. Its Apache-2.0 license, NOTICE and bundled
+third-party license notices are preserved alongside the assets.
 SHA-256: bundle `3f6abf70480db7e07914df4c98a77385f22ea585eaf457a3e6415ba0eae2d167`;
 CSS `c3cfe8248c4b0b89673600fb829924eafbac6de4bc4b2b06f5f5243483074d0a`.
 For upgrades, obtain a pinned package, preserve its license, update these hashes,
