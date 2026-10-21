@@ -100,3 +100,10 @@ test('data browser shares the same complete navigation and footer as the other p
   const examples=read('index.html').match(/<div class="mhk-packs mhk-demos">([\s\S]*?)<\/div>/)[1];
   for(const path of ['/demo','/plates']) assert.ok(examples.includes('href="'+path+'"'),path+' remains accessible as a homepage example');
 });
+
+
+test('badge policy update uses the same effective date in both languages',()=>{
+ const policy=readFileSync(new URL('../../src/mcp_open_data_hk/web/legal.js',import.meta.url),'utf8');
+ assert.equal((policy.match(/Effective 21 October 2026/g)||[]).length,2);
+ assert.equal((policy.match(/2026 年 10 月 21 日/g)||[]).length,2);
+});

@@ -310,7 +310,7 @@ export default {
         secured.headers.set('Content-Language',discovery.language || 'en');
       }
       if (discovery.noindex || (rawAsset && /\.(html|json)$/.test(url.pathname))) secured.headers.set('X-Robots-Tag', 'noindex, follow');
-      secured.headers.set('Content-Security-Policy', "default-src 'self'; script-src 'self' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com; img-src 'self' data: https://www.google-analytics.com; frame-ancestors 'none'; base-uri 'none'");
+      secured.headers.set('Content-Security-Policy', "default-src 'self'; script-src 'self' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com; img-src 'self' data: https://www.google-analytics.com https://hk.app/badges/; frame-ancestors 'none'; base-uri 'none'");
       secured.headers.set('X-Content-Type-Options', 'nosniff');
       secured.headers.set('Referrer-Policy', 'no-referrer');
       secured.headers.set('X-Mcp-Release', env.RELEASE_COMMIT);

@@ -10,7 +10,7 @@ playwright-artifacts
 deploy/cloudflare/node_modules
 deploy/cloudflare/.wrangler
 
-deploy/cloudflare/.ops-secrets.json
+deploy/cloudflare/.ops-*.json
 
 deploy/cloudflare/worker-configuration.d.ts
 .dev.vars*

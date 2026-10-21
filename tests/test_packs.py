@@ -70,6 +70,10 @@ def test_api_docs_assets_work_with_the_actual_security_policy(service):
         response = client.get("/docs")
         assert response.status_code == 200
         assert "script-src 'self'" in response.headers["content-security-policy"]
+        assert (
+            "img-src 'self' data: https://hk.app/badges/;"
+            in response.headers["content-security-policy"]
+        )
         assets = Assets()
         assets.feed(response.text)
         assert assets.urls
