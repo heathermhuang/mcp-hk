@@ -70,3 +70,6 @@ body{margin:0;padding:20px;background:#f8f7f2;color-scheme:light dark}#mhk-previ
 
 #mhk-preview .mhk-maker-badge{flex:0 0 100%;justify-content:flex-start}
 #mhk-preview .mhk-maker-badge img{width:214px;height:40px;max-width:100%;object-fit:contain}
+
+/* Optional first-visit analytics must not make the public page inert. */
+#mhk-privacy-choice[open]:not(:modal){position:fixed;inset:auto 16px 16px auto;margin:0;max-width:420px;width:calc(100% - 32px);padding:20px;z-index:30}

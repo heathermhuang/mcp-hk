@@ -52,7 +52,7 @@
     if (!allowed && loaded) location.reload();
   }
   reject.addEventListener('click',()=>choose(false)); accept.addEventListener('click',()=>choose(true)); close.addEventListener('click',()=>dialog.close());
-  document.querySelectorAll('[data-analytics-settings]').forEach(button=>button.addEventListener('click',()=>{render();dialog.showModal();}));
+  document.querySelectorAll('[data-analytics-settings]').forEach(button=>button.addEventListener('click',()=>{render();if(dialog.open)dialog.close();dialog.showModal();}));
   window.addEventListener('mhk:language',render);
   window.addEventListener('mhk:navigate',pageView);window.addEventListener('popstate',pageView);
   render();
@@ -60,6 +60,10 @@
     id=/^G-[A-Z0-9]{4,20}$/.test(config.googleAnalyticsId || '') ? config.googleAnalyticsId : '';
     render();
     if (respectsOptOut()) { if(id)window['ga-disable-'+id]=true;removeCookies();return; }
-    if (choice?.allowed) start(); else if (id && !choice) dialog.showModal();
+    if (choice?.allowed) start(); else if (id && !choice && !dialog.open) {
+      const previousFocus=document.activeElement;
+      dialog.show();
+      previousFocus?.focus?.({preventScroll:true});
+    }
   }).catch(()=>{/* Optional analytics never prevents use of the service. */});
 })();
