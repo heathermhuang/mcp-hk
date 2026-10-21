@@ -60,6 +60,10 @@
     id=/^G-[A-Z0-9]{4,20}$/.test(config.googleAnalyticsId || '') ? config.googleAnalyticsId : '';
     render();
     if (respectsOptOut()) { if(id)window['ga-disable-'+id]=true;removeCookies();return; }
-    if (choice?.allowed) start(); else if (id && !choice && !dialog.open) dialog.show();
+    if (choice?.allowed) start(); else if (id && !choice && !dialog.open) {
+      const previousFocus=document.activeElement;
+      dialog.show();
+      previousFocus?.focus?.({preventScroll:true});
+    }
   }).catch(()=>{/* Optional analytics never prevents use of the service. */});
 })();
