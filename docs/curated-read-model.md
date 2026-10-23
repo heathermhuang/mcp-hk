@@ -255,3 +255,34 @@ The proposed initial host is 2 vCPU, 4 GiB RAM and 80 GiB disk. The observed
 three-copy/read-model/restore envelope fits that disk; keep at least 20 GiB free.
 Actual hosting, credentials, encrypted offsite backup access and final live
 REST/MCP acceptance remain release gates until their observed receipts exist.
+
+
+## Production operator configuration (24 October 2026)
+
+The approved initial host is DigitalOcean `mcp-hk-curated-20261024` in `sgp1`,
+2 vCPU / 4 GiB / 80 GiB (`s-2vcpu-4gb`). Its US$24/month compute and 20% weekly
+backup plan total US$28.80/month before tax, within the approved US$30 cap;
+existing Cloudflare usage is separate. Weekly snapshots retain 28 days.
+
+The backend hostname is `curated.mcp.hk`; its bearer token remains in the optional
+Worker secret and the host's root-owned environment file. The checked-in origin
+keeps future gateway deployments connected. Supply `CURATED_BACKEND_TOKEN` together
+with the existing `OPS_TOKEN` through the ignored mode-0600 secrets file. Missing
+credentials continue to disable this optional pack.
+
+The logical backup belongs in the private `mcp-hk-backups` R2 bucket under
+`curated/<version>/<sha256>/`, independently of legacy `backups/` retention and
+`latest.*` recovery pointers. The initial 398,652,591-byte archive has SHA-256
+`a2fa41b79d03283d3b659dbf2045ef65b8fa2cd594ae2200cd6028bb061c6330`.
+Its manifest lists six ordered chunks (at most 64 MiB each), sizes and per-chunk
+checksums. Retrieve using remote R2 access, verify every chunk and the assembled
+archive, and restore into a fresh database before qualifying a release. Retain the
+aggregate source and restore receipts; never treat an object upload or host
+snapshot as a completed restore test. Upload and qualify a new immutable backup
+before publishing any later dataset version. This archival release has no ingest
+schedule that mutates the fixed source facts.
+
+Deployment is complete only after the host and offsite restores, authenticated
+HTTPS query, live REST/MCP parity, accepted legacy checkpoint restore and all-five
+schedule restoration have observed receipts. This operator configuration alone
+makes none of those runtime claims.
