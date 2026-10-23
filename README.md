@@ -68,6 +68,11 @@ See [source field contracts and attribution](docs/sources.md),
 [operations, Docker and release gates](docs/operations.md), and
 [the upstream README](docs/upstream-readme.md) for the eight original tools.
 
+For offline preparation of historical corporate packs, see the
+[Enigma archive audit](docs/enigma-audit.md). This operator workflow acquires,
+inspects and verifies the original release in isolation; it does not publish a
+new data pack or modify the serving application.
+
 ## Contribute and verify
 
 ```sh
