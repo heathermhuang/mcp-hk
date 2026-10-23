@@ -19,7 +19,6 @@ jobs:
     env:
       CURATED_TEST_DSN: postgresql://postgres@127.0.0.1:5432/curated
       CURATED_REQUIRE_DB: '1'
-      CURATED_TEST_CONTAINER: ${{ job.services.postgres.id }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
@@ -28,6 +27,8 @@ jobs:
       - run: pip install -r requirements.lock
       - run: pip install --no-deps -e . && pip install 'psycopg[binary]==3.2.13'
       - run: PYTHONPATH=src python -m pytest tests/test_curated_postgres.py -v
+        env:
+          CURATED_TEST_CONTAINER: ${{ job.services.postgres.id }}
   # Existing main-only workflows do not run on a stacked PR's feature base.
   stacked-python:
     if: github.event_name == 'pull_request' && github.base_ref != 'main'
