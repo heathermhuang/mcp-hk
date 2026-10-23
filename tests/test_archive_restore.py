@@ -115,3 +115,41 @@ def test_archive_member_is_not_parsed_as_a_native_option(tmp_path, monkeypatch):
     monkeypatch.setattr("mcp_open_data_hk.archive_extract.subprocess.Popen", launch)
     with pytest.raises(OSError, match="fixture"):
         extract_member(tmp_path, "-ooutside.sql", reserve=0)
+
+
+def test_stalled_database_pipe_cannot_bypass_import_deadline():
+    import subprocess
+    import sys
+    import time
+    from mcp_open_data_hk.archive_restore import DeadlineWriter
+
+    child = subprocess.Popen(
+        [sys.executable, "-c", "import time; time.sleep(10)"], stdin=subprocess.PIPE
+    )
+    started = time.monotonic()
+    try:
+        with DeadlineWriter(child.stdin, started + 0.1) as sink:
+            with pytest.raises(AuditError) as error:
+                sink.write(b"x" * (1024 * 1024))
+        assert error.value.code == "RESTORE_TIMEOUT"
+        assert time.monotonic() - started < 1
+    finally:
+        child.kill()
+        child.wait(timeout=5)
+        child.stdin.close()
+
+
+def test_loader_grants_must_be_exactly_current_schema():
+    from mcp_open_data_hk.archive_restore import validate_loader_grants
+
+    readonly = [
+        "GRANT USAGE ON *.* TO `audit_loader`@`localhost`",
+        "GRANT SELECT ON `audit\\_new`.* TO `audit_loader`@`localhost`",
+    ]
+    assert validate_loader_grants("audit_new", readonly) == readonly
+    for extra in [
+        "GRANT SELECT, INSERT ON `audit\\_old`.* TO `audit_loader`@`localhost`",
+        "GRANT FILE ON *.* TO `audit_loader`@`localhost`",
+    ]:
+        with pytest.raises(AuditError):
+            validate_loader_grants("audit_new", readonly + [extra])

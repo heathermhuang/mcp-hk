@@ -4,6 +4,7 @@ import json
 import os
 import re
 import secrets
+import selectors
 import subprocess
 import tempfile
 import time
@@ -135,6 +136,63 @@ def install_client_config(workspace, container):
     )
 
 
+class DeadlineWriter:
+    """Bound every pipe write, including when the database stops consuming."""
+
+    def __init__(self, stream, deadline):
+        self.fd, self.deadline = stream.fileno(), deadline
+        os.set_blocking(self.fd, False)
+        self.selector = selectors.DefaultSelector()
+        self.selector.register(self.fd, selectors.EVENT_WRITE)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_):
+        self.selector.close()
+
+    def write(self, data):
+        remaining = memoryview(data)
+        while remaining:
+            timeout = self.deadline - time.monotonic()
+            if timeout <= 0:
+                raise AuditError(
+                    "RESTORE_TIMEOUT", "One-hour audit import bound reached"
+                )
+            if not self.selector.select(timeout=min(timeout, 5)):
+                continue
+            try:
+                written = os.write(self.fd, remaining[:65536])
+            except BlockingIOError:
+                continue
+            remaining = remaining[written:]
+
+
+def loader_setup(database, password):
+    # Database-level GRANT names are patterns in MySQL: escape underscores.
+    grant_database = database.replace("_", "\\_")
+    return (
+        f"CREATE DATABASE `{database}` CHARACTER SET utf8mb4;\n"
+        "DROP USER IF EXISTS 'audit_loader'@'localhost';\n"
+        f"CREATE USER 'audit_loader'@'localhost' IDENTIFIED BY '{password}';\n"
+        f"GRANT SELECT,INSERT ON `{grant_database}`.* TO 'audit_loader'@'localhost';\n"
+    )
+
+
+def validate_loader_grants(database, grants, writing=False):
+    grant_database = database.replace("_", "\\_")
+    privileges = "SELECT, INSERT" if writing else "SELECT"
+    expected = {
+        "GRANT USAGE ON *.* TO `audit_loader`@`localhost`",
+        f"GRANT {privileges} ON `{grant_database}`.* TO `audit_loader`@`localhost`",
+    }
+    if set(grants) != expected:
+        raise AuditError(
+            "UNSAFE_DATABASE", "Loader privileges exceed the current audit schema"
+        )
+    return grants
+
+
 def restore(workspace, container, database):
     if not re.fullmatch(r"audit_[a-z0-9_]{1,50}", database):
         raise AuditError("UNSAFE_DATABASE", "Use a new audit_ database name")
@@ -175,13 +233,7 @@ def restore(workspace, container, database):
         os.chmod(config, 0o600)
         # Write inside the live mount namespace: archive-copy APIs can miss tmpfs.
         install_client_config(workspace, container)
-        setup = (
-            f"CREATE DATABASE `{database}` CHARACTER SET utf8mb4;\n"
-            "CREATE USER IF NOT EXISTS 'audit_loader'@'localhost';\n"
-            f"ALTER USER 'audit_loader'@'localhost' IDENTIFIED BY '{password}';\n"
-            f"GRANT SELECT,INSERT ON `{database}`.* TO 'audit_loader'@'localhost';\n"
-            f"USE `{database}`;\n" + ddl
-        )
+        setup = loader_setup(database, password) + f"USE `{database}`;\n" + ddl
         query(container, None, setup, root=True)
         report["sourceTableCount"] = len(schemas)
         report["restoredTables"] = list(SELECTED)
@@ -196,6 +248,7 @@ def restore(workspace, container, database):
             "SELECT @@skip_networking,@@local_infile,@@event_scheduler,@@secure_file_priv;SHOW GRANTS;",
         )
         report["serverSettingsAndLoaderGrants"] = settings.splitlines()
+        validate_loader_grants(database, settings.splitlines()[1:], writing=True)
         if not settings.startswith("1\t0\tOFF\t"):
             raise AuditError(
                 "UNSAFE_DATABASE",
@@ -220,9 +273,7 @@ def restore(workspace, container, database):
                 stdout=errors,
                 stderr=errors,
             )
-            process.stdin.write(
-                b"SET NAMES utf8mb4; SET SESSION sql_mode='NO_AUTO_VALUE_ON_ZERO';\n"
-            )
+            sink = DeadlineWriter(process.stdin, started + 3600)
 
             def progress(table, byte_count, counts):
                 if time.monotonic() - started > 3600:
@@ -241,18 +292,23 @@ def restore(workspace, container, database):
                     },
                 )
 
-            inventory = scan_dump(data, schemas, process.stdin, progress)
+            with sink:
+                sink.write(
+                    b"SET NAMES utf8mb4; SET SESSION sql_mode='NO_AUTO_VALUE_ON_ZERO';\n"
+                )
+                inventory = scan_dump(data, schemas, sink, progress)
             process.stdin.close()
-            process.wait(timeout=300)
+            process.wait(timeout=max(0.01, min(300, started + 3600 - time.monotonic())))
             if process.returncode:
                 raise AuditError(
                     "DATABASE_IMPORT_FAILED",
                     "Literal projection import failed; retain partial audit database",
                 )
+        grant_database = database.replace("_", "\\_")
         query(
             container,
             None,
-            f"REVOKE INSERT ON `{database}`.* FROM 'audit_loader'@'localhost';",
+            f"REVOKE INSERT ON `{grant_database}`.* FROM 'audit_loader'@'localhost';",
             root=True,
         )
         report["sourceInventory"] = inventory
@@ -283,9 +339,9 @@ def restore(workspace, container, database):
                 )
             verified[table] = {"rows": count, "dateRanges": ranges, "columns": columns}
         report["restoredTableAudit"] = verified
-        report["readOnlyGrants"] = query(
-            container, database, "SHOW GRANTS;"
-        ).splitlines()
+        report["readOnlyGrants"] = validate_loader_grants(
+            database, query(container, database, "SHOW GRANTS;").splitlines()
+        )
         report["status"] = "restored"
         report["finishedAt"] = now()
         report["elapsedSeconds"] = round(time.monotonic() - started, 3)
