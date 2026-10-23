@@ -50,6 +50,7 @@ mcp-hk-http = "mcp_open_data_hk.api:main"
 mcp-hk-refresh = "mcp_open_data_hk.ingest:main"
 mcp-hk-catalogue = "mcp_open_data_hk.catalogue_cli:main"
 mcp-hk-container = "mcp_open_data_hk.operations:main"
+mcp-hk-enigma-audit = "mcp_open_data_hk.archive_audit:main"
 
 [project.urls]
 Homepage = "https://mcp.hk"
@@ -65,4 +66,4 @@ testpaths = ["tests"]
 markers = ["live: optional government network integration probes"]
 
 [tool.setuptools.package-data]
-mcp_open_data_hk = ["web/*.html", "web/*.css", "web/*.js", "web/*.json", "web/*.svg", "web/*.png", "web/*LICENSE*.txt", "web/*NOTICE*.txt", "source-relay-targets.json"]
+mcp_open_data_hk = ["web/*.html", "web/*.css", "web/*.js", "web/*.json", "web/*.svg", "web/*.png", "web/*LICENSE*.txt", "web/*NOTICE*.txt", "source-relay-targets.json", "webb-site-NOTICE.txt"]

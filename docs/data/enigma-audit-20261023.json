@@ -1,0 +1,1334 @@
+{
+  "phase": "Enigma source archive audit",
+  "status": "source_fidelity_verified",
+  "source": {
+    "fileId": "1AUpdv6nXd5G46dyUU-ydDL4rEUjbeoz5",
+    "name": "enigma251227.7z",
+    "size": 1721680391,
+    "modifiedTime": "2025-12-27T02:51:27.000Z",
+    "sourceUrl": "https://drive.google.com/file/d/1AUpdv6nXd5G46dyUU-ydDL4rEUjbeoz5/view",
+    "noticeUrl": "https://drive.google.com/file/d/1zXq1bwP0jNlZXNelsGobkDG12abzC93-/view",
+    "licence": "CC-BY; retain the original notice and attribution to David M Webb"
+  },
+  "archiveSha256": "9c2c42ae5e762d34b60954f43b37199b92b546033e229a292ed08b76323f6de2",
+  "archiveBytes": 1721680391,
+  "members": [
+    {
+      "path": "enigmaData-2025-12-27- 000.sql",
+      "bytes": 12416843125,
+      "directory": false
+    },
+    {
+      "path": "enigmaStructure-2025-12-27- 000.sql",
+      "bytes": 449550,
+      "directory": false
+    },
+    {
+      "path": "enigmaTriggers-2025-12-27- 000.sql",
+      "bytes": 24907,
+      "directory": false
+    }
+  ],
+  "declaredExpandedBytes": 12417317582,
+  "sourceTableCount": 187,
+  "sourceRowsParsed": 151145202,
+  "sourceTableRows": {
+    "acdata": {
+      "rows": 18649,
+      "insertStatements": 1
+    },
+    "acitems": {
+      "rows": 32,
+      "insertStatements": 1
+    },
+    "activity": {
+      "rows": 13,
+      "insertStatements": 1
+    },
+    "adjustments": {
+      "rows": 41873,
+      "insertStatements": 2
+    },
+    "advisers": {
+      "rows": 5724,
+      "insertStatements": 1
+    },
+    "adviserships": {
+      "rows": 131648,
+      "insertStatements": 10
+    },
+    "airlines": {
+      "rows": 468,
+      "insertStatements": 1
+    },
+    "airports": {
+      "rows": 708,
+      "insertStatements": 1
+    },
+    "alias": {
+      "rows": 3737,
+      "insertStatements": 1
+    },
+    "bbexch": {
+      "rows": 41,
+      "insertStatements": 1
+    },
+    "bodytype": {
+      "rows": 16,
+      "insertStatements": 1
+    },
+    "buybacklog": {
+      "rows": 1,
+      "insertStatements": 1
+    },
+    "campaign": {
+      "rows": 4,
+      "insertStatements": 1
+    },
+    "capacity": {
+      "rows": 33,
+      "insertStatements": 1
+    },
+    "capchanges": {
+      "rows": 99588,
+      "insertStatements": 7
+    },
+    "capchangetypes": {
+      "rows": 61,
+      "insertStatements": 1
+    },
+    "casetypes": {
+      "rows": 114,
+      "insertStatements": 1
+    },
+    "categories": {
+      "rows": 198,
+      "insertStatements": 1
+    },
+    "cattree": {
+      "rows": 118,
+      "insertStatements": 1
+    },
+    "chartitems": {
+      "rows": 43,
+      "insertStatements": 1
+    },
+    "charts": {
+      "rows": 14,
+      "insertStatements": 1
+    },
+    "charttypes": {
+      "rows": 2,
+      "insertStatements": 1
+    },
+    "classifications": {
+      "rows": 3843,
+      "insertStatements": 1
+    },
+    "codeshare": {
+      "rows": 913499,
+      "insertStatements": 22
+    },
+    "comeets": {
+      "rows": 60304,
+      "insertStatements": 3
+    },
+    "comex": {
+      "rows": 10647,
+      "insertStatements": 1
+    },
+    "compos": {
+      "rows": 406158,
+      "insertStatements": 24
+    },
+    "coms": {
+      "rows": 9,
+      "insertStatements": 1
+    },
+    "corpwords": {
+      "rows": 59,
+      "insertStatements": 1
+    },
+    "courts": {
+      "rows": 12,
+      "insertStatements": 1
+    },
+    "currencies": {
+      "rows": 19,
+      "insertStatements": 1
+    },
+    "currpair": {
+      "rows": 11,
+      "insertStatements": 1
+    },
+    "data": {
+      "rows": 12856,
+      "insertStatements": 1
+    },
+    "dataitems": {
+      "rows": 44,
+      "insertStatements": 1
+    },
+    "datasource": {
+      "rows": 3,
+      "insertStatements": 1
+    },
+    "dateaccuracy": {
+      "rows": 5,
+      "insertStatements": 1
+    },
+    "destor": {
+      "rows": 1435119,
+      "insertStatements": 25
+    },
+    "directorships": {
+      "rows": 29848020,
+      "insertStatements": 2722
+    },
+    "dismodes": {
+      "rows": 18,
+      "insertStatements": 1
+    },
+    "dlreasons": {
+      "rows": 21,
+      "insertStatements": 1
+    },
+    "doctypes": {
+      "rows": 13,
+      "insertStatements": 1
+    },
+    "documents": {
+      "rows": 121246,
+      "insertStatements": 17
+    },
+    "domchanges": {
+      "rows": 105,
+      "insertStatements": 1
+    },
+    "domiciles": {
+      "rows": 328,
+      "insertStatements": 1
+    },
+    "donations": {
+      "rows": 547,
+      "insertStatements": 1
+    },
+    "dtsquotes": {
+      "rows": 3273342,
+      "insertStatements": 246
+    },
+    "enginesize": {
+      "rows": 7,
+      "insertStatements": 1
+    },
+    "entitlements": {
+      "rows": 122002,
+      "insertStatements": 58
+    },
+    "errorlog": {
+      "rows": 0,
+      "insertStatements": 0
+    },
+    "ess": {
+      "rows": 304605,
+      "insertStatements": 31
+    },
+    "events": {
+      "rows": 125544,
+      "insertStatements": 24
+    },
+    "filingcodes": {
+      "rows": 143501,
+      "insertStatements": 2
+    },
+    "flights": {
+      "rows": 1253303,
+      "insertStatements": 203
+    },
+    "forexrates": {
+      "rows": 100681,
+      "insertStatements": 3
+    },
+    "freg": {
+      "rows": 34784,
+      "insertStatements": 3
+    },
+    "freq": {
+      "rows": 3,
+      "insertStatements": 1
+    },
+    "frstatus": {
+      "rows": 6,
+      "insertStatements": 1
+    },
+    "fueltype": {
+      "rows": 6,
+      "insertStatements": 1
+    },
+    "govac": {
+      "rows": 51929,
+      "insertStatements": 4
+    },
+    "govadopt": {
+      "rows": 95,
+      "insertStatements": 1
+    },
+    "govitems": {
+      "rows": 6313,
+      "insertStatements": 2
+    },
+    "heldas": {
+      "rows": 3,
+      "insertStatements": 1
+    },
+    "hkcrtypes": {
+      "rows": 7,
+      "insertStatements": 1
+    },
+    "hkdistrict": {
+      "rows": 18,
+      "insertStatements": 1
+    },
+    "hkexdata": {
+      "rows": 4078,
+      "insertStatements": 1
+    },
+    "hkports": {
+      "rows": 16,
+      "insertStatements": 1
+    },
+    "hkpx": {
+      "rows": 97404,
+      "insertStatements": 3
+    },
+    "hkpxtypes": {
+      "rows": 3,
+      "insertStatements": 1
+    },
+    "hkregion": {
+      "rows": 3,
+      "insertStatements": 1
+    },
+    "issue": {
+      "rows": 35853,
+      "insertStatements": 3
+    },
+    "issuedshares": {
+      "rows": 684413,
+      "insertStatements": 37
+    },
+    "jails": {
+      "rows": 34,
+      "insertStatements": 1
+    },
+    "jailtypes": {
+      "rows": 6,
+      "insertStatements": 1
+    },
+    "judgments": {
+      "rows": 159418,
+      "insertStatements": 31
+    },
+    "landreg": {
+      "rows": 16402,
+      "insertStatements": 1
+    },
+    "licrec": {
+      "rows": 565646,
+      "insertStatements": 40
+    },
+    "licrecsum": {
+      "rows": 2930,
+      "insertStatements": 1
+    },
+    "lirorgteam": {
+      "rows": 4105,
+      "insertStatements": 1
+    },
+    "lirroles": {
+      "rows": 6,
+      "insertStatements": 1
+    },
+    "lirstaff": {
+      "rows": 94,
+      "insertStatements": 1
+    },
+    "lirteams": {
+      "rows": 38,
+      "insertStatements": 1
+    },
+    "lirteamstaff": {
+      "rows": 225,
+      "insertStatements": 1
+    },
+    "listings": {
+      "rows": 79,
+      "insertStatements": 1
+    },
+    "log": {
+      "rows": 58,
+      "insertStatements": 1
+    },
+    "lsadm": {
+      "rows": 33910,
+      "insertStatements": 2
+    },
+    "lsalias": {
+      "rows": 643,
+      "insertStatements": 1
+    },
+    "lsdoms": {
+      "rows": 96,
+      "insertStatements": 1
+    },
+    "lsemps": {
+      "rows": 2314,
+      "insertStatements": 1
+    },
+    "lsjobs": {
+      "rows": 5824,
+      "insertStatements": 1
+    },
+    "lsorgs": {
+      "rows": 1069,
+      "insertStatements": 1
+    },
+    "lsposts": {
+      "rows": 22495,
+      "insertStatements": 2
+    },
+    "lsppl": {
+      "rows": 30845,
+      "insertStatements": 6
+    },
+    "lsroles": {
+      "rows": 5,
+      "insertStatements": 1
+    },
+    "marketsforweb": {
+      "rows": 5,
+      "insertStatements": 1
+    },
+    "mergedpersons": {
+      "rows": 3837,
+      "insertStatements": 1
+    },
+    "missingcr": {
+      "rows": 651,
+      "insertStatements": 1
+    },
+    "missingorg": {
+      "rows": 130,
+      "insertStatements": 1
+    },
+    "months": {
+      "rows": 12,
+      "insertStatements": 1
+    },
+    "namechanges": {
+      "rows": 2502870,
+      "insertStatements": 287
+    },
+    "namesex": {
+      "rows": 563241,
+      "insertStatements": 31
+    },
+    "nationality": {
+      "rows": 14766170,
+      "insertStatements": 385
+    },
+    "oldcr": {
+      "rows": 3354124,
+      "insertStatements": 103
+    },
+    "oldcrf": {
+      "rows": 32056,
+      "insertStatements": 1
+    },
+    "oldlots": {
+      "rows": 3010,
+      "insertStatements": 1
+    },
+    "oldlsjobs": {
+      "rows": 6417,
+      "insertStatements": 1
+    },
+    "oldlsorgs": {
+      "rows": 1718,
+      "insertStatements": 1
+    },
+    "oldlsposts": {
+      "rows": 27980,
+      "insertStatements": 3
+    },
+    "oldlsppl": {
+      "rows": 43781,
+      "insertStatements": 8
+    },
+    "oldsfcids": {
+      "rows": 15,
+      "insertStatements": 1
+    },
+    "olicrec": {
+      "rows": 13446,
+      "insertStatements": 1
+    },
+    "organisations": {
+      "rows": 19734419,
+      "insertStatements": 4010
+    },
+    "orgdata": {
+      "rows": 13573,
+      "insertStatements": 2
+    },
+    "orgtypes": {
+      "rows": 43,
+      "insertStatements": 1
+    },
+    "ownerprof": {
+      "rows": 21328,
+      "insertStatements": 2
+    },
+    "ownerstks": {
+      "rows": 80365,
+      "insertStatements": 7
+    },
+    "ownertype": {
+      "rows": 16,
+      "insertStatements": 1
+    },
+    "pay": {
+      "rows": 366056,
+      "insertStatements": 34
+    },
+    "payerrors": {
+      "rows": 1480,
+      "insertStatements": 1
+    },
+    "payerrtype": {
+      "rows": 11,
+      "insertStatements": 1
+    },
+    "payfx": {
+      "rows": 41743,
+      "insertStatements": 2
+    },
+    "paylineerrors": {
+      "rows": 1963,
+      "insertStatements": 1
+    },
+    "paylineerrtype": {
+      "rows": 11,
+      "insertStatements": 1
+    },
+    "payreview": {
+      "rows": 74034,
+      "insertStatements": 3
+    },
+    "people": {
+      "rows": 14611943,
+      "insertStatements": 2272
+    },
+    "persons": {
+      "rows": 34346366,
+      "insertStatements": 384
+    },
+    "personstories": {
+      "rows": 52096,
+      "insertStatements": 1
+    },
+    "positions": {
+      "rows": 659,
+      "insertStatements": 1
+    },
+    "prhblock": {
+      "rows": 1661,
+      "insertStatements": 1
+    },
+    "prhestate": {
+      "rows": 246,
+      "insertStatements": 1
+    },
+    "prhflat": {
+      "rows": 1011576,
+      "insertStatements": 85
+    },
+    "prisoners": {
+      "rows": 1012,
+      "insertStatements": 1
+    },
+    "prisorigin": {
+      "rows": 25,
+      "insertStatements": 1
+    },
+    "ptoperators": {
+      "rows": 12,
+      "insertStatements": 1
+    },
+    "qt": {
+      "rows": 3661,
+      "insertStatements": 1
+    },
+    "qtbytype": {
+      "rows": 945,
+      "insertStatements": 1
+    },
+    "qtcentres": {
+      "rows": 22,
+      "insertStatements": 1
+    },
+    "rank": {
+      "rows": 8,
+      "insertStatements": 1
+    },
+    "relationships": {
+      "rows": 14,
+      "insertStatements": 1
+    },
+    "relatives": {
+      "rows": 36380,
+      "insertStatements": 2
+    },
+    "reorg": {
+      "rows": 245,
+      "insertStatements": 1
+    },
+    "repdocs": {
+      "rows": 5017,
+      "insertStatements": 1
+    },
+    "repfilings": {
+      "rows": 135775,
+      "insertStatements": 24
+    },
+    "roles": {
+      "rows": 41,
+      "insertStatements": 1
+    },
+    "sdi": {
+      "rows": 341047,
+      "insertStatements": 88
+    },
+    "sdicap": {
+      "rows": 426219,
+      "insertStatements": 10
+    },
+    "sdievent": {
+      "rows": 345355,
+      "insertStatements": 12
+    },
+    "sdireason": {
+      "rows": 84,
+      "insertStatements": 1
+    },
+    "sectypes": {
+      "rows": 52,
+      "insertStatements": 1
+    },
+    "sfcnews": {
+      "rows": 369,
+      "insertStatements": 3
+    },
+    "sfcshort": {
+      "rows": 467212,
+      "insertStatements": 25
+    },
+    "sholdings": {
+      "rows": 125156,
+      "insertStatements": 9
+    },
+    "snaplog": {
+      "rows": 30984,
+      "insertStatements": 4
+    },
+    "sources": {
+      "rows": 285,
+      "insertStatements": 1
+    },
+    "statgov": {
+      "rows": 66,
+      "insertStatements": 1
+    },
+    "stats": {
+      "rows": 62,
+      "insertStatements": 1
+    },
+    "status": {
+      "rows": 4,
+      "insertStatements": 1
+    },
+    "stocklistings": {
+      "rows": 16354,
+      "insertStatements": 2
+    },
+    "stories": {
+      "rows": 15574,
+      "insertStatements": 5
+    },
+    "storytags": {
+      "rows": 4323,
+      "insertStatements": 1
+    },
+    "tdjourneys": {
+      "rows": 2727,
+      "insertStatements": 1
+    },
+    "tdreglic": {
+      "rows": 7569,
+      "insertStatements": 1
+    },
+    "tempsfc": {
+      "rows": 2,
+      "insertStatements": 1
+    },
+    "titles": {
+      "rows": 93,
+      "insertStatements": 1
+    },
+    "tundir": {
+      "rows": 4,
+      "insertStatements": 1
+    },
+    "tunnels": {
+      "rows": 26,
+      "insertStatements": 1
+    },
+    "tuntraff": {
+      "rows": 13299,
+      "insertStatements": 1
+    },
+    "ukappres": {
+      "rows": 4170,
+      "insertStatements": 1
+    },
+    "ukch": {
+      "rows": 22,
+      "insertStatements": 1
+    },
+    "ukchnats": {
+      "rows": 12647,
+      "insertStatements": 1
+    },
+    "ukhons": {
+      "rows": 109,
+      "insertStatements": 1
+    },
+    "uklog": {
+      "rows": 9,
+      "insertStatements": 1
+    },
+    "uknonhuman": {
+      "rows": 1636,
+      "insertStatements": 1
+    },
+    "ukppl": {
+      "rows": 17168774,
+      "insertStatements": 690
+    },
+    "users": {
+      "rows": 759,
+      "insertStatements": 1
+    },
+    "vax": {
+      "rows": 31482,
+      "insertStatements": 3
+    },
+    "vaxcohorts": {
+      "rows": 9,
+      "insertStatements": 1
+    },
+    "veengine": {
+      "rows": 918,
+      "insertStatements": 1
+    },
+    "vehicleclass": {
+      "rows": 87,
+      "insertStatements": 1
+    },
+    "vehiclefr": {
+      "rows": 24085,
+      "insertStatements": 1
+    },
+    "vehiclefuel": {
+      "rows": 22852,
+      "insertStatements": 1
+    },
+    "vehiclemakes": {
+      "rows": 281,
+      "insertStatements": 1
+    },
+    "vehicletypos": {
+      "rows": 8,
+      "insertStatements": 1
+    },
+    "web": {
+      "rows": 17302,
+      "insertStatements": 2
+    },
+    "webbhold": {
+      "rows": 22,
+      "insertStatements": 1
+    },
+    "wsprivs": {
+      "rows": 771,
+      "insertStatements": 1
+    },
+    "wsroles": {
+      "rows": 6,
+      "insertStatements": 1
+    },
+    "wsroletabs": {
+      "rows": 46,
+      "insertStatements": 1
+    }
+  },
+  "restoredTableAudit": {
+    "organisations": {
+      "rows": 19734419,
+      "dateRanges": {
+        "modified": [
+          "2012-01-16 03:42:17",
+          "2025-12-26 16:00:03",
+          "0"
+        ],
+        "SFCupd": [
+          "2020-02-01 02:01:42",
+          "2025-12-26 02:53:26",
+          "19728878"
+        ],
+        "incDate": [
+          "1230-07-02",
+          "2025-12-26",
+          "59850"
+        ],
+        "disDate": [
+          "1679-09-25",
+          "2025-12-30",
+          "7888718"
+        ],
+        "incUpd": [
+          "2017-01-03 15:30:41",
+          "2025-12-27 00:00:03",
+          "45710"
+        ]
+      },
+      "columns": [
+        "PersonID",
+        "Domicile",
+        "Name1",
+        "cName",
+        "SFCID",
+        "orgType",
+        "incDate",
+        "disDate",
+        "disMode",
+        "incAcc",
+        "incID",
+        "incUpd",
+        "modified",
+        "SFCupd",
+        "SFCri"
+      ]
+    },
+    "people": {
+      "rows": 14611943,
+      "dateRanges": {
+        "modified": [
+          "2018-04-22 03:44:55",
+          "2025-12-26 15:34:31",
+          "0"
+        ],
+        "SFCupd": [
+          "2011-09-28 11:45:03",
+          "2025-12-26 02:53:26",
+          "14479355"
+        ],
+        "SFClastDate": [
+          "2003-04-01",
+          "2015-02-09",
+          "14533687"
+        ]
+      },
+      "columns": [
+        "PersonID",
+        "Name1",
+        "Name2",
+        "cName",
+        "SFCID",
+        "modified",
+        "SFCupd",
+        "SFClastDate"
+      ]
+    },
+    "namechanges": {
+      "rows": 2502870,
+      "dateRanges": {
+        "dateChanged": [
+          "0004-02-24",
+          "9999-12-31",
+          "1334"
+        ],
+        "modified": [
+          "2012-01-07 09:00:39",
+          "2025-12-26 15:59:52",
+          "0"
+        ]
+      },
+      "columns": [
+        "ID1",
+        "personID",
+        "oldName",
+        "oldcName",
+        "dateChanged",
+        "dateAcc",
+        "modified"
+      ]
+    },
+    "directorships": {
+      "rows": 29848020,
+      "dateRanges": {
+        "ApptDate": [
+          "0206-12-06",
+          "2025-12-26",
+          "1062608"
+        ],
+        "ResDate": [
+          "1000-01-01",
+          "2030-03-09",
+          "8878397"
+        ],
+        "modified": [
+          "1970-01-01 00:00:01",
+          "2025-12-26 15:59:56",
+          "0"
+        ]
+      },
+      "columns": [
+        "ID1",
+        "Company",
+        "Director",
+        "JoinedY",
+        "ApptDate",
+        "ApptAcc",
+        "ResDate",
+        "ResAcc",
+        "positionID",
+        "source",
+        "modified"
+      ]
+    },
+    "licrec": {
+      "rows": 565646,
+      "dateRanges": {
+        "startDate": [
+          "2003-04-03",
+          "2025-12-24",
+          "84138"
+        ],
+        "endDate": [
+          "2003-04-02",
+          "2025-12-29",
+          "90862"
+        ],
+        "modified": [
+          "2015-02-11 16:00:01",
+          "2025-12-24 18:51:52",
+          "0"
+        ]
+      },
+      "columns": [
+        "ID",
+        "staffID",
+        "orgID",
+        "role",
+        "actType",
+        "startDate",
+        "endDate",
+        "modified"
+      ]
+    },
+    "olicrec": {
+      "rows": 13446,
+      "dateRanges": {
+        "startDate": [
+          "2003-04-17",
+          "2025-12-24",
+          "4857"
+        ],
+        "endDate": [
+          "2003-04-02",
+          "2025-12-22",
+          "7151"
+        ],
+        "modified": [
+          "2016-06-12 15:35:27",
+          "2025-12-24 18:01:37",
+          "0"
+        ]
+      },
+      "columns": [
+        "ID",
+        "orgID",
+        "ri",
+        "actType",
+        "startDate",
+        "endDate",
+        "modified"
+      ]
+    },
+    "domiciles": {
+      "rows": 328,
+      "dateRanges": {},
+      "columns": [
+        "ID",
+        "ShortName",
+        "FullName",
+        "HKExDomicile",
+        "A2",
+        "friendly",
+        "HKCR"
+      ]
+    },
+    "orgtypes": {
+      "rows": 43,
+      "dateRanges": {},
+      "columns": [
+        "orgType",
+        "typeName",
+        "HKCRname"
+      ]
+    },
+    "dismodes": {
+      "rows": 18,
+      "dateRanges": {},
+      "columns": [
+        "ID",
+        "disModeTxt",
+        "UKuri",
+        "UKapi"
+      ]
+    },
+    "positions": {
+      "rows": 659,
+      "dateRanges": {},
+      "columns": [
+        "positionID",
+        "posShort",
+        "posLong",
+        "status",
+        "rank",
+        "LSrole"
+      ]
+    },
+    "activity": {
+      "rows": 13,
+      "dateRanges": {},
+      "columns": [
+        "ID",
+        "actName"
+      ]
+    },
+    "dateaccuracy": {
+      "rows": 5,
+      "dateRanges": {},
+      "columns": [
+        "AccID",
+        "AccText"
+      ]
+    },
+    "issue": {
+      "rows": 35853,
+      "dateRanges": {
+        "expmat": [
+          "1987-12-31",
+          "2077-04-21",
+          "29825"
+        ]
+      },
+      "columns": [
+        "ID1",
+        "issuer",
+        "SEHKID",
+        "typeID",
+        "expmat",
+        "expAcc",
+        "SEHKcurr",
+        "userID",
+        "coupon",
+        "floating",
+        "HKEXwvr"
+      ]
+    },
+    "listings": {
+      "rows": 79,
+      "dateRanges": {},
+      "columns": [
+        "stockExID",
+        "shortName",
+        "longName"
+      ]
+    },
+    "stocklistings": {
+      "rows": 16354,
+      "dateRanges": {
+        "FirstTradeDate": [
+          "1917-01-01",
+          "2025-12-24",
+          "4769"
+        ],
+        "FinalTradeDate": [
+          "1930-09-27",
+          "2025-12-17",
+          "10238"
+        ],
+        "DelistDate": [
+          "1986-01-24",
+          "2025-12-24",
+          "9541"
+        ],
+        "modified": [
+          "1970-01-01 00:00:01",
+          "2025-12-24 14:23:22",
+          "0"
+        ]
+      },
+      "columns": [
+        "IssueID",
+        "StockCode",
+        "StockExID",
+        "FirstTradeDate",
+        "FinalTradeDate",
+        "DelistDate",
+        "ID",
+        "modified",
+        "ReasonID",
+        "2ndCtr",
+        "sedol",
+        "isin",
+        "stockId"
+      ]
+    }
+  },
+  "restoreSeconds": 840.21,
+  "isolation": {
+    "image": "mysql@sha256:598bf8b783dddc9070e9011aeb1eb5947f0bf7c4eda8ac510906556b8a2b6d0a",
+    "network": "none",
+    "publishedPorts": [],
+    "memoryBytes": 6442450944
+  },
+  "excludedPeopleFields": [
+    "Sex",
+    "YOB",
+    "MOB",
+    "DOB",
+    "YOD",
+    "MonD",
+    "DOD",
+    "TitleID",
+    "HKID",
+    "HKIDsource",
+    "userID",
+    "nameStem",
+    "dn1",
+    "dn2",
+    "dSex"
+  ],
+  "qualification": {
+    "status": "source_fidelity_verified",
+    "qualifiedAt": "2026-10-23T11:02:12.630520+00:00",
+    "sourceDataSha256": "39ca9e09601d2c99ef60a52a6f86f222d7304d885e13f25b9898d208dec578af",
+    "samples": {
+      "organisations": {
+        "count": 100,
+        "columns": [
+          "PersonID",
+          "Domicile",
+          "Name1",
+          "modified",
+          "orgType",
+          "SFCID",
+          "cName",
+          "SFCupd",
+          "incDate",
+          "disDate",
+          "disMode",
+          "incAcc",
+          "incID",
+          "incUpd"
+        ],
+        "sourceIdSetSha256": "98b55c5f86de372ee501ef363e8a9719c892baeb34e4a321d06c7b38a1fbd84e"
+      },
+      "namechanges": {
+        "count": 30,
+        "columns": [
+          "ID1",
+          "personID",
+          "oldName",
+          "oldcName",
+          "dateChanged",
+          "dateAcc",
+          "modified"
+        ],
+        "sourceIdSetSha256": "1af464660a00634bfc234cf793406b3f664c7c8edcb5e54f98c610f9c53ea101"
+      },
+      "directorships": {
+        "count": 30,
+        "columns": [
+          "ID1",
+          "Company",
+          "Director",
+          "JoinedY",
+          "ApptDate",
+          "ApptAcc",
+          "ResDate",
+          "ResAcc",
+          "positionID",
+          "source",
+          "modified"
+        ],
+        "sourceIdSetSha256": "52221d22177970dfc29a3e5c3dae7d2a32c21b212b5cca225192fab5092252f5"
+      },
+      "licrec": {
+        "count": 30,
+        "columns": [
+          "ID",
+          "staffID",
+          "orgID",
+          "role",
+          "actType",
+          "startDate",
+          "endDate",
+          "modified"
+        ],
+        "sourceIdSetSha256": "8085d0d6d4fe8df453e39d44d8ba6cf7cdc7fe59fef5d6cf8d74d85094f6cd23"
+      }
+    },
+    "sourceScanAndMeasurementsSeconds": 67.969,
+    "auditorModuleSha256": {
+      "archive_restore.py": "9c161e59e70ff5e7c0d74ce1c5b8609a54e3ead17c874946bdc8234b977c89e2",
+      "archive_qualify.py": "339c9faa926fd6978409df6fb6df8b2f190e419781d44cfe67e7b93fa53c616e",
+      "archive_extract.py": "59a5d859ce68c7656c582d8d33d71cd3051ddbbb973e08da5b042c498f798d12",
+      "archive_audit.py": "d1e451da95d9c1fb6c6b97e505e1f253a382c2cddf0c2eec26192c2f2af45ed9",
+      "archive_sql.py": "4b12bc472cb0d9e90a4358adfe4849e65f03ff8b285a7e2b339ce8d3ae3b7fd0"
+    },
+    "hongKongDomiciledSourceEntities": 3693036,
+    "companyStrataSampleCounts": {
+      "1": 20,
+      "2": 20,
+      "3": 20,
+      "4": 20,
+      "5": 20
+    },
+    "mysqlTableStorage": [
+      {
+        "table": "activity",
+        "dataBytes": "16384",
+        "indexBytes": "0",
+        "approximateRows": "13"
+      },
+      {
+        "table": "dateaccuracy",
+        "dataBytes": "16384",
+        "indexBytes": "0",
+        "approximateRows": "5"
+      },
+      {
+        "table": "directorships",
+        "dataBytes": "1398800384",
+        "indexBytes": "0",
+        "approximateRows": "29081751"
+      },
+      {
+        "table": "dismodes",
+        "dataBytes": "16384",
+        "indexBytes": "0",
+        "approximateRows": "18"
+      },
+      {
+        "table": "domiciles",
+        "dataBytes": "65536",
+        "indexBytes": "0",
+        "approximateRows": "328"
+      },
+      {
+        "table": "issue",
+        "dataBytes": "1589248",
+        "indexBytes": "0",
+        "approximateRows": "35366"
+      },
+      {
+        "table": "licrec",
+        "dataBytes": "26787840",
+        "indexBytes": "0",
+        "approximateRows": "564374"
+      },
+      {
+        "table": "listings",
+        "dataBytes": "16384",
+        "indexBytes": "0",
+        "approximateRows": "79"
+      },
+      {
+        "table": "namechanges",
+        "dataBytes": "181075968",
+        "indexBytes": "0",
+        "approximateRows": "2480479"
+      },
+      {
+        "table": "olicrec",
+        "dataBytes": "1589248",
+        "indexBytes": "0",
+        "approximateRows": "13283"
+      },
+      {
+        "table": "organisations",
+        "dataBytes": "1786773504",
+        "indexBytes": "0",
+        "approximateRows": "19567859"
+      },
+      {
+        "table": "orgtypes",
+        "dataBytes": "16384",
+        "indexBytes": "0",
+        "approximateRows": "43"
+      },
+      {
+        "table": "people",
+        "dataBytes": "786432000",
+        "indexBytes": "0",
+        "approximateRows": "14213339"
+      },
+      {
+        "table": "positions",
+        "dataBytes": "81920",
+        "indexBytes": "0",
+        "approximateRows": "659"
+      },
+      {
+        "table": "stocklistings",
+        "dataBytes": "1589248",
+        "indexBytes": "0",
+        "approximateRows": "16256"
+      }
+    ],
+    "qualifications": [
+      "Samples compare restored projected facts with the original archive; they are not current-government verification or a population accuracy estimate.",
+      "Redundant fractional-second zeroes in MySQL JSON timestamp rendering are compared semantically; source fact values are not rewritten.",
+      "incID is a source/domicile registry identifier, not a verified universal BRN crosswalk.",
+      "namechanges records previous names and change dates; effective-start dates must not be guessed.",
+      "directorships contains global officer/other roles, not solely HK-listed company directors.",
+      "licrec and olicrec are activity/relationship intervals, not counts of distinct licensed people or firms.",
+      "Source raw tables and sampled source IDs remain private; no source records are published by this audit.",
+      "Full Hong Kong relationship closure, exhaustive foreign-key reconciliation and production PostgreSQL query sizing remain projection-stage work."
+    ]
+  },
+  "scope": {
+    "currentGovernmentVerification": false,
+    "fullRelationshipClosure": false,
+    "productionReadModelSized": false,
+    "productionChanged": false,
+    "rawRecordsPublished": false
+  },
+  "retainedNoticeTextSha256": "a81aeeee21c0f3c1eae7185822a64dbf65513a1c1b212c591d9431e0f1ab02fe",
+  "restartQualificationVerified": true
+}
