@@ -1,0 +1,269 @@
+{
+  "status": "full_scale_local_qualified",
+  "date": "2026-10-23",
+  "sourceManifest": {
+    "archiveSha256": "9c2c42ae5e762d34b60954f43b37199b92b546033e229a292ed08b76323f6de2",
+    "sourceDataSha256": "39ca9e09601d2c99ef60a52a6f86f222d7304d885e13f25b9898d208dec578af",
+    "sourceStructureSha256": "5b3360c04e284cdd6c111ce802c8f8a08061bd23ab99498b581db44b15b53802",
+    "sourceRelease": "enigma251227",
+    "attribution": "David Webb / Webb-site, original Enigma release",
+    "notice": "webb-site-NOTICE.txt",
+    "licence": "CC-BY; retain the original release notice",
+    "view": "archive",
+    "observedAt": null,
+    "coverage": "Source observations vary by record; not a current register",
+    "transform": "enigma-hk-v1",
+    "transformSha256": "41fb6c0a0b1bda1242eb12def866a94d981feb07af6709ff4528ca034227ecc1",
+    "counts": {
+      "entities": 3957949,
+      "entity_identifiers": 7786192,
+      "entity_names": 7929688,
+      "officer_appointments": 559372,
+      "licences": 13446,
+      "licence_relationships": 565646,
+      "formerNames": 891211,
+      "source_references": 1066
+    },
+    "scopeCounts": {
+      "hk_domicile": 3693036,
+      "hk_listed_issuer": 4228,
+      "registered_non_hk": 30637,
+      "sfc_firm": 5570
+    },
+    "elapsedSeconds": 525.63,
+    "scopePolicy": "HK domicile, source orgType 27, HK Main/GEM issuers, SFC firms; referenced officers/staff only; former names for primary organisations"
+  },
+  "restore": {
+    "databaseIdentity": {
+      "cluster": "7699833027169996835",
+      "database": "curated_restore"
+    },
+    "version": "enigma251227-hk-v1",
+    "manifestSha256": "3ccee0b6dc1816842067db30d4e7b6f1fd6a92542c3747658a5e0b55e02d522e",
+    "counts": {
+      "entities": 3957949,
+      "entity_identifiers": 7786192,
+      "entity_names": 7929688,
+      "officer_appointments": 559372,
+      "licences": 13446,
+      "licence_relationships": 565646,
+      "source_references": 1066
+    },
+    "sampleHashes": {
+      "entities": "304f35eb1c1151aca4f4e9aa3b81dfc51927c692df206c153922c35a7f1502f4",
+      "entity_identifiers": "3850a3a0a585064ef058397bfd86312fb94c3ed287709248077207ae887a3e98",
+      "entity_names": "874f2b3afd4af72844edfb81cf6dfbe78d04e25f78eefe105fcc2be89f9e1c26",
+      "officer_appointments": "0a0dc92ba1b1e2f0aed2a89b0876909db4fe0f03bc3717739d1d40f4017743e8",
+      "licences": "399bb94d1c7f097aa4eb1338bef4314f5a29be8552e93ea97afb327072d47ad7",
+      "licence_relationships": "d956de57f5558e7b3dec356a621cfb8fdf3590e3bf2393a988a7465df9270898",
+      "source_references": "e888d9ea4c056578cc51315cd88f4c3e899ac0461831dead312db8a6ae150867"
+    },
+    "unresolvedReferences": {
+      "entities.domicile": 0,
+      "entities.org_type": 0,
+      "officer_appointments.role_id": 0,
+      "licences.activity_id": 0,
+      "licence_relationships.activity_id": 0
+    },
+    "temporal": {
+      "officer_appointments": {
+        "uncertain_bounds": 179114,
+        "reversed_bounds": 1120,
+        "invalid_dates": 0
+      },
+      "licences": {
+        "uncertain_bounds": 10897,
+        "reversed_bounds": 0,
+        "invalid_dates": 0
+      },
+      "licence_relationships": {
+        "uncertain_bounds": 173439,
+        "reversed_bounds": 0,
+        "invalid_dates": 0
+      }
+    },
+    "databaseBytes": 5957222400,
+    "validatedConstraints": true,
+    "originalDatabaseIdentity": {
+      "cluster": "7699833027169996835",
+      "database": "curated"
+    },
+    "backupSha256": "a2fa41b79d03283d3b659dbf2045ef65b8fa2cd594ae2200cd6028bb061c6330",
+    "independentlyRestored": true
+  },
+  "backup": {
+    "bytes": 398652591,
+    "sha256": "a2fa41b79d03283d3b659dbf2045ef65b8fa2cd594ae2200cd6028bb061c6330",
+    "version": "enigma251227-hk-v1"
+  },
+  "queryPlans": {
+    "香港": {
+      "milliseconds": 32.273,
+      "indexes": [
+        "names_prefix",
+        "entities_pkey"
+      ],
+      "sequentialScans": [],
+      "rows": 101
+    },
+    "hong kong": {
+      "milliseconds": 12.995,
+      "indexes": [
+        "names_prefix",
+        "entities_pkey"
+      ],
+      "sequentialScans": [],
+      "rows": 101
+    },
+    "hsbc": {
+      "milliseconds": 20.763,
+      "indexes": [
+        "names_prefix",
+        "entities_pkey"
+      ],
+      "sequentialScans": [],
+      "rows": 101
+    },
+    "li": {
+      "milliseconds": 17.348,
+      "indexes": [
+        "names_prefix",
+        "entities_pkey"
+      ],
+      "sequentialScans": [],
+      "rows": 101
+    },
+    "ab": {
+      "milliseconds": 30.874,
+      "indexes": [
+        "names_prefix",
+        "entities_pkey"
+      ],
+      "sequentialScans": [],
+      "rows": 101
+    },
+    "%_": {
+      "milliseconds": 0.04,
+      "indexes": [
+        "names_prefix",
+        "entities_pkey"
+      ],
+      "sequentialScans": [],
+      "rows": 0
+    },
+    "exact_identifier": {
+      "milliseconds": 0.818,
+      "indexes": [
+        "identifiers_lookup",
+        "entities_pkey"
+      ],
+      "sequentialScans": [],
+      "rows": 1
+    },
+    "officers": {
+      "milliseconds": 0.396,
+      "indexes": [
+        "officers_company"
+      ],
+      "sequentialScans": [],
+      "rows": 101
+    },
+    "names": {
+      "milliseconds": 0.361,
+      "indexes": [
+        "names_entity"
+      ],
+      "sequentialScans": [],
+      "rows": 2
+    },
+    "licences": {
+      "milliseconds": 0.195,
+      "indexes": [
+        "licences_company"
+      ],
+      "sequentialScans": [],
+      "rows": 13
+    },
+    "licence_relationships": {
+      "milliseconds": 0.873,
+      "indexes": [
+        "licence_relationships_pkey"
+      ],
+      "sequentialScans": [],
+      "rows": 101
+    }
+  },
+  "sourceFidelity": {
+    "sourceComparisons": {
+      "officer_appointments": 30,
+      "licences": 30,
+      "licence_relationships": 30,
+      "organisations": 30,
+      "people": 30
+    },
+    "passed": 150,
+    "usesFinalNormalizer": true
+  },
+  "http": {
+    "queries": [
+      {
+        "prefix": "香港",
+        "rows": 20,
+        "milliseconds": 72.6
+      },
+      {
+        "prefix": "hsbc",
+        "rows": 20,
+        "milliseconds": 49.1
+      },
+      {
+        "prefix": "hong kong",
+        "rows": 20,
+        "milliseconds": 40.1
+      },
+      {
+        "prefix": "li",
+        "rows": 20,
+        "milliseconds": 37.4
+      }
+    ],
+    "view": "archive",
+    "version": "enigma251227-hk-v1",
+    "httpLibraryParity": true,
+    "nonemptyRelationshipFamilies": [
+      "officers",
+      "licences",
+      "licence_relationships"
+    ],
+    "authorizationAndErrorChecks": true,
+    "sourceFidelityPassed": 150
+  },
+  "container": {
+    "image": "sha256:414354f3fce18d67ec21cb5fdef5444ffbc160274c16fe1547cc33aec7ff3aab",
+    "uid": 65532,
+    "cacheExcluded": true,
+    "httpAuthenticatedRead": true,
+    "composeConfigValid": true
+  },
+  "checks": {
+    "pythonPassed": 300,
+    "existingOptionalSkipped": 7,
+    "postgresContractsPassed": 7,
+    "workerPassed": 92,
+    "quality": "passed"
+  },
+  "runtime": {
+    "python": "3.14.6",
+    "unicode": "16.0.0",
+    "postgres": "16",
+    "memoryLimitBytes": 2147483648
+  },
+  "limitations": [
+    "Historical source observations only; not current government verification",
+    "1120 source officer intervals have reversed bounds; exact as-of unsupported",
+    "Counts/constraints and sampled hashes plus backup checksum; not all-row cryptographic equivalence",
+    "Local restore only; offsite recovery and production hosting/cost not qualified",
+    "Gateway REST/MCP, catalogue/UI and current sources remain later work",
+    "Full import retains its initial implementation byte hash; final changes formatted code and hardened preflight/connection checks. Final normalizer passed 150 source comparisons; full source census and model restore were rechecked."
+  ]
+}

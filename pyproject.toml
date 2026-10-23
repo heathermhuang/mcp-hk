@@ -33,6 +33,8 @@ classifiers = [
 requires-python = ">=3.10"
 
 [project.optional-dependencies]
+curated = ["psycopg[binary]==3.2.13"]
+
 test = [
     "pytest==8.4.2",
     "pytest-asyncio==0.26.0",
@@ -50,6 +52,8 @@ mcp-hk-http = "mcp_open_data_hk.api:main"
 mcp-hk-refresh = "mcp_open_data_hk.ingest:main"
 mcp-hk-catalogue = "mcp_open_data_hk.catalogue_cli:main"
 mcp-hk-container = "mcp_open_data_hk.operations:main"
+mcp-hk-curated-backend = "mcp_open_data_hk.curated.backend:main"
+mcp-hk-curated = "mcp_open_data_hk.curated.cli:main"
 mcp-hk-enigma-audit = "mcp_open_data_hk.archive_audit:main"
 
 [project.urls]
