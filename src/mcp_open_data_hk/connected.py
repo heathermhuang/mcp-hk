@@ -2,7 +2,7 @@
 
 import unicodedata
 
-from .sources import PACKS, SOURCES
+from .sources import SOURCES, available_packs
 
 DISPLAY = {
     "addresses": (
@@ -58,9 +58,21 @@ DISPLAY = {
 }
 
 
+DISPLAY["enigma"] = (
+    "Hong Kong archival organisations and relationships",
+    "香港機構及關係歷史資料",
+    "Search David Webb's original Enigma archive: organisation names, officer appointments and SFC relationships. Historical observations, not current verification.",
+    "搜尋 David Webb 原始 Enigma 檔案中的機構名稱、職位及證監會關係；歷史紀錄並非現況核實。",
+    "enigma webb companies company organisations officers licence SFC archive 公司 機構 董事 牌照 歷史",
+    "/docs#/default/company_search_api_v1_companies_get",
+    "Search archival organisations",
+    "搜尋機構歷史資料",
+)
+
+
 def entries():
     result = []
-    for pack in PACKS:
+    for pack in available_packs():
         key = pack["id"]
         title, zh, description, description_zh, aliases, url, action, action_zh = (
             DISPLAY[key]

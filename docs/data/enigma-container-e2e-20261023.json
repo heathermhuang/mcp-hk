@@ -1,0 +1,11 @@
+{
+  "gatewayImage": "sha256:b0d41e1b7568cb11814fee47791b84941a6643369118b3cbe90e4108301a1f0a",
+  "backendImage": "sha256:08c09d4e629dcc153d459ac966e2b91abb201e005a627bd455d91bfa448d9940",
+  "version": "enigma251227-hk-v1",
+  "realRestMcp": true,
+  "crossTransportCursor": true,
+  "gatewayWithoutPostgresDriver": true,
+  "privateDataAndCredentialsExcluded": true,
+  "noticeServed": true,
+  "nativeData": "Unseeded isolated gateway; company flows only. Existing production readiness checked separately."
+}

@@ -106,3 +106,5 @@ catalogues, request Markdown representations and use read-only browser tools.
 See [agent discovery contracts and validation](docs/agent-readiness.md).
 
 The detailed expansion plan and acceptance criteria are in [the engineering plan](docs/plans/government-expansion.md). Inventory discovery is not full government data onboarding; consult live coverage for validation, failures and remaining work.
+
+The optional [Hong Kong archival entity read model](docs/curated-read-model.md) provides offline normalization, indexed PostgreSQL queries, a private backend and opt-in REST/MCP company tools. Production requires a configured, restore-qualified backend.

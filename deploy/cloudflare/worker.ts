@@ -9,6 +9,7 @@ import {relayApprovedSource} from './source-relay';
 import {saveOverview, serveOverview} from './overview';
 import {normalizeBackendResponse, recoveringResponse} from './recovery';
 import {saveBackup, requireCheckpoint, safeOperationError} from './backup';
+import {curatedContainerEnv} from './curated';
 import {UsageStore, LIMITS, clientKey, describeRequest, meterResponse} from './usage';
 
 
@@ -63,6 +64,7 @@ export class McpContainer extends Container<Env> {
   // Keep the runtime warm across the five-minute review cadence.
   sleepAfter = '10m';
   envVars = {
+    ...curatedContainerEnv(this.env,this.env.CURATED_BACKEND_ORIGIN),
     MCP_HK_DATABASE: '/data/mcp-hk.sqlite3', HOST: '0.0.0.0', PORT: '8000',
     MCP_HK_OPS_TOKEN: this.env.OPS_TOKEN,
     MCP_HK_BOOTSTRAP_URL: `${this.env.BOOTSTRAP_ORIGIN}/__ops/snapshot`,

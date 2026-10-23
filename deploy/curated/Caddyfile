@@ -1,0 +1,4 @@
+{$CURATED_HOSTNAME} {
+    # Access logs stay off: URLs can contain user search terms.
+    reverse_proxy backend:8081
+}

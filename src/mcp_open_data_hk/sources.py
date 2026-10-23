@@ -231,3 +231,33 @@ def parse_addresses(payload: dict) -> list[dict]:
             ).model_dump()
         )
     return results
+
+
+ENIGMA_PACK = {
+    "id": "enigma",
+    "title": "Hong Kong archival companies and relationships",
+    "provider": "David Webb / Webb-site",
+    "providerType": "independent",
+    "view": "archive",
+    "http": ["/api/v1/companies"],
+    "tools": [
+        "hk_company_search",
+        "hk_company_get",
+        "hk_company_name_history",
+        "hk_company_officers",
+        "hk_company_licences",
+        "hk_company_licence_relationships",
+    ],
+}
+SOURCES["enigma"] = {
+    "sourceUrl": "https://drive.google.com/drive/folders/13mzAvvufXC3QmH8OvMVx2juUi7qdnVLL",
+    "attribution": "David Webb / Webb-site, original Enigma release; retain original notice",
+    "providerType": "independent",
+    "freshnessSeconds": 0,
+}
+
+
+def available_packs():
+    from .companies import settings
+
+    return PACKS + ([ENIGMA_PACK] if settings() is not None else [])

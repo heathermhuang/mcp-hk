@@ -1,0 +1,34 @@
+# Local development only. Database has no published host port.
+services:
+  postgres:
+    image: postgres@sha256:16bc17c64a573ef34162af9298258d1aec548232985b33ed7b1eac33ba35c229
+    environment:
+      POSTGRES_DB: curated
+      POSTGRES_PASSWORD: ${CURATED_ADMIN_PASSWORD:?Set a local admin password}
+    volumes:
+      - curated-data:/var/lib/postgresql/data
+    mem_limit: 2g
+    cpus: 2
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d curated"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  backend:
+    profiles: [serve]
+    build:
+      context: ../..
+      dockerfile: deploy/curated/Dockerfile
+    environment:
+      # Dedicated SELECT-only login; never the owner/administrator DSN.
+      CURATED_DSN: ${CURATED_READER_DSN:?Provision the serving role first}
+      CURATED_BACKEND_TOKEN: ${CURATED_BACKEND_TOKEN:?Set a dedicated backend token}
+      CURATED_CURSOR_SECRET: ${CURATED_CURSOR_SECRET:?Set a separate cursor signing secret}
+    ports: ["127.0.0.1:8081:8081"]
+    mem_limit: 512m
+    cpus: 1
+    depends_on:
+      postgres:
+        condition: service_healthy
+volumes:
+  curated-data:

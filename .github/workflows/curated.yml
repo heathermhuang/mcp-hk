@@ -1,0 +1,66 @@
+name: Curated read model
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  postgres-contracts:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: curated
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres -d curated"
+          --health-interval 5s --health-timeout 3s --health-retries 20
+    env:
+      CURATED_TEST_DSN: postgresql://postgres@127.0.0.1:5432/curated
+      CURATED_REQUIRE_DB: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      - run: pip install uv==0.11.7
+      - name: Verify curated dependency locks
+        run: |
+          uv lock --locked
+          uv export --frozen --format requirements-txt --all-extras --no-emit-project --output-file /tmp/requirements-check.lock > /dev/null
+          diff <(tail -n +3 requirements.lock) <(tail -n +3 /tmp/requirements-check.lock)
+      - run: pip install -r requirements.lock
+      - run: pip install --no-deps -e . && pip install 'psycopg[binary]==3.2.13'
+      - run: PYTHONPATH=src python -m pytest tests/test_curated_postgres.py -v
+        env:
+          CURATED_TEST_CONTAINER: ${{ job.services.postgres.id }}
+  # Existing main-only workflows do not run on a stacked PR's feature base.
+  stacked-python:
+    if: github.event_name == 'pull_request' && github.base_ref != 'main'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.11', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: pip install -r requirements.lock && pip install --no-deps -e .
+      - run: bash scripts/check.sh quality && bash scripts/check.sh python
+      - run: pip install build && python -m build
+  stacked-worker:
+    if: github.event_name == 'pull_request' && github.base_ref != 'main'
+    runs-on: ubuntu-latest
+    env:
+      WRANGLER_SEND_METRICS: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: deploy/cloudflare/package-lock.json
+      - run: npm --prefix deploy/cloudflare ci --ignore-scripts
+      - run: bash scripts/check.sh worker
