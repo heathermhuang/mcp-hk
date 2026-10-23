@@ -336,3 +336,178 @@ def test_fixture_has_its_own_database(model):
 
     reader = model[2]
     assert conninfo_to_dict(reader.dsn)["dbname"] != conninfo_to_dict(DSN)["dbname"]
+
+
+@pytest.mark.parametrize(
+    "privilege",
+    [
+        "replication",
+        "pg_read_server_files",
+        "pg_execute_server_program",
+        "pg_read_all_data",
+        "noinherit",
+    ],
+)
+def test_elevated_serving_credentials_are_rejected_at_grant_and_runtime(
+    model, privilege
+):
+    from psycopg import sql
+
+    version, manifest, reader, role, owner = model
+    local_accept(version, owner)
+    with connect(owner) as admin:
+        if privilege == "replication":
+            admin.execute(
+                sql.SQL("ALTER ROLE {} REPLICATION").format(sql.Identifier(role))
+            )
+        else:
+            group = "pg_read_server_files" if privilege == "noinherit" else privilege
+            if privilege == "noinherit":
+                admin.execute(
+                    sql.SQL("ALTER ROLE {} NOINHERIT").format(sql.Identifier(role))
+                )
+            admin.execute(
+                sql.SQL("GRANT {} TO {}").format(
+                    sql.Identifier(group), sql.Identifier(role)
+                )
+            )
+    with pytest.raises(ValueError, match="unprivileged"):
+        grant_reader(owner, role)
+    with pytest.raises(ReadError) as error:
+        reader.get(1)
+    assert error.value.code == "UNSAFE_READER"
+
+
+@pytest.mark.asyncio
+async def test_gateway_rest_mcp_and_discovery_share_real_backend(
+    model, tmp_path, monkeypatch
+):
+    import httpx
+    from fastapi.testclient import TestClient
+    from fastmcp import Client
+    from mcp_open_data_hk.api import create_app
+    from mcp_open_data_hk.curated.backend import create_app as private_app
+    from mcp_open_data_hk.services import Service
+    from mcp_open_data_hk.storage import Store
+
+    version, manifest, reader, role, owner = model
+    local_accept(version, owner)
+    token = "gateway-test-credential-of-32-characters"
+    monkeypatch.setenv("MCP_HK_CURATED_ORIGIN", "https://archive.example")
+    monkeypatch.setenv("MCP_HK_CURATED_TOKEN", token)
+    monkeypatch.setattr("mcp_open_data_hk.companies.ARCHIVE_SHA", "a" * 64)
+    service = Service(Store(str(tmp_path / "gateway.sqlite3")))
+    service.companies.transport = httpx.ASGITransport(app=private_app(reader, token))
+    service.resources.catalogue.publish(
+        [
+            {
+                "id": "sample",
+                "title": "Sample",
+                "catalogue": "DATA.GOV.HK",
+                "provider": "Example",
+                "providerType": "government",
+            }
+        ],
+        [],
+        {},
+    )
+    app = create_app(service)
+    cases = [
+        (
+            "/api/v1/companies",
+            {"q": "foo", "limit": 1},
+            "hk_company_search",
+            {"q": "foo", "limit": 1},
+        ),
+        (
+            "/api/v1/companies/1",
+            {"version": version},
+            "hk_company_get",
+            {"entityId": 1, "version": version},
+        ),
+        (
+            "/api/v1/companies/1/names",
+            {"version": version},
+            "hk_company_name_history",
+            {"entityId": 1, "version": version},
+        ),
+        (
+            "/api/v1/companies/2/officers",
+            {"version": version},
+            "hk_company_officers",
+            {"entityId": 2, "version": version},
+        ),
+        (
+            "/api/v1/companies/1/licences",
+            {"version": version},
+            "hk_company_licences",
+            {"entityId": 1, "version": version},
+        ),
+        (
+            "/api/v1/companies/1/licence_relationships",
+            {"version": version},
+            "hk_company_licence_relationships",
+            {"entityId": 1, "version": version},
+        ),
+    ]
+    with TestClient(app) as http:
+        responses = [http.get(path, params=params) for path, params, _, _ in cases]
+        assert all(response.status_code == 200 for response in responses), [
+            r.text for r in responses
+        ]
+        assert http.get("/api/v1/packs").json()["items"][-1]["id"] == "enigma"
+        found = http.get(
+            "/api/v1/catalogue/datasets", params={"q": "enigma", "access": "connected"}
+        ).json()
+        assert found["items"][0]["id"] == "mcp:enigma"
+        assert http.get("/api/v1/companies/3").status_code == 404
+        assert http.get("/api/v1/companies/3/names").status_code == 404
+        assert (
+            http.get(
+                "/api/v1/companies", params={"q": "foo", "requireFresh": True}
+            ).status_code
+            == 422
+        )
+        assert (
+            http.get(
+                "/api/v1/companies/2/officers", params={"asOf": "2020-01-01"}
+            ).status_code
+            == 422
+        )
+        assert http.get("/api/v1/companies", params={"q": "x"}).status_code == 400
+        assert http.get("/healthz").status_code == 200
+        assert http.get("/api/v1/companies/notice").status_code == 200
+    async with Client(app.state.mcp) as mcp:
+        tools = {t.name: t for t in await mcp.list_tools()}
+        for response, (_, _, tool, args) in zip(responses, cases):
+            actual = (await mcp.call_tool(tool, args)).data
+            expected = response.json()
+            assert actual["data"] == expected["data"]
+            assert actual["meta"]["version"] == expected["meta"]["version"] == version
+            assert actual["warnings"] == expected["warnings"]
+            assert actual["provenance"][0]["archiveSha256"] == "a" * 64
+            assert tools[tool].annotations.readOnlyHint
+        first = responses[0].json()
+        second = (
+            await mcp.call_tool(
+                "hk_company_search",
+                {"q": "foo", "limit": 1, "cursor": first["meta"]["nextCursor"]},
+            )
+        ).data
+        assert second["data"] != first["data"]
+        assert second["meta"]["version"] == version
+    party = responses[3].json()["data"]["items"][0]["party"]
+    assert party["name1"] == "CHAN" and party["name2"] == "Tai Man"
+
+
+def test_explicit_history_version_survives_new_publication(model):
+
+    version, manifest, reader, role, owner = model
+    local_accept(version, owner)
+    next_version = version + "-new"
+    stage(owner, FixtureSource(), next_version)
+    grant_reader(owner, role)
+    local_accept(next_version, owner)
+    assert reader.related(1, "names", version=version)["version"] == version
+    assert reader.get(1, version=version)["version"] == version
+    assert reader.related(1, "names")["version"] == next_version

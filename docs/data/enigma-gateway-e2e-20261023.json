@@ -1,0 +1,48 @@
+{
+  "view": "archive",
+  "version": "enigma251227-hk-v1",
+  "cases": [
+    {
+      "operation": "hk_company_search",
+      "httpStatus": 200,
+      "milliseconds": 24.12,
+      "returnedCount": 20
+    },
+    {
+      "operation": "hk_company_get",
+      "httpStatus": 200,
+      "milliseconds": 24.15,
+      "returnedCount": 1
+    },
+    {
+      "operation": "hk_company_name_history",
+      "httpStatus": 200,
+      "milliseconds": 22.76,
+      "returnedCount": 2
+    },
+    {
+      "operation": "hk_company_officers",
+      "httpStatus": 200,
+      "milliseconds": 33.34,
+      "returnedCount": 20
+    },
+    {
+      "operation": "hk_company_licences",
+      "httpStatus": 200,
+      "milliseconds": 23.1,
+      "returnedCount": 6
+    },
+    {
+      "operation": "hk_company_licence_relationships",
+      "httpStatus": 200,
+      "milliseconds": 31.43,
+      "returnedCount": 20
+    }
+  ],
+  "realNetworkRestMcpParity": true,
+  "crossTransportCursor": true,
+  "connectedCatalogue": true,
+  "historicalFreshnessRejection": true,
+  "exactAsOfRejected": true,
+  "relationshipPartiesNamed": true
+}

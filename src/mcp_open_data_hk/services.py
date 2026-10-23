@@ -13,7 +13,7 @@ from functools import lru_cache
 
 from .contracts import DomainError, Envelope, RestaurantQuery
 from .http import request_json
-from .sources import DISTRICTS, PACKS, SOURCES, parse_addresses
+from .sources import DISTRICTS, SOURCES, available_packs, parse_addresses
 from .storage import Store
 
 
@@ -51,12 +51,14 @@ def restaurant_quality(row):
 
 class Service:
     def __init__(self, store: Store):
+        from .companies import Companies
         from .platehk import PlateHK
         from .resources import Resources
         from .seehouse import SeeHouse
 
         self.store = store
         self.address_slots = asyncio.Semaphore(3)
+        self.companies = Companies()
         self.plates = PlateHK(self)
         self.properties = SeeHouse(self)
         self.resources = Resources(store)
@@ -273,7 +275,7 @@ class Service:
                     "attribution": SOURCES[pack["id"]]["attribution"],
                     "capability": "queryable",
                 }
-                for pack in PACKS
+                for pack in available_packs()
             ]
         }
 
@@ -306,6 +308,22 @@ class Service:
         checks = self.store.checks()
         sources = []
         for pack, source in SOURCES.items():
+            if pack == "enigma":
+                if self.companies.configured:
+                    sources.append(
+                        {
+                            "sourceId": "enigma",
+                            "sourceUrl": source["sourceUrl"],
+                            "providerType": "independent",
+                            "attribution": source["attribution"],
+                            "view": "archive",
+                            "currentVerification": False,
+                            "backendConfigured": True,
+                            "availability": "checked_on_query",
+                            "stale": True,
+                        }
+                    )
+                continue
             check = checks.get(pack, {})
             sid = self.store.active(pack)
             item = {

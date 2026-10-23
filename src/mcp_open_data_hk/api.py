@@ -17,6 +17,9 @@ from fastapi.staticfiles import StaticFiles
 from . import server as catalogue
 from .contracts import (
     DomainError,
+    CompanySearchQuery,
+    CompanyHistoryQuery,
+    CompanyReadQuery,
     PlateComparablesQuery,
     PlateSearchQuery,
     PropertySearchQuery,
@@ -160,6 +163,7 @@ def create_app(service=None):
                 }
             },
             status_code=exc.status,
+            headers={"Retry-After": str(exc.retry_after)} if exc.retry_after else None,
         )
 
     @app.exception_handler(RequestValidationError)
@@ -194,6 +198,32 @@ def create_app(service=None):
     def packs():
         """Queryable packs, including independent external providers."""
         return service.packs()
+
+    @app.get("/api/v1/companies")
+    async def company_search(query: Annotated[CompanySearchQuery, Query()]):
+        return await service.companies.query("search", query.model_dump())
+
+    @app.get("/api/v1/companies/notice")
+    def company_notice():
+        return FileResponse(
+            Path(__file__).with_name("webb-site-NOTICE.txt"), media_type="text/plain"
+        )
+
+    @app.get("/api/v1/companies/{entity_id}")
+    async def company_get(entity_id: int, query: Annotated[CompanyReadQuery, Query()]):
+        return await service.companies.query(
+            "get", query.model_dump(), entity_id=entity_id
+        )
+
+    @app.get("/api/v1/companies/{entity_id}/{family}")
+    async def company_history(
+        entity_id: int,
+        family: Literal["names", "officers", "licences", "licence_relationships"],
+        query: Annotated[CompanyHistoryQuery, Query()],
+    ):
+        return await service.companies.query(
+            "related", query.model_dump(), entity_id=entity_id, family=family
+        )
 
     @app.get("/api/v1/properties/search")
     async def property_search(query: Annotated[PropertySearchQuery, Query()]):

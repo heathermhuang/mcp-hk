@@ -5,6 +5,7 @@ import json
 
 from .build import connect
 from .schema import TABLES, schema_name
+from .security import safe_reader_role
 
 
 def fingerprint(manifest):
@@ -204,11 +205,7 @@ def grant_reader(dsn, role):
     from psycopg.rows import dict_row
 
     with connect(dsn, row_factory=dict_row) as conn:
-        info = conn.execute(
-            "SELECT rolsuper,rolbypassrls,rolcreaterole,rolcreatedb FROM pg_roles WHERE rolname=%s",
-            (role,),
-        ).fetchone()
-        if info is None or any(info.values()):
+        if not safe_reader_role(conn, role):
             raise ValueError("Provision a dedicated unprivileged serving role first")
         schemas = ["curated"] + [
             r["schema_name"]

@@ -1,9 +1,8 @@
 # Hong Kong archival entity read model
 
 This optional component transforms the qualified original Enigma release into a
-persistent PostgreSQL model and a private query service. It does not enable a new
-pack on the public mcp.hk gateway. The existing application starts without
-PostgreSQL or its optional driver. Gateway REST/MCP tools, catalogue/UI integration,
+persistent PostgreSQL model and a private query service. It includes an opt-in shared REST/MCP gateway adapter, enabled only with a configured private backend. The existing application starts without
+PostgreSQL or its optional driver. A richer explorer UI,
 current-government reconciliation, downloadable exports, production hosting and
 offsite recovery remain separate milestones.
 
@@ -155,8 +154,7 @@ Queries use fixed parameterized SQL, C-collated B-tree prefix/range indexes,
 release-pinned signed cursors, four query slots, a two-second SQL timeout, 250 ms
 lock timeout and 2 MiB output cap. Cursor expiry is 48 hours. Missing/expired/
 unavailable/timeout states remain distinct. The backend access log is disabled
-so query terms do not enter URL logs. It is a private backend: gateway budgets,
-public envelopes and MCP parity are the next adapter milestone.
+so query terms do not enter URL logs. It is a private backend; the shared gateway adapter applies existing edge budgets/auth and public envelopes. REST/MCP parity is verified below.
 
 For local Compose use `deploy/curated/compose.yaml`: PostgreSQL has no published
 host port; the optional `serve` profile binds the backend only to loopback. Supply
@@ -180,3 +178,80 @@ Python CI runs without the optional driver/database. No archive is downloaded in
 CI. Full-scale receipts are separate from these reproducible synthetic contracts.
 
 Full-scale local evidence: [23 October qualification](data/enigma-hk-read-model-20261023.md).
+
+## Public gateway adapter
+
+With a configured backend the shared gateway registers these REST/MCP pairs:
+
+| HTTP | MCP |
+| --- | --- |
+| `/api/v1/companies?q=香港` | `hk_company_search` |
+| `/api/v1/companies/{id}` | `hk_company_get` |
+| `/api/v1/companies/{id}/names` | `hk_company_name_history` |
+| `/api/v1/companies/{id}/officers` | `hk_company_officers` |
+| `/api/v1/companies/{id}/licences` | `hk_company_licences` |
+| `/api/v1/companies/{id}/licence_relationships` | `hk_company_licence_relationships` |
+
+Use `namespace` and `value` instead of `q` for an explicit identifier. Copy the
+search result's `meta.version` into detail/history `version`; copy `meta.nextCursor`
+for the next page, including across REST and MCP. Names are matching facts, so one
+organisation can have multiple search matches. Officers/staff include source-linked
+party names; original roles and activity labels accompany the numeric source IDs.
+Organisation routes reject human IDs. No general person-name search is exposed.
+
+The gateway returns its existing Envelope, with archival warnings, source hashes,
+version, attribution and `freshnessBasis=fixed_archive`. Neither a successful
+backend request nor `retrievedAt` advances a source observation date.
+`requireFresh=true` and `view=latest_observed` return 422 for this fixed archive.
+Company discovery is enabled only when the optional backend is configured.
+Unavailable/expired/invalid/timeout responses are explicit errors, never empty rows.
+
+Gateway settings: `MCP_HK_CURATED_ORIGIN` is an operator-configured HTTPS origin
+without userinfo/path/query; `MCP_HK_CURATED_TOKEN` is a dedicated backend credential.
+For explicit local development only, `MCP_HK_CURATED_ALLOW_LOCAL=true` permits a
+fixed loopback/backend service name over HTTP. The client follows no redirects,
+uses strict TLS verification, caps the response/envelope at 2 MiB and bounds total
+request duration and four concurrent calls. It never receives the database DSN.
+
+On Cloudflare, `CURATED_BACKEND_ORIGIN` is a non-secret Worker variable and
+`CURATED_BACKEND_TOKEN` is an optional Worker secret. The controller forwards only
+these two settings to the Python gateway. The operations token is not substituted.
+Missing/invalid settings disable the optional pack and leave legacy readiness and
+all existing recovery limits unchanged. Follow the existing resource-cron pause,
+lease, adoption, five-schedule restore and accepted-backup procedure when releasing
+the changed Worker/controller. Do not enable the new origin until its independent
+restore and authenticated read succeed.
+
+The serving role must have no replication privilege or memberships, including
+NOINHERIT/SET ROLE paths. Provision direct SELECT grants; both grant time and runtime
+reject elevated credentials. `uv.lock` and the all-extras `requirements.lock`
+include the pinned curated extra; CI checks their consistency.
+
+## Dedicated host deployment bundle
+
+`deploy/curated/production.compose.yaml` runs PostgreSQL, the non-root backend and
+an HTTPS proxy on a separately approved persistent host. Only HTTPS/HTTP for
+certificate issuance is public; PostgreSQL and port 8081 are not published. Keep
+SSH restricted to the operator's approved address. Do not put this database in the
+existing Cloudflare container or its checkpoint.
+
+Provision the host before running the bundle. Create root-owned mode-0600
+`/etc/mcp-hk-curated/pg-admin-password` and `backend.env`. The latter contains
+`CURATED_DSN` for the dedicated reader, `CURATED_BACKEND_TOKEN` and an independent
+`CURATED_CURSOR_SECRET`. Never pass their values as CLI arguments or build args.
+Keep persistent data under `/srv/mcp-hk-curated/`. Set `CURATED_HOSTNAME` to the
+approved backend hostname, configure its DNS, and restrict administrative access.
+
+Start only PostgreSQL, restore the checksummed candidate into a fresh database,
+compare the original inspection/backup receipt, create the unprivileged login,
+grant SELECT and publish the accepted local pointer. Then start the backend/proxy
+and verify authenticated `/health` and a real query over HTTPS before enabling the
+gateway variable/secret. Keep an independent offsite copy of the logical backup
+and its aggregate manifest; verify its downloaded checksum and restore it before
+claiming offsite recovery. A host disk snapshot alone is not that proof.
+
+This bundle creates no cloud resources, DNS records or paid subscriptions by itself.
+The proposed initial host is 2 vCPU, 4 GiB RAM and 80 GiB disk. The observed
+three-copy/read-model/restore envelope fits that disk; keep at least 20 GiB free.
+Actual hosting, credentials, encrypted offsite backup access and final live
+REST/MCP acceptance remain release gates until their observed receipts exist.

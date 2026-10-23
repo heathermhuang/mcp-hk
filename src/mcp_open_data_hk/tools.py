@@ -22,6 +22,13 @@ def register_data_tools(server, service=None):
 
     register_mcp(server, current)
 
+    from .company_api import register_company_tools
+
+    from .companies import settings
+
+    if settings() is not None:
+        register_company_tools(server, current)
+
     @server.tool(annotations={"readOnlyHint": True, "destructiveHint": False})
     async def hk_address_search(
         q: str, limit: int = 5, lang: Literal["en", "zh-Hant"] = "en"

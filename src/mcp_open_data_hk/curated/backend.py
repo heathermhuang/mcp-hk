@@ -86,8 +86,14 @@ def create_app(reader, token):
         )
 
     @app.get("/v1/entities/{entity_id}")
-    async def get(entity_id: int, authorization: str | None = Header(None)):
-        return await call(reader.get, authorization, entity_id=entity_id)
+    async def get(
+        entity_id: int,
+        version: str | None = Query(None, max_length=100),
+        authorization: str | None = Header(None),
+    ):
+        return await call(
+            reader.get, authorization, entity_id=entity_id, version=version
+        )
 
     @app.get("/v1/entities/{entity_id}/{family}")
     async def related(
@@ -96,6 +102,7 @@ def create_app(reader, token):
         limit: int = Query(20, ge=1, le=100),
         cursor: str | None = Query(None, max_length=2048),
         as_of: str | None = Query(None, alias="asOf", max_length=10),
+        version: str | None = Query(None, max_length=100),
         authorization: str | None = Header(None),
     ):
         return await call(
@@ -106,6 +113,7 @@ def create_app(reader, token):
             limit=limit,
             cursor=cursor,
             as_of=as_of,
+            version=version,
         )
 
     return app

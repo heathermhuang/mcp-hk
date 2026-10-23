@@ -6,9 +6,12 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class DomainError(Exception):
-    def __init__(self, code: str, message: str, status: int = 503):
+    def __init__(
+        self, code: str, message: str, status: int = 503, retry_after: int | None = None
+    ):
         super().__init__(f"{code}: {message}")
         self.code, self.message, self.status = code, message, status
+        self.retry_after = retry_after
 
 
 class Model(BaseModel):
@@ -122,3 +125,39 @@ class PlateComparablesQuery(Model):
     q: str = Field(min_length=1, max_length=16)
     page: int = Field(default=1, ge=1, le=100)
     pageSize: int = Field(default=8, ge=1, le=50)
+
+
+class CompanySearchQuery(Model):
+    q: str | None = Field(default=None, min_length=2, max_length=200)
+    namespace: str | None = Field(default=None, max_length=100)
+    value: str | None = Field(default=None, max_length=200)
+    limit: int = Field(default=20, ge=1, le=100)
+    cursor: str | None = Field(default=None, max_length=2048)
+    view: Literal["archive", "latest_observed"] = "archive"
+    requireFresh: bool = False
+
+    @model_validator(mode="after")
+    def choose_search(self):
+        if self.q is not None:
+            self.q = self.q.strip()
+            if len(self.q) < 2 or self.namespace is not None or self.value is not None:
+                raise ValueError(
+                    "Choose a two-character name prefix or an explicit identifier"
+                )
+        elif not self.namespace or not self.value:
+            raise ValueError("An explicit identifier namespace and value are required")
+        return self
+
+
+class CompanyReadQuery(Model):
+    version: str | None = Field(
+        default=None, max_length=100, pattern=r"^[A-Za-z0-9._-]+$"
+    )
+    view: Literal["archive", "latest_observed"] = "archive"
+    requireFresh: bool = False
+
+
+class CompanyHistoryQuery(CompanyReadQuery):
+    limit: int = Field(default=20, ge=1, le=100)
+    cursor: str | None = Field(default=None, max_length=2048)
+    asOf: str | None = Field(default=None, max_length=10)

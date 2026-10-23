@@ -11,6 +11,7 @@ import time
 from .build import connect
 from .normalize import search_key
 from .schema import schema_name
+from .security import safe_reader_role
 
 
 class ReadError(ValueError):
@@ -82,10 +83,7 @@ class Reader:
                 row_factory=dict_row,
                 options="-c search_path=pg_catalog -c default_transaction_read_only=on -c statement_timeout=2000 -c lock_timeout=250 -c idle_in_transaction_session_timeout=5000",
             ) as conn:
-                role = conn.execute(
-                    "SELECT rolsuper,rolbypassrls,rolcreaterole,rolcreatedb FROM pg_roles WHERE rolname=current_user"
-                ).fetchone()
-                if any(role.values()):
+                if not safe_reader_role(conn):
                     raise ReadError(
                         "UNSAFE_READER", "Serving requires a dedicated SELECT-only role"
                     )
@@ -151,7 +149,9 @@ class Reader:
             raise ReadError("OUTPUT_LIMIT", "Result exceeds the response budget")
         return result
 
-    def page(self, operation, filters, statement, params, limit=20, cursor=None):
+    def page(
+        self, operation, filters, statement, params, limit=20, cursor=None, version=None
+    ):
         if (
             not isinstance(limit, int)
             or isinstance(limit, bool)
@@ -159,12 +159,15 @@ class Reader:
         ):
             raise ReadError("INVALID_LIMIT", "Limit must be 1 through 100")
         state = self.unseal(cursor, operation, filters) if cursor else None
-        version = state["version"] if state else None
+        if state and version is not None and version != state["version"]:
+            raise ReadError("INVALID_CURSOR", "Cursor belongs to a different version")
+        version = state["version"] if state else version
         with self.request(version) as (conn, release):
             if (
                 "entity_id" in filters
                 and conn.execute(
-                    "SELECT 1 FROM entities WHERE entity_id=%s", (filters["entity_id"],)
+                    "SELECT 1 FROM entities WHERE entity_id=%s AND kind='organisation'",
+                    (filters["entity_id"],),
                 ).fetchone()
                 is None
             ):
@@ -280,7 +283,9 @@ class Reader:
             ).fetchall()
             return self.result(release, row)
 
-    def related(self, entity_id, family, limit=20, cursor=None, as_of=None):
+    def related(
+        self, entity_id, family, limit=20, cursor=None, as_of=None, version=None
+    ):
         if as_of is not None:
             raise ReadError(
                 "AS_OF_UNSUPPORTED",
@@ -307,9 +312,20 @@ class Reader:
         table, column, order = queries[family]
 
         def statement(last, size, params):
-            # All identifiers come from the fixed mapping above.
+            # Identifiers and joins come only from this fixed family mapping.
+            extra, joins = "", ""
+            if family in {"officers", "licence_relationships"}:
+                party_key = "officer_id" if family == "officers" else "person_id"
+                extra += ",jsonb_build_object('entityId',p.entity_id,'kind',p.kind,'name1',p.name1,'name2',p.name2,'chineseName',p.chinese_name) AS party"
+                joins += f" JOIN entities p ON p.entity_id=t.{party_key}"
+            if family == "officers":
+                extra += ",role.label AS role_label"
+                joins += " JOIN source_references role ON role.family='positions' AND role.code=t.role_id"
+            if family in {"licences", "licence_relationships"}:
+                extra += ",activity.label AS activity_label"
+                joins += " JOIN source_references activity ON activity.family='activity' AND activity.code=t.activity_id"
             return (
-                f"SELECT *,{order} AS page_key FROM {table} WHERE {column}=%s AND {order}>%s ORDER BY {order} LIMIT %s",
+                f"SELECT t.*,t.{order} AS page_key{extra} FROM {table} t{joins} WHERE t.{column}=%s AND t.{order}>%s ORDER BY t.{order} LIMIT %s",
                 (
                     entity_id,
                     last if last is not None else ("" if order == "fact_id" else 0),
@@ -317,4 +333,6 @@ class Reader:
                 ),
             )
 
-        return self.page(family, {"entity_id": entity_id}, statement, (), limit, cursor)
+        return self.page(
+            family, {"entity_id": entity_id}, statement, (), limit, cursor, version
+        )
