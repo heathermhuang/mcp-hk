@@ -1,0 +1,12 @@
+[Unit]
+Description=mcp.hk bounded official company observations and logical backup
+After=docker.service network-online.target
+Requires=docker.service
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/mcp-hk
+ExecStart=/opt/mcp-hk/deploy/curated/run-official.sh
+TimeoutStartSec=15min
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true

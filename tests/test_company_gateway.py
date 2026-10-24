@@ -102,3 +102,46 @@ async def test_unconfigured_backend_is_optional_and_unavailable(monkeypatch):
     with pytest.raises(DomainError) as error:
         await client.query("search", {"q": "香港"})
     assert error.value.code == "PACK_UNAVAILABLE"
+
+
+@pytest.mark.asyncio
+async def test_official_view_keeps_source_identity_and_version_separate(monkeypatch):
+    monkeypatch.setenv("MCP_HK_CURATED_ORIGIN", "https://archive.example")
+    monkeypatch.setenv("MCP_HK_CURATED_TOKEN", "x" * 32)
+    version = "official-" + "a" * 32
+    paths = []
+
+    def upstream(request):
+        paths.append(request.url.path)
+        data = {"entity_id": "cr:local:00001234", "observations": []}
+        return httpx.Response(
+            200,
+            json={
+                "version": version,
+                "provenance": {"view": "latest_observed"},
+                "data": data if "entities" in request.url.path else [data],
+                "nextCursor": None,
+            },
+        )
+
+    client = Companies(transport=httpx.MockTransport(upstream))
+    found = await client.query("search", {"q": "香港", "view": "latest_observed"})
+    assert found["meta"]["view"] == "latest_observed"
+    assert found["data"]["items"][0]["entity_id"] == "cr:local:00001234"
+    detail = await client.query(
+        "get",
+        {"view": "latest_observed", "version": version},
+        entity_id="cr:local:00001234",
+    )
+    assert detail["meta"]["version"] == version
+    assert paths == [
+        "/v1/official/companies",
+        "/v1/official/entities/cr:local:00001234",
+    ]
+    with pytest.raises(DomainError):
+        await client.query("get", {"view": "latest_observed"}, entity_id=1234)
+    with pytest.raises(DomainError):
+        await client.query(
+            "search", {"view": "latest_observed", "q": "香港", "requireFresh": True}
+        )
+    assert len(paths) == 2
