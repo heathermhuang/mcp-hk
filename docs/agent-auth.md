@@ -110,3 +110,39 @@ References: [Auth.md](https://workos.com/auth-md/docs/apps),
 [RFC 7523](https://www.rfc-editor.org/rfc/rfc7523),
 [RFC 7009](https://www.rfc-editor.org/rfc/rfc7009),
 [RFC 7591](https://www.rfc-editor.org/rfc/rfc7591).
+
+## Recovery rotation and scoped containment (candidate, not deployed)
+
+Successful recovery login now consumes the old key atomically, returns a new key
+once, and invalidates every previous owner session, including another client's
+already-issued cookie. Explicit **Replace recovery key and revoke other sessions**
+does the same from a valid CSRF-protected account session. Ordinary sign-out remains
+local to that session. None of these actions renews the original 90-day account expiry.
+Legacy owner records migrate on recovery; legacy cookies without a generation fail
+closed and must sign in with their existing key. Revocation survives service restart.
+
+Save the replacement before leaving its response. If the body is lost but the new
+cookie arrived, use that session's replacement action again. If both key and session
+are lost, the account cannot be recovered: there is no identity/email backdoor. Create
+a new account and have the operator contain the known old owner ID when necessary;
+do not reset signing keys or delete the namespace to recover an individual account.
+
+The authenticated operator endpoint `POST /__ops/agent-auth/contain-owner` accepts
+only JSON `{"owner":"owner_…"}` (the exact account ID, not a recovery key). It removes
+that owner's recovery/session/claim/authorization artifacts and revokes associated
+registrations, including pending claim registrations, in one storage transaction.
+It leaves unrelated owners operational and records a credential-free containment
+audit event. Repeating it is safe; retain failed/unknown responses and inspect state
+before relying on containment. Never exercise it against real accounts as a test.
+`/__ops/agent-auth/revoke-all` deliberately retains its registration-only meaning.
+
+Account create/recovery/rotation/containment events retain opaque owner identifiers
+and timestamps for seven days; no key, cookie, token, CSRF value or source payload is
+written to the audit. Auth records remain in the separate auth Durable Object.
+
+Rollback must retain current auth storage. Deleting old sessions/recovery records
+helps preserve invalidation, and disabled owners are removed with a tombstone, but
+older code can reopen lifecycle gaps for subsequent actions. Do not roll back the auth
+service to pre-remediation code or restore a historical auth snapshot; restrict the
+affected path or forward-fix while retaining revocation. Data snapshot restore is a
+separate operation and never restores auth state. See the [candidate status](security/remediation-20261024/README.md).

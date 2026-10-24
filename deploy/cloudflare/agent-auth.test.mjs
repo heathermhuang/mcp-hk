@@ -6,13 +6,14 @@ import {AgentAuthService,digest,JWT_GRANT,CLAIM_GRANT,protectedDataPath,isAgentA
 async function fixture(){
   const db=new DatabaseSync(':memory:');let now=Date.UTC(2026,9,19,12);
   const sql={exec(q,...v){const s=db.prepare(q);return /^SELECT/i.test(q)?s.all(...v):(s.run(...v),[]);}};
-  const service=new AgentAuthService(sql,'https://mcp.hk',()=>now);await service.init();
+  const atomic=fn=>{db.exec('BEGIN');try{const result=fn();db.exec('COMMIT');return result;}catch(error){db.exec('ROLLBACK');throw error;}};
+  const service=new AgentAuthService(sql,'https://mcp.hk',atomic,()=>now);await service.init();
   const req=(path,data,extra={})=>service.handle(new Request('https://mcp.hk'+path,{method:data===undefined?'GET':'POST',headers:{'x-auth-client-key':'test-ip',...(data===undefined?{}:{'Content-Type':'application/json'}),...extra},body:data===undefined?undefined:JSON.stringify(data)}));
   const form=(path,data,extra={})=>service.handle(new Request('https://mcp.hk'+path,{method:'POST',headers:{'x-auth-client-key':'test-ip','Content-Type':'application/x-www-form-urlencoded',...extra},body:new URLSearchParams(data)}));
   const register=async()=>{const r=await req('/agent/identity',{type:'anonymous'});assert.equal(r.status,201);return r.json();};
   const exchange=async assertion=>{const r=await form('/oauth2/token',{grant_type:JWT_GRANT,assertion,resource:'https://mcp.hk/agent/data'});assert.equal(r.status,200,await r.clone().text());return r.json();};
   const owner=async()=>{const response=await form('/agent/account',{action:'create'},{Origin:'https://mcp.hk'});assert.equal(response.status,200);const html=await response.text();return {cookie:response.headers.get('Set-Cookie').split(';')[0],id:html.match(/Account ID: <code>([^<]+)/)[1],key:html.match(/<code>(recover_[^<]+)/)[1],csrf:html.match(/name="csrf" value="([^"]+)/)[1],html};};
-  return {db,sql,service,req,form,register,exchange,owner,advance:s=>{now+=s*1000;}};
+  return {db,sql,atomic,service,req,form,register,exchange,owner,advance:s=>{now+=s*1000;}};
 }
 test('real anonymous registration, signed JWT exchange, protected read and immediate revocation',async()=>{
   const f=await fixture(),r=await f.register(),t=await f.exchange(r.identity_assertion);
@@ -32,7 +33,7 @@ test('key persistence, public JWKS verification, token type/audience/signature a
   const jwks=await (await f.req('/oauth2/jwks')).json(),jwk=jwks.keys[0];assert.equal(jwk.d,undefined);
   const [h,p,s]=t.access_token.split('.'),key=await crypto.subtle.importKey('jwk',jwk,{name:'ECDSA',namedCurve:'P-256'},false,['verify']);
   assert.equal(await crypto.subtle.verify({name:'ECDSA',hash:'SHA-256'},key,Buffer.from(s,'base64url'),Buffer.from(h+'.'+p)),true);
-  const restarted=new AgentAuthService(f.sql,'https://mcp.hk',()=>Date.UTC(2026,9,19,12));await restarted.init();
+  const restarted=new AgentAuthService(f.sql,'https://mcp.hk',f.atomic,()=>Date.UTC(2026,9,19,12));await restarted.init();
   assert.equal((await restarted.handle(new Request('https://mcp.hk/agent/data',{headers:{Authorization:'Bearer '+t.access_token}}))).status,200);
   for(const invalid of [r.identity_assertion,t.access_token.slice(0,-8)+'AAAAAAAA',t.access_token+'.extra'])assert.equal((await f.req('/agent/data',undefined,{Authorization:'Bearer '+invalid})).status,401);
   f.advance(901);assert.equal((await f.req('/agent/data',undefined,{Authorization:'Bearer '+t.access_token})).status,401);
@@ -109,13 +110,14 @@ test('owner recovery and logout authenticate without collecting a user identity'
   // preserves CSRF's Origin check while excluding private paths/query strings.
   assert.equal(signed.headers.get('Referrer-Policy'),'strict-origin');
   assert.equal((await f.form('/agent/account',{action:'create'},{Origin:'https://evil.test'})).status,403);
-  const logout=await f.form('/agent/account',{action:'logout',csrf:owner.csrf},{Cookie:owner.cookie,Origin:'https://mcp.hk'});assert.equal(logout.status,200);assert.match(logout.headers.get('Set-Cookie'),/Max-Age=0/);
+  const signedHtml=await signed.text(),csrf=signedHtml.match(/name="csrf" value="([^"]+)/)[1],cookie=signed.headers.get('Set-Cookie').split(';')[0];
+  const logout=await f.form('/agent/account',{action:'logout',csrf},{Cookie:cookie,Origin:'https://mcp.hk'});assert.equal(logout.status,200);assert.match(logout.headers.get('Set-Cookie'),/Max-Age=0/);
   assert.equal((await f.form('/agent/account',{action:'revoke',registration:'unknown',csrf:owner.csrf},{Cookie:owner.cookie,Origin:'https://mcp.hk'})).status,403);
 });
 test('bulk revocation survives a service restart and never invalidates unrelated public routes',async()=>{
   const f=await fixture(),a=await f.register(),b=await f.register(),ta=await f.exchange(a.identity_assertion),tb=await f.exchange(b.identity_assertion);
   assert.equal((await f.req('/agent/data',undefined,{Authorization:'Bearer '+ta.access_token})).status,200);
-  f.service.revokeAll();const restarted=new AgentAuthService(f.sql,'https://mcp.hk',()=>Date.UTC(2026,9,19,12));await restarted.init();
+  f.service.revokeAll();const restarted=new AgentAuthService(f.sql,'https://mcp.hk',f.atomic,()=>Date.UTC(2026,9,19,12));await restarted.init();
   for(const token of [ta.access_token,tb.access_token])assert.equal((await restarted.handle(new Request('https://mcp.hk/agent/data',{headers:{Authorization:'Bearer '+token}}))).status,401);
   assert.equal(isAgentAuthPath('/api/v1/packs'),false);assert.equal(isAgentAuthPath('/mcp'),false);
 });
@@ -141,4 +143,80 @@ test('both public and protected data forwarding omit credentials and retain the 
   assert.equal(headers.get('x-mcp-client-ip'),'203.0.113.8');assert.equal(headers.get('Mcp-Session-Id'),'public-mcp-session');assert.equal(headers.get('Accept'),'application/json');
   const controller=dataRequestHeaders(new Request('https://mcp.hk/api/v1/packs',{headers:{Cookie:'owner-secret',Authorization:'Bearer owner-secret','x-mcp-client-ip':'203.0.113.8'}}),'203.0.113.8');
   assert.equal(controller.get('x-mcp-client-ip'),'203.0.113.8');assert.equal(controller.has('Cookie'),false);assert.equal(controller.has('Authorization'),false);
+});
+
+function accountResponse(response,html){return {cookie:response.headers.get('Set-Cookie').split(';')[0],key:html.match(/<code>(recover_[^<]+)/)[1],csrf:html.match(/name="csrf" value="([^"]+)/)[1]};}
+test('recovery race consumes key once and invalidates both clients pre-rotation account actions across restart',async()=>{
+  const f=await fixture(),owner=await f.owner();
+  // Two distinct valid stored cookies model clients already signed in before recovery.
+  const original=f.db.prepare("SELECT value,expires FROM auth_records WHERE kind='session'").get();
+  const otherToken='synthetic-second-client',otherCookie='__Host-mcp_owner='+otherToken;
+  f.db.prepare('INSERT INTO auth_records VALUES (?,?,?,?)').run('session',await digest(otherToken),original.value,original.expires);
+  for(const cookie of [owner.cookie,otherCookie])assert.match(await (await f.req('/agent/account',undefined,{Cookie:cookie})).text(),/Account ID:/);
+  f.advance(1800);
+  const expiry=f.db.prepare("SELECT expires FROM auth_records WHERE kind='owner'").get().expires;
+  const race=await Promise.all([f.form('/agent/account',{action:'login',recovery_key:owner.key},{Origin:'https://mcp.hk'}),f.form('/agent/account',{action:'login',recovery_key:owner.key},{Origin:'https://mcp.hk'})]);
+  assert.deepEqual(race.map(r=>r.status).sort(),[200,401]);
+  const won=race.find(r=>r.status===200),fresh=accountResponse(won,await won.text());
+  for(const cookie of [owner.cookie,otherCookie])assert.equal((await f.form('/agent/account',{action:'rotate',csrf:owner.csrf},{Origin:'https://mcp.hk',Cookie:cookie})).status,403);
+  assert.equal((await f.form('/agent/account',{action:'login',recovery_key:owner.key},{Origin:'https://mcp.hk'})).status,401);
+  assert.equal(f.db.prepare("SELECT expires FROM auth_records WHERE kind='owner'").get().expires,expiry);
+  const restarted=new AgentAuthService(f.sql,'https://mcp.hk',f.atomic,()=>Date.UTC(2026,9,19,12,30));await restarted.init();
+  for(const cookie of [owner.cookie,otherCookie])assert.equal((await restarted.handle(new Request('https://mcp.hk/agent/account',{method:'POST',headers:{Origin:'https://mcp.hk',Cookie:cookie,'Content-Type':'application/json'},body:JSON.stringify({action:'rotate',csrf:owner.csrf})}))).status,403);
+  // If the key body was lost but the cookie arrived, explicit rotation recovers.
+  const rotated=await f.form('/agent/account',{action:'rotate',csrf:fresh.csrf},{Origin:'https://mcp.hk',Cookie:fresh.cookie});assert.equal(rotated.status,200);
+  const next=accountResponse(rotated,await rotated.text());
+  assert.equal((await f.form('/agent/account',{action:'login',recovery_key:fresh.key},{Origin:'https://mcp.hk'})).status,401);
+  assert.equal((await f.form('/agent/account',{action:'login',recovery_key:next.key},{Origin:'https://mcp.hk'})).status,200);
+  const audit=JSON.stringify(f.db.prepare("SELECT value FROM auth_records WHERE kind='audit'").all());
+  for(const secret of [owner.key,owner.cookie,owner.csrf,fresh.key,next.key,otherToken])assert.equal(audit.includes(secret),false);
+  for(const event of ['owner.created','owner.recovered','owner.rotated'])assert.ok(audit.includes(event));
+});
+test('legacy sessions fail closed; legacy owner recovery migrates without extending expiry; failed rotation rolls back',async()=>{
+  const f=await fixture(),owner=await f.owner();
+  f.db.exec("UPDATE auth_records SET value=json_remove(value,'$.generation') WHERE kind IN ('owner','session')");
+  assert.equal((await f.form('/agent/account',{action:'rotate',csrf:owner.csrf},{Cookie:owner.cookie,Origin:'https://mcp.hk'})).status,403);
+  const expiry=f.db.prepare("SELECT expires FROM auth_records WHERE kind='owner'").get().expires;
+  const original=f.sql.exec;
+  f.sql.exec=(q,...args)=>{if(q==='INSERT OR REPLACE INTO auth_records VALUES (?,?,?,?)'&&args[0]==='audit'&&args[2].includes('owner.recovered'))throw new Error('synthetic write failure');return original(q,...args);};
+  assert.equal((await f.form('/agent/account',{action:'login',recovery_key:owner.key},{Origin:'https://mcp.hk'})).status,503);
+  f.sql.exec=original;
+  const response=await f.form('/agent/account',{action:'login',recovery_key:owner.key},{Origin:'https://mcp.hk'});assert.equal(response.status,200);
+  const migrated=accountResponse(response,await response.text());
+  assert.equal(f.db.prepare("SELECT expires FROM auth_records WHERE kind='owner'").get().expires,expiry);
+  f.advance(90*86400);
+  assert.equal((await f.form('/agent/account',{action:'login',recovery_key:migrated.key},{Origin:'https://mcp.hk'})).status,401);
+});
+test('scoped containment destroys recovery, sessions, pending claims and issued authorization artifacts; other owner survives',async()=>{
+  const f=await fixture(),owner=await f.owner(),other=await f.owner(),r=await f.register();
+  const c=await (await f.req('/agent/identity/claim',{claim_token:r.claim_token,owner_id:owner.id})).json(),attempt=new URL(c.claim.verification_uri).searchParams.get('attempt');
+  assert.equal((await f.form('/agent/claim',{attempt,user_code:c.claim.user_code,csrf:owner.csrf},{Cookie:owner.cookie,Origin:'https://mcp.hk'})).status,200);
+  const granted=await (await f.form('/oauth2/token',{grant_type:CLAIM_GRANT,claim_token:r.claim_token})).json();assert.ok(granted.access_token);
+  const pending=await f.register(),claim=await (await f.req('/agent/identity/claim',{claim_token:pending.claim_token,owner_id:owner.id})).json();assert.ok(claim.claim);
+  f.service.containOwner(owner.id);
+  const restarted=new AgentAuthService(f.sql,'https://mcp.hk',f.atomic,()=>Date.UTC(2026,9,19,12));await restarted.init();
+  assert.equal((await restarted.handle(new Request('https://mcp.hk/agent/data',{headers:{Authorization:'Bearer '+granted.access_token}}))).status,401);
+  assert.equal((await f.form('/oauth2/token',{grant_type:JWT_GRANT,assertion:granted.identity_assertion})).status,400);
+  assert.equal((await f.form('/oauth2/token',{grant_type:CLAIM_GRANT,claim_token:pending.claim_token})).status,400);
+  assert.equal((await f.form('/agent/account',{action:'login',recovery_key:owner.key},{Origin:'https://mcp.hk'})).status,401);
+  assert.equal((await f.form('/agent/account',{action:'rotate',csrf:owner.csrf},{Origin:'https://mcp.hk',Cookie:owner.cookie})).status,403);
+  assert.equal((await f.form('/agent/account',{action:'rotate',csrf:other.csrf},{Origin:'https://mcp.hk',Cookie:other.cookie})).status,200);
+  assert.equal(f.db.prepare("SELECT count(*) n FROM auth_records WHERE kind='attempt'").get().n,0);
+});
+
+test('containment during asynchronous signing cannot issue a surviving owner token',async()=>{
+  const f=await fixture(),owner=await f.owner(),r=await f.register();
+  const claim=await (await f.req('/agent/identity/claim',{claim_token:r.claim_token,owner_id:owner.id})).json();
+  const attempt=new URL(claim.claim.verification_uri).searchParams.get('attempt');
+  await f.form('/agent/claim',{attempt,user_code:claim.claim.user_code,csrf:owner.csrf},{Cookie:owner.cookie,Origin:'https://mcp.hk'});
+  const granted=await (await f.form('/oauth2/token',{grant_type:CLAIM_GRANT,claim_token:r.claim_token})).json();
+  const original=crypto.subtle.sign.bind(crypto.subtle);let arrive,release;
+  const reached=new Promise(r=>{arrive=r;}),resume=new Promise(r=>{release=r;});
+  crypto.subtle.sign=async(...args)=>{arrive();await resume;return original(...args);};
+  try{
+    const inflight=f.form('/oauth2/token',{grant_type:JWT_GRANT,assertion:granted.identity_assertion});
+    await reached;f.service.containOwner(owner.id);release();
+    assert.equal((await inflight).status,400);
+    assert.equal(f.db.prepare("SELECT count(*) n FROM auth_records WHERE kind='at+jwt'").get().n,0);
+  }finally{release();crypto.subtle.sign=original;}
 });

@@ -46,7 +46,7 @@ export class AgentAuth extends DurableObject<Env> {
   private service: AgentAuthService;
   constructor(ctx: DurableObjectState, env: Env) {
     super(ctx,env);
-    this.service=new AgentAuthService(ctx.storage.sql,env.PUBLIC_ORIGIN);
+    this.service=new AgentAuthService(ctx.storage.sql,env.PUBLIC_ORIGIN,fn=>ctx.storage.transactionSync(fn));
     ctx.blockConcurrencyWhile(()=>this.service.init());
   }
   async fetch(request: Request): Promise<Response> {
@@ -58,6 +58,7 @@ export class AgentAuth extends DurableObject<Env> {
     if(this.service.hasExpiringRecords())await this.ctx.storage.setAlarm(Date.now()+3600000);
   }
   async revokeAll(): Promise<void> {this.service.revokeAll();}
+  async containOwner(owner: string): Promise<void> {this.service.containOwner(owner);}
 }
 
 export class McpContainer extends Container<Env> {
@@ -257,6 +258,14 @@ export default {
     }
     if (url.pathname.startsWith('/__ops/')) {
       if (!(await authorized(request, env.OPS_TOKEN))) return new Response('Not found', {status: 404});
+      if(url.pathname==='/__ops/agent-auth/contain-owner'&&request.method==='POST') {
+        try {
+          const bytes=await boundedBody(request,1024),data=JSON.parse(new TextDecoder().decode(bytes));
+          if(typeof data.owner!=='string'||!/^owner_[A-Za-z0-9_-]{43}$/.test(data.owner))return new Response('Invalid owner',{status:400});
+          await env.AGENT_AUTH.get(env.AGENT_AUTH.idFromName('production')).containOwner(data.owner);
+          return Response.json({contained:true},{headers:{'Cache-Control':'no-store'}});
+        } catch {return Response.json({error:{code:'CONTAINMENT_NOT_CONFIRMED'}},{status:503});}
+      }
       if(url.pathname==='/__ops/agent-auth/revoke-all'&&request.method==='POST') {
         await env.AGENT_AUTH.get(env.AGENT_AUTH.idFromName('production')).revokeAll();
         return Response.json({revoked:true},{headers:{'Cache-Control':'no-store'}});
