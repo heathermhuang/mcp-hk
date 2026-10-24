@@ -308,19 +308,26 @@ class Service:
         checks = self.store.checks()
         sources = []
         for pack, source in SOURCES.items():
-            if pack == "enigma":
+            if pack in {"enigma", "company_registry"}:
                 if self.companies.configured:
                     sources.append(
                         {
-                            "sourceId": "enigma",
+                            "sourceId": pack,
                             "sourceUrl": source["sourceUrl"],
-                            "providerType": "independent",
+                            "providerType": source["providerType"],
                             "attribution": source["attribution"],
-                            "view": "archive",
+                            "view": (
+                                "archive" if pack == "enigma" else "latest_observed"
+                            ),
                             "currentVerification": False,
                             "backendConfigured": True,
                             "availability": "checked_on_query",
-                            "stale": True,
+                            "stale": True if pack == "enigma" else None,
+                            "observationStatusUrl": (
+                                "/api/v1/companies/updates/status"
+                                if pack == "company_registry"
+                                else None
+                            ),
                         }
                     )
                 continue

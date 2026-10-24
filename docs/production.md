@@ -269,3 +269,42 @@ also be loopback-only (`-p 127.0.0.1:8000:8000`) unless an explicitly configured
 reverse proxy supplies host/origin/admission controls. Container-internal `HOST=0.0.0.0`
 is separate from the host's published interface. Publishing packages remains disabled
 under the fork's existing upstream-identity guard.
+## Official company observations (P6)
+
+The dedicated curated host owns `curated.official_*` state. Its independent
+`mcp-hk-official.timer` runs at 05:00 UTC daily (13:00 HKT), with persistent catch-up
+and a 15-minute service deadline. Install the checked-in units from
+`deploy/curated/systemd/` after deploying the reviewed source to `/opt/mcp-hk`.
+`run-official.sh` uses the existing owner-only `/etc/mcp-hk-curated/owner.env` inside
+an ephemeral collector container on the existing private Docker network; the public
+backend retains its SELECT-only role. Grant SELECT on new curated tables directly
+to that existing role after schema creation. Do not put owner credentials in the
+backend or gateway. No new host or paid service is required.
+
+The collector enforces 48 requests, 64 MiB response bytes, six weekly CSV/XLS pairs,
+four lender CSV/XLS pairs and at most 20 exact tracked BRN address reads per run.
+A source failure retains the accepted official pointer. Individually rejected
+addresses retain their previous observation and appear as explicit gaps while
+independent verified weekly/lender files may publish. Discovered weeks and accepted
+weeks are distinct; previous published versions remain available. Interrupted
+`running` receipts are evidence of an incomplete run, never success. The advisory
+writer lock is released by connection termination, without operator lease clearing.
+
+`backup-official.sh` creates an immutable custom-format logical dump of the curated
+metadata schema, including all official source bytes, verification bytes, records,
+run receipts, versions and accepted pointer. It verifies its archive index and
+retains local copies for 30 days. The existing weekly provider snapshot policy
+covers `/srv/mcp-hk-curated/` and these database/backups; do not claim a future
+provider snapshot has occurred. Release qualification copies a fresh dump to the
+existing private R2 bucket, retrieves and checksum-verifies it, then restores into
+a fresh isolated database. The original immutable Enigma model and complete export
+retain their separately qualified backup/download paths. Daily collection stops
+before a run if host free space falls below 10 GiB.
+
+For data rollback, invoke the collector image with the existing owner configuration
+and `python -m mcp_open_data_hk.curated.official_ingest --rollback <accepted-version>`.
+The writer lock and version-existence check protect the pointer; no historical
+capture is deleted. Verify search/get parity against the chosen version afterward.
+To suspend only these updates, stop `mcp-hk-official.timer`; do not alter gateway
+schedules or unrelated host timers. A failed scheduled collection or backup makes
+the systemd unit fail and leaves its durable run receipt and journal evidence.

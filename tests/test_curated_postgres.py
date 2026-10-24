@@ -257,10 +257,51 @@ def test_actual_dump_restore_gate(tmp_path):
         source_dsn = make_conninfo(**dict(config, dbname=original))
         restore_dsn = make_conninfo(**dict(config, dbname=restored))
         stage(source_dsn, FixtureSource(), version)
+        from psycopg.rows import dict_row
+        from mcp_open_data_hk.curated.official import DDL, weekly
+        from mcp_open_data_hk.curated.official_ingest import save_capture, promote
+        from pathlib import Path
+
+        with connect(source_dsn, autocommit=True, row_factory=dict_row) as source:
+            source.execute(DDL)
+            body = (
+                Path(__file__).parent / "fixtures/official/weekly-local.csv"
+            ).read_bytes()
+            capture, _ = save_capture(
+                source,
+                "restore-fixture",
+                "https://www.cr.gov.hk/test.csv",
+                body,
+                {},
+                parser=lambda b: weekly(b, "local", "20261012"),
+            )
+            official_version = promote(
+                source, {"restore-fixture": capture}, {"restored": True}
+            )
         proof = backup(container, original, version, tmp_path / "model.dump")
         with pytest.raises(ValueError, match="checksum"):
             restore(container, restored, tmp_path / "model.dump", "0" * 64)
         restore(container, restored, tmp_path / "model.dump", proof["sha256"])
+        with connect(restore_dsn, row_factory=dict_row) as restored_conn:
+            assert (
+                restored_conn.execute(
+                    "SELECT version FROM curated.official_pointer"
+                ).fetchone()["version"]
+                == official_version
+            )
+            assert (
+                restored_conn.execute(
+                    "SELECT body FROM curated.official_captures WHERE capture_id=%s",
+                    (capture,),
+                ).fetchone()["body"]
+                == body
+            )
+            assert (
+                restored_conn.execute(
+                    "SELECT count(*) AS n FROM curated.official_records"
+                ).fetchone()["n"]
+                == 3
+            )
         accepted = accept_restore(source_dsn, restore_dsn, version, proof["sha256"])
         assert accepted["independentlyRestored"]
         publish(source_dsn, version)
@@ -557,3 +598,101 @@ def test_public_export_is_complete_typed_and_refuses_unqualified_or_overwritten_
         stream.write(b"corrupt")
     with pytest.raises(ValueError, match="checksum"):
         verify(target)
+
+
+def test_official_idempotence_exact_joins_failures_and_rollback(model):
+    from psycopg import sql
+    from psycopg.rows import dict_row
+    from mcp_open_data_hk.curated.official import DDL, SourceRejected, address, weekly
+    from mcp_open_data_hk.curated.official_ingest import save_capture, promote, rollback
+    from mcp_open_data_hk.curated.official_read import OfficialReader
+    from pathlib import Path
+
+    version, _, reader, role, owner = model
+    local_accept(version, owner)
+    fixtures = Path(__file__).parent / "fixtures" / "official"
+    body = (fixtures / "weekly-local.csv").read_bytes()
+    key = "weekly:test"
+
+    def parse(body):
+        return weekly(body, "local", "20261012")
+
+    with connect(owner, autocommit=True, row_factory=dict_row) as conn:
+        conn.execute(DDL)
+        capture, rows = save_capture(
+            conn, key, "https://www.cr.gov.hk/test.csv", body, {}, parser=parse
+        )
+        repeated, _ = save_capture(
+            conn, key, "https://www.cr.gov.hk/test.csv", body, {}, parser=parse
+        )
+        assert capture == repeated
+        assert (
+            conn.execute(
+                "SELECT count(*) AS n FROM curated.official_records"
+            ).fetchone()["n"]
+            == 3
+        )
+        v1 = promote(conn, {key: capture}, {"view": "latest_observed"})
+        assert promote(conn, {key: capture}, {"view": "latest_observed"}) == v1
+        conn.execute(
+            __import__("psycopg")
+            .sql.SQL("GRANT SELECT ON ALL TABLES IN SCHEMA curated TO {}")
+            .format(sql.Identifier(role))
+        )
+        official = OfficialReader(reader)
+        first = official.search(name="10", limit=1)
+        assert first["nextCursor"]
+        assert (
+            official.search(namespace="cr:local:brn", value="81363340")["data"][0][
+                "entity_id"
+            ]
+            == "cr:local:81363340"
+        )
+        assert (
+            official.search(namespace="cr:local:brn", value="081363340")["data"] == []
+        )
+        assert (
+            official.search(namespace="cr:foreign:brn", value="81363340")["data"] == []
+        )
+        with pytest.raises(SourceRejected):
+            save_capture(
+                conn, key, "https://www.cr.gov.hk/test.csv", body[:-8], {}, parser=parse
+            )
+        assert official.search(name="10")["version"] == v1
+        shortened = b"\n".join(body.splitlines()[:2]) + b"\n"
+        with pytest.raises(SourceRejected, match="COMPLETENESS"):
+            save_capture(
+                conn, key, "https://www.cr.gov.hk/test.csv", shortened, {}, parser=parse
+            )
+        assert official.search(name="10")["version"] == v1
+        with pytest.raises(SourceRejected):
+            promote(conn, {key: "unvalidated"}, {})
+        assert official.search(name="10")["version"] == v1
+        brn = rows[0]["identifier"]["value"]
+        addr = (fixtures / "local.json").read_bytes()
+        address_id, _ = save_capture(
+            conn,
+            "address:test",
+            "https://data.cr.gov.hk/test",
+            addr,
+            {},
+            parser=lambda b: address(b, "local", brn),
+        )
+        v2 = promote(
+            conn,
+            {key: capture, "address:test": address_id},
+            {"view": "latest_observed"},
+        )
+        assert v2 != v1
+        assert len(official.get("cr:local:" + brn, v2)["data"]["observations"]) == 2
+        assert len(official.get("cr:local:" + brn, v1)["data"]["observations"]) == 1
+        second = official.search(name="10", limit=1, cursor=first["nextCursor"])
+        assert second["version"] == v1 and second["data"] != first["data"]
+        rollback(conn, v1)
+        assert official.search(name="10")["version"] == v1
+        assert official.get("cr:local:" + brn, v2)["version"] == v2
+        with pytest.raises(ReadError):
+            official.get("81363340")
+        with pytest.raises(ReadError):
+            official.search(name="wrong", cursor=first["nextCursor"])
+        assert reader.get(1)["version"] == version

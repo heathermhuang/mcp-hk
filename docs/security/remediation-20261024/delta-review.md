@@ -1,7 +1,8 @@
 # Audit-to-candidate security delta review
 
 Audit `4692f9a4c199aaabc75e26eb837cbb918e672553`; freshly fetched implementation base
-`1b9c71e6e73945134d92c876146e653568b7202c`. Exact final SHA and the complete binary-safe
+`1b9c71e6e73945134d92c876146e653568b7202c`, then integrated main
+`d6a4dda7ff53ed04d197bca1b89604ae6c713351` after PR creation. Exact final SHA and the complete binary-safe
 diff are in the external frozen bundle. This is a scoped source review and local
 verification record, not an independent full security audit or assessor closure.
 
@@ -46,6 +47,29 @@ The original auth, parser and usage mechanisms were unchanged at the implementat
 base. The original report's corrections remain: anonymous read access is intentional,
 HKMA already has an aggregate 8 MB post-page check, and forwarding a method alone
 never established backend acceptance.
+
+## Main change integrated after opening the draft PR
+
+Main advanced by PR #59 while this candidate was being prepared. Its 34-file delta
+adds official Registry observations; the audit-to-integrated-base delta is now
+90 files, 10,409 insertions and 23 deletions. The documentation append conflict was
+resolved by retaining both the official-update procedures and security release gate.
+`api.py` and `companies.py` merged without dropping the security middleware/transport.
+
+Reviewed new public/privileged boundaries: `Companies.official_query` uses the same
+bounded `fetch` adapter, so the new search/detail/status routes inherit operation
+and edge accounting. The gateway's exact configured `/v1/` curated credential rule
+also covers `/v1/official/`; it adds no arbitrary destination. Official entity IDs
+are allowlisted strings; reader SQL is parameterized, version/cursor bounded, and
+uses the same restricted reader role and shared semaphore with read-only/time limits.
+The separate scheduled collector has 48-attempt, 64 MiB aggregate, 8 MiB response
+and 780-second checked budgets, `trust_env=False` and no redirects; it is offline
+operator tooling on the curated host, not container-dispatched public-source work.
+Its full network/deadline behavior is outside this candidate's execution coverage.
+Systemd/backup scripts and source parsers remain a separate operator surface.
+Existing new company gateway/official fixtures are included in the final required
+gate; database integration still needs its configured services. This scoped delta
+review does not qualify current deployed official-reader grants or ingestion.
 
 ## Candidate changes and review conclusions
 

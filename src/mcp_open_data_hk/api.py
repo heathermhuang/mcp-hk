@@ -227,10 +227,16 @@ def create_app(service=None):
             Path(__file__).with_name("webb-site-NOTICE.txt"), media_type="text/plain"
         )
 
+    @app.get("/api/v1/companies/updates/status")
+    async def official_company_status():
+        return await service.companies.query("status", {"view": "latest_observed"})
+
     @app.get("/api/v1/companies/{entity_id}")
-    async def company_get(entity_id: int, query: Annotated[CompanyReadQuery, Query()]):
+    async def company_get(entity_id: str, query: Annotated[CompanyReadQuery, Query()]):
         return await service.companies.query(
-            "get", query.model_dump(), entity_id=entity_id
+            "get",
+            query.model_dump(),
+            entity_id=int(entity_id) if entity_id.isdigit() else entity_id,
         )
 
     @app.get("/api/v1/companies/{entity_id}/{family}")

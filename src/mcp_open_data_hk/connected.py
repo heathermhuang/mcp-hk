@@ -70,6 +70,18 @@ DISPLAY["enigma"] = (
 )
 
 
+DISPLAY["company_registry"] = (
+    "Official company updates and money-lender registers",
+    "官方公司更新及放債人名冊",
+    "Search accepted company events, observed addresses and monthly money-lender registers. Explicit subset coverage and source dates; dissolution and current officer coverage are unavailable.",
+    "搜尋已接納的公司事件、觀察所得地址及每月放債人名冊；附資料子集範圍及來源日期，未涵蓋解散事件或現任董事資料。",
+    "company companies registry registration name change BRN money lenders 公司 註冊 商業登記 名稱 地址 放債人",
+    "/companies",
+    "Search official observations",
+    "搜尋官方觀察資料",
+)
+
+
 def entries():
     result = []
     for pack in available_packs():
