@@ -5,6 +5,8 @@ from urllib.parse import urlsplit
 
 import httpx
 
+from .upstream_budget import BudgetTransport
+
 from .contracts import DomainError
 
 HOSTS = {"data.gov.hk", "www.als.gov.hk", "portal.csdi.gov.hk", "plate.hk", "see.house"}
@@ -15,6 +17,8 @@ async def request_json(url: str, params: dict | None = None):
         raise DomainError("INVALID_SOURCE", "Source is not allowed", 400)
     try:
         async with httpx.AsyncClient(
+            trust_env=False,
+            transport=BudgetTransport(),
             timeout=5,
             follow_redirects=False,
             headers={

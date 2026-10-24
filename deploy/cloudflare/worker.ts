@@ -1,5 +1,5 @@
 import {companyDownloads,publishCompanyDownload} from './company-downloads';
-import { Container } from '@cloudflare/containers';
+import { Container, ContainerProxy } from '@cloudflare/containers';
 import { DurableObject } from 'cloudflare:workers';
 import {AgentAuthService,isAgentAuthPath,protectedDataPath,dataRequestHeaders} from './agent-auth';
 import {discoveryTarget,discoveryLinks} from './discovery';
@@ -11,6 +11,10 @@ import {saveOverview, serveOverview} from './overview';
 import {normalizeBackendResponse, recoveringResponse} from './recovery';
 import {saveBackup, requireCheckpoint, safeOperationError} from './backup';
 import {curatedContainerEnv} from './curated';
+export {ContainerProxy};
+import {boundedBytes} from './response-policy';
+import {mcpPolicy} from './mcp-policy';
+import {UpstreamStore,governedFetch,dispatchOperation} from './upstream';
 import {UsageStore, LIMITS, clientKey, describeRequest, meterResponse} from './usage';
 
 
@@ -27,19 +31,8 @@ class BodyLimitError extends Error {
   constructor(bytesRead: number) {super('Body exceeds limit');this.bytesRead=bytesRead;}
 }
 async function boundedBody(request: Request | Response, limit: number): Promise<Uint8Array> {
-  const reader = request.body?.getReader();
-  if (!reader) return new Uint8Array();
-  const parts: Uint8Array[] = []; let length = 0;
-  for (;;) {
-    const {done, value} = await reader.read();
-    if (done) break;
-    length += value.length;
-    if (length > limit) { await reader.cancel(); throw new BodyLimitError(length); }
-    parts.push(value);
-  }
-  const result = new Uint8Array(length); let offset = 0;
-  for (const p of parts) { result.set(p, offset); offset += p.length; }
-  return result;
+  try {return await boundedBytes(request,limit);}
+  catch(error) {if(error instanceof Error&&error.message==='RESPONSE_TOO_LARGE')throw new BodyLimitError(limit+1);throw error;}
 }
 
 export class AgentAuth extends DurableObject<Env> {
@@ -63,6 +56,23 @@ export class AgentAuth extends DurableObject<Env> {
 
 export class McpContainer extends Container<Env> {
   private downloads = companyDownloads(this.env.BACKUPS);
+  enableInternet = false;
+  interceptHttps = true;
+  // The only allowed egress is a synthetic host handled outside the container.
+  // No direct HTTP, HTTPS, raw TCP or public DNS fallback is allowed.
+  private upstream() {return new UpstreamStore(this.ctx.storage.sql,fn=>this.ctx.storage.transactionSync(fn),Number(this.env.UPSTREAM_DAILY_CALLS),Number(this.env.UPSTREAM_DAILY_BYTES));}
+  async upstreamGateway(request: Request): Promise<Response> {
+    if(new URL(request.url).pathname==='/bootstrap'&&request.method==='GET') {
+      const snapshot=await this.env.BACKUPS.get('latest.snapshot.tar.gz');
+      return snapshot?new Response(snapshot.body,{headers:{'X-Snapshot-SHA256':snapshot.customMetadata?.sha256||''}}):new Response('No accepted snapshot',{status:503});
+    }
+    return governedFetch(request,this.upstream(),this.env.CURATED_BACKEND_ORIGIN,Reflect.get(this.env,'CURATED_BACKEND_TOKEN'));
+  }
+  private async dispatchGoverned(request: Request,maintenance=false): Promise<Response> {
+    const headers=new Headers(request.headers);headers.set('x-mcp-edge-token',this.env.OPS_TOKEN);
+    return dispatchOperation(new Request(request,{headers}),this.upstream(),r=>this.containerFetch(r),maintenance);
+  }
+
   defaultPort = 8000;
   // Keep the runtime warm across the five-minute review cadence.
   sleepAfter = '10m';
@@ -70,14 +80,14 @@ export class McpContainer extends Container<Env> {
     ...curatedContainerEnv(this.env,this.env.CURATED_BACKEND_ORIGIN),
     MCP_HK_DATABASE: '/data/mcp-hk.sqlite3', HOST: '0.0.0.0', PORT: '8000',
     MCP_HK_OPS_TOKEN: this.env.OPS_TOKEN,
-    MCP_HK_BOOTSTRAP_URL: `${this.env.BOOTSTRAP_ORIGIN}/__ops/snapshot`,
+    MCP_HK_BOOTSTRAP_URL: 'http://mcp-egress/bootstrap',
     MCP_HK_EDGE_MODE: 'true',
     MCP_HK_ALLOWED_HOSTS: 'mcp.hk,mcp-hk.measurable.workers.dev,localhost,127.0.0.1,container',
     MCP_HK_ALLOWED_ORIGINS: 'https://mcp.hk,https://mcp-hk.measurable.workers.dev,http://localhost:8000',
   };
   entrypoint = ['mcp-hk-container'];
 
-  usageReport(days: number) { return new UsageStore(this.ctx.storage.sql).report(days); }
+  usageReport(days: number) { return {...new UsageStore(this.ctx.storage.sql).report(days),upstream:this.upstream().report()}; }
 
   async publishCompanyExport(input: unknown) {
     const owner = await this.claimSeedLease();
@@ -93,6 +103,7 @@ export class McpContainer extends Container<Env> {
   async fetch(request: Request): Promise<Response> {
     const started = Date.now(), url = new URL(request.url);
     if (url.pathname.startsWith('/__ops/')) return new Response('Not found', {status: 404});
+    const policy=mcpPolicy(request,this.env.PUBLIC_ORIGIN);if(policy)return policy;
     const usage = new UsageStore(this.ctx.storage.sql);
     const key = await clientKey(request.headers.get('x-mcp-client-ip') || 'unknown',this.env.OPS_TOKEN);
     const preliminary=usage.quota(key,0,Date.now(),false);
@@ -134,7 +145,7 @@ export class McpContainer extends Container<Env> {
     headers.set('x-mcp-edge-token', this.env.OPS_TOKEN);
     const forwarded = new Request(request.url, {method: request.method, headers, body: body ?? request.body, redirect:'manual'});
     let response: Response;
-    try { response = await this.downloads(forwarded) || await this.containerFetch(forwarded); }
+    try { response = await this.downloads(forwarded) || await this.dispatchGoverned(forwarded); }
     catch { response = recoveringResponse(this.env.RELEASE_COMMIT); }
     response = await normalizeBackendResponse(response,this.env.RELEASE_COMMIT);
     const result = new Response(response.body,response);
@@ -170,7 +181,7 @@ export class McpContainer extends Container<Env> {
         pack = scheduled?.pack || 'resources';
       }
       const path = pack === 'backup' ? '/__ops/backup' : `/__ops/refresh?pack=${pack}`;
-      const response = await this.containerFetch(`${this.env.PUBLIC_ORIGIN}${path}`, {method: 'POST', headers: {'Authorization': `Bearer ${this.env.OPS_TOKEN}`, 'x-mcp-edge-token': this.env.OPS_TOKEN}});
+      const response = await this.dispatchGoverned(new Request(`${this.env.PUBLIC_ORIGIN}${path}`, {method: 'POST', headers: {'Authorization': `Bearer ${this.env.OPS_TOKEN}`, 'x-mcp-edge-token': this.env.OPS_TOKEN}}),true);
       if (!response.ok) throw new Error(`Maintenance source returned ${response.status}`);
       const receipt = await saveBackup(this.env, response, pack);
       let overview;
@@ -191,7 +202,7 @@ export class McpContainer extends Container<Env> {
   }
 
   async publishOverview() {
-    const response = await this.containerFetch(`${this.env.PUBLIC_ORIGIN}/api/v1/coverage`, {headers: {'x-mcp-edge-token': this.env.OPS_TOKEN}, signal: AbortSignal.timeout(15000)});
+    const response = await this.dispatchGoverned(new Request(`${this.env.PUBLIC_ORIGIN}/api/v1/coverage`, {headers: {'x-mcp-edge-token': this.env.OPS_TOKEN}, signal: AbortSignal.timeout(15000)}));
     if (!response.ok) throw new Error(`Coverage returned ${response.status}`);
     const bytes = await boundedBody(response, 100000);
     return saveOverview(this.env, JSON.parse(new TextDecoder().decode(bytes)));
@@ -238,9 +249,16 @@ export class McpContainer extends Container<Env> {
   async operationsStatus() { return await this.ctx.storage.get('maintenanceStatus') || {status: 'not_run'}; }
 }
 
+// Assign through the SDK setter so ContainerProxy receives the handler registry.
+McpContainer.outbound = ()=>new Response('Direct egress denied',{status:403});
+McpContainer.outboundByHost = {
+  'mcp-egress': async (request:Request,env:Env) => env.APP.get(env.APP.idFromName('production')).upstreamGateway(request),
+};
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
+    const policy=mcpPolicy(request,env.PUBLIC_ORIGIN);if(policy)return policy;
     if(isAgentAuthPath(url.pathname)&&url.origin!==env.PUBLIC_ORIGIN)return new Response('Use the canonical mcp.hk origin',{status:400,headers:{'Cache-Control':'no-store'}});
     if (url.protocol !== 'https:' && !['localhost', '127.0.0.1'].includes(url.hostname)) return Response.redirect(`https://${url.host}${url.pathname}${url.search}`, 308);
     if (url.hostname === 'www.mcp.hk') return Response.redirect(`https://mcp.hk${url.pathname}${url.search}`, 308);
@@ -345,7 +363,7 @@ export default {
     }
     if (url.pathname === '/api/v1/operations') {
       const manifest = await env.BACKUPS.get('latest.json');
-      return Response.json({backup: manifest ? await manifest.json() : null, maintenance: await env.APP.get(env.APP.idFromName('production')).operationsStatus(), schedules: {catalogue: 'Sunday 12:00 Asia/Hong_Kong', resources: 'every five minutes at minutes 2,7,...57; up to 256 reviews, 90 seconds, six concurrent/two per host, 50000 review attempts/day', restaurants: 'daily 10:00 Asia/Hong_Kong', population: 'Sunday 11:00 Asia/Hong_Kong', backup: 'daily 09:00 Asia/Hong_Kong'}, retentionDays: 30});
+      return Response.json({backup: manifest ? JSON.parse(new TextDecoder().decode(await boundedBytes(new Response(manifest.body),65536))) : null, maintenance: await env.APP.get(env.APP.idFromName('production')).operationsStatus(), schedules: {catalogue: 'Sunday 12:00 Asia/Hong_Kong', resources: 'every five minutes at minutes 2,7,...57; up to 256 reviews, 90 seconds, six concurrent/two per host, 50000 review attempts/day', restaurants: 'daily 10:00 Asia/Hong_Kong', population: 'Sunday 11:00 Asia/Hong_Kong', backup: 'daily 09:00 Asia/Hong_Kong'}, retentionDays: 30});
     }
     const headers = dataRequestHeaders(request);
     try {

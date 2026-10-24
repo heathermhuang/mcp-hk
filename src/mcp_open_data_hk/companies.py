@@ -10,6 +10,8 @@ from urllib.parse import urlsplit
 
 import httpx
 
+from .upstream_budget import BudgetTransport
+
 from .contracts import DomainError, Envelope
 
 SOURCE_URL = "https://drive.google.com/drive/folders/13mzAvvufXC3QmH8OvMVx2juUi7qdnVLL"
@@ -237,7 +239,7 @@ class Companies:
     async def fetch(self, path, params):
         origin, token = self.config
         async with httpx.AsyncClient(
-            transport=self.transport,
+            transport=BudgetTransport(self.transport),
             timeout=httpx.Timeout(10, connect=5),
             trust_env=False,
             follow_redirects=False,

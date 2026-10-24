@@ -390,6 +390,7 @@ async def test_source_failure_traceback_redacts_address_query(monkeypatch):
         return httpx.Response(503)
 
     def client(**kwargs):
+        kwargs.pop("transport")
         return original(transport=httpx.MockTransport(unavailable), **kwargs)
 
     monkeypatch.setattr(httpx, "AsyncClient", client)

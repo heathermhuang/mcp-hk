@@ -4,7 +4,7 @@
   "account_id": "63a7fe52c985c63bb9e69ce47efdc569",
   "main": "worker.ts",
   "compatibility_date": "2026-10-16",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "workers_dev": true,
   "routes": [
     { "pattern": "mcp.hk", "zone_id": "cc6b9c6ef2f428d48c9dd81732917947", "custom_domain": true },
@@ -13,6 +13,8 @@
   "secrets": { "required": ["OPS_TOKEN"] },
   "vars": {
     "PUBLIC_ORIGIN": "https://mcp.hk",
+    "UPSTREAM_DAILY_CALLS": "500000",
+    "UPSTREAM_DAILY_BYTES": "8000000000",
     "CURATED_BACKEND_ORIGIN": "https://curated.mcp.hk",
     "GA_MEASUREMENT_ID": "G-Y1PSQCCW4C",
     "RELEASE_COMMIT": "development",

@@ -249,6 +249,8 @@ async def test_http_source_redirects_and_rate_limits(monkeypatch):
 
     def client(**kwargs):
         assert kwargs["follow_redirects"] is False
+        assert kwargs["trust_env"] is False
+        kwargs.pop("transport")
         return real_client(
             **kwargs,
             transport=httpx.MockTransport(lambda r: copy.copy(responses.pop(0))),

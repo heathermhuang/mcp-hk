@@ -12,9 +12,12 @@ import socket
 import ssl
 import time
 import zlib
+
+import certifi
 from urllib.parse import quote, urljoin, urlsplit
 
 from .contracts import DomainError
+from .upstream_budget import get_budget, gateway_headers, GATEWAY
 from .source_relay import relay_request
 
 MAX_BYTES = 8_000_000
@@ -42,8 +45,10 @@ def validate_url(url):
 
 def public_addresses(host, port):
     addresses = socket.getaddrinfo(host, port, type=socket.SOCK_STREAM)
-    if not addresses or any(
-        not ipaddress.ip_address(a[4][0]).is_global for a in addresses
+    if (
+        not addresses
+        or len(addresses) > 16
+        or any(not ipaddress.ip_address(a[4][0]).is_global for a in addresses)
     ):
         raise DomainError(
             "UNSAFE_SOURCE", "Source resolves to a non-public network", 422
@@ -57,8 +62,14 @@ class PinnedHTTP(http.client.HTTPConnection):
         addresses = public_addresses(self.host, self.port)
         last = None
         for family, kind, proto, _, addr in addresses:
+            budget = get_budget()
+            remaining = budget.remaining()
             conn = socket.socket(family, kind, proto)
-            conn.settimeout(self.timeout)
+            conn.settimeout(
+                min(self.timeout, remaining)
+                if isinstance(self.timeout, (int, float))
+                else remaining
+            )
             try:
                 conn.connect(addr)
                 self.sock = conn
@@ -74,7 +85,7 @@ class PinnedHTTPS(PinnedHTTP):
 
     def connect(self):
         super().connect()
-        self.sock = ssl.create_default_context().wrap_socket(
+        self.sock = ssl.create_default_context(cafile=certifi.where()).wrap_socket(
             self.sock, server_hostname=self.host
         )
 
@@ -83,29 +94,55 @@ def fetch_sync(
     url, headers=None, maximum=MAX_BYTES, destination=None, payload=None, deadline=30
 ):
     started = time.monotonic()
+    budget = get_budget()
+    budget.acquire()
+    try:
+        return _fetch_attempts(
+            url, headers, maximum, destination, payload, deadline, started, budget
+        )
+    finally:
+        budget.release()
+
+
+def _fetch_attempts(
+    url, headers, maximum, destination, payload, deadline, started, budget
+):
     identity_retry = False
-    for _ in range(4):
-        if time.monotonic() - started > deadline:
-            raise DomainError(
-                "SOURCE_TIMEOUT", "Source exceeded download deadline", 504
-            )
+    for attempt in range(4):
+        if attempt:
+            # Each redirect/retry is a new charged upstream attempt.
+            budget.retry()
+        budget.remaining()
         original = validate_url(url)
-        relay = relay_request(url, headers, payload)
+        hosted = os.environ.get("MCP_HK_EDGE_MODE") == "true"
+        relay = None if hosted else relay_request(url, headers, payload)
         if relay:
             # The approved source is public too. Never turn this into a route
             # around the reader's private-address rejection.
             public_addresses(original.hostname, original.port or 443)
         p = validate_url(relay[0] if relay else url)
-        connection = (PinnedHTTPS if p.scheme == "https" else PinnedHTTP)(
-            p.hostname, port=p.port, timeout=30 if relay else 10
-        )
+        if hosted:
+            gateway = validate_url(GATEWAY)
+            connection = http.client.HTTPConnection(
+                gateway.hostname, timeout=min(10, budget.remaining())
+            )
+        else:
+            connection = (PinnedHTTPS if p.scheme == "https" else PinnedHTTP)(
+                p.hostname, port=p.port, timeout=min(10, budget.remaining())
+            )
         output = None
         try:
             connection.request(
                 "POST" if payload is not None else "GET",
-                quote(p.path or "/", safe="/%:@!$&'()*+,;=-._~")
-                + (
-                    "?" + quote(p.query, safe="=&;%:+,/?@!$'()*-._~") if p.query else ""
+                (
+                    "/fetch"
+                    if hosted
+                    else quote(p.path or "/", safe="/%:@!$&'()*+,;=-._~")
+                    + (
+                        "?" + quote(p.query, safe="=&;%:+,/?@!$'()*-._~")
+                        if p.query
+                        else ""
+                    )
                 ),
                 body=payload,
                 headers={
@@ -113,10 +150,19 @@ def fetch_sync(
                     "Accept-Encoding": "identity" if identity_retry else "gzip",
                     **(headers or {}),
                     **(relay[1] if relay else {}),
+                    **(gateway_headers(budget, url) if hosted else {}),
                 },
             )
+            if getattr(connection, "sock", None):
+                connection.sock.settimeout(min(10, budget.remaining()))
             response = connection.getresponse()
             meta = {k.lower(): v for k, v in response.getheaders()}
+            if hosted and response.status in {403, 429, 504}:
+                raise DomainError(
+                    "UPSTREAM_BUDGET",
+                    "Edge upstream allocation denied",
+                    response.status,
+                )
             if relay and meta.get("x-mcp-source-transport") != "approved-worker-relay":
                 raise DomainError(
                     "SOURCE_UNAVAILABLE", "Approved source relay was unavailable", 502
@@ -165,13 +211,20 @@ def fetch_sync(
                 if meta.get("content-encoding") == "gzip"
                 else None
             )
-            while chunk := response.read1(65536):
+            while True:
+                if getattr(connection, "sock", None):
+                    connection.sock.settimeout(min(10, budget.remaining()))
+                budget.remaining()
+                chunk = response.read1(65536)
+                if not chunk:
+                    break
                 if time.monotonic() - started > deadline:
                     raise DomainError(
                         "SOURCE_TIMEOUT", "Source exceeded download deadline", 504
                     )
                 if decoder:
                     chunk = decoder.decompress(chunk, maximum + 1 - length)
+                budget.charge(len(chunk))
                 length += len(chunk)
                 if output:
                     output.write(chunk)
