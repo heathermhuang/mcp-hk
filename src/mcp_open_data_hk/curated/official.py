@@ -117,7 +117,9 @@ def verify_xls(body, xls, normalizations=None):
         start = next(
             i
             for i in range(min(30, sheet.nrows))
-            if [header(str(v)) for v in sheet.row_values(i)] == normalized
+            if [header(str(v)) for v in sheet.row_values(i)[: len(fields)]]
+            == normalized
+            and not any(str(v).strip() for v in sheet.row_values(i)[len(fields) :])
         )
     except Exception as exc:
         raise SourceRejected("XLS_SCHEMA_CHANGED") from exc
@@ -139,6 +141,10 @@ def verify_xls(body, xls, normalizations=None):
     actual = []
     prefix_columns = []
     for i in range(start + 1, sheet.nrows):
+        # Formatting-aware xlrd exposes trailing styled blank columns. Ignore
+        # only empty cells; extra source values must still fail qualification.
+        if any(str(v).strip() for v in sheet.row_values(i)[len(fields) :]):
+            raise SourceRejected("XLS_EXTRA_SOURCE_COLUMNS")
         values = []
         prefixed = []
         for col, field in enumerate(fields):
