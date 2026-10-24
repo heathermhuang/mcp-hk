@@ -47,11 +47,13 @@ class Collector:
         if self.requests > self.request_limit or time.monotonic() > self.deadline:
             raise SourceRejected("RUN_REQUEST_OR_TIME_BUDGET")
         reserved = state.reserve(self.conn) if self.conn else None
+        read_started = time.monotonic()
         with self.client.stream("GET", url, params=params) as response:
             check = {
                 "sourceUrl": str(response.url),
                 "checkedAt": now(),
                 "httpStatus": response.status_code,
+                "durationSeconds": round(time.monotonic() - read_started, 3),
                 "sourceLastModified": response.headers.get("last-modified"),
             }
             self.checks.append(check)
@@ -84,7 +86,11 @@ class Collector:
                 body.extend(chunk)
             if self.conn:
                 state.settle_bytes(self.conn, reserved, len(body))
-            check.update(sha256=digest(body), bytes=len(body))
+            check.update(
+                sha256=digest(body),
+                bytes=len(body),
+                durationSeconds=round(time.monotonic() - read_started, 3),
+            )
             return bytes(body), response.headers
 
     def close(self):
@@ -258,6 +264,10 @@ def coverage(conn, members):
         "SELECT max(r.record->>'coverageEnd') AS cutoff FROM curated.official_records r WHERE capture_id=ANY(%s) AND r.record->>'kind'='money_lender'",
         (list(set(members.values())),),
     ).fetchone()["cutoff"]
+    policy = conn.execute(
+        "SELECT state FROM curated.official_source_state WHERE family='address_policy'"
+    ).fetchone()
+    address_daily_limit = policy["state"]["dailyLimit"] if policy else 20
     counts = {r["kind"]: {"rows": r["rows"], "entities": r["entities"]} for r in rows}
 
     def end(w):
@@ -288,7 +298,7 @@ def coverage(conn, members):
         "schedule": {
             "kind": "systemd",
             "utc": "05:00 daily",
-            "addressLimit": 20,
+            "addressLimit": address_daily_limit,
             "requestLimit": 48,
             "dailyCrRequestLimit": 500,
             "byteLimit": 67108864,
@@ -337,6 +347,9 @@ def collect_lenders(conn, collector):
 
 
 def collect_addresses(conn, collector, job_id, limit):
+    from .official_address_stage import usage
+
+    limit = min(limit, usage(conn)["remaining"])
     state.seed_queue(conn)
     targets = conn.execute(
         "SELECT entity_id FROM curated.official_address_queue WHERE next_due<=now() ORDER BY next_due,last_success NULLS FIRST,entity_id LIMIT %s",
@@ -511,7 +524,7 @@ def run(
         if not job_id:
             return {"status": "duplicate", "scheduledFor": occurrence}
         collector = collector or Collector(
-            conn, 16 if mode == "backfill" else 120 if mode == "addresses" else 48
+            conn, 16 if mode == "backfill" else 100 if mode == "addresses" else 48
         )
         collector.conn = conn
         errors, changed = [], False

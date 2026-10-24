@@ -1,0 +1,10 @@
+[Unit]
+Description=Address batches at 09/10/11 HKT, bounded by approved daily stage
+[Timer]
+OnCalendar=*-*-* 01:00:00 UTC
+OnCalendar=*-*-* 02:00:00 UTC
+OnCalendar=*-*-* 03:00:00 UTC
+Persistent=true
+Unit=mcp-hk-official-addresses.service
+[Install]
+WantedBy=timers.target

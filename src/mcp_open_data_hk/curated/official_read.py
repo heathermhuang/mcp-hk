@@ -321,6 +321,7 @@ class OfficialReader:
                     }
                     for r in jobs
                 ]
+                from .official_address_stage import usage as address_usage
                 from .official_offsite_job import gate
 
                 recovery = {
@@ -352,6 +353,7 @@ class OfficialReader:
                         "targetRpoHours": 24,
                     },
                     "backfillRecoveryGateOpen": coverage_current,
+                    "addressPolicy": address_usage(conn),
                     "nextConfiguredDueAt": next_due.isoformat(),
                     "sourceChecks": conn.execute(
                         "SELECT family,checked_at,hold_until,state->>'status' AS status FROM curated.official_source_state WHERE family NOT IN ('inventory_baseline','health') AND family NOT LIKE 'address:%%' ORDER BY family LIMIT 110"

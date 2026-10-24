@@ -58,7 +58,8 @@ def test_scoped_uploader_roundtrip_and_failure_never_publish_manifest(tmp_path):
 
 
 def test_retention_requires_restore_checksum_remote_copy_and_keeps_latest_two(tmp_path):
-    import os, time
+    import os
+    import time
     from mcp_open_data_hk.curated.official_retention import prune
 
     config = tmp_path / "uploader.json"

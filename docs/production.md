@@ -405,3 +405,16 @@ qualified copies, requires matching restore proof, local SHA-256 and a still-
 present checksum/size-matching offsite object, and never deletes R2 objects or
 unverified/failed evidence. No public version, cursor, original archive or other
 bucket prefix is pruned by this workflow.
+
+Address expansion is a persisted owner policy, initially 20/day. Both new check
+rows and pre-migration address source reads count, including failed attempts.
+`official_address_stage --set 100` requires the recovery gate. Admission to 250
+requires at least 100 observed same-day attempts, at most 5% settled identity/no-
+match failures, no network/hold/schema failures, at least 50 timed source samples,
+mean at most 7.5 seconds and p95 at most 20 seconds (within the 780-second sequential
+100-read envelope), memory below 512 MiB and a fresh enlarged-state restore after
+the latest address attempt. A failed gate retains the qualified prior stage.
+The 09/10/11 HKT address timer requests at most 100 per batch; the durable daily
+policy yields 100/100/50 at 250, and later deliveries become no-ops. Freshness also
+uses the same remaining address policy and 500/day CR provider budget. Publication
+seeds new exact identities into the queue without changing existing due/hold state.

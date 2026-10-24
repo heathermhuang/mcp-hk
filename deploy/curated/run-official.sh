@@ -4,6 +4,9 @@ umask 077
 cd "$(dirname "$0")/../.."
 export CURATED_HOSTNAME=curated.mcp.hk
 mode=${1:-freshness}
+address_limit=${2:-20}
+case "$address_limit" in ''|*[!0-9]*) exit 2;; esac
+[ "$address_limit" -le 100 ] || exit 2
 case "$mode" in freshness|backfill|addresses|publish|plan) ;; *) exit 2;; esac
 if [ "$mode" = backfill ] && systemctl is-active --quiet mcp-hk-official.service; then echo 'Backfill skipped: freshness unit owns the window'; exit 0; fi
 exec 9>"${MCP_HK_MAINTENANCE_LOCK:-/run/lock/mcp-hk-official-maintenance.lock}"
@@ -15,6 +18,10 @@ memory=$(awk '/MemAvailable:/ {print $2}' /proc/meminfo)
 image=$(docker compose -p curated -f deploy/curated/production.compose.yaml images -q backend)
 if [ "$mode" = backfill ]; then
  if ! docker run --rm --memory 128m --cpus 1 --network curated_default --env-file /etc/mcp-hk-curated/owner.env "$image" python -m mcp_open_data_hk.curated.official_offsite_job gate; then echo 'Backfill held: offsite recovery gate'; exit 0; fi
+fi
+if [ "$mode" = addresses ]; then
+ remaining=$(docker run --rm --memory 128m --cpus 1 --network curated_default --env-file /etc/mcp-hk-curated/owner.env "$image" python -m mcp_open_data_hk.curated.official_address_stage | python3 -c 'import json,sys; print(json.load(sys.stdin)["remaining"])')
+ [ "$remaining" -gt 0 ] || { echo 'Address daily stage already settled'; exit 0; }
 fi
 # Timer provenance is independently checked against LastTriggerUSecMonotonic.
 # An operator starting the unit outside its timer window receives a manual timestamp.
@@ -29,7 +36,7 @@ fi
 receipt=$(mktemp)
 trap 'rm -f "$receipt"' EXIT HUP INT TERM
 result=0
-docker run --rm --memory 512m --cpus 1 --network curated_default --env-file /etc/mcp-hk-curated/owner.env "$image" python -m mcp_open_data_hk.curated.official_ingest "$mode" --scheduled-for "$stamp" > "$receipt" || result=$?
+docker run --rm --memory 512m --cpus 1 --network curated_default --env-file /etc/mcp-hk-curated/owner.env "$image" python -m mcp_open_data_hk.curated.official_ingest "$mode" --scheduled-for "$stamp" --address-limit "$address_limit" > "$receipt" || result=$?
 python3 - "$receipt" <<'PY'
 import json,sys
 try:

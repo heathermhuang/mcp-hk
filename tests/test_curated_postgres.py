@@ -1201,3 +1201,84 @@ def test_official_offsite_job_failure_retains_last_copy_and_holds_growth(model):
         assert not recovery.gate(conn)
         recovery.qualify_restore(conn, dict(proof, prefix=receipt_new["prefix"]))
         assert recovery.gate(conn)
+
+
+def test_official_address_stages_count_legacy_and_require_enlarged_restore(
+    model, monkeypatch
+):
+    from datetime import datetime, timedelta, timezone
+    from psycopg.rows import dict_row
+    from psycopg.types.json import Jsonb
+    from mcp_open_data_hk.curated import official_state as state
+    from mcp_open_data_hk.curated import official_address_stage as policy
+    from mcp_open_data_hk.curated.official import SourceRejected
+
+    _, _, _, _, owner = model
+    url = "https://data.cr.gov.hk/cr/api/api/v1/api_builder/json/local/search"
+    with connect(owner, autocommit=True, row_factory=dict_row) as conn:
+        state.migrate(conn)
+        conn.execute(
+            "INSERT INTO curated.official_runs(run_id,status,receipt) VALUES('legacy','success',%s)",
+            (
+                Jsonb(
+                    {
+                        "sourceChecks": [{"sourceUrl": url} for _ in range(20)],
+                        "addressFailures": [{"code": "SOURCE_HTTP_400"}],
+                    }
+                ),
+            ),
+        )
+        job = state.begin_job(conn, "addresses", "2026-10-24T01:00:00Z")
+        for i in range(20):
+            conn.execute(
+                "INSERT INTO curated.official_address_checks(job_id,entity_id,outcome) VALUES(%s,%s,%s)",
+                (job, "cr:local:" + str(i), "SOURCE_HTTP_400" if i == 0 else "success"),
+            )
+        assert (
+            policy.usage(conn)["attempts"] == 40
+            and policy.usage(conn)["remaining"] == 0
+        )
+        monkeypatch.setattr(policy, "gate", lambda c: False)
+        with pytest.raises(SourceRejected, match="RECOVERY"):
+            policy.set_stage(conn, 100)
+        monkeypatch.setattr(policy, "gate", lambda c: True)
+        policy.set_stage(conn, 100)
+        assert policy.usage(conn)["remaining"] == 60
+        with pytest.raises(SourceRejected, match="PILOT"):
+            policy.set_stage(conn, 250)
+        for i in range(20, 80):
+            conn.execute(
+                "INSERT INTO curated.official_address_checks(job_id,entity_id,outcome) VALUES(%s,%s,'success')",
+                (job, "cr:local:" + str(i)),
+            )
+        conn.execute(
+            "UPDATE curated.official_jobs SET status='success',receipt=%s WHERE job_id=%s",
+            (
+                Jsonb(
+                    {
+                        "sourceChecks": [
+                            {"sourceUrl": url, "durationSeconds": 1} for _ in range(60)
+                        ],
+                        "maxRssKiB": 100000,
+                    }
+                ),
+                job,
+            ),
+        )
+        with pytest.raises(SourceRejected, match="RESTORE"):
+            policy.set_stage(conn, 250)
+        conn.execute(
+            "INSERT INTO curated.official_source_state(family,state) VALUES('offsite_restore',%s)",
+            (
+                Jsonb(
+                    {
+                        "verifiedAt": (
+                            datetime.now(timezone.utc) + timedelta(seconds=1)
+                        ).isoformat()
+                    }
+                ),
+            ),
+        )
+        policy.set_stage(conn, 250)
+        assert policy.usage(conn)["remaining"] == 150
+        assert state.pointer(conn) is None
