@@ -1,0 +1,8 @@
+[Unit]
+Description=Daily official company subset check at 13:00 HKT
+[Timer]
+OnCalendar=*-*-* 05:00:00 UTC
+Persistent=true
+Unit=mcp-hk-official.service
+[Install]
+WantedBy=timers.target

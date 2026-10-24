@@ -69,6 +69,8 @@ class Companies:
 
     async def query(self, operation, params=None, entity_id=None, family=None):
         params = {k: v for k, v in (params or {}).items() if v is not None}
+        if params.get("view") == "latest_observed":
+            return await self.official_query(operation, params, entity_id)
         if (
             params.pop("requireFresh", False)
             or params.pop("view", "archive") != "archive"
@@ -233,6 +235,99 @@ class Companies:
                 "OUTPUT_LIMIT", "Archival envelope exceeded its byte bound", 413
             )
         return result
+
+    async def official_query(self, operation, params, entity_id=None):
+        from .curated.official import LIMITATIONS
+
+        params = dict(params)
+        params.pop("view", None)
+        if params.pop("requireFresh", False):
+            raise DomainError(
+                "ARCHIVE_NOT_CURRENT",
+                "Official observations have source dates and subset coverage; freshness cannot be guaranteed",
+                422,
+            )
+        if not self.config:
+            raise DomainError("PACK_UNAVAILABLE", "Company backend is not configured")
+        if operation == "search":
+            path = "/v1/official/companies"
+            if "q" in params:
+                params["name"] = params.pop("q")
+        elif (
+            operation == "get"
+            and isinstance(entity_id, str)
+            and re.fullmatch(r"cr:(?:local|foreign|mlr):[A-Za-z0-9]{1,20}", entity_id)
+        ):
+            path = "/v1/official/entities/" + entity_id
+        elif operation == "status":
+            path = "/v1/official/status"
+        else:
+            raise DomainError(
+                "INVALID_QUERY",
+                "Use an official source identity for observed detail; archival histories remain separate",
+                400,
+            )
+        try:
+            await asyncio.wait_for(self.slots.acquire(), timeout=0.25)
+        except asyncio.TimeoutError as exc:
+            raise DomainError(
+                "QUERY_BUSY", "Company query concurrency limit reached", 429
+            ) from exc
+        try:
+            payload = await asyncio.wait_for(self.fetch(path, params), timeout=12)
+        except (httpx.HTTPError, asyncio.TimeoutError) as exc:
+            raise DomainError(
+                "PACK_UNAVAILABLE", "Official observations are unavailable"
+            ) from exc
+        finally:
+            self.slots.release()
+        source, data, version = (
+            payload.get("provenance"),
+            payload.get("data"),
+            payload.get("version"),
+        )
+        if (
+            not isinstance(source, dict)
+            or source.get("view") != "latest_observed"
+            or not isinstance(version, str)
+            or not re.fullmatch(r"official-[a-f0-9]{32}", version)
+            or not isinstance(data, (dict, list))
+            or isinstance(data, list)
+            and (len(data) > 100 or any(not isinstance(r, dict) for r in data))
+            or params.get("version")
+            and version != params["version"]
+        ):
+            raise DomainError(
+                "SOURCE_SCHEMA_CHANGED",
+                "Official response violates its bounded version contract",
+            )
+        if operation == "get" and (
+            not isinstance(data, dict) or data.get("entity_id") != entity_id
+        ):
+            raise DomainError(
+                "SOURCE_SCHEMA_CHANGED", "Official record identity differs"
+            )
+        return Envelope(
+            data={"items": data} if isinstance(data, list) else data,
+            meta={
+                "version": version,
+                "view": "latest_observed",
+                "snapshotIds": [version],
+                "nextCursor": payload.get("nextCursor"),
+                "returnedCount": len(data) if isinstance(data, list) else 1,
+                "countScope": "this_page",
+                "currentVerification": False,
+            },
+            provenance=[source],
+            warnings=[
+                {
+                    "code": "OFFICIAL_OBSERVED_SUBSET",
+                    "message": message,
+                    "affectedSourceId": "companies_registry",
+                }
+                for message in LIMITATIONS
+            ],
+        ).model_dump(mode="json")
 
     async def fetch(self, path, params):
         origin, token = self.config

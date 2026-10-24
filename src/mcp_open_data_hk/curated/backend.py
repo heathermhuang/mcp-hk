@@ -7,6 +7,7 @@ from fastapi import FastAPI, Header, HTTPException, Query
 from starlette.concurrency import run_in_threadpool
 
 from .read import Reader, ReadError
+from .official_read import OfficialReader
 
 STATUS = {
     "INVALID_QUERY": 400,
@@ -53,6 +54,41 @@ def create_app(reader, token):
         except Exception as exc:
             # No DSNs, credentials, source values or caller terms in error bodies.
             raise HTTPException(503, detail={"code": "PACK_UNAVAILABLE"}) from exc
+
+    official = OfficialReader(reader)
+
+    @app.get("/v1/official/status")
+    async def official_status(authorization: str | None = Header(None)):
+        return await call(official.status, authorization)
+
+    @app.get("/v1/official/companies")
+    async def official_search(
+        name: str | None = Query(None, max_length=200),
+        namespace: str | None = Query(None, max_length=100),
+        value: str | None = Query(None, max_length=200),
+        limit: int = Query(20, ge=1, le=100),
+        cursor: str | None = Query(None, max_length=2048),
+        authorization: str | None = Header(None),
+    ):
+        return await call(
+            official.search,
+            authorization,
+            name=name,
+            namespace=namespace,
+            value=value,
+            limit=limit,
+            cursor=cursor,
+        )
+
+    @app.get("/v1/official/entities/{entity_id}")
+    async def official_get(
+        entity_id: str,
+        version: str | None = Query(None, max_length=100),
+        authorization: str | None = Header(None),
+    ):
+        return await call(
+            official.get, authorization, entity_id=entity_id, version=version
+        )
 
     @app.get("/health")
     async def health(authorization: str | None = Header(None)):

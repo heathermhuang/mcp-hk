@@ -41,3 +41,10 @@ test('relationship display preserves given names and source Chinese names withou
  assert.equal(partyNames({kind:'organisation',name1:'Company Limited',name2:'Alternative'}).primary,'Company Limited');
  assert.equal(partyNames({kind:'person',name1:'CHAN',name2:null}).primary,'CHAN');
 });
+
+test('official page exports retain their separate view and Registry attribution',async()=>{
+  const payload={meta:{version:'official-'+'a'.repeat(32),view:'latest_observed'},data:{items:[{entity_id:'cr:local:00001234',name1:'Raw Company',identifier:{namespace:'cr:local:brn',value:'00001234'}}]},provenance:[{attribution:'Companies Registry',sourceUrl:'https://www.cr.gov.hk/'}],warnings:[]};
+  const pack=await pagePackage(payload,{family:'official-search'},'Government of the HKSAR / Companies Registry / DATA.GOV.HK');
+  assert.equal(pack.manifest.view,'latest_observed');assert.equal(pack.manifest.scope,'this_page');assert.equal(pack.manifest.currentVerification,false);assert.equal(pack.manifest.rowCount,1);
+  await assert.rejects(pagePackage(payload,{},'Webb archive notice'));
+});

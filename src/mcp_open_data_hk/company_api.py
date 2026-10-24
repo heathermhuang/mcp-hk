@@ -16,7 +16,7 @@ def register_company_tools(server, current):
         view: Literal["archive", "latest_observed"] = "archive",
         requireFresh: bool = False,
     ) -> dict:
-        """Search original Enigma organisation name prefixes or explicit identifiers. Historical observations, not current company verification. Preserve source IDs and leading zeros. Multiple name facts can match one organisation. Pass returned version to detail/history reads and the signed cursor to the next page."""
+        """Search organisation name prefixes or explicit identifiers. view=archive selects Enigma; view=latest_observed selects the separately maintained official Registry subset (cr:local:brn, cr:foreign:brn, cr:mlr). Historical observations, not current company verification. Preserve source IDs and leading zeros. Multiple name facts can match one organisation. Pass returned version to detail/history reads and the signed cursor to the next page."""
         query = CompanySearchQuery(
             q=q,
             namespace=namespace,
@@ -30,16 +30,21 @@ def register_company_tools(server, current):
 
     @server.tool(annotations={"readOnlyHint": True, "destructiveHint": False})
     async def hk_company_get(
-        entityId: int,
+        entityId: int | str,
         version: str | None = None,
         view: Literal["archive", "latest_observed"] = "archive",
         requireFresh: bool = False,
     ) -> dict:
-        """Read a source-linked organisation and archived identifiers. An incorporation number is not a verified BRN. Pin the search result's version; this archive does not prove current registration or trading status."""
+        """Read a source-linked organisation. For view=latest_observed pass the exact string entityId from official search; detail returns dated events/addresses/lender records with raw source fields. An incorporation number is not a verified BRN. Pin the search result's version; this archive does not prove current registration or trading status."""
         query = CompanyReadQuery(version=version, view=view, requireFresh=requireFresh)
         return await current().companies.query(
             "get", query.model_dump(), entity_id=entityId
         )
+
+    @server.tool(annotations={"readOnlyHint": True, "destructiveHint": False})
+    async def hk_company_updates_status() -> dict:
+        """Read accepted official subset coverage, missing weeks, address denominator, source cutoff, bounded schedule and recent production ingestion receipts. No live crawl is started."""
+        return await current().companies.query("status", {"view": "latest_observed"})
 
     async def history(entityId, family, limit, cursor, version, asOf):
         query = CompanyHistoryQuery(

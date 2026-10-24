@@ -108,3 +108,12 @@ See [agent discovery contracts and validation](docs/agent-readiness.md).
 The detailed expansion plan and acceptance criteria are in [the engineering plan](docs/plans/government-expansion.md). Inventory discovery is not full government data onboarding; consult live coverage for validation, failures and remaining work.
 
 The optional [Hong Kong archival entity read model](docs/curated-read-model.md) provides offline normalization, indexed PostgreSQL queries, a private backend and opt-in REST/MCP company tools. Production requires a configured, restore-qualified backend.
+
+Official company observations are maintained separately from Enigma. Use
+`hk_company_search` / `hk_company_get` with `view="latest_observed"`, or
+`GET /api/v1/companies?q=HONG%20KONG&view=latest_observed`. Official record IDs
+are namespaced strings; use the exact returned `entity_id` and pin its `version`.
+`hk_company_updates_status` and `/api/v1/companies/updates/status` report accepted
+weeks, missing backfill, the address subset denominator, monthly lender cutoff and
+recent ingestion outcomes. `/companies` provides both official and archival views.
+See the [P6 source and operating plan](docs/data/official-company-updates-plan.md).

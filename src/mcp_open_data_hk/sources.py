@@ -257,7 +257,29 @@ SOURCES["enigma"] = {
 }
 
 
+OFFICIAL_COMPANY_PACK = {
+    "id": "company_registry",
+    "title": "Official company observations and money-lender registers",
+    "provider": "Companies Registry / DATA.GOV.HK",
+    "providerType": "government",
+    "view": "latest_observed",
+    "http": [
+        "/api/v1/companies?view=latest_observed",
+        "/api/v1/companies/updates/status",
+    ],
+    "tools": ["hk_company_search", "hk_company_get", "hk_company_updates_status"],
+}
+SOURCES["company_registry"] = {
+    "sourceUrl": "https://data.gov.hk/en-data/dataset/hk-cr-crdata-list-newly-registered-companies-2526",
+    "attribution": "Government of the HKSAR / Companies Registry / DATA.GOV.HK",
+    "providerType": "government",
+    "freshnessSeconds": 0,
+}
+
+
 def available_packs():
     from .companies import settings
 
-    return PACKS + ([ENIGMA_PACK] if settings() is not None else [])
+    return PACKS + (
+        [ENIGMA_PACK, OFFICIAL_COMPANY_PACK] if settings() is not None else []
+    )
