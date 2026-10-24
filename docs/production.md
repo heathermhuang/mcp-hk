@@ -286,3 +286,78 @@ capture is deleted. Verify search/get parity against the chosen version afterwar
 To suspend only these updates, stop `mcp-hk-official.timer`; do not alter gateway
 schedules or unrelated host timers. A failed scheduled collection or backup makes
 the systemd unit fail and leaves its durable run receipt and journal evidence.
+
+### Company maintenance continuation
+
+The additive `curated/migrations/001_official_maintenance.sql` retains the original
+captures, versions and pointers and labels their original transform. New captures
+include the explicit transform code hash in their identity, separately from raw
+SHA-256. The packaged migration is applied by the owner collector; serving roles
+remain SELECT only. Grant SELECT on the additional tables before swapping readers.
+
+`python -m mcp_open_data_hk.curated.official_ingest` accepts `freshness` (default),
+`backfill`, `addresses`, `publish`, `plan` and `verify-run`. Pass an explicit
+`--scheduled-for` occurrence with timezone for ordinary scheduler work; duplicate
+family/operation/occurrence cannot execute again. A running receipt left by an
+interruption stays unknown until the owning process is known to have stopped.
+Do not delete a receipt to retry or clear another writer's lock. `plan` uses stored
+inventory and makes no network reads. `backfill --pairs 1` is the initial pilot;
+maximum `--pairs 4` reads 16 objects and stages complete local/foreign groups.
+It never calls the lender/address/daily collector. Discovery must be under 36 hours
+old. At most 12 batches/day, one sequential source read, 64 MiB/batch and 8 MiB/object
+apply. Failed and uncertain requests consume the shared 500/day CR budget; Retry-After
+on 429/503 sets a persisted shared hold. Interrupted requests retain byte reservations.
+
+Freshness checks the latest two pairs and the four-file same-period lender group.
+An unrelated failed group cannot suppress verified staging. Daily publication
+merges staged membership after acquiring the writer lock and comparing its base;
+accepted state and its successful job receipt commit atomically. Normal publication
+occurs at most once per UTC date. Backfilled staged counts remain distinct from
+public accepted counts. Missing catalogue entries are retained as discovery gaps.
+No new public version is promised by a successful staged-only batch.
+
+The address due queue is keyed by register plus exact BRN; it selects indexed SQL
+pages and preserves prior successful observations after provider/empty/schema
+failure. Repeated unchanged addresses have new check evidence without an invented
+move. Changed observations retain previous accepted memberships. `latestAddress`
+is queried separately so the detail response's first 100 observations cannot hide
+it. The address stage remains 20/day until offsite recovery and measured 100/day
+qualification pass. No reader starts collection.
+
+The host runner enforces 512 MiB/one CPU on collectors, requires 1 GiB available
+memory and 10 GiB disk, and records local backup independently after collection,
+even on partial/failure. Health units compare a bounded expected occurrence at
+05:20 UTC and again at 06:00 only when the earlier result was running. Missing,
+interrupted, collection, publication and backup failures remain distinct. No
+staffed alert channel or daily offsite RPO is implied. A manual unit start is not
+scheduled success: retain timer LastTriggerUSec and unit start/end evidence.
+
+Install/enable the health timer only after a manual no-network verifier probe.
+The checked-in backfill timer is a deployment template and remains disabled until
+pilot, recovery/headroom and provider-backup-window qualification. Do not enable
+it simply because code passed CI. Existing daily local retention stays 30 days;
+this release adds no public-version/raw-history pruning. Do not prune unresolved
+receipts or the only verified recovery copy.
+
+Daily offsite uploads and source-gated Gazette/SFC/HKEX integrations require the
+explicit decisions in [the unsent briefs](data/qualification/company-permission-briefs.md).
+Release-time R2 upload/retrieval and restore do not establish unattended daily RPO.
+Synthetic contract fixtures neither grant source permissions nor implement a live
+connector. Rollback stops only newly installed timers, preserves staged/raw/job
+state and restores an accepted pointer separately from code. Old version/cursor
+windows and the immutable archive remain retained.
+
+Host source ownership: an earlier release populated `/opt/mcp-hk` while its Git
+metadata remained at the original archive configuration commit. Treat that dirty
+checkout as owned work. Deploy this continuation into a new immutable
+`/opt/mcp-hk-releases/<main-commit>` directory and point only
+`/opt/mcp-hk-maintenance-current` and the official units at it. Use Compose project
+`curated` when building/replacing only its backend. Leave the existing PostgreSQL
+and proxy services, configuration, source checkout and their mounts intact.
+The runner resolves its own release directory rather than assuming `/opt/mcp-hk`.
+
+Official address history is available through
+`GET /api/v1/companies/<exact-cr-entity>/addresses?view=latest_observed` and
+`hk_company_address_history`, with bounded signed pagination and selected-version
+pinning. Occurrence IDs are distinct from reusable raw payload IDs, preserving
+A→B→A reversion order. The six archival tools and their integer Webb IDs remain.

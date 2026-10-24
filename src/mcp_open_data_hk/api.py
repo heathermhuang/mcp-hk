@@ -223,12 +223,17 @@ def create_app(service=None):
 
     @app.get("/api/v1/companies/{entity_id}/{family}")
     async def company_history(
-        entity_id: int,
-        family: Literal["names", "officers", "licences", "licence_relationships"],
+        entity_id: str,
+        family: Literal[
+            "names", "officers", "licences", "licence_relationships", "addresses"
+        ],
         query: Annotated[CompanyHistoryQuery, Query()],
     ):
         return await service.companies.query(
-            "related", query.model_dump(), entity_id=entity_id, family=family
+            "related",
+            query.model_dump(),
+            entity_id=int(entity_id) if entity_id.isdigit() else entity_id,
+            family=family,
         )
 
     @app.get("/api/v1/properties/search")

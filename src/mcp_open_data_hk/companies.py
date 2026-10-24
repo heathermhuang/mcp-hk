@@ -70,7 +70,7 @@ class Companies:
     async def query(self, operation, params=None, entity_id=None, family=None):
         params = {k: v for k, v in (params or {}).items() if v is not None}
         if params.get("view") == "latest_observed":
-            return await self.official_query(operation, params, entity_id)
+            return await self.official_query(operation, params, entity_id, family)
         if (
             params.pop("requireFresh", False)
             or params.pop("view", "archive") != "archive"
@@ -236,7 +236,7 @@ class Companies:
             )
         return result
 
-    async def official_query(self, operation, params, entity_id=None):
+    async def official_query(self, operation, params, entity_id=None, family=None):
         from .curated.official import LIMITATIONS
 
         params = dict(params)
@@ -259,6 +259,13 @@ class Companies:
             and re.fullmatch(r"cr:(?:local|foreign|mlr):[A-Za-z0-9]{1,20}", entity_id)
         ):
             path = "/v1/official/entities/" + entity_id
+        elif (
+            operation == "related"
+            and family == "addresses"
+            and isinstance(entity_id, str)
+            and re.fullmatch(r"cr:(?:local|foreign):[A-Za-z0-9]{1,20}", entity_id)
+        ):
+            path = "/v1/official/entities/" + entity_id + "/addresses"
         elif operation == "status":
             path = "/v1/official/status"
         else:

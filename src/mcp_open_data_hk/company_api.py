@@ -46,6 +46,21 @@ def register_company_tools(server, current):
         """Read accepted official subset coverage, missing weeks, address denominator, source cutoff, bounded schedule and recent production ingestion receipts. No live crawl is started."""
         return await current().companies.query("status", {"view": "latest_observed"})
 
+    @server.tool(annotations={"readOnlyHint": True, "destructiveHint": False})
+    async def hk_company_address_history(
+        entityId: str,
+        limit: int = 20,
+        cursor: str | None = None,
+        version: str | None = None,
+    ) -> dict:
+        """Read version-pinned official address observation occurrences by exact company BRN namespace. Dates are observations, not effective move dates. Unchanged checks are separate from address changes. No collection is started."""
+        query = CompanyHistoryQuery(
+            limit=limit, cursor=cursor, version=version, view="latest_observed"
+        )
+        return await current().companies.query(
+            "related", query.model_dump(), entity_id=entityId, family="addresses"
+        )
+
     async def history(entityId, family, limit, cursor, version, asOf):
         query = CompanyHistoryQuery(
             limit=limit, cursor=cursor, version=version, asOf=asOf

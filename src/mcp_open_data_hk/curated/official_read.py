@@ -4,6 +4,8 @@ import contextlib
 import re
 import time
 
+from datetime import datetime, timedelta, timezone
+
 from .official import ATTRIBUTION, CATALOGUE, TERMS, LIMITATIONS
 from .read import ReadError, prefix_end
 from .normalize import search_key
@@ -173,7 +175,7 @@ class OfficialReader:
         with self.request() as conn:
             release = self.version(conn, version)
             rows = conn.execute(
-                "SELECT r.record FROM curated.official_records r JOIN curated.official_members m USING(capture_id) WHERE m.version=%s AND r.entity_id=%s ORDER BY r.record->>'coverageEnd' DESC NULLS LAST,r.fact_id LIMIT 101",
+                "SELECT r.record || CASE WHEN o.observation_id IS NULL THEN '{}'::jsonb ELSE jsonb_build_object('observedAt',o.observed_at,'observationId',o.observation_id) END AS record FROM curated.official_records r JOIN curated.official_members m USING(capture_id) LEFT JOIN curated.official_address_observations o ON o.capture_id=m.capture_id AND o.source_key=m.source_key WHERE m.version=%s AND r.entity_id=%s ORDER BY r.record->>'coverageEnd' DESC NULLS LAST,o.observed_at DESC NULLS LAST,r.fact_id LIMIT 101",
                 (release["version"], entity_id),
             ).fetchall()
             if not rows:
@@ -182,6 +184,10 @@ class OfficialReader:
                     "No accepted observation for this exact source identity",
                 )
             records = [r["record"] for r in rows[:100]]
+            address_row = conn.execute(
+                "SELECT r.record || jsonb_build_object('observedAt',o.observed_at,'observationId',o.observation_id) AS record FROM curated.official_records r JOIN curated.official_members m USING(capture_id) LEFT JOIN curated.official_address_observations o ON o.capture_id=m.capture_id AND o.source_key=m.source_key WHERE m.version=%s AND r.entity_id=%s AND r.record->>'kind'='address_observation' ORDER BY coalesce(o.observed_at,(r.record->'source'->>'fetchedAt')::timestamptz) DESC,r.fact_id LIMIT 1",
+                (release["version"], entity_id),
+            ).fetchone()
             latest = records[0]
             return self.result(
                 release,
@@ -192,9 +198,75 @@ class OfficialReader:
                     "chinese_name": latest.get("chinese_name"),
                     "identifier": latest["identifier"],
                     "observations": records,
+                    "latestAddress": address_row["record"] if address_row else None,
                     "observationCountScope": "at_most_100_in_selected_version",
                     "observationsTruncated": len(rows) > 100,
                 },
+            )
+
+    def address_history(
+        self, entity_id, limit=20, cursor=None, version=None, asOf=None
+    ):
+        if not re.fullmatch(r"cr:(?:local|foreign):[A-Za-z0-9]{1,20}", str(entity_id)):
+            raise ReadError("INVALID_ID", "Use an exact company source identity")
+        if type(limit) is not int or not 1 <= limit <= 100:
+            raise ReadError("INVALID_LIMIT", "Limit must be 1 through 100")
+        if asOf is not None:
+            raise ReadError(
+                "AS_OF_UNSUPPORTED",
+                "Observation dates do not establish an effective address interval",
+            )
+        filters = {"entityId": entity_id}
+        state = (
+            self.archive.unseal(cursor, "official_addresses", filters)
+            if cursor
+            else None
+        )
+        if state and version and state["version"] != version:
+            raise ReadError("INVALID_CURSOR", "Cursor version differs")
+        with self.request() as conn:
+            release = self.version(conn, state["version"] if state else version)
+            rows = conn.execute(
+                "SELECT o.observation_id,o.observed_at,r.record FROM curated.official_address_observations o JOIN curated.official_members m ON m.source_key=o.source_key AND m.capture_id=o.capture_id JOIN curated.official_records r ON r.capture_id=o.capture_id AND r.entity_id=o.entity_id WHERE m.version=%s AND o.entity_id=%s AND (o.observed_at,o.observation_id)<(%s::timestamptz,%s) ORDER BY o.observed_at DESC,o.observation_id DESC LIMIT %s",
+                (
+                    release["version"],
+                    entity_id,
+                    state["last"][0] if state else "infinity",
+                    state["last"][1] if state else "",
+                    limit + 1,
+                ),
+            ).fetchall()
+            more = len(rows) > limit
+            rows = rows[:limit]
+            token = (
+                self.archive.seal(
+                    {
+                        "op": "official_addresses",
+                        "filters": filters,
+                        "version": release["version"],
+                        "last": [
+                            rows[-1]["observed_at"].isoformat(),
+                            rows[-1]["observation_id"],
+                        ],
+                        "expires": (
+                            state["expires"] if state else int(time.time()) + 172800
+                        ),
+                    }
+                )
+                if more
+                else None
+            )
+            return self.result(
+                release,
+                [
+                    dict(
+                        r["record"],
+                        observedAt=r["observed_at"].isoformat(),
+                        observationId=r["observation_id"],
+                    )
+                    for r in rows
+                ],
+                token,
             )
 
     def status(self):
@@ -203,6 +275,60 @@ class OfficialReader:
             runs = conn.execute(
                 "SELECT run_id,started_at,finished_at,status,receipt FROM curated.official_runs ORDER BY started_at DESC LIMIT 2"
             ).fetchall()
+            # Older deployments can serve the expanded reader before migration.
+            migrated = conn.execute(
+                "SELECT to_regclass('curated.official_jobs') AS name"
+            ).fetchone()["name"]
+            maintenance = None
+            if migrated:
+                from .official_state import plan
+
+                jobs = conn.execute(
+                    "SELECT job_id,operation,scheduled_for,started_at,finished_at,published_at,status,collection_status,publication_status,backup_status FROM curated.official_jobs WHERE family='cr' ORDER BY started_at DESC LIMIT 6"
+                ).fetchall()
+                queue = conn.execute(
+                    "SELECT count(*) AS eligible,count(*) FILTER(WHERE last_success IS NOT NULL) AS observed,count(*) FILTER(WHERE outcome NOT IN ('success','never')) AS held,count(*) FILTER(WHERE next_due<=now()) AS due,count(*) FILTER(WHERE last_success<now()-interval '90 days') AS olderThan90Days,min(last_success) AS oldestObservation,max(last_success) AS newestObservation FROM curated.official_address_queue"
+                ).fetchone()
+                budgets = conn.execute(
+                    "SELECT provider,day,requests,bytes FROM curated.official_daily_budgets WHERE day=CURRENT_DATE"
+                ).fetchall()
+                current = datetime.now(timezone.utc)
+                next_due = current.replace(hour=5, minute=0, second=0, microsecond=0)
+                if next_due <= current:
+                    next_due += timedelta(days=1)
+                jobs = [
+                    {
+                        "jobId": r["job_id"],
+                        "operation": r["operation"],
+                        "scheduledFor": r["scheduled_for"],
+                        "startedAt": r["started_at"],
+                        "finishedAt": r["finished_at"],
+                        "publishedAt": r["published_at"],
+                        "status": r["status"],
+                        "collectionStatus": r["collection_status"],
+                        "publicationStatus": r["publication_status"],
+                        "backupStatus": r["backup_status"],
+                    }
+                    for r in jobs
+                ]
+                maintenance = {
+                    "nextConfiguredDueAt": next_due.isoformat(),
+                    "sourceChecks": conn.execute(
+                        "SELECT family,checked_at,hold_until,state->>'status' AS status FROM curated.official_source_state WHERE family NOT IN ('inventory_baseline','health') AND family NOT LIKE 'address:%%' ORDER BY family LIMIT 110"
+                    ).fetchall(),
+                    "inventory": plan(conn),
+                    "jobs": jobs,
+                    "addressQueue": queue,
+                    "dailyBudgets": budgets,
+                    "offsiteRpoQualified": False,
+                }
+            # Invocation/source details remain private; public readers get outcomes.
+            runs = [{k: v for k, v in row.items() if k != "receipt"} for row in runs]
             return self.result(
-                release, {"coverage": release["manifest"], "recentRuns": runs}
+                release,
+                {
+                    "coverage": release["manifest"],
+                    "recentRuns": runs,
+                    "maintenance": maintenance,
+                },
             )

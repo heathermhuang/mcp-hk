@@ -1,3 +1,4 @@
+import {officialBackup} from './official-backup';
 import {companyDownloads,publishCompanyDownload} from './company-downloads';
 import { Container } from '@cloudflare/containers';
 import { DurableObject } from 'cloudflare:workers';
@@ -243,6 +244,7 @@ export default {
     if(isAgentAuthPath(url.pathname)&&url.origin!==env.PUBLIC_ORIGIN)return new Response('Use the canonical mcp.hk origin',{status:400,headers:{'Cache-Control':'no-store'}});
     if (url.protocol !== 'https:' && !['localhost', '127.0.0.1'].includes(url.hostname)) return Response.redirect(`https://${url.host}${url.pathname}${url.search}`, 308);
     if (url.hostname === 'www.mcp.hk') return Response.redirect(`https://mcp.hk${url.pathname}${url.search}`, 308);
+    if(url.pathname.startsWith('/__company-backup/'))return officialBackup(request,env);
     if (isAgentAuthPath(url.pathname)) {
       // Credentials/cookies belong only to the canonical host. Never redirect POST secrets.
       const headers=new Headers(request.headers);
