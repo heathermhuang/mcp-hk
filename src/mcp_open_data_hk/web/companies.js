@@ -1,5 +1,6 @@
 import {fetchPublicJson} from './http.js';
 import {pagePackage} from './company-export.js';
+import {partyNames} from './company-fields.js';
 
 const $=id=>document.getElementById(id),t=(...args)=>MhkI18n.t(...args),api=fetchPublicJson;
 const families={overview:'companyOverview',names:'companyNames',officers:'companyOfficers',licences:'companyLicences',licence_relationships:'companyRelations'};
@@ -43,8 +44,8 @@ function renderRecord(){
 function renderFacts(){
   const payload=family==='overview'&&detail?{...detail,data:{items:[detail.data]}}:facts,items=rows(payload);$('company-facts-status').textContent=factError?errorText(factError):factBusy?t('companyFactsLoading'):payload?items.length?t('companyFactsCount',{count:items.length}):t('companyNoFacts'):'';
   $('company-facts').replaceChildren();
-  if(family!=='overview')for(const item of items){const row=node('article',null,'company-fact'),party=item.party;let title=item.display_name||party?.chineseName&&MhkI18n.lang==='zh'&&party.chineseName||party?.name1||item.activity_label||t('companyUnknown');row.append(node('strong',title));
-    if(party?.chineseName&&MhkI18n.lang!=='zh')row.append(node('p',party.chineseName));
+  if(family!=='overview')for(const item of items){const row=node('article',null,'company-fact'),party=item.party,names=partyNames(party,MhkI18n.lang);let title=item.display_name||names.primary||item.activity_label||t('companyUnknown');row.append(node('strong',title));
+    if(names.secondary)row.append(node('p',names.secondary));
     if(item.role_label)row.append(node('p',`${t('companyFactRole')}: ${item.role_label}`));
     if(item.role_code!=null)row.append(node('p',`${t('companyFactRole')}: ${item.role_code===0?(MhkI18n.lang==='zh'?'代表':'Representative'):item.role_code===1?(MhkI18n.lang==='zh'?'負責人員':'Responsible officer'):item.role_code}${item.activity_label?' · '+item.activity_label:''}`));
     if(item.start_precision!=null)row.append(node('p',`${t('companyFactDates')}: ${date(item.start_raw,item.start_precision)} → ${date(item.end_raw,item.end_precision)}`));
