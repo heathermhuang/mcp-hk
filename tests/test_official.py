@@ -166,9 +166,12 @@ def test_xls_quote_prefix_requires_explicit_metadata_and_preserves_csv(monkeypat
 
     class Sheet:
         nrows = len(raw) + 1
+        extra = ["", ""]
 
         def row_values(self, index):
-            return fields if index == 0 else [raw[index - 1][f] for f in fields]
+            return (
+                fields if index == 0 else [raw[index - 1][f] for f in fields]
+            ) + self.extra
 
         def cell(self, index, col):
             value = raw[index - 1][fields[col]]
@@ -204,6 +207,19 @@ def test_xls_quote_prefix_requires_explicit_metadata_and_preserves_csv(monkeypat
     different = body.replace(b"Plutus Example Limited", b"Plutus Different Limited")
     with pytest.raises(SourceRejected, match="CSV_XLS_ROWS_DIFFER"):
         verify_xls(different, b"fixture")
+    Sheet.extra = ["unexpected source data"]
+    with pytest.raises(SourceRejected, match="XLS_SCHEMA_CHANGED"):
+        verify_xls(body, b"fixture")
+    original_row_values = Sheet.row_values
+    monkeypatch.setattr(
+        Sheet,
+        "row_values",
+        lambda self, index: (
+            fields + [""] if index == 0 else original_row_values(self, index)
+        ),
+    )
+    with pytest.raises(SourceRejected, match="XLS_EXTRA_SOURCE_COLUMNS"):
+        verify_xls(body, b"fixture")
 
 
 def test_reparse_receipt_retains_original_source_observation_time():
