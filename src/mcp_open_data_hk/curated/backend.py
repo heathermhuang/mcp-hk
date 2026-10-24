@@ -90,6 +90,25 @@ def create_app(reader, token):
             official.get, authorization, entity_id=entity_id, version=version
         )
 
+    @app.get("/v1/official/entities/{entity_id}/addresses")
+    async def official_addresses(
+        entity_id: str,
+        limit: int = Query(20, ge=1, le=100),
+        cursor: str | None = Query(None, max_length=2048),
+        version: str | None = Query(None, max_length=100),
+        asOf: str | None = Query(None, max_length=10),
+        authorization: str | None = Header(None),
+    ):
+        return await call(
+            official.address_history,
+            authorization,
+            entity_id=entity_id,
+            limit=limit,
+            cursor=cursor,
+            version=version,
+            asOf=asOf,
+        )
+
     @app.get("/health")
     async def health(authorization: str | None = Header(None)):
         def check():

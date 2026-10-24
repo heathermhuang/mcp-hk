@@ -1,0 +1,8 @@
+[Unit]
+Description=Bounded two-hour historical catch-up; requires qualified recovery
+[Timer]
+OnCalendar=*-*-* 00,02,04,06,08,10,12,14,16,18,20,22:20:00 UTC
+Persistent=false
+Unit=mcp-hk-official-backfill.service
+[Install]
+WantedBy=timers.target

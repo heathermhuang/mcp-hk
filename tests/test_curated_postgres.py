@@ -278,6 +278,11 @@ def test_actual_dump_restore_gate(tmp_path):
             official_version = promote(
                 source, {"restore-fixture": capture}, {"restored": True}
             )
+            from mcp_open_data_hk.curated import official_state as state
+
+            state.begin_job(source, "backfill", "2026-10-24T12:20:00Z")
+            state.reserve(source)
+            state.stage_group(source, "restore-fixture", {"restore-fixture": capture})
         proof = backup(container, original, version, tmp_path / "model.dump")
         with pytest.raises(ValueError, match="checksum"):
             restore(container, restored, tmp_path / "model.dump", "0" * 64)
@@ -302,6 +307,23 @@ def test_actual_dump_restore_gate(tmp_path):
                 ).fetchone()["n"]
                 == 3
             )
+        with (
+            connect(source_dsn, row_factory=dict_row) as original_conn,
+            connect(restore_dsn, row_factory=dict_row) as restored_conn,
+        ):
+            for table in [
+                "official_jobs",
+                "official_daily_budgets",
+                "official_staged",
+                "official_source_state",
+            ]:
+                query = sql.SQL(
+                    "SELECT md5(coalesce(string_agg(row_to_json(t)::text,E'\\n' ORDER BY row_to_json(t)::text),'')) AS sha FROM curated.{} t"
+                ).format(sql.Identifier(table))
+                assert (
+                    original_conn.execute(query).fetchone()
+                    == restored_conn.execute(query).fetchone()
+                )
         accepted = accept_restore(source_dsn, restore_dsn, version, proof["sha256"])
         assert accepted["independentlyRestored"]
         publish(source_dsn, version)
@@ -696,3 +718,379 @@ def test_official_idempotence_exact_joins_failures_and_rollback(model):
         with pytest.raises(ReadError):
             official.search(name="wrong", cursor=first["nextCursor"])
         assert reader.get(1)["version"] == version
+
+
+def test_official_maintenance_budgets_occurrences_transform_and_conflicts(
+    model, monkeypatch
+):
+    from pathlib import Path
+    from psycopg.rows import dict_row
+    from mcp_open_data_hk.curated import official_state as state
+    from mcp_open_data_hk.curated import official_ingest as ingest
+    from mcp_open_data_hk.curated.official import SourceRejected, weekly
+
+    _, _, _, _, owner = model
+    body = (Path(__file__).parent / "fixtures/official/weekly-local.csv").read_bytes()
+    with connect(owner, autocommit=True, row_factory=dict_row) as conn:
+        state.migrate(conn)
+        state.migrate(conn)
+        stamp = "2026-10-25T05:00:00Z"
+        job = state.begin_job(conn, "backfill", stamp)
+        assert job
+        assert state.begin_job(conn, "backfill", "2026-10-25T13:00:00+08:00") is None
+        assert state.begin_job(conn, "addresses", stamp)
+        token = state.reserve(conn)
+        # Unknown request is never refunded; a later successful read settles only itself.
+        state.settle_bytes(conn, state.reserve(conn), 12)
+        row = conn.execute("SELECT * FROM curated.official_daily_budgets").fetchone()
+        assert row["requests"] == 2 and row["bytes"] == token[0] + 12
+        conn.execute("UPDATE curated.official_daily_budgets SET requests=500")
+        with pytest.raises(SourceRejected, match="DAILY_SOURCE_BUDGET"):
+            state.reserve(conn)
+        state.hold(conn, 3600)
+        with pytest.raises(SourceRejected, match="SOURCE_HOLD"):
+            state.reserve(conn)
+
+        def parse(b):
+            return weekly(b, "local", "20261012")
+
+        cap, _ = ingest.save_capture(
+            conn, "test", "https://www.cr.gov.hk/test.csv", body, {}, parser=parse
+        )
+        assert (
+            cap
+            == ingest.save_capture(
+                conn, "test", "https://www.cr.gov.hk/test.csv", body, {}, parser=parse
+            )[0]
+        )
+        monkeypatch.setattr(state, "transform_hash", lambda: "b" * 64)
+        replay, _ = ingest.save_capture(
+            conn, "test", "https://www.cr.gov.hk/test.csv", body, {}, parser=parse
+        )
+        assert replay != cap
+        assert (
+            conn.execute(
+                "SELECT count(DISTINCT sha256) AS n FROM curated.official_captures"
+            ).fetchone()["n"]
+            == 1
+        )
+        v1 = ingest.promote(conn, {"test": cap}, {}, expected_base=None)
+        v2 = ingest.promote(conn, {"test": replay}, {}, expected_base=v1)
+        with pytest.raises(SourceRejected, match="PUBLICATION_CONFLICT"):
+            ingest.promote(conn, {"test": cap}, {}, expected_base=v1)
+        assert state.pointer(conn) == v2
+        with connect(owner, autocommit=True, row_factory=dict_row) as contender:
+            conn.execute("SELECT pg_advisory_lock(%s)", (state.LOCK,))
+            assert ingest.run(owner, mode="backfill")["status"] == "busy"
+            conn.execute("SELECT pg_advisory_unlock(%s)", (state.LOCK,))
+            assert state.pointer(contender) == v2
+
+
+def test_official_backfill_stages_complete_pairs_and_resumes_without_daily_reads(
+    model, monkeypatch
+):
+    from psycopg.rows import dict_row
+    from mcp_open_data_hk.curated import official_state as state
+    from mcp_open_data_hk.curated import official_ingest as ingest
+    from mcp_open_data_hk.curated.official import SourceRejected
+
+    _, _, _, _, owner = model
+    base = "https://www.cr.gov.hk/docs/wrpt/RNC063/RNC063"
+    links = [
+        base + s + "_" + w + ".csv"
+        for w in ["20250106", "20250113", "20250120", "20250127", "20250203"]
+        for s in ["L", "F"]
+    ]
+    seen = []
+
+    class Fake:
+        requests = 0
+        bytes = 0
+        checks = []
+
+        def get(self, url):
+            self.requests += 1
+            seen.append(url)
+            if "F_20250113" in url:
+                raise SourceRejected("FIXTURE_FAILED_REGISTER")
+            return b"fixture", {}
+
+        def close(self):
+            pass
+
+    def capture(conn, key, url, body, headers, verification, parser):
+        cap = __import__("hashlib").sha256(key.encode()).hexdigest()
+        conn.execute(
+            "INSERT INTO curated.official_captures(capture_id,source_key,sha256,body,receipt,valid) VALUES(%s,%s,%s,%s,'{}',true) ON CONFLICT DO NOTHING",
+            (cap, key, cap, body),
+        )
+        return cap, []
+
+    monkeypatch.setattr(ingest, "save_capture", capture)
+    with connect(owner, autocommit=True, row_factory=dict_row) as conn:
+        state.migrate(conn)
+        state.inventory(conn, links, "a" * 64)
+    first = ingest.run(
+        owner, Fake(), mode="backfill", scheduled_for="2026-10-24T12:20:00Z"
+    )
+    assert first["status"] == "partial"
+    assert first["requests"] <= 16
+    assert first["inventory"]["stagedFiles"] == 6
+    assert first["inventory"]["publishedFiles"] == 0
+    assert all("/wrpt/" in url for url in seen)
+    seen.clear()
+    second = ingest.run(
+        owner, Fake(), mode="backfill", scheduled_for="2026-10-24T14:20:00Z"
+    )
+    assert second["inventory"]["stagedFiles"] == 8
+    assert not any("20250106" in url for url in seen)
+    duplicate = ingest.run(
+        owner, Fake(), mode="backfill", scheduled_for="2026-10-24T14:20:00Z"
+    )
+    assert duplicate["status"] == "duplicate"
+    with connect(owner, autocommit=True, row_factory=dict_row) as conn:
+        assert state.pointer(conn) is None
+        # Missing catalogue entries remain recorded; absence never deletes captures.
+        state.inventory(conn, links[2:], "b" * 64)
+        assert (
+            conn.execute(
+                "SELECT count(*) AS n FROM curated.official_inventory WHERE NOT present"
+            ).fetchone()["n"]
+            == 2
+        )
+        assert (
+            conn.execute(
+                "SELECT count(*) AS n FROM curated.official_staged"
+            ).fetchone()["n"]
+            == 8
+        )
+
+
+def test_official_address_a_b_b_history_queue_growth_and_health(model, monkeypatch):
+    from pathlib import Path
+    from psycopg.rows import dict_row
+    from mcp_open_data_hk.curated import official_state as state
+    from mcp_open_data_hk.curated import official_ingest as ingest
+    from mcp_open_data_hk.curated import official_health as health
+    from mcp_open_data_hk.curated.official import weekly
+
+    _, _, reader, role, owner = model
+    fixtures = Path(__file__).parent / "fixtures/official"
+    body = (fixtures / "weekly-local.csv").read_bytes()
+    address_a = json.loads((fixtures / "local.json").read_bytes())
+    entity = "cr:local:" + address_a[0]["Brn"]
+    address_b = json.loads(json.dumps(address_a))
+    address_b[0]["Address_of_Registered_Office"] = "SYNTHETIC ADDRESS B"
+
+    class Fake:
+        requests = 0
+        bytes = 0
+        checks = []
+
+        def __init__(self, value):
+            self.value = json.dumps(value).encode()
+
+        def get(self, url, params):
+            self.requests += 1
+            return self.value, {}
+
+    with connect(owner, autocommit=True, row_factory=dict_row) as conn:
+        state.migrate(conn)
+        cap, _ = ingest.save_capture(
+            conn,
+            "test",
+            "https://www.cr.gov.hk/test.csv",
+            body,
+            {},
+            parser=lambda b: weekly(b, "local", "20261012"),
+        )
+        ingest.promote(conn, {"test": cap}, {})
+        state.seed_queue(conn)
+        conn.execute(
+            "UPDATE curated.official_address_queue SET next_due=now()+interval '1 year' WHERE entity_id<>%s",
+            (entity,),
+        )
+        for i, value in enumerate(
+            [address_a, address_b, address_b, address_a, address_a]
+        ):
+            job = state.begin_job(conn, "addresses", f"2026-10-{24+i}T01:00:00Z")
+            conn.execute(
+                "UPDATE curated.official_address_queue SET next_due='-infinity' WHERE entity_id=%s",
+                (entity,),
+            )
+            assert not ingest.collect_addresses(conn, Fake(value), job, 1)
+            if i == 2:
+                members = ingest.current_members(conn)
+                members.update(
+                    {
+                        r["source_key"]: r["capture_id"]
+                        for r in conn.execute("SELECT * FROM curated.official_staged")
+                    }
+                )
+                version_b = ingest.promote(conn, members, {})
+        assert (
+            conn.execute(
+                "SELECT count(*) AS n FROM curated.official_address_checks"
+            ).fetchone()["n"]
+            == 5
+        )
+        assert (
+            conn.execute(
+                "SELECT count(*) AS n FROM curated.official_staged WHERE group_key=%s",
+                ("address:" + entity,),
+            ).fetchone()["n"]
+            == 3
+        )
+        from psycopg import sql
+        from mcp_open_data_hk.curated.official_read import OfficialReader
+
+        members = ingest.current_members(conn)
+        members.update(
+            {
+                r["source_key"]: r["capture_id"]
+                for r in conn.execute("SELECT * FROM curated.official_staged")
+            }
+        )
+        version_a = ingest.promote(conn, members, {})
+        conn.execute(
+            sql.SQL("GRANT SELECT ON ALL TABLES IN SCHEMA curated TO {}").format(
+                sql.Identifier(role)
+            )
+        )
+        official = OfficialReader(reader)
+        assert (
+            official.get(entity, version_b)["data"]["latestAddress"]["address"]
+            == "SYNTHETIC ADDRESS B"
+        )
+        assert (
+            official.get(entity, version_a)["data"]["latestAddress"]["address"]
+            == address_a[0]["Address_of_Registered_Office"]
+        )
+        page = official.address_history(entity, limit=1, version=version_a)
+        assert (
+            page["nextCursor"]
+            and page["data"][0]["address"]
+            == address_a[0]["Address_of_Registered_Office"]
+        )
+        ingest.rollback(conn, version_b)
+        page2 = official.address_history(entity, limit=1, cursor=page["nextCursor"])
+        assert (
+            page2["version"] == version_a
+            and page2["data"][0]["address"] == "SYNTHETIC ADDRESS B"
+        )
+        with pytest.raises(Exception, match="Cursor"):
+            official.address_history(
+                entity, version=version_b, cursor=page["nextCursor"]
+            )
+        old_capture = conn.execute(
+            "SELECT latest_capture FROM curated.official_address_queue WHERE entity_id=%s",
+            (entity,),
+        ).fetchone()["latest_capture"]
+        monkeypatch.setattr(state, "transform_hash", lambda: "f" * 64)
+        conn.execute(
+            "UPDATE curated.official_address_queue SET next_due='-infinity' WHERE entity_id=%s",
+            (entity,),
+        )
+        replay_job = state.begin_job(conn, "addresses", "2026-10-29T01:00:00Z")
+        assert not ingest.collect_addresses(conn, Fake(address_a), replay_job, 1)
+        new_capture = conn.execute(
+            "SELECT latest_capture FROM curated.official_address_queue WHERE entity_id=%s",
+            (entity,),
+        ).fetchone()["latest_capture"]
+        assert new_capture != old_capture
+        queue = conn.execute(
+            "SELECT * FROM curated.official_address_queue WHERE entity_id=%s", (entity,)
+        ).fetchone()
+        state.seed_queue(conn)
+        assert (
+            conn.execute(
+                "SELECT * FROM curated.official_address_queue WHERE entity_id=%s",
+                (entity,),
+            ).fetchone()
+            == queue
+        )
+        job = state.begin_job(conn, "freshness", "2026-10-25T05:00:00Z")
+        conn.execute(
+            "UPDATE curated.official_jobs SET status='success',collection_status='success',publication_status='published',backup_status='local_failed',finished_at=now() WHERE job_id=%s",
+            (job,),
+        )
+        assert health.check(conn, "2026-10-25T05:00:00Z")["status"] == "backup_failure"
+        again = health.check(conn, "2026-10-25T05:00:00Z")
+        assert again["unchanged"] and again["status"] == "backup_failure"
+        conn.execute(
+            "UPDATE curated.official_jobs SET backup_status='local_verified' WHERE job_id=%s",
+            (job,),
+        )
+        assert health.check(conn, "2026-10-25T05:00:00Z")["status"] == "success"
+        assert health.check(conn, "2026-10-26T05:00:00Z")["status"] == "missed"
+
+
+def test_official_publication_and_job_receipt_are_one_transaction(model, monkeypatch):
+    from pathlib import Path
+    from psycopg.rows import dict_row
+    from mcp_open_data_hk.curated import official_state as state
+    from mcp_open_data_hk.curated import official_ingest as ingest
+    from mcp_open_data_hk.curated.official import weekly
+
+    _, _, _, _, owner = model
+    body = (Path(__file__).parent / "fixtures/official/weekly-local.csv").read_bytes()
+    with connect(owner, autocommit=True, row_factory=dict_row) as conn:
+        state.migrate(conn)
+        cap, _ = ingest.save_capture(
+            conn,
+            "test",
+            "https://www.cr.gov.hk/test.csv",
+            body,
+            {},
+            parser=lambda b: weekly(b, "local", "20261012"),
+        )
+        first = ingest.promote(conn, {"test": cap}, {})
+        conn.execute(
+            "UPDATE curated.official_versions SET created_at=now()-interval '1 day'"
+        )
+        monkeypatch.setattr(state, "transform_hash", lambda: "c" * 64)
+        replay, _ = ingest.save_capture(
+            conn,
+            "test",
+            "https://www.cr.gov.hk/test.csv",
+            body,
+            {},
+            parser=lambda b: weekly(b, "local", "20261012"),
+        )
+        state.stage_group(conn, "test", {"test": replay})
+    original = state.finish_job
+
+    def fail_published(conn, job_id, receipt):
+        if receipt.get("published"):
+            raise RuntimeError("Fixture receipt storage failure")
+        return original(conn, job_id, receipt)
+
+    monkeypatch.setattr(state, "finish_job", fail_published)
+    failed = ingest.run(owner, mode="publish", scheduled_for="2026-10-24T05:00:00Z")
+    assert failed["status"] == "failed"
+    with connect(owner, autocommit=True, row_factory=dict_row) as conn:
+        assert state.pointer(conn) == first
+        assert (
+            conn.execute(
+                "SELECT count(*) AS n FROM curated.official_versions"
+            ).fetchone()["n"]
+            == 1
+        )
+        assert (
+            conn.execute("SELECT capture_id FROM curated.official_staged").fetchone()[
+                "capture_id"
+            ]
+            == replay
+        )
+    monkeypatch.setattr(state, "finish_job", original)
+    passed = ingest.run(owner, mode="publish", scheduled_for="2026-10-25T05:00:00Z")
+    assert passed["published"] and passed["status"] == "success"
+    with connect(owner, autocommit=True, row_factory=dict_row) as conn:
+        assert state.pointer(conn) == passed["version"]
+        assert (
+            conn.execute(
+                "SELECT publication_status FROM curated.official_jobs WHERE job_id=%s",
+                (passed["jobId"],),
+            ).fetchone()["publication_status"]
+            == "published"
+        )

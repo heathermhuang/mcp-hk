@@ -267,7 +267,12 @@ OFFICIAL_COMPANY_PACK = {
         "/api/v1/companies?view=latest_observed",
         "/api/v1/companies/updates/status",
     ],
-    "tools": ["hk_company_search", "hk_company_get", "hk_company_updates_status"],
+    "tools": [
+        "hk_company_search",
+        "hk_company_get",
+        "hk_company_updates_status",
+        "hk_company_address_history",
+    ],
 }
 SOURCES["company_registry"] = {
     "sourceUrl": "https://data.gov.hk/en-data/dataset/hk-cr-crdata-list-newly-registered-companies-2526",

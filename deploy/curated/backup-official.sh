@@ -1,10 +1,10 @@
 #!/bin/sh
 set -eu
-cd /opt/mcp-hk
+cd "$(dirname "$0")/../.."
 export CURATED_HOSTNAME=curated.mcp.hk
 folder=/srv/mcp-hk-curated/official-backups
 install -d -m 700 "$folder"
-postgres=$(docker compose -f deploy/curated/production.compose.yaml ps -q postgres)
+postgres=$(docker compose -p curated -f deploy/curated/production.compose.yaml ps -q postgres)
 stamp=$(date -u +%Y%m%dT%H%M%SZ)
 file="$folder/official-$stamp.dump"
 # Metadata plus official captures/records/versions/runs/pointer. The immutable
@@ -14,5 +14,6 @@ sha256sum "$file" > "$file.sha256"
 # Check the archive index before recording success. Release qualification also
 # retrieves a fresh R2 copy and performs a full isolated database restore.
 docker exec -i "$postgres" pg_restore --list < "$file" > /dev/null
+cut -d ' ' -f 1 "$file.sha256" > "$folder/latest-local.sha256"
 find "$folder" -maxdepth 1 -type f -name 'official-????????T??????Z.dump*' -mtime +30 -delete
 printf 'Official logical backup verified: %s\n' "$stamp"

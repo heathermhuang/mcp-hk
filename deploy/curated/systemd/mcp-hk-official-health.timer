@@ -1,0 +1,9 @@
+[Unit]
+Description=Verify company maintenance at 13:20 HKT, and 14:00 if still running
+[Timer]
+OnCalendar=*-*-* 05:20:00 UTC
+OnCalendar=*-*-* 06:00:00 UTC
+Persistent=true
+Unit=mcp-hk-official-health.service
+[Install]
+WantedBy=timers.target

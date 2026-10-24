@@ -1,0 +1,11 @@
+[Unit]
+Description=mcp.hk deterministic official observation health comparison
+After=docker.service
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/mcp-hk-maintenance-current
+ExecStart=/opt/mcp-hk-maintenance-current/deploy/curated/verify-official.sh
+TimeoutStartSec=2min
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
