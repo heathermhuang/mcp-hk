@@ -122,6 +122,10 @@ def save_capture(conn, key, url, body, headers, verification=None, parser=None):
         "UPDATE curated.official_captures SET transform_version=%s,transform_sha256=%s WHERE capture_id=%s AND transform_sha256 IS NULL",
         (state.TRANSFORM, transform, capture_id),
     )
+    conn.execute(
+        "UPDATE curated.official_inventory SET state='downloaded' WHERE source_key=%s",
+        (key,),
+    )
     try:
         records = parser(body)
         if verification is not None:
@@ -175,6 +179,10 @@ def save_capture(conn, key, url, body, headers, verification=None, parser=None):
                 )
         return capture_id, records
     except Exception as exc:
+        conn.execute(
+            "UPDATE curated.official_inventory SET state='rejected' WHERE source_key=%s",
+            (key,),
+        )
         conn.execute(
             "UPDATE curated.official_captures SET receipt=receipt || %s WHERE capture_id=%s AND NOT valid",
             (Jsonb({"failureCode": type(exc).__name__, "failedAt": now()}), capture_id),

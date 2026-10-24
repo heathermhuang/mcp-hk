@@ -836,6 +836,9 @@ def test_official_backfill_stages_complete_pairs_and_resumes_without_daily_reads
     assert first["status"] == "partial"
     assert first["requests"] <= 16
     assert first["inventory"]["stagedFiles"] == 6
+    assert first["inventory"]["downloadedFiles"] == 6
+    assert first["inventory"]["discoveredFiles"] == 10
+    assert first["inventory"]["rejectedFiles"] == 0
     assert first["inventory"]["publishedFiles"] == 0
     assert all("/wrpt/" in url for url in seen)
     seen.clear()

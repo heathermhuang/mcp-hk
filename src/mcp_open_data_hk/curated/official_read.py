@@ -287,7 +287,7 @@ class OfficialReader:
                     "SELECT job_id,operation,scheduled_for,started_at,finished_at,published_at,status,collection_status,publication_status,backup_status FROM curated.official_jobs WHERE family='cr' ORDER BY started_at DESC LIMIT 6"
                 ).fetchall()
                 queue = conn.execute(
-                    "SELECT count(*) AS eligible,count(*) FILTER(WHERE last_success IS NOT NULL) AS observed,count(*) FILTER(WHERE outcome NOT IN ('success','never')) AS held,count(*) FILTER(WHERE next_due<=now()) AS due,count(*) FILTER(WHERE last_success<now()-interval '90 days') AS olderThan90Days,min(last_success) AS oldestObservation,max(last_success) AS newestObservation FROM curated.official_address_queue"
+                    "SELECT count(*) AS eligible,count(*) FILTER(WHERE last_success IS NOT NULL) AS observed,count(*) FILTER(WHERE outcome NOT IN ('success','never')) AS held,count(*) FILTER(WHERE next_due<=now()) AS due,count(*) FILTER(WHERE last_success<now()-interval '90 days') AS olderThan90Days,count(*) FILTER(WHERE last_success>=now()-interval '7 days') AS checkedWithin7Days,count(*) FILTER(WHERE last_success<now()-interval '7 days' AND last_success>=now()-interval '30 days') AS checked8To30DaysAgo,count(*) FILTER(WHERE last_success<now()-interval '30 days' AND last_success>=now()-interval '90 days') AS checked31To90DaysAgo,min(last_success) AS oldestObservation,max(last_success) AS newestObservation FROM curated.official_address_queue"
                 ).fetchone()
                 budgets = conn.execute(
                     "SELECT provider,day,requests,bytes FROM curated.official_daily_budgets WHERE day=CURRENT_DATE"

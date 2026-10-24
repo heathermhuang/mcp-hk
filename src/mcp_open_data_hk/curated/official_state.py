@@ -163,6 +163,19 @@ def plan(conn):
         "weeks": rows,
         "missingPairs": sum(r["published"] < 2 for r in rows),
         "pendingPairs": sum(r["staged"] < 2 and r["published"] < 2 for r in rows),
+        "discoveredFiles": sum(r["files"] for r in rows),
+        "downloadedFiles": conn.execute(
+            "SELECT count(*) AS n FROM curated.official_inventory i WHERE i.present AND EXISTS(SELECT 1 FROM curated.official_captures c WHERE c.source_key=i.source_key)"
+        ).fetchone()["n"],
+        "rejectedFiles": conn.execute(
+            "SELECT count(*) AS n FROM curated.official_inventory WHERE present AND state='rejected'"
+        ).fetchone()["n"],
+        "sourceHoldUntil": (
+            conn.execute(
+                "SELECT hold_until FROM curated.official_source_state WHERE family='cr' AND hold_until>now()"
+            ).fetchone()
+            or {}
+        ).get("hold_until"),
         "stagedFiles": sum(r["staged"] for r in rows),
         "publishedFiles": sum(r["published"] for r in rows),
         "missingInventoryFiles": conn.execute(
