@@ -48,3 +48,10 @@ test('agent discovery documents use only fixed static asset routes and correct m
   assert.equal(discoveryTarget(new URL('https://mcp.hk/.well-known/api-catalog')).contentType,'application/linkset+json');
   assert.deepEqual(discoveryTarget(new URL('https://mcp.hk/.well-known/oauth-authorization-server')),{});
 });
+
+test('company selection URLs are noindex in both locale assets and preserve canonical explorer routes',()=>{
+ for(const suffix of ['?q=香港','?entity=341&version=archive-v1','?namespace=webb:person&value=341']){
+  const selected=discoveryTarget(new URL('https://mcp.hk/companies'+suffix));assert.equal(selected.noindex,true);assert.match(selected.asset,/-filtered\.html$/);
+ }
+ assert.equal(discoveryTarget(new URL('https://mcp.hk/companies?lang=zh-Hant')).noindex,false);
+});

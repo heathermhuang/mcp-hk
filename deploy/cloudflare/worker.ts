@@ -1,3 +1,4 @@
+import {companyDownloads,publishCompanyDownload} from './company-downloads';
 import { Container } from '@cloudflare/containers';
 import { DurableObject } from 'cloudflare:workers';
 import {AgentAuthService,isAgentAuthPath,protectedDataPath,dataRequestHeaders} from './agent-auth';
@@ -60,6 +61,7 @@ export class AgentAuth extends DurableObject<Env> {
 }
 
 export class McpContainer extends Container<Env> {
+  private downloads = companyDownloads(this.env.BACKUPS);
   defaultPort = 8000;
   // Keep the runtime warm across the five-minute review cadence.
   sleepAfter = '10m';
@@ -75,6 +77,12 @@ export class McpContainer extends Container<Env> {
   entrypoint = ['mcp-hk-container'];
 
   usageReport(days: number) { return new UsageStore(this.ctx.storage.sql).report(days); }
+
+  async publishCompanyExport(input: unknown) {
+    const owner = await this.claimSeedLease();
+    try {return await publishCompanyDownload(this.env.BACKUPS,input);}
+    finally {await this.releaseSeedLease(owner);}
+  }
 
   async runScheduled(pack: string, scheduledAt: number) {
     await enqueueScheduled(this.ctx.storage, pack, scheduledAt);
@@ -125,7 +133,7 @@ export class McpContainer extends Container<Env> {
     headers.set('x-mcp-edge-token', this.env.OPS_TOKEN);
     const forwarded = new Request(request.url, {method: request.method, headers, body: body ?? request.body, redirect:'manual'});
     let response: Response;
-    try { response = await this.containerFetch(forwarded); }
+    try { response = await this.downloads(forwarded) || await this.containerFetch(forwarded); }
     catch { response = recoveringResponse(this.env.RELEASE_COMMIT); }
     response = await normalizeBackendResponse(response,this.env.RELEASE_COMMIT);
     const result = new Response(response.body,response);
@@ -252,6 +260,13 @@ export default {
       if(url.pathname==='/__ops/agent-auth/revoke-all'&&request.method==='POST') {
         await env.AGENT_AUTH.get(env.AGENT_AUTH.idFromName('production')).revokeAll();
         return Response.json({revoked:true},{headers:{'Cache-Control':'no-store'}});
+      }
+      if (url.pathname === '/__ops/company-downloads/publish' && request.method === 'POST') {
+        try {
+          const bytes=await boundedBody(request,4096);
+          const receipt=await env.APP.get(env.APP.idFromName('production')).publishCompanyExport(JSON.parse(new TextDecoder().decode(bytes)));
+          return Response.json(receipt,{headers:{'Cache-Control':'no-store'}});
+        } catch {return Response.json({error:{code:'EXPORT_PUBLICATION_FAILED',message:'Publication was not confirmed. Inspect current pointers and the owning lease before retrying.'}},{status:409,headers:{'Cache-Control':'no-store'}});}
       }
       if (url.pathname === '/__ops/source-relay') return relayApprovedSource(request);
       if (url.pathname === '/__ops/source-probe' && request.method === 'GET') {

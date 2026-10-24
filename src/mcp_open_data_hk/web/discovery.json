@@ -624,6 +624,19 @@
           }
         ]
       }
+    },
+    "/companies": {
+      "en": {
+        "title": "Hong Kong company archive · mcp.hk",
+        "heading": "Company archive",
+        "description": "Find an organisation in David Webb’s original Enigma archive. Follow its names, appointments and SFC records with the source version attached."
+      },
+      "zh-Hant": {
+        "title": "香港公司歷史資料 · mcp.hk",
+        "heading": "公司歷史資料",
+        "description": "搜尋 David Webb 原始 Enigma 檔案中的機構，並按同一資料版本查看名稱、職位及證監會紀錄。"
+      },
+      "template": "companies.html"
     }
   },
   "faq": {
