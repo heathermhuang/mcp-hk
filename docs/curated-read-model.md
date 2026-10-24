@@ -286,3 +286,66 @@ Deployment is complete only after the host and offsite restores, authenticated
 HTTPS query, live REST/MCP parity, accepted legacy checkpoint restore and all-five
 schedule restoration have observed receipts. This operator configuration alone
 makes none of those runtime claims.
+
+## Bilingual explorer and public exports
+
+`/companies` provides English / Hong Kong Traditional Chinese name-prefix or
+explicit identifier search, selection, names/officers/SFC history and stable URLs.
+Selection/history retain the returned archive version; a missing version fails
+explicitly. Interface language changes do not translate or rewrite source facts.
+Search results are matching name facts and can repeat an organisation.
+
+Each non-empty displayed page can be downloaded as a bounded ZIP containing
+`records.json`, spreadsheet-safe UTF-8 CSV, schema, provenance, the retained notice
+and a SHA-256 manifest. JSON retains strings, leading zeros, nulls and arrays. CSV
+uses an apostrophe for formula-like and leading-zero text; this transformation is
+explicit in its schema. A page package never claims to be a full search result.
+
+The complete snapshot contains all seven approved model tables as typed NDJSON,
+including only the dependency parties already admitted by the HK projection. It
+is independent of the user's search, not the original global dump or a current
+register. The archive includes per-file row counts/hashes, schema and attribution;
+the external manifest includes the archive SHA-256 and byte size.
+
+Build offline using the dedicated reader, on the persistent host with the normal
+20 GiB reserve. Each build uses a new directory; failure retains files/receipt and
+cannot publish. Do not generate an export inside a public request:
+
+```sh
+# CURATED_DSN comes from a protected environment file, never an argument.
+python -m mcp_open_data_hk.curated.export build \
+  --version enigma251227-hk-v1 --directory /owned/new-export-directory
+python -m mcp_open_data_hk.curated.export verify \
+  --directory /owned/new-export-directory
+```
+
+Stage `part-000`, etc., `NOTICE.txt` and `publication.json` (as `manifest.json`)
+in private R2 at `exports/companies/<version>/<archive-sha256>/`. Retrieve every
+object remotely and compare its bytes/hash before publication. This prefix is
+independent of both `curated/` recovery backups and legacy `backups/` retention.
+The public route exposes only the approved archive/manifest/schema/notice; it
+cannot select arbitrary R2 keys or raw database backups.
+
+After archive qualification and remote retrieval, authenticated operators POST
+`/__ops/company-downloads/publish` with `version`, `sha256`, `expectedVersionHash`
+and `expectedLatestHash` (explicit null when absent). The named controller's
+existing maintenance/seed lease serializes publishers; stale expected pointers
+and incomplete artifacts fail without replacing the accepted latest pointer.
+Never retry an uncertain publication blindly: inspect both pointers and the
+owning lease. Immutable hash-addressed manifests remain usable after a newer
+version is published. No expiry or deletion is currently promised for them.
+
+`/downloads/companies/manifest.json?version=<version>` returns that version's
+published manifest. Omitting the version selects the published latest pointer.
+The Worker streams the complete archive from R2 under existing request budgets,
+with two concurrent bulk streams per controller. It checks part sizes before
+sending a file, incrementally hashes every streamed part and the full archive,
+and aborts on corruption. Streaming stays bounded; no full archive enters Worker
+memory or the Python gateway. Interrupted files must be downloaded again; byte
+ranges are explicitly unsupported. Compare the actual downloaded archive against
+the manifest, then verify its uncompressed members and row counts.
+
+Follow the normal gateway rollout/backup/restore procedure. During the approved
+cron pause and after lease drain, use an immediate Durable Object code update to
+avoid the CLI's deferred old controller environment. Verify controller adoption,
+actual download bytes and browser flows before restoring all five schedules.

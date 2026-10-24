@@ -64,7 +64,7 @@ DISPLAY["enigma"] = (
     "Search David Webb's original Enigma archive: organisation names, officer appointments and SFC relationships. Historical observations, not current verification.",
     "搜尋 David Webb 原始 Enigma 檔案中的機構名稱、職位及證監會關係；歷史紀錄並非現況核實。",
     "enigma webb companies company organisations officers licence SFC archive 公司 機構 董事 牌照 歷史",
-    "/docs#/default/company_search_api_v1_companies_get",
+    "/companies",
     "Search archival organisations",
     "搜尋機構歷史資料",
 )

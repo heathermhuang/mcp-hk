@@ -511,3 +511,49 @@ def test_explicit_history_version_survives_new_publication(model):
     assert reader.related(1, "names", version=version)["version"] == version
     assert reader.get(1, version=version)["version"] == version
     assert reader.related(1, "names")["version"] == next_version
+
+
+def test_public_export_is_complete_typed_and_refuses_unqualified_or_overwritten_builds(
+    model, tmp_path
+):
+    import tarfile
+
+    from mcp_open_data_hk.curated.export import build, verify
+
+    version, _, reader, _, owner = model
+    with pytest.raises(ValueError, match="published"):
+        build(reader.dsn, version, tmp_path / "unpublished", reserve_bytes=0)
+    assert (tmp_path / "unpublished" / "failed-receipt.json").exists()
+    local_accept(version, owner)
+    temporal = inspect(owner, version)["temporal"]
+    with connect(owner) as conn:
+        conn.execute(
+            "UPDATE curated.dataset_versions SET restore_proof=restore_proof||%s::jsonb WHERE version=%s",
+            (json.dumps({"temporal": temporal}), version),
+        )
+    target = tmp_path / "approved"
+    publication = build(reader.dsn, version, target, reserve_bytes=0)
+    verified = verify(target)
+    assert verified["verified"] and verified["typedNdjsonVerified"]
+    assert verified["rows"]["entities"] == 3
+    assert publication["scope"] == "complete_approved_subset"
+    with tarfile.open(target / "companies.tar.gz") as archive:
+        entities = [json.loads(line) for line in archive.extractfile("entities.ndjson")]
+        assert (
+            next(r for r in entities if r["entity_id"] == 1)["chinese_name"]
+            == "香港甲公司"
+        )
+        identifiers = [
+            json.loads(line)
+            for line in archive.extractfile("entity_identifiers.ndjson")
+        ]
+        assert any(r["value"] == "0000123" for r in identifiers)
+        assert any(r["kind"] == "person" for r in entities)
+        assert "birth_date" not in entities[0]
+        assert b"Webb" in archive.extractfile("NOTICE.txt").read()
+    with pytest.raises(FileExistsError):
+        build(reader.dsn, version, target, reserve_bytes=0)
+    with (target / "companies.tar.gz").open("ab") as stream:
+        stream.write(b"corrupt")
+    with pytest.raises(ValueError, match="checksum"):
+        verify(target)

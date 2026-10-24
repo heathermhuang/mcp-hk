@@ -104,7 +104,7 @@ def test_sitemap_only_lists_canonical_indexable_pages_with_reciprocal_languages(
         for lang in ("en", "zh-Hant")
     }
     assert {n.find("sm:loc", ns).text for n in entries} == expected
-    assert len(entries) == len(expected) == 24
+    assert len(entries) == len(expected) == 26
     for entry in entries:
         assert len(entry.findall("x:link", ns)) == 3
         for link in entry.findall("x:link", ns):
@@ -193,3 +193,15 @@ def test_static_edge_build_matches_self_hosted_renderer():
             ).read_text() == render_page(path, lang)
     for path in ("/robots.txt", "/sitemap.xml", "/llms.txt"):
         assert (WEB / path.lstrip("/")).read_text() == text_response(path)[0]
+
+
+def test_company_explorer_is_bilingual_and_query_state_is_not_indexed(client):
+    for lang, heading in [("en", "Company archive"), ("zh-Hant", "公司歷史資料")]:
+        response = client.get("/companies", params={"lang": lang})
+        assert response.status_code == 200 and heading in response.text
+        assert 'id="company-search"' in response.text
+        assert 'id="company-snapshot-download"' in response.text
+        assert "/assets/companies.js" in response.text
+    response = client.get("/companies?entity=341&version=archive-v1")
+    assert response.headers["x-robots-tag"] == "noindex, follow"
+    assert '<meta name="robots" content="noindex, follow">' in response.text
