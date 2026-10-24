@@ -31,3 +31,13 @@ with zipfile.ZipFile(p) as z:
 test('empty or unversioned data cannot become a successful page export',async()=>{
  for(const payload of [{data:{items:[]},meta:{version:'x'}},{data:{items:[{}]},meta:{version:'../secret'}}])await assert.rejects(pagePackage(payload,{family:'search'},'Webb'));
 });
+
+test('relationship display preserves given names and source Chinese names without treating organisation alternatives as given names',async()=>{
+ const {partyNames}=await import('../../src/mcp_open_data_hk/web/company-fields.js');
+ const person={kind:'person',name1:'Kadoorie',name2:'Michael David',chineseName:'米高嘉道理'};
+ assert.deepEqual(partyNames(person,'en'),{primary:'Kadoorie, Michael David',secondary:'米高嘉道理'});
+ assert.deepEqual(partyNames(person,'zh'),{primary:'米高嘉道理',secondary:'Kadoorie, Michael David'});
+ assert.notEqual(partyNames({kind:'person',name1:'CHAN',name2:'Tai Man'}).primary,partyNames({kind:'person',name1:'CHAN',name2:'Wai Man'}).primary);
+ assert.equal(partyNames({kind:'organisation',name1:'Company Limited',name2:'Alternative'}).primary,'Company Limited');
+ assert.equal(partyNames({kind:'person',name1:'CHAN',name2:null}).primary,'CHAN');
+});
