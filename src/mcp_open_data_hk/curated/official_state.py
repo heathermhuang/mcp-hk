@@ -8,7 +8,7 @@ from psycopg.types.json import Jsonb
 
 from .official import DDL, SourceRejected, digest, encoded
 
-TRANSFORM = "official-v2"
+TRANSFORM = "official-v3"
 LOCK = 68002406
 
 

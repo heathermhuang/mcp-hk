@@ -3,6 +3,7 @@
 import csv
 import hashlib
 import io
+from itertools import product
 import json
 import re
 from collections import Counter
@@ -104,13 +105,13 @@ def csv_rows(body):
     return fields, rows
 
 
-def verify_xls(body, xls):
+def verify_xls(body, xls, normalizations=None):
     """Reconcile all CSV rows with the independently fetched XLS representation."""
     import xlrd
 
     fields, rows = csv_rows(body)
     try:
-        book = xlrd.open_workbook(file_contents=xls)
+        book = xlrd.open_workbook(file_contents=xls, formatting_info=True)
         sheet = book.sheet_by_index(0)
         normalized = [header(f) for f in fields]
         start = next(
@@ -136,8 +137,10 @@ def verify_xls(body, xls):
 
     expected = Counter(canonical([row[f] for f in fields]) for row in rows)
     actual = []
+    prefix_columns = []
     for i in range(start + 1, sheet.nrows):
         values = []
+        prefixed = []
         for col, field in enumerate(fields):
             cell = sheet.cell(i, col)
             if cell.ctype == xlrd.XL_CELL_DATE:
@@ -150,11 +153,43 @@ def verify_xls(body, xls):
                 value = str(int(cell.value))
             else:
                 value = str(cell.value)
+            if cell.ctype == xlrd.XL_CELL_TEXT and getattr(
+                book.xf_list[cell.xf_index], "lotus_123_prefix", 0
+            ):
+                prefixed.append(col)
             values.append(value)
         if any(v.strip() for v in values):
             actual.append(canonical(values))
+            prefix_columns.append(prefixed)
+    restored_prefixes = 0
     if Counter(actual) != expected:
-        raise SourceRejected("CSV_XLS_ROWS_DIFFER")
+        remaining = expected.copy()
+        for row, prefixed in zip(actual, prefix_columns):
+            if remaining[row]:
+                remaining[row] -= 1
+                continue
+            if not prefixed or len(prefixed) > 8:
+                raise SourceRejected("CSV_XLS_ROWS_DIFFER")
+            candidates = []
+            for choices in product((False, True), repeat=len(prefixed)):
+                candidate = list(row)
+                for col, enabled in zip(prefixed, choices):
+                    if enabled:
+                        candidate[col] = "'" + candidate[col]
+                candidate = tuple(candidate)
+                if remaining[candidate] > 0:
+                    candidates.append((candidate, sum(choices)))
+            if len(candidates) != 1:
+                raise SourceRejected("CSV_XLS_ROWS_DIFFER")
+            candidate, count = candidates[0]
+            remaining[candidate] -= 1
+            restored_prefixes += count
+        if any(remaining.values()):
+            raise SourceRejected("CSV_XLS_ROWS_DIFFER")
+    if normalizations is not None:
+        normalizations.update(
+            excelQuotePrefixCells=restored_prefixes, sourceCsvTextPreserved=True
+        )
     return len(rows)
 
 
@@ -399,8 +434,8 @@ def discover(body):
     return links
 
 
-def capture_receipt(url, body, headers, records):
-    fetched = now()
+def capture_receipt(url, body, headers, records, fetched_at=None):
+    fetched = fetched_at or now()
     modified = headers.get("last-modified")
     coverage = max((r.get("coverageEnd", "") for r in records), default="") or None
     result = {

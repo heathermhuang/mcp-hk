@@ -58,3 +58,45 @@ def test_collector_interruption_still_runs_independent_logical_backup(tmp_path):
     assert result.returncode == 137
     assert "interrupted_or_unknown" in result.stdout
     assert (release / "backup-observed").exists()
+
+
+def test_partial_backfill_still_requests_recovery_milestone(tmp_path):
+    import json
+
+    release = tmp_path / "release" / "deploy" / "curated"
+    release.mkdir(parents=True)
+    runner = release / "run-backfill.sh"
+    runner.write_bytes((ROOT / "deploy/curated/run-backfill.sh").read_bytes())
+    executable(release / "run-official.sh", "exit 1")
+    binaries = tmp_path / "bin"
+    binaries.mkdir()
+    counter = tmp_path / "counter"
+    executable(
+        binaries / "docker",
+        f"""if [ -f '{counter}' ]; then printf '%s\\n' '{{"pendingPairs":80,"milestoneNeeded":10,"noOp":false}}'; else touch '{counter}'; printf '%s\\n' '{{"pendingPairs":84,"milestoneNeeded":null,"noOp":false}}'; fi""",
+    )
+    marker = tmp_path / "milestone"
+    executable(binaries / "systemctl", f'touch "{marker}"')
+    policy = tmp_path / "policy.json"
+    policy.write_text(
+        json.dumps(
+            {
+                "providerBackupWeekdayUtc": "SUN",
+                "providerBackupStartHourUtc": 0,
+                "providerBackupEndHourUtc": 0,
+            }
+        )
+    )
+    result = subprocess.run(
+        ["sh", str(runner)],
+        env=dict(
+            os.environ,
+            PATH=str(binaries) + ":" + os.environ["PATH"],
+            MCP_HK_MAINTENANCE_POLICY=str(policy),
+        ),
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 1
+    assert marker.exists()
+    assert '"milestoneNeeded":10' in result.stdout
