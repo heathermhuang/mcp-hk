@@ -56,6 +56,9 @@ def create_app(service=None):
         allow_headers=["Content-Type", "MCP-Protocol-Version", "Mcp-Session-Id"],
         expose_headers=["MCP-Protocol-Version", "Mcp-Session-Id"],
     )
+    from .upstream_budget import OperationMiddleware
+
+    app.add_middleware(OperationMiddleware)
     buckets = OrderedDict()
     hosts = set(
         os.environ.get(
@@ -94,6 +97,21 @@ def create_app(service=None):
                 {"error": {"code": "INVALID_ORIGIN", "message": "Origin not allowed"}},
                 status_code=403,
             )
+        if request.url.path == "/mcp":
+            if request.method not in {"GET", "POST", "OPTIONS"}:
+                return Response(
+                    status_code=405, headers={"Allow": "GET, POST, OPTIONS"}
+                )
+            if request.method == "OPTIONS":
+                return Response(
+                    status_code=204,
+                    headers={
+                        "Allow": "GET, POST, OPTIONS",
+                        "Access-Control-Allow-Origin": "*",
+                        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+                        "Access-Control-Allow-Headers": "Content-Type, MCP-Protocol-Version, Mcp-Session-Id",
+                    },
+                )
         try:
             length = int(request.headers.get("content-length", "0"))
         except ValueError:

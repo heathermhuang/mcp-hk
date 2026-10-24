@@ -114,6 +114,16 @@ class Store:
     def connect(self):
         db = sqlite3.connect(self.path, timeout=10)
         db.row_factory = sqlite3.Row
+        # No serving/maintenance query needs ATTACH or runtime native extensions.
+        db.set_authorizer(
+            lambda action, first, second, *_: (
+                sqlite3.SQLITE_DENY
+                if action in {sqlite3.SQLITE_ATTACH, sqlite3.SQLITE_DETACH}
+                or action == sqlite3.SQLITE_FUNCTION
+                and second == "load_extension"
+                else sqlite3.SQLITE_OK
+            )
+        )
         try:
             with db:
                 yield db

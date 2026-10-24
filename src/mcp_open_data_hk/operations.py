@@ -7,6 +7,9 @@ import io
 import os
 import re
 import sqlite3
+import ssl
+
+import certifi
 import tarfile
 import tempfile
 import threading
@@ -170,7 +173,11 @@ def bootstrap():
     url = os.environ.get("MCP_HK_BOOTSTRAP_URL")
     if not url:
         return
-    if not url.startswith("https://"):
+    internal = (
+        os.environ.get("MCP_HK_EDGE_MODE") == "true"
+        and url == "http://mcp-egress/bootstrap"
+    )
+    if not internal and not url.startswith("https://"):
         raise ValueError("Bootstrap requires HTTPS")
     token = os.environ.get("MCP_HK_OPS_TOKEN", "")
     if not token:
@@ -187,7 +194,13 @@ def bootstrap():
         def redirect_request(self, *args, **kwargs):
             raise ValueError("Bootstrap redirects are not allowed")
 
-    with urllib.request.build_opener(NoRedirect).open(request, timeout=30) as response:
+    with urllib.request.build_opener(
+        urllib.request.ProxyHandler({}),
+        urllib.request.HTTPSHandler(
+            context=ssl.create_default_context(cafile=certifi.where())
+        ),
+        NoRedirect,
+    ).open(request, timeout=30) as response:
         data = response.read(MAX_BACKUP + 1)
         digest = response.headers.get("X-Snapshot-SHA256", "")
     restore(data, digest, os.environ.get("MCP_HK_DATABASE", ".data/mcp-hk.sqlite3"))

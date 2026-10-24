@@ -7,7 +7,9 @@ const encoder = new TextEncoder();
 type RecordValue = Record<string, unknown>;
 type Registration = {id: string; owner: string; version: number; expires: number; revoked: boolean; name: string};
 type Claim = {registration: string; owner: string; attempt: string; code: string; expires: number; tries: number; poll: number; consumed: boolean};
-type Session = {owner: string; csrf: string};
+type Session = {owner: string; csrf: string; generation: number};
+type Owner = {key: string; generation?: number};
+type Atomic = <T>(fn: ()=>T)=>T;
 type Client = {name: string; redirects: string[]};
 type Code = {registration: string; client: string; redirect: string; challenge: string};
 class AuthError extends Error {
@@ -58,6 +60,7 @@ export function protectedDataPath(path: string): string | undefined {
 export function dataRequestHeaders(request: Request,clientIP=request.headers.get('cf-connecting-ip')||'unknown'): Headers {
   const headers=new Headers(request.headers);
   headers.delete('Authorization');headers.delete('Cookie');headers.delete('x-auth-client-key');
+  for(const name of [...headers.keys()])if(name.startsWith('x-mcp-')&&name!=='x-mcp-client-ip')headers.delete(name);
   headers.set('x-mcp-client-ip',clientIP);
   return headers;
 }
@@ -66,12 +69,13 @@ export class AgentAuthService {
   private sql: Pick<SqlStorage,'exec'>;
   readonly origin: string;
   private clock: ()=>number;
+  private atomic: Atomic;
   private privateKey!: CryptoKey;
   private publicKey!: CryptoKey;
   private jwk!: JsonWebKey;
   private kid!: string;
-  constructor(sql: Pick<SqlStorage,'exec'>, origin: string, clock = ()=>Date.now()) {
-    this.sql=sql;this.origin=origin;this.clock=clock;
+  constructor(sql: Pick<SqlStorage,'exec'>, origin: string, atomic: Atomic, clock = ()=>Date.now()) {
+    this.sql=sql;this.origin=origin;this.clock=clock;this.atomic=atomic;
     this.sql.exec('CREATE TABLE IF NOT EXISTS auth_records (kind TEXT NOT NULL, id TEXT NOT NULL, value TEXT NOT NULL, expires INTEGER NOT NULL, PRIMARY KEY(kind,id))');
     this.sql.exec('CREATE INDEX IF NOT EXISTS auth_expiry ON auth_records(expires)');
   }
@@ -87,7 +91,24 @@ export class AgentAuthService {
     this.audit('registrations.revoked');
   }
   hasExpiringRecords(): boolean {return Boolean(Array.from(this.sql.exec("SELECT id FROM auth_records WHERE kind!='key' LIMIT 1")).length);}
-  private audit(event: string,registration=''): void {this.put('audit',random(),{event,registration,at:this.now()},this.now()+7*86400);}
+  private audit(event: string,registration='',owner=''): void {this.put('audit',random(),{event,registration,owner,at:this.now()},this.now()+7*86400);}
+  containOwner(id: string): void {
+    if(!/^owner_[A-Za-z0-9_-]{43}$/.test(id))throw new AuthError('invalid_owner');
+    this.atomic(()=>{
+      // Keep a credential-free tombstone; never restore historical auth snapshots.
+      this.remove('owner',id);
+      this.sql.exec("DELETE FROM auth_records WHERE kind IN ('recovery','session') AND json_extract(value,'$.owner')=?",id);
+      const registrations=Array.from(this.sql.exec("SELECT id FROM auth_records WHERE kind='registration' AND (json_extract(value,'$.owner')=? OR id IN (SELECT json_extract(value,'$.registration') FROM auth_records WHERE kind='claim' AND json_extract(value,'$.owner')=?))",id,id));
+      for(const row of registrations) {
+        const registration=String(row.id);
+        this.sql.exec("UPDATE auth_records SET value=json_set(value,'$.revoked',json('true'),'$.version',json_extract(value,'$.version')+1) WHERE kind='registration' AND id=?",registration);
+        this.sql.exec("DELETE FROM auth_records WHERE kind IN ('code','at+jwt','oauth-id-jag+jwt') AND json_extract(value,'$.registration')=?",registration);
+      }
+      this.sql.exec("DELETE FROM auth_records WHERE kind='attempt' AND json_extract(value,'$.claim') IN (SELECT id FROM auth_records WHERE kind='claim' AND json_extract(value,'$.owner')=?)",id);
+      this.sql.exec("DELETE FROM auth_records WHERE kind='claim' AND json_extract(value,'$.owner')=?",id);
+      this.put('contained',id,{at:this.now()},253402300799);this.audit('owner.contained','',id);
+    });
+  }
   async init(): Promise<void> {
     const stored=this.get<JsonWebKey>('key','signing');
     if(stored) {
@@ -107,12 +128,13 @@ export class AgentAuthService {
     if(old>=max)throw new AuthError('rate_limited',429);this.put('rate',id,old+1,(Math.floor(this.now()/window)+1)*window);
   }
   private registration(id: string): Registration {
-    const r=this.get<Registration>('registration',id);if(!r||r.revoked)throw new AuthError('invalid_grant');return r;
+    const r=this.get<Registration>('registration',id);if(!r||r.revoked||(r.owner&&!this.get('owner',r.owner)))throw new AuthError('invalid_grant');return r;
   }
   private async sign(reg: Registration,typ: string,aud: string,ttl: number): Promise<string> {
     const payload={iss:this.origin,sub:reg.id,aud,iat:this.now(),exp:this.now()+ttl,jti:random(),scope:READ_SCOPE,v:reg.version};
     const signing=base64(encoder.encode(JSON.stringify({alg:'ES256',typ,kid:this.kid})))+'.'+base64(encoder.encode(JSON.stringify(payload)));
     const signature=await crypto.subtle.sign({name:'ECDSA',hash:'SHA-256'},this.privateKey,encoder.encode(signing));
+    const current=this.registration(reg.id);if(current.version!==reg.version)throw new AuthError('invalid_grant');
     this.put(typ,payload.jti,{registration:reg.id},payload.exp);return signing+'.'+base64(new Uint8Array(signature));
   }
   private async verify(token: string,typ: string,aud: string|string[]): Promise<{reg: Registration; jti: string}> {
@@ -156,8 +178,15 @@ export class AgentAuthService {
   }
   private async session(request: Request): Promise<Session|undefined> {
     const token=request.headers.get('Cookie')?.split(';').map(x=>x.trim()).find(x=>x.startsWith('__Host-mcp_owner='))?.slice(17);
-    return token ? this.get<Session>('session',await digest(token)) : undefined;
+    const session=token ? this.get<Session>('session',await digest(token)) : undefined;
+    return session && this.validSession(session) ? session : undefined;
   }
+  private validSession(session: Session): boolean {
+    const owner=this.get<Owner>('owner',session.owner);
+    // Legacy cookies have no generation and fail closed; recover once to migrate.
+    return Boolean(owner&&typeof owner.generation==='number'&&session.generation===owner.generation);
+  }
+  private requireSession(session: Session): void {if(!this.validSession(session))throw new AuthError('invalid_session',403);}
   private sameOrigin(request: Request): void {if(request.headers.get('Origin')!==this.origin)throw new AuthError('invalid_origin',403);}
   private async owner(request: Request,data: RecordValue): Promise<Session> {
     this.sameOrigin(request);const session=await this.session(request);if(!session||data.csrf!==session.csrf||!this.get('owner',session.owner))throw new AuthError('invalid_session',403);return session;
@@ -165,33 +194,52 @@ export class AgentAuthService {
   private accountForms(session: Session|undefined): string {
     if(!session)return `<p>No email or personal profile is collected. Create an account protected by a random recovery key. Save that key privately; it is the only way to sign in again.</p><form method="post" action="/agent/account"><input type="hidden" name="action" value="create"><button>Create recovery-key account</button></form><section><form method="post" action="/agent/account"><input type="hidden" name="action" value="login"><label>Recovery key<input name="recovery_key" type="password" required autocomplete="current-password" maxlength="100"></label><button>Sign in</button></form></section>`;
     const regs=Array.from(this.sql.exec("SELECT value FROM auth_records WHERE kind='registration' AND json_extract(value,'$.owner')=? AND json_extract(value,'$.revoked')=0 AND expires>? ORDER BY expires DESC LIMIT 200",session.owner,this.now())).map(row=>JSON.parse(String(row.value)) as Registration);
-    return `<p>Account ID: <code>${escape(session.owner)}</code></p><p>Give this account ID to your agent when requesting a claim. Keep your recovery key private.</p><p><a href="/agent/claim">Claim an agent</a></p>${regs.map(r=>`<section><p>${escape(r.name)}<br><small>${escape(r.id)}</small></p><form method="post" action="/agent/account"><input type="hidden" name="csrf" value="${session.csrf}"><input type="hidden" name="registration" value="${r.id}"><button name="action" value="revoke">Revoke agent access</button></form></section>`).join('')||'<p>No claimed agents yet.</p>'}<form method="post" action="/agent/account"><input type="hidden" name="csrf" value="${session.csrf}"><button name="action" value="logout">Sign out</button></form>`;
+    return `<p>Account ID: <code>${escape(session.owner)}</code></p><p>Give this account ID to your agent when requesting a claim. Keep your recovery key private.</p><p><a href="/agent/claim">Claim an agent</a></p>${regs.map(r=>`<section><p>${escape(r.name)}<br><small>${escape(r.id)}</small></p><form method="post" action="/agent/account"><input type="hidden" name="csrf" value="${session.csrf}"><input type="hidden" name="registration" value="${r.id}"><button name="action" value="revoke">Revoke agent access</button></form></section>`).join('')||'<p>No claimed agents yet.</p>'}<form method="post" action="/agent/account"><input type="hidden" name="csrf" value="${session.csrf}"><button name="action" value="rotate">Replace recovery key and revoke other sessions</button><button name="action" value="logout">Sign out</button></form>`;
   }
   private async browserAccount(request: Request): Promise<Response> {
     if(request.method==='GET')return page('Agent account',this.accountForms(await this.session(request)));
     if(request.method!=='POST')throw new AuthError('method_not_allowed',405);
-    this.sameOrigin(request);const data=await body(request);let account='',recovery='';
-    if(data.action==='create') {
-      this.limit('owner-create:'+request.headers.get('x-auth-client-key'),5,3600);this.limit('owner-create-global',100,3600);
-      account=random('owner_');recovery=random('recover_');this.put('owner',account,{key:await digest(recovery)},this.now()+90*86400);
-      this.put('recovery',await digest(recovery),{owner:account},this.now()+90*86400);
-    } else if(data.action==='login') {
-      this.limit('login:'+request.headers.get('x-auth-client-key'),10,600);
-      const stored=this.get<{owner:string}>('recovery',await digest(field(data.recovery_key,100)));
-      if(!stored||!this.get('owner',stored.owner))throw new AuthError('invalid_credentials',401);account=stored.owner;
-    } else {
-      const session=await this.owner(request,data);
-      if(data.action==='logout') {
-        const cookie=request.headers.get('Cookie')?.split(';').map(x=>x.trim()).find(x=>x.startsWith('__Host-mcp_owner='))?.slice(17);
-        if(cookie)this.remove('session',await digest(cookie));return page('Signed out','<p><a href="/agent/account">Sign in again</a></p>',{'Set-Cookie':'__Host-mcp_owner=; Secure; HttpOnly; SameSite=Strict; Path=/; Max-Age=0'});
-      }
-      if(data.action!=='revoke')throw new AuthError('invalid_request');const reg=this.registration(field(data.registration,100));
-      if(reg.owner!==session.owner)throw new AuthError('forbidden',403);this.revokeRegistration(reg);return page('Agent access revoked',this.accountForms(session));
+    this.sameOrigin(request);const data=await body(request);
+    if(['create','login','rotate'].includes(String(data.action))) {
+      const current=data.action==='rotate'?await this.owner(request,data):undefined;
+      const oldKey=data.action==='login'?await digest(field(data.recovery_key,100)):'';
+      if(data.action==='create'){this.limit('owner-create:'+request.headers.get('x-auth-client-key'),5,3600);this.limit('owner-create-global',100,3600);}
+      if(data.action==='login')this.limit('login:'+request.headers.get('x-auth-client-key'),10,600);
+      const recovery=random('recover_'),token=random();
+      const replacementHash=await digest(recovery),sessionHash=await digest(token);
+      const session=this.atomic(()=>{
+        let account: string,expiry: number,generation: number;
+        if(data.action==='create') {
+          account=random('owner_');expiry=this.now()+90*86400;generation=1;
+        } else {
+          if(current)this.requireSession(current);
+          const stored=current?{owner:current.owner}:this.get<{owner:string}>('recovery',oldKey);
+          const owner=stored?this.get<Owner>('owner',stored.owner):undefined;
+          if(!stored||!owner||(!current&&owner.key!==oldKey))throw new AuthError('invalid_credentials',401);
+          account=stored.owner;expiry=this.ownerExpiry(account);generation=(owner.generation||0)+1;
+          this.remove('recovery',owner.key);
+          this.sql.exec("DELETE FROM auth_records WHERE kind='session' AND json_extract(value,'$.owner')=?",account);
+        }
+        const session={owner:account,csrf:random(),generation};
+        this.put('owner',account,{key:replacementHash,generation},expiry);
+        this.put('recovery',replacementHash,{owner:account},expiry);
+        this.put('session',sessionHash,session,Math.min(expiry,this.now()+3600));
+        this.audit(data.action==='create'?'owner.created':data.action==='login'?'owner.recovered':'owner.rotated','',account);
+        return session;
+      });
+      const key=`<section><strong>Save your replacement recovery key now. It is shown once.</strong><p><code>${escape(recovery)}</code></p><p>Earlier recovery keys and sessions no longer work. Account expiry is unchanged. If this response is lost, use this session to replace the key again; without a surviving session or key the account cannot be recovered.</p></section>`;
+      return page('Agent account',key+this.accountForms(session),{'Set-Cookie':`__Host-mcp_owner=${token}; Secure; HttpOnly; SameSite=Strict; Path=/; Max-Age=3600`});
     }
-    const token=random(),session={owner:account,csrf:random()};this.put('session',await digest(token),session,this.now()+3600);
-    const key=recovery?`<section><strong>Save your recovery key now. It is shown once.</strong><p><code>${escape(recovery)}</code></p><p>Anyone with this key can manage this account's agent registrations. The account expires after 90 days.</p></section>`:'';
-    return page('Agent account',key+this.accountForms(session),{'Set-Cookie':`__Host-mcp_owner=${token}; Secure; HttpOnly; SameSite=Strict; Path=/; Max-Age=3600`});
+    const session=await this.owner(request,data);
+    if(data.action==='logout') {
+      const cookie=request.headers.get('Cookie')?.split(';').map(x=>x.trim()).find(x=>x.startsWith('__Host-mcp_owner='))?.slice(17);
+      const hash=cookie?await digest(cookie):'';this.requireSession(session);
+      if(hash)this.remove('session',hash);return page('Signed out','<p><a href="/agent/account">Sign in again</a></p>',{'Set-Cookie':'__Host-mcp_owner=; Secure; HttpOnly; SameSite=Strict; Path=/; Max-Age=0'});
+    }
+    if(data.action!=='revoke')throw new AuthError('invalid_request');const reg=this.registration(field(data.registration,100));
+    if(reg.owner!==session.owner)throw new AuthError('forbidden',403);this.revokeRegistration(reg);return page('Agent access revoked',this.accountForms(session));
   }
+
   private async claimStart(data: RecordValue): Promise<Response> {
     const claimToken=field(data.claim_token,100),key=await digest(claimToken),old=this.get<Claim>('claim',key);
     if(!old||old.consumed)throw new AuthError('invalid_claim_token');const reg=this.registration(old.registration);
@@ -200,6 +248,7 @@ export class AgentAuthService {
     // A fresh high-entropy attempt URL is required as well as the short code.
     const attempt=random('attempt_'),code=userCode();
     const attemptHash=await digest(attempt),codeHash=await digest(code);
+    if(!this.get('owner',owner))throw new AuthError('invalid_owner');
     const current=this.get<Claim>('claim',key);if(!current||current.owner)throw new AuthError('claimed_or_in_flight');
     current.owner=owner;current.attempt=attemptHash;current.code=codeHash;current.expires=this.now()+600;current.tries=0;
     this.put('claim',key,current,current.expires);this.put('attempt',current.attempt,{claim:key},current.expires);this.audit('claim.requested',reg.id);
@@ -218,6 +267,8 @@ export class AgentAuthService {
     if(!c||c.consumed||c.attempt!==attempt||c.owner!==session.owner||c.tries>=5)throw new AuthError('invalid_claim',403);
     c.tries++;this.put('claim',entry.claim,c,c.expires);
     if(c.code!==await digest(field(data.user_code,6)))throw new AuthError('invalid_code',403);
+    this.requireSession(session);
+    const fresh=this.get<Claim>('claim',entry.claim);if(!fresh||fresh.consumed||fresh.owner!==session.owner)throw new AuthError('invalid_claim',403);
     const reg=this.registration(c.registration);if(reg.owner)throw new AuthError('claimed_or_in_flight');this.ownerCapacity(session.owner);
     reg.owner=session.owner;reg.version++;reg.expires=Math.min(this.ownerExpiry(session.owner),this.now()+30*86400);this.put('registration',reg.id,reg,reg.expires);this.remove('attempt',attempt);this.audit('claim.confirmed',reg.id);
     return page('Agent claimed','<p>Your agent can finish exchanging its claim token. Older pre-claim credentials no longer work.</p><p><a href="/agent/account">Manage agent access</a></p>');
@@ -242,7 +293,8 @@ export class AgentAuthService {
       return page('Authorize read-only access',`<p><strong>${escape(auth.name)}</strong> requests <code>${READ_SCOPE}</code>. Data reads retain the existing shared limits. Only continue if you started this request.</p><p>Return address: <code>${escape(auth.redirect)}</code></p><form method="post" action="/oauth2/authorize">${hidden}<input type="hidden" name="csrf" value="${session.csrf}"><button>Allow read-only access</button></form>`);
     }
     const session=await this.owner(request,data),reg=this.createRegistration(session.owner,auth.name),code=random();
-    this.put('code',await digest(code),{registration:reg.id,client:auth.client,redirect:auth.redirect,challenge:auth.challenge},this.now()+60);
+    const codeHash=await digest(code);this.requireSession(session);this.registration(reg.id);
+    this.put('code',codeHash,{registration:reg.id,client:auth.client,redirect:auth.redirect,challenge:auth.challenge},this.now()+60);
     const target=new URL(auth.redirect);target.searchParams.set('code',code);if(auth.state)target.searchParams.set('state',auth.state);
     return new Response(null,{status:303,headers:{...commonHeaders,Location:target.href}});
   }

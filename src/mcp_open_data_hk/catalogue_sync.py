@@ -16,6 +16,8 @@ from .catalogue_store import CatalogueStore
 from .contracts import DomainError
 import httpx
 
+from .upstream_budget import BudgetTransport
+
 CKAN = "https://data.gov.hk/en-data/api/3/action/"
 OFFICIAL_LIST = "https://resource.data.one.gov.hk/opendata/open-data-list/open-data-dataset-list-en.json"
 CSW = "https://portal.csdi.gov.hk/geoportal/csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&outputSchema=http://www.opengis.net/cat/csw/2.0.2&resultType=results&elementSetName=full"
@@ -35,6 +37,7 @@ async def fetch(url, headers=None, maximum=8_000_000):
     ):
         raise ValueError("Untrusted catalogue endpoint")
     async with httpx.AsyncClient(
+        transport=BudgetTransport(),
         timeout=30,
         trust_env=False,
         follow_redirects=False,

@@ -18,6 +18,96 @@ from .source_contracts import CSV_DATE_PREAMBLE, date_only_header
 
 MAX_ROWS = 100_000
 MAX_FIELDS = 1000
+MAX_EXPANDED_BYTES = 32_000_000
+MAX_ARCHIVE_MEMBERS = 2000
+MAX_NORMALIZED_BYTES = 8_000_000
+ZIP_SIGNATURES = (b"PK\x03\x04", b"PK\x05\x06", b"PK\x07\x08")
+
+
+class ArchiveBudget:
+    def __init__(self):
+        self.members = 0
+        self.expanded = 0
+
+    def member(self):
+        self.members += 1
+        if self.members > MAX_ARCHIVE_MEMBERS:
+            invalid("Archive member budget exceeded", "SOURCE_TOO_LARGE")
+
+    def read(self, archive, member):
+        self.member()
+        result = bytearray()
+        with archive.open(member) as stream:
+            bounded = BoundedMember(stream, self)
+            while chunk := bounded.read(65536):
+                result.extend(chunk)
+        return bytes(result)
+
+
+class BoundedMember:
+    def __init__(self, stream, budget):
+        self.stream, self.budget = stream, budget
+
+    def read(self, size=-1):
+        if size < 0:
+            parts = []
+            while chunk := self.read(65536):
+                parts.append(chunk)
+            return b"".join(parts)
+        chunk = self.stream.read(
+            min(size, MAX_EXPANDED_BYTES - self.budget.expanded + 1)
+        )
+        self.budget.expanded += len(chunk)
+        if self.budget.expanded > MAX_EXPANDED_BYTES:
+            invalid("Actual archive expansion exceeds budget", "SOURCE_TOO_LARGE")
+        return chunk
+
+    def __getattr__(self, key):
+        return getattr(self.stream, key)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        self.stream.close()
+
+
+class BoundedWorkbook(zipfile.ZipFile):
+    def __init__(self, body, budget):
+        super().__init__(io.BytesIO(body))
+        self.budget = budget
+
+    def open(self, name, mode="r", pwd=None, *, force_zip64=False):
+        self.budget.member()
+        return BoundedMember(
+            super().open(name, mode, pwd, force_zip64=force_zip64), self.budget
+        )
+
+
+def normalized_size(value):
+    size = 0
+    for chunk in json.JSONEncoder(ensure_ascii=False, default=str).iterencode(value):
+        size += len(chunk.encode("utf-8"))
+        if size > MAX_NORMALIZED_BYTES:
+            invalid("Normalized output exceeds budget", "SOURCE_TOO_LARGE")
+    return size
+
+
+def is_archive(body):
+    return body.startswith(ZIP_SIGNATURES) or zipfile.is_zipfile(io.BytesIO(body))
+
+
+def workbook_archive(body, budget):
+    with zipfile.ZipFile(io.BytesIO(body)) as archive:
+        names = set(archive.namelist())
+        if not {"[Content_Types].xml", "xl/workbook.xml"} <= names:
+            invalid("ZIP member is not a supported workbook", "NESTED_ARCHIVE")
+        if len(names) > MAX_ARCHIVE_MEMBERS:
+            invalid("Workbook member budget exceeded", "SOURCE_TOO_LARGE")
+        for member in archive.infolist():
+            expanded = budget.read(archive, member)
+            if is_archive(expanded):
+                invalid("Nested archive inside workbook", "NESTED_ARCHIVE")
 
 
 def document_limits():
@@ -121,6 +211,7 @@ def table(matrix, info=None, positional_date_header=False):
         header.append(field)
         mapping.append({"name": field, "sourceHeader": name, "columnIndex": i + 1})
     rows = []
+    normalized = 2
     for values in matrix:
         if len(rows) >= MAX_ROWS:
             invalid("Source exceeds row budget", "SOURCE_TOO_LARGE")
@@ -135,7 +226,11 @@ def table(matrix, info=None, positional_date_header=False):
                 field = "_" + field
             header.append(field)
             mapping.append({"name": field, "sourceHeader": None, "columnIndex": i + 1})
-        rows.append(dict(zip(header, values)))
+        row = dict(zip(header, values))
+        normalized += normalized_size(row) + 2
+        if normalized > MAX_NORMALIZED_BYTES:
+            invalid("Normalized table exceeds budget", "SOURCE_TOO_LARGE")
+        rows.append(row)
     if info is not None:
         if dated:
             info["readerContract"] = CSV_DATE_PREAMBLE
@@ -149,12 +244,19 @@ def table(matrix, info=None, positional_date_header=False):
     return rows
 
 
-def parse(body, fmt, record_path="", sheet=""):
+def parse(body, fmt, record_path="", sheet="", *, _budget=None, _member=False):
     fmt = fmt.upper()
-    if body.startswith(b"PK\x03\x04") and fmt not in {"XLSX", "XLSM"}:
+    budget = _budget or ArchiveBudget()
+    archived = is_archive(body)
+    if archived and _member and fmt not in {"XLSX", "XLSM"}:
+        invalid("Nested record archives are not supported", "NESTED_ARCHIVE")
+    if archived and fmt not in {"XLSX", "XLSM"}:
         with zipfile.ZipFile(io.BytesIO(body)) as archive:
             members = [m for m in archive.infolist() if not m.is_dir()]
-            if len(members) > 1000 or sum(m.file_size for m in members) > 32_000_000:
+            if (
+                len(archive.infolist()) > 1000
+                or sum(m.file_size for m in members) > MAX_EXPANDED_BYTES
+            ):
                 invalid("Archive expansion exceeds budget", "SOURCE_TOO_LARGE")
             allowed = {
                 "CSV",
@@ -166,6 +268,7 @@ def parse(body, fmt, record_path="", sheet=""):
                 "KML",
                 "XLS",
                 "XLSX",
+                "XLSM",
                 "PDF",
             }
             selected = [
@@ -179,10 +282,25 @@ def parse(body, fmt, record_path="", sheet=""):
                 invalid("Encrypted archive", "ACCESS_RESTRICTED")
             all_rows = []
             member_info = []
-            for m in selected:
+            normalized = 2
+            for m in archive.infolist():
+                member_body = budget.read(archive, m)
+                child_format = m.filename.rsplit(".", 1)[-1].upper()
+                # Inspect even unread or empty/disguised members before any recursion.
+                if is_archive(member_body) and child_format not in {"XLSX", "XLSM"}:
+                    invalid(
+                        "Nested record archives are not supported", "NESTED_ARCHIVE"
+                    )
+                if m not in selected:
+                    continue
                 child_format = m.filename.rsplit(".", 1)[-1].upper()
                 child_rows, child_schema = parse(
-                    archive.read(m), child_format, record_path, sheet
+                    member_body,
+                    child_format,
+                    record_path,
+                    sheet,
+                    _budget=budget,
+                    _member=True,
                 )
                 member_info.append(
                     {
@@ -194,7 +312,11 @@ def parse(body, fmt, record_path="", sheet=""):
                 for row in child_rows:
                     if "_sourceArchiveMember" in row:
                         invalid("Reserved archive provenance field collision")
-                    all_rows.append({**row, "_sourceArchiveMember": m.filename})
+                    record = {**row, "_sourceArchiveMember": m.filename}
+                    normalized += normalized_size(record) + 2
+                    if normalized > MAX_NORMALIZED_BYTES:
+                        invalid("Normalized archive exceeds budget", "SOURCE_TOO_LARGE")
+                    all_rows.append(record)
                 if len(all_rows) > MAX_ROWS:
                     invalid("Archive exceeds row budget", "SOURCE_TOO_LARGE")
             rows, info = parse(
@@ -315,17 +437,20 @@ def parse(body, fmt, record_path="", sheet=""):
             invalid("Record path must select an array", "INVALID_RECORD_PATH")
         rows = [v if isinstance(v, dict) else {"value": v} for v in value]
     elif fmt in {"XLSX", "XLSM"}:
-        from openpyxl import load_workbook
+        from openpyxl.reader.excel import ExcelReader
 
-        with zipfile.ZipFile(io.BytesIO(body)) as archive:
-            if (
-                sum(m.file_size for m in archive.infolist()) > 32_000_000
-                or len(archive.infolist()) > 2000
-            ):
-                invalid("Workbook expansion exceeds budget", "SOURCE_TOO_LARGE")
-        book = load_workbook(
+        workbook_archive(body, budget)
+        reader = ExcelReader(
             io.BytesIO(body), read_only=True, data_only=False, keep_links=False
         )
+        reader.archive.close()
+        reader.archive = BoundedWorkbook(body, budget)
+        try:
+            reader.read()
+        except BaseException:
+            reader.archive.close()
+            raise
+        book = reader.wb
         try:
             info["availableSheets"] = book.sheetnames
             if not sheet and len(book.sheetnames) != 1:
@@ -452,6 +577,7 @@ def parse(body, fmt, record_path="", sheet=""):
         invalid("Source exceeds row budget", "SOURCE_TOO_LARGE")
     if sum(len(r) for r in rows) > 2_000_000:
         invalid("Source exceeds cell budget", "SOURCE_TOO_COMPLEX")
+    normalized_size(rows)
     rows = safe_json(rows)
     fields = sorted({k for r in rows for k in r})
     if len(fields) > MAX_FIELDS:

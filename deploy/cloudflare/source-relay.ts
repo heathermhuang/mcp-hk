@@ -1,3 +1,4 @@
+import {boundedResponse} from './response-policy.ts';
 import registry from '../../src/mcp_open_data_hk/source-relay-targets.json' with {type:'json'};
 
 const targets: Readonly<Record<string,string>>=Object.freeze(registry.targets);
@@ -29,9 +30,9 @@ export async function relayApprovedSource(request: Request, fetcher: typeof fetc
       }
       const resultHeaders=new Headers({'Cache-Control':'no-store','X-Mcp-Source-Transport':'approved-worker-relay'});
       for(const name of ['Content-Type','Content-Encoding','ETag','Last-Modified']){const value=upstream.headers.get(name);if(value)resultHeaders.set(name,value);}
-      // Stream unchanged. The authenticated reader enforces decoded 8/128 MB
-      // limits and cancellation; no unbounded body is buffered in the Worker.
-      return new Response(upstream.body,{status:upstream.status,headers:resultHeaders});
+      // Operator-only diagnostic relay: edge caps transport bytes and deadline.
+      // The reader independently caps decoded bytes; public reads use grants.
+      return boundedResponse(new Response(upstream.body,{status:upstream.status,headers:resultHeaders}),128_000_000);
     }
     return Response.json({error:{code:'SOURCE_REDIRECT_REJECTED'}},{status:502});
   }catch{return Response.json({error:{code:'SOURCE_RELAY_UNAVAILABLE'}},{status:502});}

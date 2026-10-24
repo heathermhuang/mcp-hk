@@ -79,6 +79,7 @@ class RestaurantQuery(Model):
 
 
 class Envelope(Model):
+    trust: Literal["untrusted_source_data"] = "untrusted_source_data"
     data: Any
     meta: dict[str, Any]
     provenance: list[dict[str, Any]]
