@@ -12,6 +12,7 @@ from .build import connect
 from .official_recovery import snapshot
 from .official_read import OfficialReader
 from .read import Reader, prefix_end
+from .normalize import search_key
 
 
 def verify(dsn, expected, upload):
@@ -48,7 +49,7 @@ def verify(dsn, expected, upload):
         options="-c default_transaction_read_only=on -c statement_timeout=2000 -c lock_timeout=250",
     ) as conn:
         for i in range(25):
-            key = ["10", "香港", "CHINA", "香港", "10"][i % 5]
+            key = search_key(["10", "香港", "CHINA", "香港", "10"][i % 5])
             start = time.monotonic()
             rows = conn.execute(
                 membership
@@ -56,6 +57,14 @@ def verify(dsn, expected, upload):
                 (key, prefix_end(key), key, prefix_end(key), ""),
             ).fetchall()
             samples.append((time.monotonic() - start) * 1000)
+            if i % 5 == 0:
+                started_id = time.monotonic()
+                conn.execute(
+                    membership
+                    + "SELECT r.record FROM curated.official_records r JOIN members m USING(capture_id) WHERE r.entity_id=%s LIMIT 21",
+                    ("cr:local:05243897",),
+                ).fetchall()
+                samples.append((time.monotonic() - started_id) * 1000)
             if rows:
                 start = time.monotonic()
                 conn.execute(

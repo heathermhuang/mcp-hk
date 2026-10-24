@@ -331,6 +331,23 @@ def test_actual_dump_restore_gate(tmp_path):
             connect(restore_dsn, row_factory=dict_row) as restored_conn,
         ):
             assert snapshot(original_conn) == snapshot(restored_conn)
+            expected_recovery = snapshot(restored_conn)
+        from mcp_open_data_hk.curated.official_restore_check import (
+            verify as verify_restored,
+        )
+
+        restored_proof = verify_restored(
+            restore_dsn,
+            expected_recovery,
+            {
+                "prefix": "curated/official/daily/20261024T130000Z-1234abcd",
+                "artifacts": {"official.dump": {"sha256": proof["sha256"]}},
+            },
+        )
+        assert (
+            restored_proof["performancePassed"]
+            and restored_proof["rawCaptureChecksumsVerified"] == 1
+        )
         accepted = accept_restore(source_dsn, restore_dsn, version, proof["sha256"])
         assert accepted["independentlyRestored"]
         publish(source_dsn, version)
