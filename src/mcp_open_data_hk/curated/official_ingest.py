@@ -4,6 +4,7 @@ import argparse
 import os
 import time
 import uuid
+from datetime import datetime, timedelta
 
 import httpx
 from psycopg.rows import dict_row
@@ -320,8 +321,17 @@ def run(dsn, collector=None):
                         for w in weeks
                         if any(u not in members for u in links if w in u)
                     ],
-                    "discoveredCoverageStart": weeks[0],
-                    "discoveredCoverageEnd": weeks[-1],
+                    "discoveredCoverageStart": datetime.strptime(weeks[0], "%Y%m%d")
+                    .date()
+                    .isoformat(),
+                    "discoveredCoverageEnd": (
+                        datetime.strptime(weeks[-1], "%Y%m%d").date()
+                        + timedelta(days=6)
+                    ).isoformat(),
+                    "latestAcceptedCoverageEnd": (
+                        datetime.strptime(accepted_weeks[-1], "%Y%m%d").date()
+                        + timedelta(days=6)
+                    ).isoformat(),
                     "addressEntities": sum(k.startswith("address:") for k in members),
                     "addressEligibleObservedEntities": len(tracked),
                     "moneyLenderCutoff": periods[0],
