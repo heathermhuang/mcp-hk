@@ -398,3 +398,10 @@ caller-selected object names do not reset it. A recovery manifest requires its
 exact stored dump/source sizes and provider-verified checksums. No auth token or
 query text is stored in these counters. Host restoration reserves 10 GiB plus a
 20-times compressed-size forecast before creating its disposable database.
+
+Verified retrieved offsite duplicates also have a 30-day local grace. Bounded
+pruning considers at most four expired copies per run, preserves the latest two
+qualified copies, requires matching restore proof, local SHA-256 and a still-
+present checksum/size-matching offsite object, and never deletes R2 objects or
+unverified/failed evidence. No public version, cursor, original archive or other
+bucket prefix is pruned by this workflow.

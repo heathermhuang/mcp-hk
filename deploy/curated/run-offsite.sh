@@ -50,3 +50,6 @@ if ! ./deploy/curated/restore-official.sh "$job"; then
  exit 1
 fi
 printf 'Offsite receipt: %s\n' "$folder/receipt-$job.json"
+# Bounded pruning is independent of backup success. It preserves unverified
+# evidence and latest two copies, and requires a matching still-present R2 copy.
+docker run --rm --user 0 --read-only --cap-drop ALL --memory 256m --cpus 1 --network curated_default --mount type=bind,src=/etc/mcp-hk-curated/official-uploader.json,dst=/config/uploader.json,readonly --mount type=bind,src="$folder",dst=/evidence "$image" python -m mcp_open_data_hk.curated.official_retention --folder /evidence --config /config/uploader.json || echo 'Retention held; all uncertain copies retained'
