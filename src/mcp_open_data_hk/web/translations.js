@@ -427,7 +427,8 @@ const translations = {
     "companyFactsLoading": "Reading source facts…",
     "companyNoSelection": "Select an organisation to explore its records.",
     "companyCsvNote": "CSV prefixes formula-like and leading-zero text with an apostrophe for spreadsheet safety. JSON retains the original values.",
-    "companyResultsHeading": "Search results"
+    "companyResultsHeading": "Search results",
+    "companyFirst": "First page"
   },
   "zh": {
     "rawSourceQualification": "原始來源回應。欄位標題、單位及分析含義尚未經語義核實。",
@@ -856,6 +857,7 @@ const translations = {
     "companyFactsLoading": "正在讀取來源事實紀錄…",
     "companyNoSelection": "請選擇機構以查看紀錄。",
     "companyCsvNote": "CSV 會在類似公式或以零開首的文字前加上單引號，以便安全地在試算表開啟；JSON 保留原始值。",
-    "companyResultsHeading": "搜尋結果"
+    "companyResultsHeading": "搜尋結果",
+    "companyFirst": "第一頁"
   }
 };
