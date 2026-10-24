@@ -418,3 +418,13 @@ The 09/10/11 HKT address timer requests at most 100 per batch; the durable daily
 policy yields 100/100/50 at 250, and later deliveries become no-ops. Freshness also
 uses the same remaining address policy and 500/day CR provider budget. Publication
 seeds new exact identities into the queue without changing existing due/hold state.
+
+A retained January 2025 workbook exposed an Excel XF `f123Prefix` difference:
+one CSV company-name value starts with an apostrophe while the XLS logical text
+omits it and explicitly flags the prefix. Transform `official-v3` reads formatting
+metadata and permits only an unambiguous full-row match by reconstructing one
+apostrophe on flagged text cells. Unflagged or unrelated differences still fail;
+raw CSV values, IDs, dates and multiplicities are unchanged. See the
+[Microsoft XLS XF definition](https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/993d15c4-ec04-43e9-ba36-594dfb336c6d).
+Saved-byte replay supplies the original `fetchedAt`; `reparsedAt` identifies the
+later transform. Old rejected captures and accepted public versions remain intact.

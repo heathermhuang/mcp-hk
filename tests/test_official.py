@@ -147,3 +147,70 @@ def test_collector_limits_and_upstream_failures_have_bounded_codes():
         assert len(collector.checks) == 1
     finally:
         collector.close()
+
+
+def test_xls_quote_prefix_requires_explicit_metadata_and_preserves_csv(monkeypatch):
+    import xlrd
+    from types import SimpleNamespace
+
+    body = fixture("weekly-local.csv")
+    body = rewrite(
+        body,
+        lambda rows: rows[0].update(
+            {"Current Company Name in English": "'Plutus Example Limited"}
+        ),
+    )
+    fields, raw = __import__(
+        "mcp_open_data_hk.curated.official", fromlist=["csv_rows"]
+    ).csv_rows(body)
+
+    class Sheet:
+        nrows = len(raw) + 1
+
+        def row_values(self, index):
+            return fields if index == 0 else [raw[index - 1][f] for f in fields]
+
+        def cell(self, index, col):
+            value = raw[index - 1][fields[col]]
+            if index == 1 and col == 1:
+                value = value[1:]
+            return SimpleNamespace(
+                value=value,
+                ctype=xlrd.XL_CELL_TEXT,
+                xf_index=1 if index == 1 and col == 1 else 0,
+            )
+
+    class Book:
+        datemode = 0
+        xf_list = [
+            SimpleNamespace(lotus_123_prefix=0),
+            SimpleNamespace(lotus_123_prefix=1),
+        ]
+
+        def sheet_by_index(self, index):
+            return Sheet()
+
+    book = Book()
+    monkeypatch.setattr(xlrd, "open_workbook", lambda **kwargs: book)
+    assert verify_xls(body, b"fixture") == len(raw)
+    evidence = {}
+    assert verify_xls(body, b"fixture", evidence) == len(raw)
+    assert evidence["excelQuotePrefixCells"] == 1 and evidence["sourceCsvTextPreserved"]
+    assert weekly(body, "local", "20261012")[0]["name1"] == "'Plutus Example Limited"
+    book.xf_list[1].lotus_123_prefix = 0
+    with pytest.raises(SourceRejected, match="CSV_XLS_ROWS_DIFFER"):
+        verify_xls(body, b"fixture")
+    book.xf_list[1].lotus_123_prefix = 1
+    different = body.replace(b"Plutus Example Limited", b"Plutus Different Limited")
+    with pytest.raises(SourceRejected, match="CSV_XLS_ROWS_DIFFER"):
+        verify_xls(different, b"fixture")
+
+
+def test_reparse_receipt_retains_original_source_observation_time():
+    from mcp_open_data_hk.curated.official import capture_receipt
+
+    stamp = "2026-10-24T05:44:00+00:00"
+    receipt = capture_receipt(
+        "https://www.cr.gov.hk/test", b"source", {}, [], fetched_at=stamp
+    )
+    assert receipt["fetchedAt"] == stamp

@@ -106,7 +106,9 @@ def current_members(conn):
     }
 
 
-def save_capture(conn, key, url, body, headers, verification=None, parser=None):
+def save_capture(
+    conn, key, url, body, headers, verification=None, parser=None, fetched_at=None
+):
     state.migrate(conn)
     transform = state.transform_hash()
     capture_id = digest(
@@ -119,7 +121,10 @@ def save_capture(conn, key, url, body, headers, verification=None, parser=None):
         + transform.encode()
     )
     # Raw captures survive parser/verification failure, independently of promotion.
-    receipt = capture_receipt(url, body, headers, [])
+    receipt = capture_receipt(url, body, headers, [], fetched_at=fetched_at)
+    receipt["verificationSha256"] = (
+        digest(verification) if verification is not None else None
+    )
     conn.execute(
         "INSERT INTO curated.official_captures(capture_id,source_key,sha256,body,verification_body,receipt) VALUES(%s,%s,%s,%s,%s,%s) ON CONFLICT DO NOTHING",
         (capture_id, key, digest(body), body, verification, Jsonb(receipt)),
@@ -134,11 +139,15 @@ def save_capture(conn, key, url, body, headers, verification=None, parser=None):
     )
     try:
         records = parser(body)
+        normalizations = {}
         if verification is not None:
-            verify_xls(body, verification)
+            verify_xls(body, verification, normalizations)
         if not records:
             raise SourceRejected("EMPTY_PARSED_CAPTURE")
-        receipt = capture_receipt(url, body, headers, records)
+        receipt = capture_receipt(url, body, headers, records, fetched_at=fetched_at)
+        receipt["formatNormalizations"] = normalizations
+        if fetched_at:
+            receipt["reparsedAt"] = now()
         previous = conn.execute(
             "SELECT c.receipt FROM curated.official_captures c JOIN curated.official_members m USING(capture_id) JOIN curated.official_pointer p ON p.version=m.version WHERE m.source_key=%s",
             (key,),
