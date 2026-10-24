@@ -324,6 +324,13 @@ def test_actual_dump_restore_gate(tmp_path):
                     original_conn.execute(query).fetchone()
                     == restored_conn.execute(query).fetchone()
                 )
+        from mcp_open_data_hk.curated.official_recovery import snapshot
+
+        with (
+            connect(source_dsn, row_factory=dict_row) as original_conn,
+            connect(restore_dsn, row_factory=dict_row) as restored_conn,
+        ):
+            assert snapshot(original_conn) == snapshot(restored_conn)
         accepted = accept_restore(source_dsn, restore_dsn, version, proof["sha256"])
         assert accepted["independentlyRestored"]
         publish(source_dsn, version)

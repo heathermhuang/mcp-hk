@@ -23,18 +23,24 @@ def snapshot(conn):
         ).format(sql.Identifier(row["tablename"]))
         fingerprints[row["tablename"]] = conn.execute(query).fetchone()
     checked = 0
-    for capture in conn.execute(
-        "SELECT sha256,body,verification_body,receipt FROM curated.official_captures"
-    ):
-        if digest(bytes(capture["body"])) != capture["sha256"]:
-            raise ValueError("Raw capture checksum mismatch")
-        if (
-            capture["receipt"].get("verificationSha256")
-            and digest(bytes(capture["verification_body"]))
-            != capture["receipt"]["verificationSha256"]
-        ):
-            raise ValueError("Verification capture checksum mismatch")
-        checked += 1
+    # A server cursor prevents the enlarged raw-byte inventory being buffered by
+    # libpq. Each source object remains bounded independently of backlog size.
+    with conn.transaction():
+        with conn.cursor(name="official_recovery_raw") as captures:
+            captures.itersize = 1
+            captures.execute(
+                "SELECT sha256,body,verification_body,receipt FROM curated.official_captures"
+            )
+            for capture in captures:
+                if digest(bytes(capture["body"])) != capture["sha256"]:
+                    raise ValueError("Raw capture checksum mismatch")
+                if (
+                    capture["receipt"].get("verificationSha256")
+                    and digest(bytes(capture["verification_body"]))
+                    != capture["receipt"]["verificationSha256"]
+                ):
+                    raise ValueError("Verification capture checksum mismatch")
+                checked += 1
     return {
         "tables": fingerprints,
         "rawCapturesVerified": checked,
