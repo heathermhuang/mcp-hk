@@ -1032,7 +1032,10 @@ def test_official_address_a_b_b_history_queue_growth_and_health(model, monkeypat
             "UPDATE curated.official_jobs SET backup_status='local_verified' WHERE job_id=%s",
             (job,),
         )
-        assert health.check(conn, "2026-10-25T05:00:00Z")["status"] == "success"
+        assert (
+            health.check(conn, "2026-10-25T05:00:00Z")["status"]
+            == "offsite_recovery_unqualified"
+        )
         assert health.check(conn, "2026-10-26T05:00:00Z")["status"] == "missed"
 
 
@@ -1105,3 +1108,96 @@ def test_official_publication_and_job_receipt_are_one_transaction(model, monkeyp
             ).fetchone()["publication_status"]
             == "published"
         )
+
+
+def test_official_offsite_job_failure_retains_last_copy_and_holds_growth(model):
+    from datetime import datetime, timezone
+    from psycopg.rows import dict_row
+    from mcp_open_data_hk.curated import official_state as state
+    from mcp_open_data_hk.curated import official_offsite_job as recovery
+
+    _, _, _, _, owner = model
+    with connect(owner, autocommit=True, row_factory=dict_row) as conn:
+        state.migrate(conn)
+        job = state.begin_job(
+            conn, "offsite", "2026-10-24T13:30:00Z", family="recovery"
+        )
+        receipt = {
+            "prefix": "curated/official/daily/20261024T133000Z-1234abcd",
+            "artifacts": {
+                name: {"sha256": "a" * 64, "bytes": 10}
+                for name in ["official.dump", "source.json", "manifest.json"]
+            },
+            "verifiedAt": datetime.now(timezone.utc).isoformat(),
+        }
+        with pytest.raises(ValueError, match="Unqualified"):
+            recovery.finish(
+                conn,
+                job,
+                dict(receipt, prefix="backups/legacy"),
+                "offsite_verified",
+                "qualification",
+            )
+        recovery.finish(conn, job, receipt, "offsite_verified", "qualification")
+        assert not recovery.gate(conn)
+        migrations = {
+            r["version"]: r["sha256"]
+            for r in conn.execute(
+                "SELECT version,sha256 FROM curated.official_migrations"
+            )
+        }
+        proof = {
+            "freshOffsiteRestoreVerified": True,
+            "backupSha256": "a" * 64,
+            "prefix": receipt["prefix"],
+            "migrations": migrations,
+            "performancePassed": True,
+            "qualifiedWeekPairs": 4,
+            "stagedReadP95Ms": 100,
+        }
+        with pytest.raises(ValueError, match="exact"):
+            recovery.qualify_restore(conn, dict(proof, backupSha256="b" * 64))
+        assert not recovery.gate(conn)
+        with pytest.raises(ValueError, match="schema"):
+            recovery.qualify_restore(conn, dict(proof, migrations={}))
+        recovery.qualify_restore(conn, proof)
+        assert recovery.gate(conn)
+        failure = state.begin_job(
+            conn, "offsite", "2026-10-25T05:17:00Z", family="recovery"
+        )
+        recovery.finish(
+            conn,
+            failure,
+            {"errorCode": "OFFSITE_UPLOAD_OR_BACKUP_FAILED"},
+            "offsite_failed",
+            "daily",
+        )
+        assert not recovery.gate(conn)
+        stored = conn.execute(
+            "SELECT state FROM curated.official_source_state WHERE family='offsite'"
+        ).fetchone()["state"]
+        assert stored["lastSuccess"]["prefix"] == receipt["prefix"]
+        assert stored["lastAttempt"]["status"] == "offsite_failed"
+        with pytest.raises(ValueError, match="owning"):
+            recovery.finish(conn, job, receipt, "offsite_verified", "qualification")
+        older = state.begin_job(
+            conn, "offsite", "2026-10-26T05:17:00Z", family="recovery"
+        )
+        newer = state.begin_job(
+            conn, "offsite", "2026-10-27T05:17:00Z", family="recovery"
+        )
+        receipt_new = dict(
+            receipt, prefix="curated/official/daily/20261027T051700Z-5678abcd"
+        )
+        recovery.finish(conn, newer, receipt_new, "offsite_verified", "daily")
+        recovery.finish(
+            conn, older, {"errorCode": "OLDER_FAILURE"}, "offsite_failed", "daily"
+        )
+        stored = conn.execute(
+            "SELECT state FROM curated.official_source_state WHERE family='offsite'"
+        ).fetchone()["state"]
+        assert stored["lastSuccess"]["prefix"] == receipt_new["prefix"]
+        assert stored["lastAttempt"]["jobId"] == newer
+        assert not recovery.gate(conn)
+        recovery.qualify_restore(conn, dict(proof, prefix=receipt_new["prefix"]))
+        assert recovery.gate(conn)

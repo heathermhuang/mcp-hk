@@ -5,7 +5,9 @@ source metadata and dump are independently retrieved before manifest publication
 """
 
 import hashlib
+from contextlib import ExitStack
 import json
+import os
 import re
 from datetime import datetime, timezone
 from pathlib import Path
@@ -27,7 +29,9 @@ def checksum(path):
     return h.hexdigest()
 
 
-def upload(config_path, dump_path, source_path, client=None):
+def upload(
+    config_path, dump_path, source_path, client=None, job_id=None, retrieved_dump=None
+):
     config_path, dump_path, source_path = map(
         Path, (config_path, dump_path, source_path)
     )
@@ -72,16 +76,29 @@ def upload(config_path, dump_path, source_path, client=None):
         if response.status_code != 200:
             raise RuntimeError("OFFSITE_UPLOAD_FAILED")
         h, total = hashlib.sha256(), 0
-        with client.stream(
-            "GET", ORIGIN + stamp + "/" + name, headers=headers
-        ) as response:
-            if response.status_code != 200:
-                raise RuntimeError("OFFSITE_RETRIEVAL_FAILED")
-            for chunk in response.iter_bytes():
-                total += len(chunk)
-                if total > size:
-                    raise RuntimeError("OFFSITE_SIZE_MISMATCH")
-                h.update(chunk)
+        with ExitStack() as stack:
+            destination = None
+            if name == "official.dump" and retrieved_dump:
+                destination = stack.enter_context(
+                    os.fdopen(
+                        os.open(
+                            retrieved_dump, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600
+                        ),
+                        "wb",
+                    )
+                )
+            with client.stream(
+                "GET", ORIGIN + stamp + "/" + name, headers=headers
+            ) as response:
+                if response.status_code != 200:
+                    raise RuntimeError("OFFSITE_RETRIEVAL_FAILED")
+                for chunk in response.iter_bytes():
+                    total += len(chunk)
+                    if total > size:
+                        raise RuntimeError("OFFSITE_SIZE_MISMATCH")
+                    h.update(chunk)
+                    if destination:
+                        destination.write(chunk)
         if total != size or h.hexdigest() != sha:
             raise RuntimeError("OFFSITE_CHECKSUM_MISMATCH")
         artifacts[name] = {"sha256": sha, "bytes": size}
@@ -98,6 +115,7 @@ def upload(config_path, dump_path, source_path, client=None):
             "artifacts": dict(artifacts),
             "verifiedAt": datetime.now(timezone.utc).isoformat(),
             "credentialRoute": "dedicated_prefix_capability",
+            "jobId": job_id,
             "restoreObserved": False,
         }
         with tempfile.TemporaryDirectory() as folder:
@@ -117,9 +135,17 @@ def main():
     parser.add_argument("--config", required=True)
     parser.add_argument("--dump", required=True)
     parser.add_argument("--source", required=True)
+    parser.add_argument("--job-id")
+    parser.add_argument("--retrieved-dump")
     args = parser.parse_args()
     try:
-        receipt = upload(args.config, args.dump, args.source)
+        receipt = upload(
+            args.config,
+            args.dump,
+            args.source,
+            job_id=args.job_id,
+            retrieved_dump=args.retrieved_dump,
+        )
         print(json.dumps(receipt))
     except Exception:
         # HTTP/OS errors can contain credentials or file/connection details.

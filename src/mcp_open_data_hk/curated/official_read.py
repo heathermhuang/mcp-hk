@@ -284,11 +284,21 @@ class OfficialReader:
                 from .official_state import plan
 
                 jobs = conn.execute(
-                    "SELECT job_id,operation,scheduled_for,started_at,finished_at,published_at,status,collection_status,publication_status,backup_status FROM curated.official_jobs WHERE family='cr' ORDER BY started_at DESC LIMIT 6"
+                    "SELECT job_id,operation,scheduled_for,started_at,finished_at,published_at,status,collection_status,publication_status,backup_status FROM curated.official_jobs WHERE family IN ('cr','recovery') ORDER BY started_at DESC LIMIT 6"
                 ).fetchall()
                 queue = conn.execute(
                     "SELECT count(*) AS eligible,count(*) FILTER(WHERE last_success IS NOT NULL) AS observed,count(*) FILTER(WHERE outcome NOT IN ('success','never')) AS held,count(*) FILTER(WHERE next_due<=now()) AS due,count(*) FILTER(WHERE last_success<now()-interval '90 days') AS olderThan90Days,count(*) FILTER(WHERE last_success>=now()-interval '7 days') AS checkedWithin7Days,count(*) FILTER(WHERE last_success<now()-interval '7 days' AND last_success>=now()-interval '30 days') AS checked8To30DaysAgo,count(*) FILTER(WHERE last_success<now()-interval '30 days' AND last_success>=now()-interval '90 days') AS checked31To90DaysAgo,min(last_success) AS oldestObservation,max(last_success) AS newestObservation FROM curated.official_address_queue"
                 ).fetchone()
+                for old, new in [
+                    ("olderthan90days", "olderThan90Days"),
+                    ("checkedwithin7days", "checkedWithin7Days"),
+                    ("checked8to30daysago", "checked8To30DaysAgo"),
+                    ("checked31to90daysago", "checked31To90DaysAgo"),
+                    ("oldestobservation", "oldestObservation"),
+                    ("newestobservation", "newestObservation"),
+                ]:
+                    if old in queue:
+                        queue[new] = queue[old]
                 budgets = conn.execute(
                     "SELECT provider,day,requests,bytes FROM curated.official_daily_budgets WHERE day=CURRENT_DATE"
                 ).fetchall()
@@ -311,7 +321,37 @@ class OfficialReader:
                     }
                     for r in jobs
                 ]
+                from .official_offsite_job import gate
+
+                recovery = {
+                    r["family"]: r["state"]
+                    for r in conn.execute(
+                        "SELECT family,state FROM curated.official_source_state WHERE family IN ('offsite','offsite_restore')"
+                    )
+                }
+                last = recovery.get("offsite", {}).get("lastSuccess", {})
+                daily_observed = (
+                    conn.execute(
+                        "SELECT 1 FROM curated.official_jobs WHERE family='recovery' AND status='success' AND receipt->>'scheduleKind'='daily' LIMIT 1"
+                    ).fetchone()
+                    is not None
+                )
+                coverage_current = gate(conn)
                 maintenance = {
+                    "offsite": {
+                        "lastUploadAt": last.get("finishedAt"),
+                        "lastAttemptOutcome": recovery.get("offsite", {})
+                        .get("lastAttempt", {})
+                        .get("status"),
+                        "lastUploadScheduleKind": last.get("scheduleKind"),
+                        "restoreVerifiedAt": recovery.get("offsite_restore", {}).get(
+                            "verifiedAt"
+                        ),
+                        "coverageCurrent": coverage_current,
+                        "dailyCadenceObserved": daily_observed,
+                        "targetRpoHours": 24,
+                    },
+                    "backfillRecoveryGateOpen": coverage_current,
                     "nextConfiguredDueAt": next_due.isoformat(),
                     "sourceChecks": conn.execute(
                         "SELECT family,checked_at,hold_until,state->>'status' AS status FROM curated.official_source_state WHERE family NOT IN ('inventory_baseline','health') AND family NOT LIKE 'address:%%' ORDER BY family LIMIT 110"
@@ -320,7 +360,7 @@ class OfficialReader:
                     "jobs": jobs,
                     "addressQueue": queue,
                     "dailyBudgets": budgets,
-                    "offsiteRpoQualified": False,
+                    "offsiteRpoQualified": coverage_current and daily_observed,
                 }
             # Invocation/source details remain private; public readers get outcomes.
             runs = [{k: v for k, v in row.items() if k != "receipt"} for row in runs]

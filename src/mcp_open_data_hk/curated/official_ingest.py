@@ -446,10 +446,20 @@ def publish_staged(conn):
     base = state.pointer(conn)
     before = current_members(conn)
     members = dict(before)
+    performance = conn.execute(
+        "SELECT state->>'status' AS status FROM curated.official_source_state WHERE family='performance'"
+    ).fetchone()
+    hold_history = performance and performance["status"] == "failed"
     # Preserve existing history keys. Old single-address members remain immutable.
     for row in conn.execute(
         "SELECT source_key,capture_id FROM curated.official_staged"
     ):
+        if (
+            hold_history
+            and row["source_key"].startswith("https://www.cr.gov.hk/docs/wrpt/")
+            and row["source_key"] not in before
+        ):
+            continue
         members[row["source_key"]] = row["capture_id"]
     if members == before:
         return base, False
@@ -460,6 +470,7 @@ def publish_staged(conn):
     if today:
         return base, False
     version = promote(conn, members, coverage(conn, members), expected_base=base)
+    state.seed_queue(conn)
     return version, True
 
 

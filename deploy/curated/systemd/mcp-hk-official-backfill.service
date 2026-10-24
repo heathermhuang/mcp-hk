@@ -5,7 +5,7 @@ Requires=docker.service
 [Service]
 Type=oneshot
 WorkingDirectory=/opt/mcp-hk-maintenance-current
-ExecStart=/opt/mcp-hk-maintenance-current/deploy/curated/run-official.sh backfill
+ExecStart=/opt/mcp-hk-maintenance-current/deploy/curated/run-backfill.sh
 TimeoutStartSec=15min
 UMask=0077
 NoNewPrivileges=true

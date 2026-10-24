@@ -39,8 +39,24 @@ def check(conn, scheduled_for):
             status = "success"
     else:
         status = "missed"
+    from .official_offsite_job import gate
+
+    recovery_current = gate(conn)
+    if status in {"success", "partial_source_coverage"} and not recovery_current:
+        active = conn.execute(
+            "SELECT 1 FROM curated.official_jobs WHERE family='recovery' AND status='running' AND started_at>now()-interval '16 minutes' LIMIT 1"
+        ).fetchone()
+        status = "recovery_running" if active else "offsite_recovery_unqualified"
+    performance = conn.execute(
+        "SELECT state->>'status' AS status FROM curated.official_source_state WHERE family='performance'"
+    ).fetchone()
+    if performance and performance["status"] == "failed":
+        status = "performance_or_restore_failure"
     summary = json.loads(json.dumps(receipt, default=str))
-    summary.update(status=status, offsiteStatus="not_qualified")
+    summary.update(
+        status=status,
+        offsiteStatus="coverage_current" if recovery_current else "not_qualified",
+    )
     fingerprint = digest(encoded(summary))
     previous = conn.execute(
         "SELECT state FROM curated.official_source_state WHERE family='health'"

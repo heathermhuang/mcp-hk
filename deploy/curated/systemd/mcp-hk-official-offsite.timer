@@ -1,0 +1,8 @@
+[Unit]
+Description=Daily official offsite recovery upload at 13:17 HKT
+[Timer]
+OnCalendar=*-*-* 05:17:00 UTC
+Persistent=true
+Unit=mcp-hk-official-offsite.service
+[Install]
+WantedBy=timers.target
