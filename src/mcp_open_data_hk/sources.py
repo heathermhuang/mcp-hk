@@ -281,5 +281,5 @@ def available_packs():
     from .companies import settings
 
     return PACKS + (
-        [ENIGMA_PACK, OFFICIAL_COMPANY_PACK] if settings() is not None else []
+        [OFFICIAL_COMPANY_PACK, ENIGMA_PACK] if settings() is not None else []
     )
