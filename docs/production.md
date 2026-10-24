@@ -246,3 +246,26 @@ survive Worker changes. Deploy migration `v2-agent-auth` once; retain that migra
 and namespace in later rollouts. Anonymous public reads remain available if the
 optional auth service is unavailable. See [agent-auth.md](agent-auth.md) for
 credential lifetimes, private bulk revocation, recovery caveats and smoke checks.
+
+## Security remediation release gate (24 October candidate)
+
+The [security candidate](security/remediation-20261024/README.md) is a draft and must
+not be treated as release-ready. Local direct-egress acceptance currently fails.
+Do not deploy it to production on the strength of unit tests or policy declarations.
+Its new Worker gateway, container image, auth migration, protocol matrix and effective
+allocation settings must be independently qualified in isolated staging first.
+
+When release is separately authorized: preserve current auth state; pause only the
+resource cron through the documented trigger change and propagation/lease sequence;
+record the full Git SHA, Worker version, controller policy, image digest and numeric
+limits; force and verify controller/image adoption; run harmless synthetic-owner and
+public-read checks, a fresh isolated accepted-backup restore, then restore all five
+schedules. Do not infer adoption from a release header. Keep failed/unknown receipts.
+Rollback never restores historical auth storage or reenables a pre-remediation auth
+lifecycle; use a forward repair or restrict the affected route.
+
+Self-hosted `mcp-hk-http` binds loopback by default. A Docker host-port mapping should
+also be loopback-only (`-p 127.0.0.1:8000:8000`) unless an explicitly configured public
+reverse proxy supplies host/origin/admission controls. Container-internal `HOST=0.0.0.0`
+is separate from the host's published interface. Publishing packages remains disabled
+under the fork's existing upstream-identity guard.
