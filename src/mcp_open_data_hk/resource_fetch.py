@@ -62,7 +62,7 @@ class PinnedHTTP(http.client.HTTPConnection):
         addresses = public_addresses(self.host, self.port)
         last = None
         for family, kind, proto, _, addr in addresses:
-            budget = get_budget()
+            budget = getattr(self, "operation_budget", None) or get_budget()
             remaining = budget.remaining()
             conn = socket.socket(family, kind, proto)
             conn.settimeout(
@@ -130,6 +130,7 @@ def _fetch_attempts(
             connection = (PinnedHTTPS if p.scheme == "https" else PinnedHTTP)(
                 p.hostname, port=p.port, timeout=min(10, budget.remaining())
             )
+        connection.operation_budget = budget
         output = None
         try:
             connection.request(
