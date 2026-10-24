@@ -748,6 +748,7 @@ def test_official_maintenance_budgets_occurrences_transform_and_conflicts(
         with pytest.raises(SourceRejected, match="DAILY_SOURCE_BUDGET"):
             state.reserve(conn)
         state.hold(conn, 3600)
+        assert json.loads(json.dumps(state.plan(conn)))["sourceHoldUntil"]
         with pytest.raises(SourceRejected, match="SOURCE_HOLD"):
             state.reserve(conn)
 

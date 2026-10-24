@@ -172,7 +172,7 @@ def plan(conn):
         ).fetchone()["n"],
         "sourceHoldUntil": (
             conn.execute(
-                "SELECT hold_until FROM curated.official_source_state WHERE family='cr' AND hold_until>now()"
+                "SELECT hold_until::text AS hold_until FROM curated.official_source_state WHERE family='cr' AND hold_until>now()"
             ).fetchone()
             or {}
         ).get("hold_until"),
