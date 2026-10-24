@@ -1,0 +1,12 @@
+[Unit]
+Description=mcp.hk scoped official state upload and independent verification
+After=docker.service network-online.target
+Requires=docker.service
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/mcp-hk-maintenance-current
+ExecStart=/opt/mcp-hk-maintenance-current/deploy/curated/run-offsite.sh
+TimeoutStartSec=15min
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true

@@ -1,0 +1,12 @@
+[Unit]
+Description=mcp.hk offsite restore and staged-read qualification milestone
+After=docker.service
+Requires=docker.service
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/mcp-hk-maintenance-current
+ExecStart=/opt/mcp-hk-maintenance-current/deploy/curated/qualify-offsite.sh
+TimeoutStartSec=15min
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true

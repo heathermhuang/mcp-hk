@@ -1,5 +1,13 @@
 # Source permission briefs — UNSENT
 
+Uploader update: the human explicitly approved the dedicated prefix-only capability
+during this continuation. A separate random host credential has been prepared and
+installed owner-only; no broad OAuth or gateway OPS credential was reused. The
+uploader's deployment, scoped negative tests and scheduled restore qualification
+are being completed. The Gazette/SFC/HKEX permission briefs below remain unsent
+and their access/output modes remain gated. Earlier uploader text records the
+proposal before this approval.
+
 24 October 2026. These briefs request a decision, not permission inferred from
 public visibility. No message has been sent, terms accepted, contract signed or
 paid feed ordered. All gated collectors and public output modes remain absent.

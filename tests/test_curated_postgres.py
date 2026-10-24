@@ -324,6 +324,30 @@ def test_actual_dump_restore_gate(tmp_path):
                     original_conn.execute(query).fetchone()
                     == restored_conn.execute(query).fetchone()
                 )
+        from mcp_open_data_hk.curated.official_recovery import snapshot
+
+        with (
+            connect(source_dsn, row_factory=dict_row) as original_conn,
+            connect(restore_dsn, row_factory=dict_row) as restored_conn,
+        ):
+            assert snapshot(original_conn) == snapshot(restored_conn)
+            expected_recovery = snapshot(restored_conn)
+        from mcp_open_data_hk.curated.official_restore_check import (
+            verify as verify_restored,
+        )
+
+        restored_proof = verify_restored(
+            restore_dsn,
+            expected_recovery,
+            {
+                "prefix": "curated/official/daily/20261024T130000Z-1234abcd",
+                "artifacts": {"official.dump": {"sha256": proof["sha256"]}},
+            },
+        )
+        assert (
+            restored_proof["performancePassed"]
+            and restored_proof["rawCaptureChecksumsVerified"] == 1
+        )
         accepted = accept_restore(source_dsn, restore_dsn, version, proof["sha256"])
         assert accepted["independentlyRestored"]
         publish(source_dsn, version)
@@ -748,6 +772,7 @@ def test_official_maintenance_budgets_occurrences_transform_and_conflicts(
         with pytest.raises(SourceRejected, match="DAILY_SOURCE_BUDGET"):
             state.reserve(conn)
         state.hold(conn, 3600)
+        assert json.loads(json.dumps(state.plan(conn)))["sourceHoldUntil"]
         with pytest.raises(SourceRejected, match="SOURCE_HOLD"):
             state.reserve(conn)
 
@@ -836,6 +861,9 @@ def test_official_backfill_stages_complete_pairs_and_resumes_without_daily_reads
     assert first["status"] == "partial"
     assert first["requests"] <= 16
     assert first["inventory"]["stagedFiles"] == 6
+    assert first["inventory"]["downloadedFiles"] == 6
+    assert first["inventory"]["discoveredFiles"] == 10
+    assert first["inventory"]["rejectedFiles"] == 0
     assert first["inventory"]["publishedFiles"] == 0
     assert all("/wrpt/" in url for url in seen)
     seen.clear()
@@ -1021,7 +1049,10 @@ def test_official_address_a_b_b_history_queue_growth_and_health(model, monkeypat
             "UPDATE curated.official_jobs SET backup_status='local_verified' WHERE job_id=%s",
             (job,),
         )
-        assert health.check(conn, "2026-10-25T05:00:00Z")["status"] == "success"
+        assert (
+            health.check(conn, "2026-10-25T05:00:00Z")["status"]
+            == "offsite_recovery_unqualified"
+        )
         assert health.check(conn, "2026-10-26T05:00:00Z")["status"] == "missed"
 
 
@@ -1094,3 +1125,177 @@ def test_official_publication_and_job_receipt_are_one_transaction(model, monkeyp
             ).fetchone()["publication_status"]
             == "published"
         )
+
+
+def test_official_offsite_job_failure_retains_last_copy_and_holds_growth(model):
+    from datetime import datetime, timezone
+    from psycopg.rows import dict_row
+    from mcp_open_data_hk.curated import official_state as state
+    from mcp_open_data_hk.curated import official_offsite_job as recovery
+
+    _, _, _, _, owner = model
+    with connect(owner, autocommit=True, row_factory=dict_row) as conn:
+        state.migrate(conn)
+        job = state.begin_job(
+            conn, "offsite", "2026-10-24T13:30:00Z", family="recovery"
+        )
+        receipt = {
+            "prefix": "curated/official/daily/20261024T133000Z-1234abcd",
+            "artifacts": {
+                name: {"sha256": "a" * 64, "bytes": 10}
+                for name in ["official.dump", "source.json", "manifest.json"]
+            },
+            "verifiedAt": datetime.now(timezone.utc).isoformat(),
+        }
+        with pytest.raises(ValueError, match="Unqualified"):
+            recovery.finish(
+                conn,
+                job,
+                dict(receipt, prefix="backups/legacy"),
+                "offsite_verified",
+                "qualification",
+            )
+        recovery.finish(conn, job, receipt, "offsite_verified", "qualification")
+        assert not recovery.gate(conn)
+        migrations = {
+            r["version"]: r["sha256"]
+            for r in conn.execute(
+                "SELECT version,sha256 FROM curated.official_migrations"
+            )
+        }
+        proof = {
+            "freshOffsiteRestoreVerified": True,
+            "backupSha256": "a" * 64,
+            "prefix": receipt["prefix"],
+            "migrations": migrations,
+            "performancePassed": True,
+            "qualifiedWeekPairs": 4,
+            "stagedReadP95Ms": 100,
+        }
+        with pytest.raises(ValueError, match="exact"):
+            recovery.qualify_restore(conn, dict(proof, backupSha256="b" * 64))
+        assert not recovery.gate(conn)
+        with pytest.raises(ValueError, match="schema"):
+            recovery.qualify_restore(conn, dict(proof, migrations={}))
+        recovery.qualify_restore(conn, proof)
+        assert recovery.gate(conn)
+        failure = state.begin_job(
+            conn, "offsite", "2026-10-25T05:17:00Z", family="recovery"
+        )
+        recovery.finish(
+            conn,
+            failure,
+            {"errorCode": "OFFSITE_UPLOAD_OR_BACKUP_FAILED"},
+            "offsite_failed",
+            "daily",
+        )
+        assert not recovery.gate(conn)
+        stored = conn.execute(
+            "SELECT state FROM curated.official_source_state WHERE family='offsite'"
+        ).fetchone()["state"]
+        assert stored["lastSuccess"]["prefix"] == receipt["prefix"]
+        assert stored["lastAttempt"]["status"] == "offsite_failed"
+        with pytest.raises(ValueError, match="owning"):
+            recovery.finish(conn, job, receipt, "offsite_verified", "qualification")
+        older = state.begin_job(
+            conn, "offsite", "2026-10-26T05:17:00Z", family="recovery"
+        )
+        newer = state.begin_job(
+            conn, "offsite", "2026-10-27T05:17:00Z", family="recovery"
+        )
+        receipt_new = dict(
+            receipt, prefix="curated/official/daily/20261027T051700Z-5678abcd"
+        )
+        recovery.finish(conn, newer, receipt_new, "offsite_verified", "daily")
+        recovery.finish(
+            conn, older, {"errorCode": "OLDER_FAILURE"}, "offsite_failed", "daily"
+        )
+        stored = conn.execute(
+            "SELECT state FROM curated.official_source_state WHERE family='offsite'"
+        ).fetchone()["state"]
+        assert stored["lastSuccess"]["prefix"] == receipt_new["prefix"]
+        assert stored["lastAttempt"]["jobId"] == newer
+        assert not recovery.gate(conn)
+        recovery.qualify_restore(conn, dict(proof, prefix=receipt_new["prefix"]))
+        assert recovery.gate(conn)
+
+
+def test_official_address_stages_count_legacy_and_require_enlarged_restore(
+    model, monkeypatch
+):
+    from datetime import datetime, timedelta, timezone
+    from psycopg.rows import dict_row
+    from psycopg.types.json import Jsonb
+    from mcp_open_data_hk.curated import official_state as state
+    from mcp_open_data_hk.curated import official_address_stage as policy
+    from mcp_open_data_hk.curated.official import SourceRejected
+
+    _, _, _, _, owner = model
+    url = "https://data.cr.gov.hk/cr/api/api/v1/api_builder/json/local/search"
+    with connect(owner, autocommit=True, row_factory=dict_row) as conn:
+        state.migrate(conn)
+        conn.execute(
+            "INSERT INTO curated.official_runs(run_id,status,receipt) VALUES('legacy','success',%s)",
+            (
+                Jsonb(
+                    {
+                        "sourceChecks": [{"sourceUrl": url} for _ in range(20)],
+                        "addressFailures": [{"code": "SOURCE_HTTP_400"}],
+                    }
+                ),
+            ),
+        )
+        job = state.begin_job(conn, "addresses", "2026-10-24T01:00:00Z")
+        for i in range(20):
+            conn.execute(
+                "INSERT INTO curated.official_address_checks(job_id,entity_id,outcome) VALUES(%s,%s,%s)",
+                (job, "cr:local:" + str(i), "SOURCE_HTTP_400" if i == 0 else "success"),
+            )
+        assert (
+            policy.usage(conn)["attempts"] == 40
+            and policy.usage(conn)["remaining"] == 0
+        )
+        monkeypatch.setattr(policy, "gate", lambda c: False)
+        with pytest.raises(SourceRejected, match="RECOVERY"):
+            policy.set_stage(conn, 100)
+        monkeypatch.setattr(policy, "gate", lambda c: True)
+        policy.set_stage(conn, 100)
+        assert policy.usage(conn)["remaining"] == 60
+        with pytest.raises(SourceRejected, match="PILOT"):
+            policy.set_stage(conn, 250)
+        for i in range(20, 80):
+            conn.execute(
+                "INSERT INTO curated.official_address_checks(job_id,entity_id,outcome) VALUES(%s,%s,'success')",
+                (job, "cr:local:" + str(i)),
+            )
+        conn.execute(
+            "UPDATE curated.official_jobs SET status='success',receipt=%s WHERE job_id=%s",
+            (
+                Jsonb(
+                    {
+                        "sourceChecks": [
+                            {"sourceUrl": url, "durationSeconds": 1} for _ in range(60)
+                        ],
+                        "maxRssKiB": 100000,
+                    }
+                ),
+                job,
+            ),
+        )
+        with pytest.raises(SourceRejected, match="RESTORE"):
+            policy.set_stage(conn, 250)
+        conn.execute(
+            "INSERT INTO curated.official_source_state(family,state) VALUES('offsite_restore',%s)",
+            (
+                Jsonb(
+                    {
+                        "verifiedAt": (
+                            datetime.now(timezone.utc) + timedelta(seconds=1)
+                        ).isoformat()
+                    }
+                ),
+            ),
+        )
+        policy.set_stage(conn, 250)
+        assert policy.usage(conn)["remaining"] == 150
+        assert state.pointer(conn) is None

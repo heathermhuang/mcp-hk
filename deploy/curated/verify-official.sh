@@ -11,5 +11,5 @@ trap 'rm -f "$receipt"' EXIT HUP INT TERM
 result=0
 docker run --rm --memory 128m --cpus 1 --network curated_default --env-file /etc/mcp-hk-curated/owner.env "$image" python -m mcp_open_data_hk.curated.official_health verify --scheduled-for "$stamp" > "$receipt" || result=$?
 cat "$receipt"
-if python3 -c 'import json,sys; sys.exit(json.load(open(sys.argv[1]))["status"]!="running")' "$receipt"; then printf '%s' "$stamp" > /srv/mcp-hk-curated/official-health-running; fi
+if python3 -c 'import json,sys; sys.exit(json.load(open(sys.argv[1]))["status"] not in ("running","recovery_running"))' "$receipt"; then printf '%s' "$stamp" > /srv/mcp-hk-curated/official-health-running; fi
 exit "$result"

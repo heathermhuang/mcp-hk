@@ -35,6 +35,7 @@ def test_collector_interruption_still_runs_independent_logical_backup(tmp_path):
     )
     binaries = tmp_path / "bin"
     binaries.mkdir()
+    executable(binaries / "flock", "exit 0")
     executable(binaries / "systemctl", 'printf "0\\n"')
     executable(
         binaries / "awk",
@@ -46,7 +47,11 @@ def test_collector_interruption_still_runs_independent_logical_backup(tmp_path):
     )
     result = subprocess.run(
         ["sh", str(runner), "freshness"],
-        env=dict(os.environ, PATH=str(binaries) + ":" + os.environ["PATH"]),
+        env=dict(
+            os.environ,
+            PATH=str(binaries) + ":" + os.environ["PATH"],
+            MCP_HK_MAINTENANCE_LOCK=str(tmp_path / "maintenance.lock"),
+        ),
         capture_output=True,
         text=True,
     )

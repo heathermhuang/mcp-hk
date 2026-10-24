@@ -361,3 +361,60 @@ Official address history is available through
 `hk_company_address_history`, with bounded signed pagination and selected-version
 pinning. Occurrence IDs are distinct from reusable raw payload IDs, preserving
 A→B→A reversion order. The six archival tools and their integer Webb IDs remain.
+
+Approved uploader activation uses only a newly generated host capability in
+owner-only `/etc/mcp-hk-curated/official-uploader.json` and the distinct Worker
+secret `OFFICIAL_BACKUP_TOKEN`. Never reuse OPS_TOKEN or host an R2 parent token.
+The offsite unit runs at 05:17 UTC, independently of collection. It creates an
+immutable dump plus complete table/raw-checksum metadata, uploads/retrieves both,
+then writes/retrieves the immutable manifest. Its job and last attempt/success
+are independent of publication/local backup. A failed attempt retains the prior
+offsite pointer and closes the growth gate. An interrupted upload stays unknown.
+
+`official_offsite_job qualify-restore` accepts operator restore evidence only for
+the exact latest dump checksum and records the qualified schema hashes. Catch-up
+requires a successful offsite attempt within 24 hours and that restored schema;
+known upload failure or schema drift closes the gate. Public status separately
+reports present offsite coverage, observed normal daily cadence and target RPO.
+A scheduled qualification probe is labelled `qualification`, not normal daily
+cadence. The target daily RPO stays unqualified until a normal daily upload is
+actually observed. The next daily trigger remains visible independently.
+
+Catch-up compares the stored inventory before work and does no collection/backup
+when unchanged and complete. It respects the checked host provider-window policy
+and the shared host maintenance lock. Around 10%, 50% and full qualification it
+starts the independent milestone service: checksum-verified retrieval, isolated
+restore, every table/raw checksum, bounded staged prefix/identifier/detail/page
+queries and p95 below one second. A restore/performance failure closes the growth
+gate and retains its clone and receipts. The publisher holds new historical weeks
+while allowing independently valid existing weeks/lenders/addresses to advance.
+Successful disposable clones are removed only by their validated owning job name;
+production, public-version history and offsite objects remain retained.
+
+The dedicated capability also has persisted aggregate daily upload/read budgets
+in the existing controller: at most 16 PUT attempts and 1 GiB plus 8 MiB metadata,
+64 read admissions and 2 GiB retrieved bytes. Failed attempts consume admission;
+caller-selected object names do not reset it. A recovery manifest requires its
+exact stored dump/source sizes and provider-verified checksums. No auth token or
+query text is stored in these counters. Host restoration reserves 10 GiB plus a
+20-times compressed-size forecast before creating its disposable database.
+
+Verified retrieved offsite duplicates also have a 30-day local grace. Bounded
+pruning considers at most four expired copies per run, preserves the latest two
+qualified copies, requires matching restore proof, local SHA-256 and a still-
+present checksum/size-matching offsite object, and never deletes R2 objects or
+unverified/failed evidence. No public version, cursor, original archive or other
+bucket prefix is pruned by this workflow.
+
+Address expansion is a persisted owner policy, initially 20/day. Both new check
+rows and pre-migration address source reads count, including failed attempts.
+`official_address_stage --set 100` requires the recovery gate. Admission to 250
+requires at least 100 observed same-day attempts, at most 5% settled identity/no-
+match failures, no network/hold/schema failures, at least 50 timed source samples,
+mean at most 7.5 seconds and p95 at most 20 seconds (within the 780-second sequential
+100-read envelope), memory below 512 MiB and a fresh enlarged-state restore after
+the latest address attempt. A failed gate retains the qualified prior stage.
+The 09/10/11 HKT address timer requests at most 100 per batch; the durable daily
+policy yields 100/100/50 at 250, and later deliveries become no-ops. Freshness also
+uses the same remaining address policy and 500/day CR provider budget. Publication
+seeds new exact identities into the queue without changing existing due/hold state.
