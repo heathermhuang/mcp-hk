@@ -266,3 +266,49 @@ def test_sqlite_restrictions_preserve_required_json_and_reject_attach_extension(
             db.execute("ATTACH DATABASE ':memory:' AS unwanted")
         with pytest.raises(sqlite3.DatabaseError):
             db.execute("SELECT load_extension('synthetic-no-such-library')")
+
+
+def test_hosted_sync_reader_uses_only_gateway_and_reports_its_transport(monkeypatch):
+    import io
+
+    seen = []
+
+    class Connection:
+        sock = None
+
+        def __init__(self, host, **kwargs):
+            assert host == "mcp-egress"
+
+        def request(self, method, path, body=None, headers=None):
+            seen.append((method, path, headers))
+
+        def getresponse(self):
+            class Response:
+                status = 200
+                read1 = io.BytesIO(b'{"value":1}').read
+
+                def getheaders(self):
+                    return []
+
+            return Response()
+
+        def close(self):
+            pass
+
+    monkeypatch.setenv("MCP_HK_EDGE_MODE", "true")
+    monkeypatch.setattr(resource_fetch.http.client, "HTTPConnection", Connection)
+    monkeypatch.setattr(
+        resource_fetch,
+        "public_addresses",
+        lambda *a: pytest.fail("hosted reader must not resolve/dial a source directly"),
+    )
+    with operation(Budget("synthetic-grant")):
+        body, meta, final, status = resource_fetch.fetch_sync(
+            "https://public.example/data?q=value",
+            headers={"Accept-Encoding": "identity"},
+        )
+    assert status == 200 and body == b'{"value":1}'
+    assert final == "https://public.example/data?q=value"
+    assert meta["_mcp_source_transport"] == "edge-governed"
+    assert seen[0][0:2] == ("GET", "/fetch")
+    assert seen[0][2]["x-mcp-target"] == final

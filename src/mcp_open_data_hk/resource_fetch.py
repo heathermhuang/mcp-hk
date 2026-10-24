@@ -168,7 +168,9 @@ def _fetch_attempts(
                     "SOURCE_UNAVAILABLE", "Approved source relay was unavailable", 502
                 )
             meta["_mcp_source_transport"] = (
-                "approved-worker-relay" if relay else "direct"
+                "edge-governed"
+                if hosted
+                else "approved-worker-relay" if relay else "direct"
             )
             if response.status in {301, 302, 303, 307, 308}:
                 if relay:
