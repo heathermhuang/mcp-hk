@@ -724,14 +724,14 @@
     },
     "/hkex": {
       "en": {
-        "title": "HKEX disclosure qualification · mcp.hk",
-        "heading": "HKEX disclosure notices",
-        "description": "Live HKEX DI data is unavailable while access and output rights are being qualified. No pilot window is accepted."
+        "title": "HKEX directors’ disclosure archive · mcp.hk",
+        "heading": "HKEX disclosure archive",
+        "description": "Browse real historical Form 3A directors’ disclosures from David Webb / Webb-site, with source dates, capacity/reason codes and amendment links. Separate from fresh HKEX updates."
       },
       "zh-Hant": {
-        "title": "港交所披露來源審核 · mcp.hk",
-        "heading": "港交所權益披露通知",
-        "description": "港交所 DI 存取及輸出權限仍在審核，現未提供即時資料，亦未接納任何試行日期範圍。"
+        "title": "港交所董事權益披露檔案 · mcp.hk",
+        "heading": "港交所權益披露檔案",
+        "description": "瀏覽 David Webb／Webb-site 的真實表格 3A 董事披露歷史，保留來源日期、身分／原因代碼及修訂連結，與最新港交所更新分開。"
       },
       "template": "hkex.html",
       "noindex": true

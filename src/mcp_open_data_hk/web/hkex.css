@@ -10,3 +10,14 @@
 .hkex-table td, .hkex-table th { padding: .65rem; border-bottom: 1px solid var(--line, #d5e2d9); text-align: start; white-space: nowrap; }
 #hkex-coverage, #hkex-window, #hkex-version { overflow-wrap: anywhere; }
 @media (max-width: 390px) { #hkex-dates { grid-template-columns: 1fr; } #hkex-search input, #hkex-search button { width: 100%; } }
+.webb-controls { display:flex; flex-wrap:wrap; gap:.75rem; align-items:end; margin-block:1rem; }
+.webb-controls label { display:grid; gap:.4rem; max-width:100%; }
+.webb-controls input,.webb-controls select { min-height:44px; max-width:100%; }
+.webb-workspace { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:2rem; }
+#webb-issuers,#webb-list { display:grid; gap:.65rem; margin-block:1rem; }
+#webb-issuers button,#webb-list button { white-space:normal; text-align:start; overflow-wrap:anywhere; }
+#webb-detail pre { max-width:100%; overflow:auto; }
+#webb-detail dl { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,2fr); gap:.5rem; }
+#webb-detail dd { margin:0; overflow-wrap:anywhere; }
+@media(max-width:768px) { .webb-workspace { grid-template-columns:1fr; } }
+@media(max-width:390px) { .webb-controls label,.webb-controls button { width:100%; } #webb-detail dl { grid-template-columns:1fr; } }

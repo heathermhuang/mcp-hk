@@ -201,6 +201,9 @@ def create_app(service=None):
 
     from .hkex_api import register_rest as register_hkex_rest
 
+    from .webb_sdi_api import register_http as register_webb_archive
+
+    register_webb_archive(app, service)
     register_hkex_rest(app, service)
 
     from . import racing

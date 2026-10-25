@@ -1,0 +1,69 @@
+{
+  "receipts": [
+    {
+      "lang": "en",
+      "width": 320,
+      "realArchive": false,
+      "downloadRows": 1,
+      "downloadSha256": "1c8d0b47ce2091386578da82b64c27b0ccedd93dfe5ac908a07fb4abe960d6eb",
+      "passed": true
+    },
+    {
+      "lang": "en",
+      "width": 390,
+      "realArchive": false,
+      "downloadRows": 1,
+      "downloadSha256": "1c8d0b47ce2091386578da82b64c27b0ccedd93dfe5ac908a07fb4abe960d6eb",
+      "passed": true
+    },
+    {
+      "lang": "en",
+      "width": 768,
+      "realArchive": false,
+      "downloadRows": 1,
+      "downloadSha256": "1c8d0b47ce2091386578da82b64c27b0ccedd93dfe5ac908a07fb4abe960d6eb",
+      "passed": true
+    },
+    {
+      "lang": "en",
+      "width": 1280,
+      "realArchive": false,
+      "downloadRows": 1,
+      "downloadSha256": "1c8d0b47ce2091386578da82b64c27b0ccedd93dfe5ac908a07fb4abe960d6eb",
+      "passed": true
+    },
+    {
+      "lang": "zh-Hant",
+      "width": 320,
+      "realArchive": false,
+      "downloadRows": 1,
+      "downloadSha256": "1c8d0b47ce2091386578da82b64c27b0ccedd93dfe5ac908a07fb4abe960d6eb",
+      "passed": true
+    },
+    {
+      "lang": "zh-Hant",
+      "width": 390,
+      "realArchive": false,
+      "downloadRows": 1,
+      "downloadSha256": "1c8d0b47ce2091386578da82b64c27b0ccedd93dfe5ac908a07fb4abe960d6eb",
+      "passed": true
+    },
+    {
+      "lang": "zh-Hant",
+      "width": 768,
+      "realArchive": false,
+      "downloadRows": 1,
+      "downloadSha256": "1c8d0b47ce2091386578da82b64c27b0ccedd93dfe5ac908a07fb4abe960d6eb",
+      "passed": true
+    },
+    {
+      "lang": "zh-Hant",
+      "width": 1280,
+      "realArchive": false,
+      "downloadRows": 1,
+      "downloadSha256": "1c8d0b47ce2091386578da82b64c27b0ccedd93dfe5ac908a07fb4abe960d6eb",
+      "passed": true
+    }
+  ],
+  "errors": []
+}
