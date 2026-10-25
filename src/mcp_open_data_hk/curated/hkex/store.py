@@ -4,7 +4,7 @@ import contextlib
 import hashlib
 import os
 import shutil
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from importlib.resources import files
 
 from psycopg import sql
@@ -173,7 +173,19 @@ class Store:
                 or run["state"] != "running"
             ):
                 raise ValueError("RUN_NOT_ADMITTED")
+            observed = c.execute(
+                "SELECT min(observed_at) AS oldest FROM hkex.captures WHERE id=ANY(%s)",
+                (list(captures.values()),),
+            ).fetchone()["oldest"]
+            # Republishing or resuming must not renew a source retention window.
+            oldest = observed or run["started_at"]
+            retained_until = min(
+                oldest + timedelta(seconds=policy.retention_seconds), policy.expires_at
+            )
+            if retained_until <= datetime.now(timezone.utc):
+                raise ValueError("SOURCE_RETENTION_EXPIRED")
             manifest = {
+                "retainedUntil": retained_until.isoformat(),
                 "source": "hkex_di",
                 "policyHash": self.policy_hash,
                 "coverage": coverage,
@@ -338,6 +350,10 @@ class Store:
             ):
                 raise ValueError("RESTORE_PROOF_REQUIRED")
             policy.require("retain", "history", "backup")
+            if datetime.fromisoformat(row["manifest"]["retainedUntil"]) <= datetime.now(
+                timezone.utc
+            ):
+                raise ValueError("SOURCE_RETENTION_EXPIRED")
             c.execute(
                 "UPDATE hkex.versions SET state='published',published_at=COALESCE(published_at,now()) WHERE version=%s",
                 (version,),

@@ -82,6 +82,7 @@ class HkexReader:
                         "pages": coverage["pages"],
                         "comprehensiveIncremental": False,
                     }
+                current_policy(c, digest(policy))
                 return {
                     "source": "hkex_di",
                     "state": "accepted" if accepted else "pilot_pending",
@@ -162,9 +163,10 @@ class HkexReader:
                 raise ReadError(
                     "HKEX_SOURCE_UNQUALIFIED", "Version requires policy requalification"
                 )
-            if (
-                datetime.now(timezone.utc) - release["created_at"]
-            ).total_seconds() >= policy.retention_seconds:
+            retained_until = datetime.fromisoformat(
+                release["manifest"]["retainedUntil"]
+            )
+            if datetime.now(timezone.utc) >= retained_until:
                 raise ReadError("VERSION_EXPIRED", "HKEX version retention expired")
             after = cursor["last"] if cursor else ""
             if operation == "issuers":
@@ -264,7 +266,7 @@ class HkexReader:
                 expires = min(
                     time.time() + policy.cursor_seconds,
                     policy.expires_at.timestamp(),
-                    release["created_at"].timestamp() + policy.retention_seconds,
+                    retained_until.timestamp(),
                 )
                 next_cursor = self.shared.seal(
                     {
