@@ -173,3 +173,12 @@ requires every authorised reachable family/milestone above accounted for and liv
 where qualified. If an external right or paid route is necessary, report precisely
 what is implemented/tested, the exact activation step held, and the prepared decision;
 do not call the whole racing track finished from scaffold deployment.
+
+## Later user clarification — development stage
+
+On 25 October the user directed us to build the working product before resolving
+licensing. That instruction supersedes the earlier synthetic-only development
+stop: bounded ordinary public factual-page development may proceed privately.
+Do not infer a licence, new terms, provider outreach, paid services or production
+publication from this stage change. Current implementation and evidence are in
+[the development report](../../verification/racing-20261025/DEVELOPMENT.md).

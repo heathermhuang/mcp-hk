@@ -1,0 +1,19 @@
+{
+  "version": "private-results-v1-1529c68a72b9975d4c37537b708b239ebc37a93602962296c69898aed7a79c12",
+  "allFactsEqualAfterLocalRestore": true,
+  "restoredRaceCount": 9,
+  "restoredResultRows": 104,
+  "cachedResumeNetworkCalls": 0,
+  "attemptCountBeforeAfter": [
+    20,
+    20
+  ],
+  "packagePrototypeFiles": [
+    "mcp_open_data_hk/curated/racing/prototype.css",
+    "mcp_open_data_hk/curated/racing/prototype.html",
+    "mcp_open_data_hk/curated/racing/prototype.js",
+    "mcp_open_data_hk/curated/racing/prototype.py"
+  ],
+  "noRawPageBodyStoredByCollector": true,
+  "productionChanged": false
+}

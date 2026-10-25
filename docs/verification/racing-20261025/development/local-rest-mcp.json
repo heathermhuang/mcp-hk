@@ -1,0 +1,57 @@
+{
+  "version": "private-results-v1-1529c68a72b9975d4c37537b708b239ebc37a93602962296c69898aed7a79c12",
+  "realTcpRestMcpParity": true,
+  "statusAndSearchPassed": true,
+  "allNineRaceResultPairs": [
+    {
+      "race": 1,
+      "rows": 11,
+      "restMcpParity": true
+    },
+    {
+      "race": 2,
+      "rows": 12,
+      "restMcpParity": true
+    },
+    {
+      "race": 3,
+      "rows": 10,
+      "restMcpParity": true
+    },
+    {
+      "race": 4,
+      "rows": 12,
+      "restMcpParity": true
+    },
+    {
+      "race": 5,
+      "rows": 12,
+      "restMcpParity": true
+    },
+    {
+      "race": 6,
+      "rows": 10,
+      "restMcpParity": true
+    },
+    {
+      "race": 7,
+      "rows": 12,
+      "restMcpParity": true
+    },
+    {
+      "race": 8,
+      "rows": 12,
+      "restMcpParity": true
+    },
+    {
+      "race": 9,
+      "rows": 13,
+      "restMcpParity": true
+    }
+  ],
+  "horseJockeyTrainerPairsPassed": true,
+  "independentRace1WinnerAndTimePassed": true,
+  "realWithdrawnRowPassed": true,
+  "totalRows": 104,
+  "providerRequestsOnRead": 0
+}

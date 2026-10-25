@@ -71,4 +71,5 @@ markers = ["live: optional government network integration probes"]
 
 [tool.setuptools.package-data]
 "mcp_open_data_hk.curated" = ["migrations/*.sql"]
+"mcp_open_data_hk.curated.racing" = ["prototype.html", "prototype.css", "prototype.js"]
 mcp_open_data_hk = ["web/*.html", "web/*.css", "web/*.js", "web/*.json", "web/*.svg", "web/*.png", "web/*LICENSE*.txt", "web/*NOTICE*.txt", "source-relay-targets.json", "webb-site-NOTICE.txt"]
