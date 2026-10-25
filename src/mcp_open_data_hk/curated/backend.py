@@ -39,13 +39,13 @@ def create_app(reader, token):
         openapi_url=None,
     )
 
-    async def call(operation, authorization, **kwargs):
+    async def call(operation_fn, authorization, **kwargs):
         if not hmac.compare_digest(
             (authorization or "").encode(), ("Bearer " + token).encode()
         ):
             raise HTTPException(401, detail={"code": "UNAUTHORIZED"})
         try:
-            return await run_in_threadpool(operation, **kwargs)
+            return await run_in_threadpool(operation_fn, **kwargs)
         except ReadError as exc:
             headers = {"Retry-After": "1"} if exc.code == "QUERY_BUSY" else None
             raise HTTPException(
@@ -72,6 +72,84 @@ def create_app(reader, token):
         authorization: str | None = Header(None),
     ):
         return await call(sfc.verify, authorization, ce=ce, version=version)
+
+    from .hkex.read import HkexReader
+
+    hkex = HkexReader(reader)
+
+    @app.get("/v1/hkex/status")
+    async def hkex_status(
+        authorization: str | None = Header(None),
+        mode: Literal["rest", "mcp", "browser"] = "rest",
+    ):
+        return await call(hkex.status, authorization, mode=mode)
+
+    @app.get("/v1/hkex/issuers")
+    async def hkex_issuers(
+        stockCode: str | None = None,
+        q: str | None = None,
+        limit: int = Query(20, ge=1, le=100),
+        cursor: str | None = None,
+        version: str | None = None,
+        mode: Literal["rest", "mcp", "browser"] = "rest",
+        authorization: str | None = Header(None),
+    ):
+        return await call(
+            hkex.query,
+            authorization,
+            operation="issuers",
+            params=dict(
+                stockCode=stockCode, q=q, limit=limit, cursor=cursor, version=version
+            ),
+            mode=mode,
+        )
+
+    @app.get("/v1/hkex/disclosures")
+    async def hkex_disclosures(
+        issuerId: str,
+        start: str,
+        end: str,
+        basis: Literal["filed", "published", "event"],
+        channel: Literal["dion", "pre_dion"] = "dion",
+        form: str | None = None,
+        limit: int = Query(20, ge=1, le=100),
+        cursor: str | None = None,
+        version: str | None = None,
+        mode: Literal["rest", "mcp", "browser"] = "rest",
+        authorization: str | None = Header(None),
+    ):
+        return await call(
+            hkex.query,
+            authorization,
+            operation="disclosures",
+            params=dict(
+                issuerId=issuerId,
+                start=start,
+                end=end,
+                basis=basis,
+                channel=channel,
+                form=form,
+                limit=limit,
+                cursor=cursor,
+                version=version,
+            ),
+            mode=mode,
+        )
+
+    @app.get("/v1/hkex/disclosures/{filing_id}")
+    async def hkex_disclosure(
+        filing_id: str,
+        version: str,
+        mode: Literal["rest", "mcp", "browser"] = "rest",
+        authorization: str | None = Header(None),
+    ):
+        return await call(
+            hkex.query,
+            authorization,
+            operation="disclosure",
+            params=dict(filingId=filing_id, version=version),
+            mode=mode,
+        )
 
     official = OfficialReader(reader)
 

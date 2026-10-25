@@ -199,6 +199,10 @@ def create_app(service=None):
         """Queryable packs, including independent external providers."""
         return service.packs()
 
+    from .hkex_api import register_rest as register_hkex_rest
+
+    register_hkex_rest(app, service)
+
     @app.get("/api/v1/companies")
     async def company_search(query: Annotated[CompanySearchQuery, Query()]):
         return await service.companies.query("search", query.model_dump())
