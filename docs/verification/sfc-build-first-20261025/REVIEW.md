@@ -20,6 +20,8 @@ Corrections made during review:
 - New source lineage is included in the immutable version manifest; restore proof
   and publication bind its checksum as well as facts. A 403 now retains a forbidden
   hold, independently from a 429 Retry-After rate-limit hold.
+- Archive licence type is displayed explicitly, including registered institutions;
+  it is not assumed from a CE or confused with the corporation-only new-source scope.
 - Archive UI pins the response version, bounds rows and identifiers, uses text
   nodes, distinguishes empty from failed, preserves labelled prior results on a
   failed replacement request, and contains its table at mobile widths.

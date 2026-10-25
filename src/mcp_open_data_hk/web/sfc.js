@@ -20,8 +20,8 @@ async function select(row,version,run,signal){
  else {
   const scroll=element('div');scroll.className='company-table-wrap';scroll.tabIndex=0;scroll.setAttribute('role','region');scroll.setAttribute('aria-label',t('sfcArchiveIntervals'));
   const table=element('table'),head=element('thead'),header=element('tr');
-  for(const key of ['sfcArchiveActivity','sfcArchiveStart','sfcArchiveEnd']){const th=element('th',t(key));th.scope='col';header.append(th);}head.append(header);table.append(head);
-  const body=element('tbody');for(const row of rows){const tr=element('tr');tr.append(element('td',row.activity_label||String(row.activity_id)),element('td',date(row.start_raw,row.start_precision)),element('td',date(row.end_raw,row.end_precision)));body.append(tr);}table.append(body);scroll.append(table);content.append(scroll);
+  for(const key of ['sfcArchiveType','sfcArchiveActivity','sfcArchiveStart','sfcArchiveEnd']){const th=element('th',t(key));th.scope='col';header.append(th);}head.append(header);table.append(head);
+  const body=element('tbody');for(const row of rows){const tr=element('tr');tr.append(element('td',row.registered_institution===0?t('sfcArchiveCorporation'):row.registered_institution===1?t('sfcArchiveInstitution'):t('sfcArchiveUnknown')),element('td',row.activity_label||String(row.activity_id)),element('td',date(row.start_raw,row.start_precision)),element('td',date(row.end_raw,row.end_precision)));body.append(tr);}table.append(body);scroll.append(table);content.append(scroll);
  }
 
  const link=element('a',t('sfcArchiveMore'));link.href='/companies?companySource=archive&entity='+row.entity_id+'&version='+encodeURIComponent(version);content.append(link);

@@ -558,7 +558,10 @@ const translations = {
     "sfcArchiveStart": "Source start / precision",
     "sfcArchiveEnd": "Source end / precision",
     "sfcArchiveUnknown": "Unknown",
-    "sfcArchiveMore": "Open the full archived organisation"
+    "sfcArchiveMore": "Open the full archived organisation",
+    "sfcArchiveType": "Source licence type",
+    "sfcArchiveCorporation": "Licensed corporation",
+    "sfcArchiveInstitution": "Registered institution"
   },
   "zh": {
     "rawSourceQualification": "原始來源回應。欄位標題、單位及分析含義尚未經語義核實。",
@@ -1118,6 +1121,9 @@ const translations = {
     "sfcArchiveStart": "來源開始日期／精確度",
     "sfcArchiveEnd": "來源結束日期／精確度",
     "sfcArchiveUnknown": "不明",
-    "sfcArchiveMore": "開啟完整歷史機構紀錄"
+    "sfcArchiveMore": "開啟完整歷史機構紀錄",
+    "sfcArchiveType": "來源牌照類型",
+    "sfcArchiveCorporation": "持牌法團",
+    "sfcArchiveInstitution": "註冊機構"
   }
 };
