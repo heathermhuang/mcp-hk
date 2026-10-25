@@ -262,9 +262,9 @@
           {
             "heading": "1. Make your first request",
             "paragraphs": [
-              "No account or key is needed. Copy this command to read the 18 district names and IDs. Records are in data.items; provenance identifies their sources."
+              "No account or key is needed. This request returns one district-wide population record in data, its reference year in data.referencePeriod, and original source links in provenance. A recent source check does not change the statistical reference year."
             ],
-            "code": "curl -fsS 'https://mcp.hk/api/v1/districts'"
+            "code": "curl -fsS 'https://mcp.hk/api/v1/districts/central-western/statistics'"
           },
           {
             "heading": "2. From catalogue to weather records",
@@ -317,9 +317,9 @@
           {
             "heading": "1. 先取得地區資料",
             "paragraphs": [
-              "毋須帳戶或密鑰。複製以下指令，可取得 18 區的名稱及識別碼；data.items 是紀錄，provenance 是來源。"
+              "毋須帳戶或密鑰。此請求在 data 回傳一個地區的全區人口紀錄，data.referencePeriod 是統計年份，provenance 提供原始來源連結。最近檢查來源不會改變統計參考年份。"
             ],
-            "code": "curl -fsS 'https://mcp.hk/api/v1/districts'"
+            "code": "curl -fsS 'https://mcp.hk/api/v1/districts/central-western/statistics'"
           },
           {
             "heading": "2. 從目錄到天氣紀錄",
@@ -419,7 +419,7 @@
           {
             "heading": "Recognize a successful connection",
             "paragraphs": [
-              "Finish only after the client lists a tool such as hk_district_list and returns a district record with its source. Copying settings or checking HTTP health does not establish a client connection. Choose Codex, Claude Code or Cursor on Connect AI; other apps need custom remote Streamable HTTP MCP support."
+              "Finish only after the client lists hk_district_statistics and returns the central-western population record, reference year and original source. Copying settings or checking HTTP health does not establish a client connection. Choose Codex, Claude Code or Cursor on Connect AI; other apps need custom remote Streamable HTTP MCP support."
             ],
             "links": [
               [
@@ -487,7 +487,7 @@
           {
             "heading": "辨認連接成功",
             "paragraphs": [
-              "客戶端須列出 hk_district_list 等工具，並實際回傳附來源的地區紀錄，才算完成。網站複製成功或 HTTP 健康檢查不等於 AI 已連接。請在連接頁選擇 Codex、Claude Code 或 Cursor；其他客戶端須支援自訂遠端 Streamable HTTP MCP。"
+              "客戶端須列出 hk_district_statistics，並實際回傳 central-western 的人口、統計年份及來源，才算完成。網站複製成功或 HTTP 健康檢查不等於 AI 已連接。請在連接頁選擇 Codex、Claude Code 或 Cursor；其他客戶端須支援自訂遠端 Streamable HTTP MCP。"
             ],
             "links": [
               [
