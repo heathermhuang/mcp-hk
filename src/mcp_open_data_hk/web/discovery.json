@@ -735,6 +735,101 @@
       },
       "template": "hkex.html",
       "noindex": true
+    },
+    "/racing": {
+      "en": {
+        "title": "Racing source status · mcp.hk",
+        "heading": "Racing source status",
+        "description": "Racing results, profiles and prospective observations are awaiting source permission. No racing dataset is published.",
+        "sections": [
+          {
+            "heading": "Coverage has not been qualified",
+            "paragraphs": [
+              "No complete meeting, season or historical range has been accepted. Declared runners, results, sectionals, dividends, profiles, trials, comments, rankings, track conditions and jackpots remain unavailable. Racing result tables overlap; they do not establish separate coverage."
+            ]
+          },
+          {
+            "heading": "Prospective observations",
+            "paragraphs": [
+              "Odds, pool investments and racing changes have no observation start or measured cadence. No historical odds are inferred. Collection and scheduling remain disabled."
+            ]
+          },
+          {
+            "heading": "Source and reuse",
+            "paragraphs": [
+              "HKJC collection, retained history, public API, MCP, browser links and downloads require separate qualification. Status checked 25 October 2026. No race search or download is offered while these modes are held."
+            ],
+            "links": [
+              [
+                "Permission and coverage status JSON",
+                "/api/v1/racing/status"
+              ],
+              [
+                "HKJC disclaimer",
+                "https://www.hkjc.com/en-us/disclaimer"
+              ],
+              [
+                "Browse other datasets",
+                "/coverage"
+              ]
+            ]
+          },
+          {
+            "heading": "For an AI client",
+            "paragraphs": [
+              "hk_racing_status returns the same source gate. Racing data tools are not advertised as available. No source request is made by a status read."
+            ],
+            "code": "GET /api/v1/racing/status\nMCP: hk_racing_status"
+          }
+        ]
+      },
+      "zh-Hant": {
+        "title": "賽馬來源狀態 · mcp.hk",
+        "heading": "賽馬來源狀態",
+        "description": "賽果、參賽者資料及前瞻觀測仍待來源授權。目前未有發布賽馬資料集。",
+        "sections": [
+          {
+            "heading": "覆蓋範圍尚未核實",
+            "paragraphs": [
+              "尚未接納完整賽事日、馬季或歷史範圍。出賽名單、賽果、分段時間、派彩、馬匹資料、試閘、沿途走勢、騎師及練馬師排名、場地狀況和多寶仍未提供。重疊的賽果表不代表不同覆蓋範圍。"
+            ]
+          },
+          {
+            "heading": "前瞻觀測",
+            "paragraphs": [
+              "賠率、彩池投注額及賽事改動尚未開始觀測，也沒有實測更新頻率。我們不推算歷史賠率。收集及排程仍然停用。"
+            ]
+          },
+          {
+            "heading": "來源及使用權限",
+            "paragraphs": [
+              "HKJC 自動收集、歷史保留、公開 API、MCP、瀏覽器連結及下載須分別核實。狀態核查日期：2026 年 10 月 25 日。權限未確認前不提供賽事搜尋或下載。"
+            ],
+            "links": [
+              [
+                "權限與覆蓋狀態 JSON",
+                "/api/v1/racing/status"
+              ],
+              [
+                "HKJC 免責聲明",
+                "https://www.hkjc.com/en-us/disclaimer"
+              ],
+              [
+                "瀏覽其他資料集",
+                "/coverage"
+              ]
+            ]
+          },
+          {
+            "heading": "供 AI 客戶端使用",
+            "paragraphs": [
+              "hk_racing_status 回傳相同的來源限制。賽馬資料工具未列作可用。讀取狀態不會向來源發出請求。"
+            ],
+            "code": "GET /api/v1/racing/status\nMCP: hk_racing_status"
+          }
+        ]
+      },
+      "noindex": true
     }
   },
   "faq": {

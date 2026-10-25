@@ -32,7 +32,7 @@ jobs:
           diff <(tail -n +3 requirements.lock) <(tail -n +3 /tmp/requirements-check.lock)
       - run: pip install -r requirements.lock
       - run: pip install --no-deps -e . && pip install 'psycopg[binary]==3.2.13'
-      - run: PYTHONPATH=src python -m pytest tests/test_curated_postgres.py tests/test_sfc_postgres.py tests/test_hkex_postgres.py -v
+      - run: PYTHONPATH=src python -m pytest tests/test_curated_postgres.py tests/test_sfc_postgres.py tests/test_hkex_postgres.py tests/test_racing_postgres.py -v
         env:
           CURATED_TEST_CONTAINER: ${{ job.services.postgres.id }}
   # Existing main-only workflows do not run on a stacked PR's feature base.

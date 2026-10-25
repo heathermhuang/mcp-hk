@@ -1,0 +1,50 @@
+[
+  {
+    "origin": "https://mcp.hk",
+    "gateStatus": true,
+    "dataModesDenied": true,
+    "schemaStatusOnly": true,
+    "bilingualGate": true,
+    "ready": true,
+    "sfcPreserved": true,
+    "companyVersions": [
+      {
+        "view": "archive",
+        "version": "enigma251227-hk-v1",
+        "pinnedDetail": true
+      },
+      {
+        "view": "latest_observed",
+        "version": "official-74c0460422870d185125947b48319d84",
+        "pinnedDetail": true
+      }
+    ]
+  },
+  {
+    "origin": "https://mcp-hk.measurable.workers.dev",
+    "gateStatus": true,
+    "dataModesDenied": true,
+    "schemaStatusOnly": true,
+    "bilingualGate": true,
+    "ready": true,
+    "sfcPreserved": true,
+    "companyVersions": [
+      {
+        "view": "archive",
+        "version": "enigma251227-hk-v1",
+        "pinnedDetail": true
+      },
+      {
+        "view": "latest_observed",
+        "version": "official-74c0460422870d185125947b48319d84",
+        "pinnedDetail": true
+      }
+    ]
+  },
+  {
+    "pinnedCompanyMcpValueParity": true,
+    "mcpStatusParity": true,
+    "toolCount": 38,
+    "existingSourceTools": true
+  }
+]

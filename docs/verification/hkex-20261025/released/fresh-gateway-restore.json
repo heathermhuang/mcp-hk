@@ -1,0 +1,33 @@
+{
+  "observedAt": "2026-10-25T06:11:11.726141+00:00",
+  "sha256": "2a845d9dc3ee080f7bf714d263cd0c6d6a714fce1df52c56bf84f659347252e0",
+  "bytes": 76405523,
+  "ready": true,
+  "sources": [
+    {
+      "sourceId": "addresses",
+      "recordCount": null
+    },
+    {
+      "sourceId": "restaurants",
+      "recordCount": 17276
+    },
+    {
+      "sourceId": "population",
+      "recordCount": 18
+    },
+    {
+      "sourceId": "catalogue",
+      "recordCount": null
+    },
+    {
+      "sourceId": "seehouse",
+      "recordCount": null
+    },
+    {
+      "sourceId": "platehk",
+      "recordCount": null
+    }
+  ],
+  "includesHkexPostgres": false
+}
