@@ -248,9 +248,10 @@ async def test_mcp_http_parity_and_preserved_tools(service):
     app = create_app(service)
     async with Client(app.state.mcp) as client:
         tools = await client.list_tools()
-        assert len(tools) == 30
-        assert "hk_sfc_status" in {t.name for t in tools}
-
+        assert len(tools) == 31
+        assert {"hk_sfc_status", "hk_hkex_status", "hk_racing_status"} <= {
+            t.name for t in tools
+        }
         assert {"list_datasets", "get_dataset_details", "search_datasets"} <= {
             t.name for t in tools
         }

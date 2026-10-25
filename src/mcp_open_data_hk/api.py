@@ -199,6 +199,10 @@ def create_app(service=None):
         """Queryable packs, including independent external providers."""
         return service.packs()
 
+    from .hkex_api import register_rest as register_hkex_rest
+
+    register_hkex_rest(app, service)
+
     from . import racing
 
     @app.get("/api/v1/racing/status")

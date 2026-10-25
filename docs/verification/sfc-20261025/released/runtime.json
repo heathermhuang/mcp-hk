@@ -1,0 +1,20 @@
+{
+  "releasedCommit": "21253347e9a8aba03ca7247e8d40f5d1f00a4369",
+  "workerVersion": "729490b3-34a1-4b1f-9316-c721676b1011",
+  "controllerContract": "source-aware-ux-1",
+  "sourceReviewPolicy": "source-review-11",
+  "imageSha256": "baefc40bdb76e46dc4df7564312bbc1383f26624c9c9740de83a050b2b21d6df",
+  "actualContainerVersion": 44,
+  "actualImageObserved": true,
+  "allPreviousSecretBindingsPreserved": true,
+  "noSfcProductionSchema": true,
+  "noSfcSourceReads": true,
+  "noSfcSchedule": true,
+  "growthReservationBytes": 0,
+  "rollbackWorkerVersion": "337926a4-221e-41c9-b044-7dc4f05c683c",
+  "previousImageSha256": "af40c180c21004a9389978caac4961ac977ae4624e5efb2fa89b364d633b4f7c",
+  "hostFreeBytes": 55215308800,
+  "hostAvailableMemoryBytes": 3089666048,
+  "postgresAdvisoryLocksAtPreflight": 0,
+  "existingCompanyOffsiteJob": "settled failed at 2026-10-25T05:21:31Z; not modified; no new source growth enabled"
+}

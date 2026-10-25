@@ -58,7 +58,7 @@ async def test_http_mcp_parity_and_independent_discovery(service, monkeypatch):
         assert compared["data"]["statistics"]["median"] == 50000
     async with Client(app.state.mcp) as client:
         tools = {t.name: t for t in await client.list_tools()}
-        assert len(tools) == 30
+        assert len(tools) == 31
         assert tools["hk_sfc_status"].annotations.readOnlyHint
 
         assert tools["hk_plate_search"].annotations.readOnlyHint

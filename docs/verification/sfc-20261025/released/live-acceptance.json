@@ -1,0 +1,25 @@
+[
+  {
+    "origin": "https://mcp.hk",
+    "statusOnly": true,
+    "deniedModes": true,
+    "bilingual": true,
+    "ready": true,
+    "archiveVersion": "enigma251227-hk-v1",
+    "officialVersion": "official-74c0460422870d185125947b48319d84"
+  },
+  {
+    "origin": "https://mcp-hk.measurable.workers.dev",
+    "statusOnly": true,
+    "deniedModes": true,
+    "bilingual": true,
+    "ready": true,
+    "archiveVersion": "enigma251227-hk-v1",
+    "officialVersion": "official-74c0460422870d185125947b48319d84"
+  },
+  {
+    "mcpStatusParity": true,
+    "toolCount": 37,
+    "existingCompanyTools": true
+  }
+]

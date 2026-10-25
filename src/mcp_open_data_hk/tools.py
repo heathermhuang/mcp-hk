@@ -26,6 +26,10 @@ def register_data_tools(server, service=None):
 
     register_sfc_mcp(server)
 
+    from .hkex_api import register_mcp as register_hkex_mcp
+
+    register_hkex_mcp(server, current)
+
     from .racing import register_tools
 
     register_tools(server)

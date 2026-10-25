@@ -465,3 +465,25 @@ def test_expired_raw_bytes_erased_but_receipts_retained(db):
             ).fetchone()["n"]
             == 1
         )
+
+
+@pytest.mark.parametrize(
+    "order",
+    __import__("itertools").permutations(
+        ("002_racing.sql", "003_sfc.sql", "004_hkex.sql")
+    ),
+)
+def test_real_sibling_migrations_in_every_order(db, order):
+    from pathlib import Path
+
+    _, target, _, _, _ = db
+    folder = Path(__file__).parents[1] / "src/mcp_open_data_hk/curated/migrations"
+    with connect(target) as conn:
+        for filename in order:
+            conn.execute((folder / filename).read_text())
+        assert (
+            conn.execute(
+                "SELECT count(*) AS n FROM pg_namespace WHERE nspname IN ('racing','curated_sfc','hkex')"
+            ).fetchone()["n"]
+            == 3
+        )
