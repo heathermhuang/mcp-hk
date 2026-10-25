@@ -12,6 +12,7 @@ from mcp_open_data_hk.services import Service
 from mcp_open_data_hk.storage import Store
 from mcp_open_data_hk.curated.sfc.contracts import (
     MODES,
+    CORPORATE_FIELDS,
     Rejected,
     SourceDate,
     ce_reference,
@@ -62,6 +63,8 @@ def fake_policy(**updates):
             )
             for mode in MODES
         },
+        allowedFields=CORPORATE_FIELDS,
+        trackedCorporateReferences=("ZZZ001", "ZZZ002", "ZZZ003"),
         retentionSeconds=86400,
         backupSeconds=86400,
     )
@@ -263,3 +266,16 @@ def test_private_backend_authentication_and_gate_without_database():
     assert client.get("/v1/sfc/status", headers=auth).json()["enabledModes"] == []
     assert client.get("/v1/sfc/corporations/ZZZ001", headers=auth).status_code == 503
     assert client.get("/v1/sfc/corporations/ＡＢＣ123", headers=auth).status_code == 400
+
+
+def test_policy_binds_fields_and_exact_tracked_cohort():
+    with pytest.raises(ValueError, match="every contract field"):
+        fake_policy(allowedFields=("ce",))
+    with pytest.raises(ValueError, match="Unsupported"):
+        fake_policy(allowedFields=CORPORATE_FIELDS + ("email",))
+    with pytest.raises(ValueError, match="exact qualified tracked cohort"):
+        fake_policy(trackedCorporateReferences=())
+    with pytest.raises(ValueError, match="canonical"):
+        fake_policy(trackedCorporateReferences=("zzz001",))
+    with pytest.raises(ValueError):
+        fake_policy(trackedCorporateReferences=("ZZZ001",) * 2)

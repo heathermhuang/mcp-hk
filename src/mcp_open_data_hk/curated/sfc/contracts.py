@@ -135,6 +135,16 @@ class Corporation(Strict):
         return "sfc:ce:" + self.ce
 
 
+# Full contract field paths. A narrower grant requires a separately reviewed
+# transform, rather than silently claiming omitted fields were qualified.
+CORPORATE_FIELDS = tuple(
+    sorted(
+        list(Corporation.model_fields)
+        + ["activities." + field for field in Activity.model_fields]
+    )
+)
+
+
 def parse_normalized(payload, expected_ce):
     """Offline, explicitly normalised JSON only. No HTML/API shape is guessed."""
     if not isinstance(payload, bytes) or len(payload) > 256 * 1024:

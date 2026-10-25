@@ -82,6 +82,12 @@ class SfcReader:
                 ):
                     raise ReadError("SFC_POLICY_CHANGED", "Policy identity changed")
                 active.require(mode, "retention")
+                current = conn.execute(
+                    "SELECT version FROM curated_sfc.pointer"
+                ).fetchone()
+                historical = not current or row["version"] != current["version"]
+                if historical:
+                    active.require("history")
                 if row["expires_at"] <= datetime.now(timezone.utc):
                     raise ReadError(
                         "VERSION_EXPIRED", "SFC permitted retention expired"
@@ -119,6 +125,13 @@ class SfcReader:
                         "completeRegulatoryHistory": False,
                     },
                 }
+                # Recheck the pointer: a concurrent publication can turn this
+                # selected version into history while its facts are read.
+                current = conn.execute(
+                    "SELECT version FROM curated_sfc.pointer"
+                ).fetchone()
+                if not current or row["version"] != current["version"]:
+                    active.require("history")
                 # Policy changes while a long read executes must not bypass a hold.
                 active.require(mode, "retention")
                 if not conn.execute(

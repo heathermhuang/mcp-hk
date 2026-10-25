@@ -134,7 +134,9 @@ class State:
             raise Rejected("SFC_INVALID_OCCURRENCE")
         with self.connection() as conn, conn.transaction():
             conn.execute("SELECT pg_advisory_xact_lock(%s)", (LOCK,))
-            self.policy(conn, policy_sha256, "automation")
+            policy = self.policy(conn, policy_sha256, "automation")
+            if not set(cohort) <= set(policy.trackedCorporateReferences):
+                raise Rejected("SFC_COHORT_UNQUALIFIED")
             existing = conn.execute(
                 "SELECT * FROM curated_sfc.runs WHERE scheduled_for=%s",
                 (scheduled_for,),
