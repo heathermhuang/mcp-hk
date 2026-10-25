@@ -40,6 +40,8 @@ commercial reuse. This build requires no Renavon subscription.
   each read, persisted 403/Retry-After holds, occurrence idempotency and failure-safe
   full-cohort staging. No public request invokes collection. Existing source-mode,
   exact-cohort, retention and publication configuration remains independent.
+  A `connector_development` purpose supports private engineering without claiming
+  intended dealings or a provider grant; it cannot enable public outputs/history.
 - Raw-source checksums, exact capture routes and transform identity accompany the
   normalized facts; raw HTML is not retained by the collector. Restore qualification
   and publication also bind the version manifest, including this lineage.

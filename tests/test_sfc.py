@@ -279,3 +279,17 @@ def test_policy_binds_fields_and_exact_tracked_cohort():
         fake_policy(trackedCorporateReferences=("zzz001",))
     with pytest.raises(ValueError):
         fake_policy(trackedCorporateReferences=("ZZZ001",) * 2)
+
+
+def test_private_development_is_not_blocked_by_a_feed_licence_or_public_grant():
+    base = fake_policy()
+    modes = {**base.modes, "rest": "denied", "mcp": "denied", "browser": "denied"}
+    private = fake_policy(purpose="connector_development", modes=modes)
+    private.require("automation", "retention", "backup")
+    for mode in ("rest", "mcp", "browser", "search", "history", "export"):
+        with pytest.raises(Rejected):
+            private.require(mode)
+        with pytest.raises(ValueError):
+            fake_policy(
+                purpose="connector_development", modes={**modes, mode: "allowed"}
+            )

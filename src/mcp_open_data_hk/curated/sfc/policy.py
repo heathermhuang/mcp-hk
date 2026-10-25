@@ -19,7 +19,7 @@ from .contracts import (
 
 class Policy(Strict):
     source: Literal["sfc_register"] = "sfc_register"
-    purpose: Literal["intended_dealing_corporate_verification"]
+    purpose: Literal["intended_dealing_corporate_verification", "connector_development"]
     route: str = Field(max_length=500)
     evidenceRef: str = Field(min_length=1, max_length=200)
     evidenceSha256: str = Field(pattern=r"^[a-f0-9]{64}$")
@@ -54,6 +54,13 @@ class Policy(Strict):
         ):
             raise ValueError(
                 "This transform requires explicit permission for every contract field"
+            )
+        if self.purpose == "connector_development" and any(
+            self.modes.get(mode) == "allowed"
+            for mode in ("rest", "mcp", "browser", "search", "history", "export")
+        ):
+            raise ValueError(
+                "Development configuration cannot enable public outputs or history"
             )
         if set(self.modes) != set(MODES):
             raise ValueError("Each mode requires an independent decision")
