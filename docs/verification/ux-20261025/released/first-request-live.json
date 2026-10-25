@@ -1,0 +1,37 @@
+{
+  "data": {
+    "id": "central-western:2024",
+    "districtId": "central-western",
+    "name": {
+      "en": "Central and Western",
+      "zhHant": "\u4e2d\u897f\u5340"
+    },
+    "referencePeriod": 2024,
+    "population": 232200,
+    "areaKm2": 12.55,
+    "populationDensity": 18510.0,
+    "populationUnit": "persons",
+    "densityUnit": "persons/km2"
+  },
+  "meta": {
+    "requestId": "bf39c00c9bc74a9c881380b8888265c8",
+    "apiVersion": "v1",
+    "snapshotIds": [
+      "2ed6e64e4f3742b486f16e5c58c2f702"
+    ],
+    "truncated": false
+  },
+  "provenance": [
+    {
+      "sourceId": "population",
+      "sourceUrl": "https://data.gov.hk/en-data/dataset/hk-censtatd-census_geo-table110-02001-csdi",
+      "attribution": "Census and Statistics Department, HKSAR Government, DATA.GOV.HK / CSDI",
+      "retrievedAt": "2026-10-16T09:37:12.968229+00:00",
+      "lastCheckedAt": "2026-10-25T03:00:55.825303+00:00",
+      "referencePeriod": 2024,
+      "stale": false,
+      "freshnessBasis": "last_successful_source_check"
+    }
+  ],
+  "warnings": []
+}

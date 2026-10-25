@@ -1,0 +1,75 @@
+{
+  "toolsDiscovered": 36,
+  "groupedSearchSchema": {
+    "anyOf": [
+      {
+        "const": "organisation",
+        "type": "string"
+      },
+      {
+        "type": "null"
+      }
+    ],
+    "default": null
+  },
+  "archiveVersion": "enigma251227-hk-v1",
+  "officialVersion": "official-8d70e15e57b12485adc5ea176daec66a",
+  "archiveRows": 5,
+  "officialRows": 5,
+  "cursorContinued": true,
+  "legacyRows": 5,
+  "districts": 18,
+  "statisticsReferenceYear": 2024,
+  "statisticsSource": [
+    {
+      "sourceId": "population",
+      "sourceUrl": "https://data.gov.hk/en-data/dataset/hk-censtatd-census_geo-table110-02001-csdi",
+      "attribution": "Census and Statistics Department, HKSAR Government, DATA.GOV.HK / CSDI",
+      "retrievedAt": "2026-10-16T09:37:12.968229+00:00",
+      "lastCheckedAt": "2026-10-25T03:00:55.825303+00:00",
+      "referencePeriod": 2024,
+      "stale": false,
+      "freshnessBasis": "last_successful_source_check"
+    }
+  ],
+  "weatherRows": 1,
+  "weatherSource": [
+    {
+      "sourceUrl": "https://rss.weather.gov.hk/rss/CurrentWeather.xml",
+      "originalResourceUrl": "https://rss.weather.gov.hk/rss/CurrentWeather.xml",
+      "catalogueUrl": "https://data.gov.hk/en-data/dataset/hk-hko-rss-current-weather-report",
+      "attribution": "Hong Kong Observatory / DATA.GOV.HK",
+      "termsUrl": "https://data.gov.hk/en/terms-and-conditions",
+      "retrievedAt": 1792897392.461409,
+      "lastCheckedAt": 1792897987.3707125,
+      "lastValidatedAt": 1792897987.3707125,
+      "publicationDate": "2012-06-29",
+      "referencePeriod": null,
+      "contentHash": "fa82bd82b3c4a232dd0f51a6ded32709a7fd40ef1f0956b1dab45d07fb4c7cbf",
+      "stale": false
+    }
+  ],
+  "http": [
+    {
+      "path": "/api/v1/companies",
+      "status": 200,
+      "elapsedSeconds": 0.5946,
+      "release": "790ae5172fab6c86944f7eabea54780b72f09deb",
+      "version": "enigma251227-hk-v1"
+    },
+    {
+      "path": "/api/v1/companies",
+      "status": 200,
+      "elapsedSeconds": 0.5458,
+      "release": "790ae5172fab6c86944f7eabea54780b72f09deb",
+      "version": "enigma251227-hk-v1"
+    },
+    {
+      "path": "/api/v1/districts/central-western/statistics",
+      "status": 200,
+      "elapsedSeconds": 0.2373,
+      "release": "790ae5172fab6c86944f7eabea54780b72f09deb",
+      "version": null
+    }
+  ]
+}

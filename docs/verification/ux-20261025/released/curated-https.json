@@ -1,0 +1,36 @@
+[
+  {
+    "path": "/health",
+    "elapsedSeconds": 0.4756,
+    "version": "enigma251227-hk-v1",
+    "groupBy": null,
+    "rows": 0,
+    "capabilities": [
+      "company-search-groupBy-organisation-v1"
+    ]
+  },
+  {
+    "path": "/v1/companies?name=HSBC&limit=5",
+    "elapsedSeconds": 0.3484,
+    "version": "enigma251227-hk-v1",
+    "groupBy": null,
+    "rows": 5,
+    "capabilities": null
+  },
+  {
+    "path": "/v1/companies?name=HSBC&limit=5&groupBy=organisation",
+    "elapsedSeconds": 0.3526,
+    "version": "enigma251227-hk-v1",
+    "groupBy": "organisation",
+    "rows": 5,
+    "capabilities": null
+  },
+  {
+    "path": "/v1/official/companies?name=HSBC&limit=5&groupBy=organisation",
+    "elapsedSeconds": 0.3745,
+    "version": "official-8d70e15e57b12485adc5ea176daec66a",
+    "groupBy": "organisation",
+    "rows": 0,
+    "capabilities": null
+  }
+]

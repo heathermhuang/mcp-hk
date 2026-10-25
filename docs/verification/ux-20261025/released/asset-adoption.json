@@ -1,0 +1,124 @@
+[
+  {
+    "asset": "app.js",
+    "sha256": "a3a9cbe5b2e3b0f7304dbcb759913c30903c043ac665a27077aa8f8dd0dfe38c",
+    "bytes": 21570,
+    "release": "790ae5172fab6c86944f7eabea54780b72f09deb",
+    "edgeBeaconInjectedAndBlocked": false
+  },
+  {
+    "asset": "coverage.js",
+    "sha256": "590bf2328250988a50e56ea0c3067a7fbbe3adfc28b8e585709dad7107ce3b6a",
+    "bytes": 28162,
+    "release": "790ae5172fab6c86944f7eabea54780b72f09deb",
+    "edgeBeaconInjectedAndBlocked": false
+  },
+  {
+    "asset": "companies.js",
+    "sha256": "cf6b88ba29c7d7022cd1aba09f2afbe00bfedc498448722a233bb179b28d54d3",
+    "bytes": 21532,
+    "release": "790ae5172fab6c86944f7eabea54780b72f09deb",
+    "edgeBeaconInjectedAndBlocked": false
+  },
+  {
+    "asset": "company-updates.js",
+    "sha256": "92c52c271661543fc84c724c66daa8b6bec2416b0e0b9ebab1c6d500bc52032c",
+    "bytes": 13527,
+    "release": "790ae5172fab6c86944f7eabea54780b72f09deb",
+    "edgeBeaconInjectedAndBlocked": false
+  },
+  {
+    "asset": "company-export.js",
+    "sha256": "8141e651c242dd0a46405f4eff50c03063d5ee4d8b747ef769f8161929375d95",
+    "bytes": 3857,
+    "release": "790ae5172fab6c86944f7eabea54780b72f09deb",
+    "edgeBeaconInjectedAndBlocked": false
+  },
+  {
+    "asset": "company-fields.js",
+    "sha256": "eeb8ce1d271b1b6fb0ed6e8770c13f27f8023fdf201f79289107c4b6cfdc2afd",
+    "bytes": 471,
+    "release": "790ae5172fab6c86944f7eabea54780b72f09deb",
+    "edgeBeaconInjectedAndBlocked": false
+  },
+  {
+    "asset": "properties.js",
+    "sha256": "b22f32fac4d83e766f457202d3c85f3bb27495bcaa128c99d46464e84fa5e9b4",
+    "bytes": 7944,
+    "release": "790ae5172fab6c86944f7eabea54780b72f09deb",
+    "edgeBeaconInjectedAndBlocked": false
+  },
+  {
+    "asset": "http.js",
+    "sha256": "9e6ec4141131370112107bac59f12ebfeb8f60af9f55470d9ec00cd6e139c42b",
+    "bytes": 1384,
+    "release": "790ae5172fab6c86944f7eabea54780b72f09deb",
+    "edgeBeaconInjectedAndBlocked": false
+  },
+  {
+    "asset": "i18n.js",
+    "sha256": "7bb31eb7b5e37e4a4e7438f61590b76eacff61de4ff7ccb128b23569a3cd14e5",
+    "bytes": 6271,
+    "release": "790ae5172fab6c86944f7eabea54780b72f09deb",
+    "edgeBeaconInjectedAndBlocked": false
+  },
+  {
+    "asset": "translations.js",
+    "sha256": "ebfca85de8b58b9169c23d349585c5fe34515a649df10a3ff23a4f0989622436",
+    "bytes": 59430,
+    "release": "790ae5172fab6c86944f7eabea54780b72f09deb",
+    "edgeBeaconInjectedAndBlocked": false
+  },
+  {
+    "asset": "style.css",
+    "sha256": "4d3569aa80e13c69c2f97ca3ef930a74a5afac6e0a6a39f98e09a69cfcbb465c",
+    "bytes": 20998,
+    "release": "790ae5172fab6c86944f7eabea54780b72f09deb",
+    "edgeBeaconInjectedAndBlocked": false
+  },
+  {
+    "asset": "coverage.css",
+    "sha256": "4548fe9f01a0bfa818b1ddb1de9b5b9c4b2c6d222a9e40aa0ec8e9219fd17b31",
+    "bytes": 4030,
+    "release": "790ae5172fab6c86944f7eabea54780b72f09deb",
+    "edgeBeaconInjectedAndBlocked": false
+  },
+  {
+    "asset": "companies.css",
+    "sha256": "2f0c0153fa14e476f99f39884af9033b87f13a4e8be3bde55202d2f127ddc006",
+    "bytes": 5548,
+    "release": "790ae5172fab6c86944f7eabea54780b72f09deb",
+    "edgeBeaconInjectedAndBlocked": false
+  },
+  {
+    "asset": "legal.js",
+    "sha256": "47bb02a4f8ccb7e949fe2b64590d9e50a69fe1f33142365c068ecf570da8e8b8",
+    "bytes": 21166,
+    "release": "790ae5172fab6c86944f7eabea54780b72f09deb",
+    "edgeBeaconInjectedAndBlocked": false
+  },
+  {
+    "asset": "analytics.js",
+    "sha256": "8db824e9ed135e8031a440043dde42af8e540ee728db9cf76a654e7da2168b3c",
+    "bytes": 5106,
+    "release": "790ae5172fab6c86944f7eabea54780b72f09deb",
+    "edgeBeaconInjectedAndBlocked": false
+  },
+  {
+    "asset": "api-docs.html",
+    "sha256": "c871a738883ac29b00d41092079377d9d67dd80d64be7dd0681247ab9fe48bd9",
+    "bytes": 2018,
+    "release": "790ae5172fab6c86944f7eabea54780b72f09deb",
+    "edgeBeaconInjectedAndBlocked": true
+  },
+  {
+    "asset": "/?lang=en",
+    "sha256": "9dbb1334d5366d590f141bd69c28deb0cdb2d3ef1611a9576f75c57f854cfc4c",
+    "bytes": 25197
+  },
+  {
+    "asset": "/?lang=zh-Hant",
+    "sha256": "752a495abbb53ca4fdb2ff99a227cffc525692b8ccd5a321d5ced50dce8890ee",
+    "bytes": 25252
+  }
+]

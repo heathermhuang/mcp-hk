@@ -1,0 +1,164 @@
+{
+  "capturedAt": "2026-10-25T03:40:03.212Z",
+  "browser": "155.0.8059.85",
+  "receipts": [
+    {
+      "name": "scope and meaningful current weather bulletin",
+      "passed": true,
+      "url": "https://mcp.hk/coverage?access=sources&lang=en&q=&dataset=hk-hko-rss-current-weather-report&resource=770e68f0676dcbf8e65e2b4e1c6f6e60"
+    },
+    {
+      "name": "original rainfall geometry projected safely",
+      "passed": true,
+      "url": "https://mcp.hk/coverage?access=sources&lang=en&q=&dataset=csdi%3Ahko_rcd_1634806665997_63899&resource=34caeb756a0a82b09c0a0d3d6b152cbe"
+    },
+    {
+      "name": "company sources, grouped identities, names and bounded export",
+      "passed": true,
+      "url": "https://mcp.hk/companies?companySource=both&official_page=1&lang=en&q=HSBC&entity=382&version=enigma251227-hk-v1&tab=names"
+    },
+    {
+      "name": "shareable property building and returned-advert filters",
+      "passed": true,
+      "url": "https://mcp.hk/properties?lang=en&building=hk-csdi-95d9ff45d90eb3f5&view=listings&quality=all&mode=rent"
+    },
+    {
+      "name": "plate history and comparison mode",
+      "passed": true,
+      "url": "https://mcp.hk/plates?lang=en&plateMode=comparables&q=AH168&page=1&pageSize=5"
+    },
+    {
+      "name": "neighbourhood result and district-wide population",
+      "passed": true,
+      "url": "https://mcp.hk/demo?lang=en"
+    },
+    {
+      "name": "mobile Chinese status and public documents",
+      "passed": true,
+      "url": "https://mcp.hk/docs?lang=zh-Hant"
+    }
+  ],
+  "errors": [],
+  "requests": [
+    {
+      "path": "/api/v1/catalogue/datasets",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/catalogue/datasets",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/catalogue/datasets/hk-hko-rss-current-weather-report",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/resources",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/resources/770e68f0676dcbf8e65e2b4e1c6f6e60/schema",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/resources/770e68f0676dcbf8e65e2b4e1c6f6e60/query",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/catalogue/datasets",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/catalogue/datasets/csdi%3Ahko_rcd_1634806665997_63899",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/resources",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/resources/34caeb756a0a82b09c0a0d3d6b152cbe/schema",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/resources/34caeb756a0a82b09c0a0d3d6b152cbe/query",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/companies",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/companies",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/companies/updates/status",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/companies/382",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/companies/382/names",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/companies/notice",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/properties/search",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/properties/building",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/properties/building",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/properties/building",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/plates/search",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/plates/comparables",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/addresses/search",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/districts/central-western/statistics",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/restaurants",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/districts/central-western/statistics",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/restaurants",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/status",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/coverage",
+      "status": 200
+    }
+  ]
+}

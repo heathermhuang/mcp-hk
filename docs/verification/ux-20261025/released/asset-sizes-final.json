@@ -1,0 +1,47 @@
+[
+  {
+    "asset": "index.html",
+    "baselineGzip": 5559,
+    "finalGzip": 5677
+  },
+  {
+    "asset": "app.js",
+    "baselineGzip": 6197,
+    "finalGzip": 6717
+  },
+  {
+    "asset": "coverage.js",
+    "baselineGzip": 6736,
+    "finalGzip": 8469
+  },
+  {
+    "asset": "companies.js",
+    "baselineGzip": 5685,
+    "finalGzip": 6207
+  },
+  {
+    "asset": "company-updates.js",
+    "baselineGzip": 5251,
+    "finalGzip": 5140
+  },
+  {
+    "asset": "properties.js",
+    "baselineGzip": 2008,
+    "finalGzip": 2633
+  },
+  {
+    "asset": "style.css",
+    "baselineGzip": 4169,
+    "finalGzip": 4472
+  },
+  {
+    "asset": "translations.js",
+    "baselineGzip": 16898,
+    "finalGzip": 19104
+  },
+  {
+    "asset": "legal.js",
+    "baselineGzip": 8342,
+    "finalGzip": 9264
+  }
+]

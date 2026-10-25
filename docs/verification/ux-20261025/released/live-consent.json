@@ -1,0 +1,8 @@
+{
+  "initialConsentNonmodal": true,
+  "primaryActionNotCovered": true,
+  "optionalRequestsBeforeConsent": 0,
+  "rejectionLeavesPublicContentUsable": true,
+  "edgeBeaconInjected": true,
+  "edgeBeaconRequestBlocked": true
+}
