@@ -11,6 +11,7 @@ from .read import Reader, ReadError
 from .official_read import OfficialReader
 
 STATUS = {
+    "SFC_INVALID_CE": 400,
     "INVALID_QUERY": 400,
     "INVALID_LIMIT": 400,
     "INVALID_ID": 400,
@@ -55,6 +56,22 @@ def create_app(reader, token):
         except Exception as exc:
             # No DSNs, credentials, source values or caller terms in error bodies.
             raise HTTPException(503, detail={"code": "PACK_UNAVAILABLE"}) from exc
+
+    from .sfc.read import SfcReader
+
+    sfc = SfcReader(reader)
+
+    @app.get("/v1/sfc/status")
+    async def sfc_status(authorization: str | None = Header(None)):
+        return await call(sfc.status, authorization)
+
+    @app.get("/v1/sfc/corporations/{ce}")
+    async def sfc_verify(
+        ce: str,
+        version: str | None = Query(None, max_length=100),
+        authorization: str | None = Header(None),
+    ):
+        return await call(sfc.verify, authorization, ce=ce, version=version)
 
     official = OfficialReader(reader)
 

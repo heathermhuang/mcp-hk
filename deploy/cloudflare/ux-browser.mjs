@@ -62,7 +62,7 @@ await run('plate modes expose honoured filters and restore URL state',async({pag
  await page.goto(origin+'/plates?lang=en');await page.getByRole('button',{name:'Auction history',exact:true}).click();await page.locator('#mhk-plate-form .mhk-plate-filters').waitFor();await page.getByRole('button',{name:'Similar plates',exact:true}).click();assert.equal(await page.locator('#mhk-plate-form .mhk-plate-filters').isVisible(),false);assert.equal(new URL(page.url()).searchParams.get('plateMode'),'comparables');await page.reload();await page.getByText('Historical fixture cohort').waitFor();assert.equal(await page.locator('#mhk-plate-form .mhk-plate-filters').isVisible(),false);
 });
 await run('all public pages, bilingual mobile/reflow, source status',async({page})=>{
- const routes=['/','/coverage','/demo','/companies','/properties','/plates','/connect','/sources','/guides','/guides/hong-kong-open-data-api','/guides/connect-ai-to-hong-kong-data','/guides/data-sources-and-freshness','/about','/terms','/privacy','/docs'];
+ const routes=['/','/coverage','/demo','/sfc','/companies','/properties','/plates','/connect','/sources','/guides','/guides/hong-kong-open-data-api','/guides/connect-ai-to-hong-kong-data','/guides/data-sources-and-freshness','/about','/terms','/privacy','/docs'];
  for(const lang of ['en','zh-Hant'])for(const path of routes){await page.setViewportSize({width:320,height:800});await page.goto(origin+path+'?lang='+lang);await page.waitForLoadState('networkidle');assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,`${path} ${lang} overflows`);assert.equal(await page.locator('.mhk-nav .mhk-navbutton').count(),4);}
  await page.goto(origin+'/sources?lang=zh-Hant');await page.locator('#mhk-status article').waitFor();assert.equal((await page.locator('#mhk-status').innerText()).includes('source_enigma'),false);await page.screenshot({path:new URL('sources-zh-mobile.png',output).pathname,fullPage:true});
 });
@@ -77,8 +77,18 @@ await run('workbook selection uses labelled choices before reading records',asyn
  await page.goto(origin+'/coverage?access=sources&dataset=weather&resource='+id+'&lang=en');await page.locator('#preview-step').waitFor();await page.getByRole('button',{name:'Show records',exact:true}).click();await page.getByRole('combobox',{name:'Workbook sheet',exact:true}).waitFor();assert.equal(queries,0);await page.getByRole('combobox',{name:'Workbook sheet',exact:true}).selectOption('中文');await page.getByRole('cell',{name:'中文紀錄',exact:true}).waitFor();assert.equal(queries,1);
 });
 await run('responsive widths, zoom reflow and keyboard navigation',async({page})=>{
- for(const width of [390,768,1280])for(const path of ['/coverage','/companies','/properties','/connect']){await page.setViewportSize({width,height:900});await page.goto(origin+path+'?lang=zh-Hant');assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,path+' width '+width);}
+ for(const width of [390,768,1280])for(const path of ['/sfc','/coverage','/companies','/properties','/connect']){await page.setViewportSize({width,height:900});await page.goto(origin+path+'?lang=zh-Hant');assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,path+' width '+width);}
  await page.goto(origin+'/coverage?access=sources&lang=en');await page.keyboard.press('Tab');assert.equal(await page.locator('.mhk-skip-link').evaluate(e=>e===document.activeElement),true);await page.keyboard.press('Enter');assert.equal(await page.locator('#main-content').evaluate(e=>e===document.activeElement),true);await page.setViewportSize({width:320,height:900});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+});
+await run('SFC gates, both languages, keyboard and no source reads',async({page,calls})=>{
+ for(const lang of ['en','zh-Hant'])for(const width of [320,390,768,1280]){
+  const before=calls.length;await page.setViewportSize({width,height:900});await page.goto(origin+'/sfc?lang='+lang);await page.waitForLoadState('networkidle');
+  assert.equal(await page.locator('#sfc-ce').isDisabled(),true);assert.equal(await page.locator('#sfc button[disabled]').count(),1);
+  assert.equal(await page.locator('a[download]').count(),0);assert.equal(calls.length,before);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+ }
+ await page.goto(origin+'/sfc?lang=en');await page.keyboard.press('Tab');await page.keyboard.press('Enter');assert.equal(await page.locator('#main-content').evaluate(e=>e===document.activeElement),true);
+ await page.locator('.mhk-language').click();await page.waitForURL(u=>u.pathname==='/sfc'&&u.searchParams.get('lang')==='zh-Hant');assert.match(await page.locator('h1').innerText(),/證監會/);
+ await page.screenshot({path:new URL('sfc-zh-Hant.png',output).pathname,fullPage:true});
 });
 assert.deepEqual(errors,[]);console.log(JSON.stringify({browser:browser.version(),receipts,errors},null,2));await writeFile(new URL('result.json',output),JSON.stringify({browser:browser.version(),receipts,errors},null,2));
 }finally{await browser.close();}

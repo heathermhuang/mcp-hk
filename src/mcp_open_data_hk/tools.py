@@ -22,6 +22,10 @@ def register_data_tools(server, service=None):
 
     register_mcp(server, current)
 
+    from .sfc import register_mcp as register_sfc_mcp
+
+    register_sfc_mcp(server)
+
     from .racing import register_tools
 
     register_tools(server)
