@@ -28,6 +28,12 @@ independent source permission or live SFC acceptance.
 - P2: private invalid-CE errors used the generic 503 mapping. They now return 400,
   with authentication and gate checks exercised without a configured database.
 
+- P1: a later approved policy did not bind exact tracked CE references or the
+  permitted field set. The policy now pins at most 25 unique canonical references;
+  admission rejects unqualified identities before any request budget is consumed.
+  It requires explicit permission for every field in this transform; a narrower
+  grant requires a separate reviewed transform, rather than silently dropping fields.
+
 The new status-only MCP tool intentionally changes the base tool inventory from
 28 to 29. The two exact inventory expectations were updated with explicit assertions
 for hk_sfc_status; no tool-preservation or parity assertion was removed.

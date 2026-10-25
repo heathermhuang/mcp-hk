@@ -294,3 +294,12 @@ def test_staging_cannot_exceed_reserved_bytes(model):
         state.stage(run, {"ZZZ001": (json.dumps(fake_fact()).encode(), a)})
     with state.connection() as c:
         assert not c.execute("SELECT * FROM curated_sfc.versions").fetchone()
+
+
+def test_unqualified_tracked_identity_cannot_consume_source_budget(model):
+    state, policy, _, _ = model
+    with pytest.raises(Rejected, match="COHORT_UNQUALIFIED"):
+        state.start(datetime.now(timezone.utc), ["ZZZ999"], policy.sha256)
+    with state.connection() as c:
+        assert not c.execute("SELECT * FROM curated_sfc.runs").fetchone()
+        assert not c.execute("SELECT * FROM curated_sfc.budgets").fetchone()

@@ -6,7 +6,15 @@ from urllib.parse import urlsplit
 
 from pydantic import Field, model_validator
 
-from .contracts import MODES, Strict, Rejected, digest, encoded
+from .contracts import (
+    MODES,
+    CORPORATE_FIELDS,
+    Strict,
+    Rejected,
+    ce_reference,
+    digest,
+    encoded,
+)
 
 
 class Policy(Strict):
@@ -18,6 +26,8 @@ class Policy(Strict):
     qualifiedAt: datetime
     recheckAt: datetime
     modes: dict[str, Literal["unknown", "denied", "allowed"]]
+    allowedFields: tuple[str, ...] = ()
+    trackedCorporateReferences: tuple[str, ...] = Field(default=(), max_length=25)
     cacheSeconds: int = Field(0, ge=0, le=86400)
     retentionSeconds: int = Field(0, ge=0)
     backupSeconds: int = Field(0, ge=0)
@@ -28,6 +38,23 @@ class Policy(Strict):
 
     @model_validator(mode="after")
     def reviewed_contract(self):
+        if len(set(self.allowedFields)) != len(self.allowedFields) or not set(
+            self.allowedFields
+        ) <= set(CORPORATE_FIELDS):
+            raise ValueError("Unsupported or duplicate allowed field")
+        cohort = tuple(ce_reference(ce) for ce in self.trackedCorporateReferences)
+        if cohort != self.trackedCorporateReferences or len(set(cohort)) != len(cohort):
+            raise ValueError(
+                "Tracked cohort must use unique canonical corporate CE references"
+            )
+        if self.modes.get("automation") == "allowed" and not cohort:
+            raise ValueError("Automation requires the exact qualified tracked cohort")
+        if self.modes.get("retention") == "allowed" and set(self.allowedFields) != set(
+            CORPORATE_FIELDS
+        ):
+            raise ValueError(
+                "This transform requires explicit permission for every contract field"
+            )
         if set(self.modes) != set(MODES):
             raise ValueError("Each mode requires an independent decision")
         url = urlsplit(self.route)
