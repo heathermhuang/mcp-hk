@@ -1,0 +1,209 @@
+{
+  "scope": "gate-only racing; existing pack regressions",
+  "checks": [
+    {
+      "name": "base-ready",
+      "status": 200
+    },
+    {
+      "name": "racing-REST-MCP-parity",
+      "value": {
+        "data": {
+          "source": "hkjc",
+          "state": "source_permission_required",
+          "liveQualified": false,
+          "acceptedVersion": null,
+          "coverage": {
+            "meeting": null,
+            "season": null,
+            "history": null
+          },
+          "seriesStart": null,
+          "measuredCadenceSeconds": null,
+          "scheduled": false,
+          "families": [
+            {
+              "id": "races",
+              "state": "unqualified",
+              "enabled": false
+            },
+            {
+              "id": "declared_runners",
+              "state": "unqualified",
+              "enabled": false
+            },
+            {
+              "id": "results",
+              "state": "unqualified",
+              "enabled": false
+            },
+            {
+              "id": "profiles",
+              "state": "unqualified",
+              "enabled": false
+            },
+            {
+              "id": "sectionals",
+              "state": "unqualified",
+              "enabled": false
+            },
+            {
+              "id": "dividends",
+              "state": "unqualified",
+              "enabled": false
+            },
+            {
+              "id": "barrier_trials",
+              "state": "unqualified",
+              "enabled": false
+            },
+            {
+              "id": "comments",
+              "state": "unqualified",
+              "enabled": false
+            },
+            {
+              "id": "jockey_rankings",
+              "state": "unqualified",
+              "enabled": false
+            },
+            {
+              "id": "trainer_rankings",
+              "state": "unqualified",
+              "enabled": false
+            },
+            {
+              "id": "track_conditions",
+              "state": "unqualified",
+              "enabled": false
+            },
+            {
+              "id": "jackpots",
+              "state": "unqualified",
+              "enabled": false
+            },
+            {
+              "id": "odds",
+              "state": "unqualified",
+              "enabled": false
+            },
+            {
+              "id": "pool_investments",
+              "state": "unqualified",
+              "enabled": false
+            },
+            {
+              "id": "changes",
+              "state": "unqualified",
+              "enabled": false
+            }
+          ],
+          "modes": {
+            "collection": "unqualified",
+            "cache": "unqualified",
+            "history": "unqualified",
+            "rest": "unqualified",
+            "mcp": "unqualified",
+            "browser": "unqualified",
+            "links": "unqualified",
+            "export": "unqualified",
+            "schedule": "unqualified"
+          }
+        },
+        "meta": {
+          "pack": "hkjc_racing",
+          "version": null,
+          "sourceQualified": false
+        },
+        "provenance": [
+          {
+            "sourceId": "hkjc",
+            "qualificationChecked": "2026-10-25",
+            "sourceUrl": "https://www.hkjc.com/en-us/disclaimer",
+            "freshnessBasis": "no_accepted_source_observation"
+          }
+        ],
+        "warnings": [
+          {
+            "code": "SOURCE_PERMISSION_REQUIRED",
+            "message": "No racing facts are published. Route-specific collection, retention and output rights remain unqualified."
+          }
+        ]
+      },
+      "tools": [
+        "get_category_details",
+        "get_dataset_details",
+        "get_datasets_by_format",
+        "get_supported_formats",
+        "hk_address_get",
+        "hk_address_search",
+        "hk_catalogue_search",
+        "hk_company_address_history",
+        "hk_company_get",
+        "hk_company_licence_relationships",
+        "hk_company_licences",
+        "hk_company_name_history",
+        "hk_company_officers",
+        "hk_company_search",
+        "hk_company_updates_status",
+        "hk_coverage",
+        "hk_data_packs",
+        "hk_dataset_resources",
+        "hk_district_list",
+        "hk_district_statistics",
+        "hk_hkex_status",
+        "hk_plate_comparables",
+        "hk_plate_datasets",
+        "hk_plate_search",
+        "hk_property_building",
+        "hk_property_coverage",
+        "hk_property_price_history",
+        "hk_property_search",
+        "hk_racing_status",
+        "hk_resource_query",
+        "hk_resource_schema",
+        "hk_restaurant_get",
+        "hk_restaurant_search",
+        "hk_sfc_status",
+        "hk_source_status",
+        "list_categories",
+        "list_datasets",
+        "search_datasets",
+        "search_datasets_with_facets"
+      ]
+    },
+    {
+      "name": "racing-races",
+      "status": 503
+    },
+    {
+      "name": "racing-races/a/results",
+      "status": 503
+    },
+    {
+      "name": "racing-participants/a",
+      "status": 503
+    },
+    {
+      "name": "racing-observations",
+      "status": 503
+    },
+    {
+      "name": "racing-exports",
+      "status": 503
+    },
+    {
+      "name": "archive-company-parity",
+      "version": "enigma251227-hk-v1",
+      "rows": 1
+    },
+    {
+      "name": "sibling-sfc-preserved",
+      "status": 200
+    },
+    {
+      "name": "disabled-data-absent-from-openapi",
+      "pass": true
+    }
+  ]
+}
