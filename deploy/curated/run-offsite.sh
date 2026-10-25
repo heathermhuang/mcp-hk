@@ -6,7 +6,7 @@ export CURATED_HOSTNAME=curated.mcp.hk
 stamp=${1:-$(date -u +%Y-%m-%dT%H:%M:%SZ)}
 kind=${2:-qualification}
 if [ "$#" -eq 0 ]; then
- trigger=$(systemctl show mcp-hk-official-offsite.timer -p LastTriggerUSecMonotonic --value)
+ trigger=$(busctl get-property org.freedesktop.systemd1 /org/freedesktop/systemd1/unit/mcp_2dhk_2dofficial_2doffsite_2etimer org.freedesktop.systemd1.Timer LastTriggerUSecMonotonic 2>/dev/null | sed -n 's/^t \([0-9][0-9]*\)$/\1/p')
  uptime=$(awk '{printf "%.0f",$1*1000000}' /proc/uptime)
  if [ "${trigger:-0}" -gt 0 ] && [ "$((uptime-trigger))" -ge 0 ] && [ "$((uptime-trigger))" -lt 60000000 ]; then
   kind=daily

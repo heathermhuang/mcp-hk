@@ -32,6 +32,29 @@ TRANSFORM = digest(
 )
 
 
+def provider_hold(status, retry_after, observed):
+    """A source denial is reviewed; a provider's longer delay is never shortened."""
+    if status == 403:
+        return None, "SOURCE_403_MANUAL_REVIEW"
+    try:
+        if retry_after is None:
+            delay = 3600
+        elif (
+            isinstance(retry_after, str)
+            and retry_after.isascii()
+            and retry_after.isdigit()
+        ):
+            delay = int(retry_after)
+        elif type(retry_after) is int and retry_after >= 0:
+            delay = retry_after
+        else:
+            raise ValueError()
+        return observed + timedelta(seconds=max(60, delay)), "SOURCE_" + str(status)
+    except (ValueError, OverflowError):
+        # An unparseable/unrepresentable header is not permission to retry sooner.
+        return None, "SOURCE_RETRY_AFTER_UNQUALIFIED"
+
+
 class Inventory(Strict):
     contract: Literal["mcp-hk-hkex-normalized-v1"]
     window: Window
@@ -76,7 +99,14 @@ class Collector:
             current_policy(c, self.store.policy_hash, ("collect", "retain"))
             control = c.execute("SELECT * FROM hkex.control WHERE singleton").fetchone()
             now = datetime.now(timezone.utc)
-            if control["hold_until"] and control["hold_until"] > now:
+            if c.execute(
+                "SELECT 1 FROM hkex.requests WHERE state='unknown' LIMIT 1"
+            ).fetchone():
+                raise ValueError("REQUEST_RECONCILIATION_REQUIRED")
+            if control["hold_code"] in {
+                "SOURCE_403_MANUAL_REVIEW",
+                "SOURCE_RETRY_AFTER_UNQUALIFIED",
+            } or (control["hold_until"] and control["hold_until"] > now):
                 raise ValueError("SOURCE_HOLD")
             if (
                 control["last_read_at"]
@@ -142,14 +172,10 @@ class Collector:
                 ),
             )
             if status in (403, 429, 503):
-                delay = (
-                    86400
-                    if status == 403
-                    else max(60, min(int(retry_after or 3600), 7 * 86400))
-                )
+                until, code = provider_hold(status, retry_after, observed)
                 c.execute(
                     "UPDATE hkex.control SET hold_until=%s,hold_code=%s WHERE singleton",
-                    (observed + timedelta(seconds=delay), "SOURCE_" + str(status)),
+                    (until, code),
                 )
             capture_id = digest(
                 {"run": run_id, "request": request_id, "hash": raw_hash}

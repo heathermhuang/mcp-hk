@@ -27,7 +27,7 @@ fi
 # An operator starting the unit outside its timer window receives a manual timestamp.
 stamp=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 if [ "$mode" = freshness ]; then
-    trigger=$(systemctl show mcp-hk-official.timer -p LastTriggerUSecMonotonic --value)
+    trigger=$(busctl get-property org.freedesktop.systemd1 /org/freedesktop/systemd1/unit/mcp_2dhk_2dofficial_2etimer org.freedesktop.systemd1.Timer LastTriggerUSecMonotonic 2>/dev/null | sed -n 's/^t \([0-9][0-9]*\)$/\1/p')
     uptime=$(awk '{printf "%.0f",$1*1000000}' /proc/uptime)
     if [ "${trigger:-0}" -gt 0 ] && [ "$((uptime-trigger))" -ge 0 ] && [ "$((uptime-trigger))" -lt 60000000 ]; then
         stamp=$(python3 -c 'from datetime import datetime,timedelta,timezone; n=datetime.now(timezone.utc); d=n.replace(hour=5,minute=0,second=0,microsecond=0); d=d-timedelta(days=1) if d>n else d; print(d.strftime("%Y-%m-%dT%H:%M:%SZ"))')
