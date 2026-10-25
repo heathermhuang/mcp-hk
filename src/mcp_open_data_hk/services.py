@@ -62,6 +62,9 @@ class Service:
         from .hkex import Hkex
 
         self.hkex = Hkex(self.companies)
+        from .webb_sdi import WebbSdi
+
+        self.webb_sdi = WebbSdi(self.companies)
         self.plates = PlateHK(self)
         self.properties = SeeHouse(self)
         self.resources = Resources(store)

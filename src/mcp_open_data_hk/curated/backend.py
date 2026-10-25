@@ -73,6 +73,67 @@ def create_app(reader, token):
     ):
         return await call(sfc.verify, authorization, ce=ce, version=version)
 
+    from .webb_sdi_read import WebbSdiReader
+
+    webb = WebbSdiReader(reader)
+
+    @app.get("/v1/webb-sdi/status")
+    async def webb_status(authorization: str | None = Header(None)):
+        return await call(webb.status, authorization)
+
+    @app.get("/v1/webb-sdi/issuers")
+    async def webb_issuers(
+        stockCode: str | None = None,
+        q: str | None = None,
+        limit: int = Query(20, ge=1, le=100),
+        cursor: str | None = None,
+        version: str | None = None,
+        authorization: str | None = Header(None),
+    ):
+        return await call(
+            webb.query,
+            authorization,
+            operation="issuers",
+            params=dict(
+                stockCode=stockCode, q=q, limit=limit, cursor=cursor, version=version
+            ),
+        )
+
+    @app.get("/v1/webb-sdi/disclosures")
+    async def webb_disclosures(
+        issuerId: str,
+        start: str | None = None,
+        end: str | None = None,
+        limit: int = Query(20, ge=1, le=100),
+        cursor: str | None = None,
+        version: str | None = None,
+        authorization: str | None = Header(None),
+    ):
+        return await call(
+            webb.query,
+            authorization,
+            operation="disclosures",
+            params=dict(
+                issuerId=issuerId,
+                start=start,
+                end=end,
+                limit=limit,
+                cursor=cursor,
+                version=version,
+            ),
+        )
+
+    @app.get("/v1/webb-sdi/disclosures/{filing_id}")
+    async def webb_disclosure(
+        filing_id: str, version: str, authorization: str | None = Header(None)
+    ):
+        return await call(
+            webb.query,
+            authorization,
+            operation="disclosure",
+            params=dict(filingId=filing_id, version=version),
+        )
+
     from .hkex.read import HkexReader
 
     hkex = HkexReader(reader)
@@ -212,7 +273,10 @@ def create_app(reader, token):
         def check():
             with reader.request() as (_, release):
                 return {
-                    "capabilities": ["company-search-groupBy-organisation-v1"],
+                    "capabilities": [
+                        "company-search-groupBy-organisation-v1",
+                        "webb-sdi-archive-v1",
+                    ],
                     "status": "ready",
                     "version": release["version"],
                     "view": "archive",

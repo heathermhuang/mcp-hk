@@ -25,6 +25,7 @@ jobs:
           for attempt in $(seq 1 30); do curl -fsS http://127.0.0.1:8765/healthz && break; sleep 1; done
           node deploy/cloudflare/ux-browser.mjs
           node deploy/cloudflare/hkex-browser.mjs
+          node deploy/cloudflare/webb-sdi-browser.mjs
 
           MCP_HK_TEST_ORIGIN=http://127.0.0.1:8765 node deploy/cloudflare/racing-browser.mjs
       - uses: actions/upload-artifact@v4

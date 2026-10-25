@@ -10,3 +10,10 @@ test('curated origin is HTTPS only with no path, credentials or caller redirecti
     assert.equal(curatedContainerEnv({CURATED_BACKEND_TOKEN:'x'.repeat(32)},origin).MCP_HK_CURATED_ORIGIN,'');
   }
 });
+test('the Webb archive consumer requires explicit activation and a configured backend',()=>{
+  const env={CURATED_BACKEND_TOKEN:'x'.repeat(32)};
+  assert.equal(curatedContainerEnv(env,'https://archive.example').MCP_HK_WEBB_SDI_ENABLED,undefined);
+  assert.equal(curatedContainerEnv({...env,WEBB_SDI_ARCHIVE_ENABLED:'true'},'https://archive.example').MCP_HK_WEBB_SDI_ENABLED,'true');
+  assert.equal(curatedContainerEnv({...env,WEBB_SDI_ARCHIVE_ENABLED:'false'},'https://archive.example').MCP_HK_WEBB_SDI_ENABLED,undefined);
+  assert.equal(curatedContainerEnv({WEBB_SDI_ARCHIVE_ENABLED:'true'},'https://archive.example').MCP_HK_WEBB_SDI_ENABLED,undefined);
+});

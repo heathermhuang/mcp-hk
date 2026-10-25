@@ -1,0 +1,69 @@
+{
+  "receipts": [
+    {
+      "lang": "en",
+      "width": 320,
+      "realArchive": true,
+      "downloadRows": 20,
+      "downloadSha256": "a068143447258804c293e963a429a3763be1bbefd61ad279377e403e5711c337",
+      "passed": true
+    },
+    {
+      "lang": "en",
+      "width": 390,
+      "realArchive": true,
+      "downloadRows": 20,
+      "downloadSha256": "e33bb8df32e0768c739f8dd0ef92b25dd70334225b15943c52e6d5e452647fc1",
+      "passed": true
+    },
+    {
+      "lang": "en",
+      "width": 768,
+      "realArchive": true,
+      "downloadRows": 20,
+      "downloadSha256": "6cf8e9525dc4c1019f93edd3ab42b1cf6bde273d668422fcba42456b75fea024",
+      "passed": true
+    },
+    {
+      "lang": "en",
+      "width": 1280,
+      "realArchive": true,
+      "downloadRows": 20,
+      "downloadSha256": "03b2f9623d90d096dc7806e35a0ab8803da6cddb3abebde556fccce91ac197b6",
+      "passed": true
+    },
+    {
+      "lang": "zh-Hant",
+      "width": 320,
+      "realArchive": true,
+      "downloadRows": 20,
+      "downloadSha256": "f31d279c37501d881abbdf9776f89f15b6daf389ac673f1f630a30ffd855a68c",
+      "passed": true
+    },
+    {
+      "lang": "zh-Hant",
+      "width": 390,
+      "realArchive": true,
+      "downloadRows": 20,
+      "downloadSha256": "d8d20f55fd8f50f9d967be1314d4b2ebb6d3e384751b35a3bca1d1e738e7aa56",
+      "passed": true
+    },
+    {
+      "lang": "zh-Hant",
+      "width": 768,
+      "realArchive": true,
+      "downloadRows": 20,
+      "downloadSha256": "ded059f5ffed38c6541f090e5e70965f6e91f5debbcbbc3df905105f0a812cdf",
+      "passed": true
+    },
+    {
+      "lang": "zh-Hant",
+      "width": 1280,
+      "realArchive": true,
+      "downloadRows": 20,
+      "downloadSha256": "82ba29ab3c3939049b242e709119a4e76913930009cad27e9d3742349eb96282",
+      "passed": true
+    }
+  ],
+  "errors": []
+}
