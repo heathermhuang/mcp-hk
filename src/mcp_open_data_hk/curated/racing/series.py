@@ -56,9 +56,9 @@ def series_receipt(rows, cadence_seconds, *, end):
     if finish < times[-1]:
         raise RacingRejected("SERIES_WINDOW_REJECTED")
     gaps, intervals = [], []
-    for left, right in zip(times, times[1:] + [finish]):
+    for index, (left, right) in enumerate(zip(times, times[1:] + [finish])):
         elapsed = (right - left).total_seconds()
-        if right != finish or right in times:
+        if index < len(times) - 1:
             intervals.append(elapsed)
         if elapsed > cadence_seconds * 1.5:
             gaps.append(

@@ -57,3 +57,8 @@ A real PostgreSQL negative test proves unexpired bytes survive, expired replay i
 refused, and expiry cleanup erases bytes while retaining request evidence. No
 cleanup/source timer is installed in production; source activation must arrange
 this deterministic cleanup and qualify backup retention under the actual grant.
+
+Prospective receipt correction: the requested window end is used for trailing-gap
+accounting but is not an extra observed sample. Measured intervals now contain
+only differences between actual sample timestamps; the exact interval-list test
+rejects a phantom zero interval when the window ends at the final observation.

@@ -271,7 +271,7 @@ def test_prospective_series_start_gap_and_capacity():
     ]
     receipt = series_receipt(rows, 60, end="2026-10-25T00:04:00Z")
     assert receipt["actualStart"] == "2026-10-25T00:00:00+00:00"
-    assert receipt["measuredIntervals"][:2] == [60.0, 180.0]
+    assert receipt["measuredIntervals"] == [60.0, 180.0]
     assert receipt["gaps"][0]["missingSamplesAtLeast"] == 2
     assert series_receipt([], 60, end="2026-10-25T00:04:00Z")["actualStart"] is None
     assert capacity(
