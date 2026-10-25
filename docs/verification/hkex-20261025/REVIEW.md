@@ -51,3 +51,7 @@ No live provider adapter or source job is activated by this correction.
 Unknown request reservations also block dispatch across later occurrences, even
 after a policy is reactivated. They must be reconciled explicitly; a new run key
 does not convert a crashed/uncertain read into a blind retry.
+
+Status also withholds old issuer identity when the active policy hash differs from
+the accepted version. A later broader grant cannot license earlier facts through
+status while the versioned data path correctly refuses them.

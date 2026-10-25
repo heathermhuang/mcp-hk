@@ -439,6 +439,12 @@ def test_status_does_not_leak_filing_inventory_or_unqualified_identity(model, tm
     assert "issuer_id" not in status["coverage"]["window"]
     assert "expectedSerials" not in status["coverage"]
     assert "issuer" not in status["coverage"]
+    # A later, broader/different grant cannot expose facts from the old policy.
+    broader = model["policy"].model_copy(update={"reference": "new-synthetic-grant"})
+    activate_policy(model["owner"], broader.model_dump(mode="json"), digest(broader))
+    status = model["reader"].status(mode="browser")
+    assert status["state"] == "policy_requalification"
+    assert "issuer_id" not in status["coverage"]["window"]
 
 
 def test_capture_retention_expiry_hides_identity_and_blocks_new_export(model, tmp_path):

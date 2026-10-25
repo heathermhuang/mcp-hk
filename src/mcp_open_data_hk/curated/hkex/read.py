@@ -67,8 +67,13 @@ class HkexReader:
                 retained = bool(accepted) and datetime.fromisoformat(
                     accepted["manifest"]["retainedUntil"]
                 ) > datetime.now(timezone.utc)
+                qualified = bool(accepted) and accepted["manifest"][
+                    "policyHash"
+                ] == digest(policy)
                 if include_inventory:
                     policy.require(mode, "retain", "history")
+                    if not qualified:
+                        raise ValueError("HKEX_POLICY_REQUALIFICATION_REQUIRED")
                     if not retained:
                         raise ValueError("SOURCE_RETENTION_EXPIRED")
                 elif coverage:
@@ -79,7 +84,7 @@ class HkexReader:
                         for key, value in coverage["window"].items()
                         if key != "issuer_id"
                     }
-                    if retained and policy.modes.get(mode) == "allowed":
+                    if retained and qualified and policy.modes.get(mode) == "allowed":
                         window["issuer_id"] = coverage["window"]["issuer_id"]
                     coverage = {
                         "window": window,
@@ -92,8 +97,16 @@ class HkexReader:
                     "source": "hkex_di",
                     "state": (
                         "accepted"
-                        if retained
-                        else "version_expired" if accepted else "pilot_pending"
+                        if retained and qualified
+                        else (
+                            "version_expired"
+                            if accepted and not retained
+                            else (
+                                "policy_requalification"
+                                if accepted
+                                else "pilot_pending"
+                            )
+                        )
                     ),
                     "acceptedVersion": accepted["version"] if accepted else None,
                     "modes": policy.modes,
