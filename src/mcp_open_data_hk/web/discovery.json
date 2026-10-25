@@ -733,8 +733,7 @@
         "heading": "港交所權益披露檔案",
         "description": "瀏覽 David Webb／Webb-site 的真實表格 3A 董事披露歷史，保留來源日期、身分／原因代碼及修訂連結，與最新港交所更新分開。"
       },
-      "template": "hkex.html",
-      "noindex": true
+      "template": "hkex.html"
     },
     "/racing": {
       "en": {
