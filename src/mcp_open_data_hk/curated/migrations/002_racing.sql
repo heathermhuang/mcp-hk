@@ -156,7 +156,7 @@ REVOKE ALL ON ALL TABLES IN SCHEMA racing FROM PUBLIC;
 CREATE TABLE IF NOT EXISTS racing.capture_buffer (
  capture_id text PRIMARY KEY, run_id text NOT NULL REFERENCES racing.jobs(run_id),
  family text NOT NULL, route text NOT NULL, raw_sha256 text NOT NULL,
- body bytea NOT NULL, retrieved_at timestamptz NOT NULL,
+ body bytea, retrieved_at timestamptz NOT NULL,
  expires_at timestamptz NOT NULL, policy_digest text NOT NULL REFERENCES racing.policies
 );
 REVOKE ALL ON racing.capture_buffer FROM PUBLIC;

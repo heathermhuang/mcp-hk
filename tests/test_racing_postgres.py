@@ -419,3 +419,49 @@ def test_internal_reader_decimal_cursor_policy_and_shared_slots(db):
     store.revoke(owner, digest)
     with pytest.raises(ReadError, match="policy"):
         reader.page("results", race_id=rid)
+
+
+def test_expired_raw_bytes_erased_but_receipts_retained(db):
+    from mcp_open_data_hk.curated.racing.maintenance import expire_raw
+
+    owner, _, digest, _, _ = db
+    collector = Collector(
+        owner,
+        digest,
+        transport=httpx.MockTransport(
+            lambda r: httpx.Response(
+                200,
+                headers={"content-type": "text/html"},
+                content=b"expiring synthetic bytes",
+            )
+        ),
+        enabled=True,
+    )
+    result = collector.run("meeting", "2026-01-01T00:00:00Z", [("results", ROUTE)])
+    capture_id = result["captures"][0]["captureId"]
+    assert expire_raw(owner)["erasedBodies"] == 0
+    with connect(owner) as conn:
+        conn.execute(
+            "UPDATE racing.capture_buffer SET expires_at=now()-interval '1 second' WHERE capture_id=%s",
+            (capture_id,),
+        )
+    with pytest.raises(RacingRejected, match="CAPTURE_EXPIRED"):
+        collector.retained_capture(capture_id)
+    assert expire_raw(owner)["erasedBodies"] == 1
+    with connect(owner) as conn:
+        row = conn.execute(
+            "SELECT body,raw_sha256,run_id FROM racing.capture_buffer WHERE capture_id=%s",
+            (capture_id,),
+        ).fetchone()
+        assert (
+            row["body"] is None
+            and row["raw_sha256"]
+            == hashlib.sha256(b"expiring synthetic bytes").hexdigest()
+        )
+        assert (
+            conn.execute(
+                "SELECT count(*) AS n FROM racing.requests WHERE run_id=%s",
+                (row["run_id"],),
+            ).fetchone()["n"]
+            == 1
+        )

@@ -49,3 +49,11 @@ Actual HKJC parser/layout/dictionaries, source permission, complete real coverag
 production source writer, capacity reservation, backup/offsite retention coverage,
 mode-specific public adapters/downloads and ordinary operation remain explicit
 activation gates. Synthetic contracts and local restore do not close them.
+
+Final retention correction: replay expiry alone did not erase expired private
+bytes. `racing.maintenance` now clears at most 1000 expired bodies per invocation
+under the source-session lock and preserves their hashes/policy/job receipts.
+A real PostgreSQL negative test proves unexpired bytes survive, expired replay is
+refused, and expiry cleanup erases bytes while retaining request evidence. No
+cleanup/source timer is installed in production; source activation must arrange
+this deterministic cleanup and qualify backup retention under the actual grant.

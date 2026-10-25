@@ -253,7 +253,7 @@ class Collector:
     def retained_capture(self, capture_id):
         with connect(self.dsn) as conn:
             row = conn.execute(
-                "SELECT * FROM racing.capture_buffer WHERE capture_id=%s AND expires_at>now()",
+                "SELECT * FROM racing.capture_buffer WHERE capture_id=%s AND body IS NOT NULL AND expires_at>now()",
                 (capture_id,),
             ).fetchone()
             if not row:
