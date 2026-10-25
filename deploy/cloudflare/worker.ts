@@ -232,7 +232,7 @@ export class McpContainer extends Container<Env> {
   }
 
   async operationDiagnostics() {
-    return {workerRelease: this.env.RELEASE_COMMIT || null, credentialBoundary:'edge-and-controller-v1', maintenancePolicy: EXPECTED_REVIEW_POLICY, idleTimeout: this.sleepAfter, leaseUntil: await this.ctx.storage.get<number>('maintenanceLease') || null,
+    return {workerRelease: this.env.RELEASE_COMMIT || null, controllerContract:'source-aware-ux-1', credentialBoundary:'edge-and-controller-v1', maintenancePolicy: EXPECTED_REVIEW_POLICY, idleTimeout: this.sleepAfter, leaseUntil: await this.ctx.storage.get<number>('maintenanceLease') || null,
       seedLease: Boolean(await this.ctx.storage.get<string>('seedOwner')),
       now: Date.now(), maintenance: await this.operationsStatus(), scheduled: await scheduledStatus(this.ctx.storage)};
   }

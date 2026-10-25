@@ -410,3 +410,22 @@ async def test_source_failure_traceback_redacts_address_query(monkeypatch):
     assert "UPSTREAM_UNAVAILABLE" in rendered
     assert "private-address-example" not in rendered
     assert error.value.__suppress_context__
+
+
+def test_introductory_http_guide_matches_the_source_linked_statistics_contract(service):
+    from mcp_open_data_hk.discovery import content
+
+    with TestClient(create_app(service)) as client:
+        response = client.get("/api/v1/districts/central-western/statistics")
+        assert response.status_code == 200
+        payload = response.json()
+        assert isinstance(payload["data"]["population"], int)
+        assert isinstance(payload["data"]["referencePeriod"], int)
+        assert payload["provenance"][0]["sourceUrl"].startswith("https://")
+    for locale in ["en", "zh-Hant"]:
+        first = content()["pages"]["/guides/hong-kong-open-data-api"][locale][
+            "sections"
+        ][0]
+        assert "/api/v1/districts/central-western/statistics" in first["code"]
+        assert "data.referencePeriod" in first["paragraphs"][0]
+        assert "data.items" not in first["paragraphs"][0]

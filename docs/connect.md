@@ -93,7 +93,7 @@ Official configuration documentation was checked on 25 October 2026:
 [Claude Code MCP](https://code.claude.com/docs/en/mcp), and
 [Cursor MCP](https://cursor.com/docs/mcp). Update an existing configuration rather
 than adding a duplicate server. Restart the client, inspect its tool list and ask:
-“Use `hk_district_list` and cite the original source for one Hong Kong district.”
+“Use `hk_district_statistics` with districtId `central-western`; report population, reference year and the original source link.”
 A returned source-linked record establishes success. Copying text, a settings entry
 or an HTTP health response does not establish a connected client.
 
