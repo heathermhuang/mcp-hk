@@ -1,0 +1,15 @@
+{
+  "workerRelease": "9e0c7be58760c56e392bcbfe0a53729586e45f96",
+  "controllerContract": "source-aware-ux-1",
+  "maintenancePolicy": "source-review-11",
+  "leaseUntil": null,
+  "seedLease": false,
+  "workerVersion": "56545b11-87ad-4695-8ccf-bc47cde43e78",
+  "containerImageSha256": "sha256:aa3ab60135282ea4c54fe1594bae7293dcb1bfcec5344fddb252cca740e78b43",
+  "containerApplicationVersion": 45,
+  "acceptedBasePacksReady": true,
+  "hkexSourceQualified": false,
+  "hkexAcceptedVersions": 0,
+  "hkexProductionSchemaDeployed": false,
+  "hkexOrdinaryOccurrenceObserved": false
+}

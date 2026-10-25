@@ -1,0 +1,31 @@
+{
+  "requiredChecks": "all passed on exact pushed head via pre-push hook",
+  "pythonPassed": 443,
+  "optionalNetworkSkipped": 7,
+  "postgresExecuted": 49,
+  "hkexPostgresExecuted": 20,
+  "workerPassed": 112,
+  "hkexRenderedSyntheticJourneys": 8,
+  "productionImageNoNetworkSmoke": true,
+  "ci": {
+    "CI": 40167362679,
+    "quality": 40167363017,
+    "postgres": 40167362801,
+    "deployment": 40167362779,
+    "browser": 40167362704
+  },
+  "allCiSuccess": true,
+  "liveHkexSourceReads": 0,
+  "sourceQualified": false,
+  "observedAt": "2026-10-25T05:46:18.122306+00:00",
+  "finalMainCheckExit": 0,
+  "preservedAcceptedMaintenanceRunners": true,
+  "testedPrHead": "8e720dc78712959f2b12499092643a698a63af00",
+  "testedDeployedMain": "9e0c7be58760c56e392bcbfe0a53729586e45f96",
+  "prs": [
+    "https://github.com/heathermhuang/mcp-hk/pull/74",
+    "https://github.com/heathermhuang/mcp-hk/pull/76"
+  ],
+  "productionImageNoNetworkSmokeHead": "dd932488d138d36911450816648d5245bf370343",
+  "finalImageRuntimeGateVerified": true
+}
