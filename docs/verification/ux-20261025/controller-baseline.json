@@ -1,0 +1,39 @@
+{
+  "workerRelease": "7ea79fa850dbd3d35d277853eb33bdea0d3a9a57",
+  "credentialBoundary": "edge-and-controller-v1",
+  "maintenancePolicy": "source-review-11",
+  "idleTimeout": "10m",
+  "leaseUntil": null,
+  "seedLease": false,
+  "now": 1792897740658,
+  "maintenance": {
+    "status": "success",
+    "key": "backups/2026-10-25T03-08-37.145Z-62768b6c-eb41-4951-ac83-dc5864467024.snapshot.tar.gz",
+    "sha256": "47787a2bbb00a4609936cbe741dcb2f9206b81523d7194a1e27700bea35901a2",
+    "createdAt": "2026-10-25T03:08:37.145Z",
+    "bytes": 72697189,
+    "reason": "resources",
+    "overview": {
+      "status": "published",
+      "asOf": "2026-10-25T03:08:48.478Z",
+      "generation": "f8d8e9945a694617b6a2a9eb565e2a03"
+    }
+  },
+  "scheduled": [
+    {
+      "pack": "backup",
+      "scheduledAt": 1792890023931,
+      "state": "success"
+    },
+    {
+      "pack": "restaurants",
+      "scheduledAt": 1792893619554,
+      "state": "success"
+    },
+    {
+      "pack": "population",
+      "scheduledAt": 1792897243477,
+      "state": "success"
+    }
+  ]
+}

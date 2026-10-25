@@ -1,0 +1,38 @@
+{
+  "browser": "155.0.8059.85",
+  "receipts": [
+    {
+      "name": "scope, pagination, history, focused detail and preview budget",
+      "passed": true
+    },
+    {
+      "name": "one company controller, partial source failure, grouping and focus",
+      "passed": true
+    },
+    {
+      "name": "property private text, selected URL, filter, refresh and history",
+      "passed": true
+    },
+    {
+      "name": "late searches cannot replace current results; official legacy URL retains identity",
+      "passed": true
+    },
+    {
+      "name": "plate modes expose honoured filters and restore URL state",
+      "passed": true
+    },
+    {
+      "name": "all public pages, bilingual mobile/reflow, source status",
+      "passed": true
+    },
+    {
+      "name": "initial analytics choice stays in flow and sends no optional requests",
+      "passed": true
+    },
+    {
+      "name": "responsive widths, zoom reflow and keyboard navigation",
+      "passed": true
+    }
+  ],
+  "errors": []
+}

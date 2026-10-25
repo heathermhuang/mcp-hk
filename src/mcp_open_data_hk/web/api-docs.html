@@ -5,16 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>mcp.hk HTTP API reference</title>
   <link rel="icon" href="/assets/favicon.svg">
-  <link rel="stylesheet" href="/assets/swagger-ui.css">
+  <link rel="stylesheet" href="/assets/swagger-ui.css"><link rel="stylesheet" href="/assets/style.css"><script src="/assets/translations.js" defer></script><script src="/assets/i18n.js" defer></script>
   <script src="/assets/swagger-ui-bundle.js" defer></script>
   <script src="/assets/api-docs.js" defer></script>
 </head>
 <body>
-  <header>
-    <a href="/">mcp.hk</a> · <a href="/connect">Connect</a> ·
-    <a href="/guides/hong-kong-open-data-api">Getting started</a> ·
-    <a href="/openapi.json">Download OpenAPI schema</a>
-  </header>
+  <div id="mhk-preview"><header class="mhk-nav"><a class="mhk-logo" href="/"><img src="/assets/logo.svg" width="125" height="40" alt="mcp.hk"></a><nav aria-label="Main navigation"><a class="mhk-navbutton" href="/coverage" data-i18n="navData">Find data</a><a class="mhk-navbutton" href="/connect" data-i18n="navConnect">Connect AI</a><a class="mhk-navbutton" href="/guides" data-i18n="navGuides">Guides</a><a class="mhk-navbutton" href="/sources" data-i18n="navSources">Data status</a></nav><button class="mhk-language" type="button">繁</button></header><p data-i18n="httpIntro">Call the API directly from your code.</p><p><a href="/guides/hong-kong-open-data-api">First request / 第一次請求</a> · <a href="/api/v1/limits">Limits / 流量限制</a> · <a href="/openapi.json">OpenAPI</a></p><p>Reference fields and operation names are in English. / 參考欄位及操作名稱以英文提供。</p><pre>curl -fsS 'https://mcp.hk/api/v1/districts'</pre></div>
   <p id="docs-status" role="status">Loading API reference…</p>
   <noscript>Enable JavaScript for the interactive reference, or download the OpenAPI schema above.</noscript>
   <main id="swagger-ui"></main>

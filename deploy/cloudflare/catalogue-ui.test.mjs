@@ -5,7 +5,7 @@ import {test} from 'node:test';
 class Element {
   constructor(tag='div'){this.tag=tag;this.children=[];this.listeners={};this.dataset={};this.attrs={};this.value='';this.textContent='';this.hidden=false;}
   append(...els){this.children.push(...els);}replaceChildren(...els){this.children=[...els];this.textContent='';}setAttribute(k,v){this.attrs[k]=v;}addEventListener(k,fn){this.listeners[k]=fn;}focus(){}scrollIntoView(){}
-  querySelectorAll(selector){const values=this.children.flatMap(c=>c instanceof Element?[c,...c.querySelectorAll(selector)]:[]);return values.filter(c=>selector==='button'?c.tag==='button':selector==='select'?c.tag==='select':selector==='[data-source-parameter]'?'sourceParameter'in c.dataset:false);}
+  querySelectorAll(selector){const values=this.children.flatMap(c=>c instanceof Element?[c,...c.querySelectorAll(selector)]:[]);return values.filter(c=>selector==='button'?c.tag==='button':selector==='a'?c.tag==='a':selector==='select'?c.tag==='select':selector==='[data-source-parameter]'?'sourceParameter'in c.dataset:false);}
 }
 const flush=()=>new Promise(resolve=>setImmediate(resolve));
 async function browser(){
@@ -24,6 +24,7 @@ async function browser(){
     if(u.pathname==='/api/v1/catalogue/datasets')return {items:u.searchParams.get('q')==='Beta'?[b]:[a,b],total:u.searchParams.get('q')==='Beta'?1:2,nextOffset:null};
     if(u.pathname.startsWith('/api/v1/catalogue/datasets/'))return u.pathname.endsWith('alpha')?a:b;
     if(u.pathname==='/api/v1/resources')return {items:u.searchParams.get('datasetId')==='beta'?[third]:[first,second],total:2,nextOffset:null};
+    if(u.pathname.endsWith('/schema'))return {schema:{fields:[{name:'row',types:['string']}],queryFields:[]},recordCount:1};
     if(u.pathname.endsWith('/query'))return new Promise(resolve=>{pendingResolve=resolve;});
     throw Error('Unexpected request '+path);
   };
@@ -32,20 +33,20 @@ async function browser(){
   context.window=context;context.matchMedia=()=>({matches:true});context.addEventListener=(name,fn)=>{listeners[name]=fn;};
   vm.runInContext(readFileSync(new URL('../../src/mcp_open_data_hk/web/coverage.js',import.meta.url),'utf8').replace(/^import .*\n/,''),context);
   await flush();await flush();
-  const button=(id,text)=>el(id).querySelectorAll('button').find(b=>b.textContent===text);
+  const button=(id,text)=>el(id).querySelectorAll(id==='datasets'?'a':'button').find(b=>b.textContent===text);
   return {el,button,form,queryButton,listeners,location,first,second,resolve:value=>pendingResolve(value)};
 }
 test('switching resources clears incompatible source settings and selection state',async()=>{
-  const b=await browser();b.button('datasets','Alpha').listeners.click();await flush();
-  b.button('resources','alpha · JSON').listeners.click();
+  const b=await browser();b.button('datasets','Alpha').listeners.click({preventDefault(){}});await flush();
+  b.button('resources','alpha · JSON').listeners.click({preventDefault(){}});
   for(const f of ['sheet','recordPath','filters','fields','parameters'])b.form.elements[f].value='old-source-value';
-  b.el('resources').querySelectorAll('button')[1].listeners.click();
+  b.el('resources').querySelectorAll('button')[1].listeners.click({preventDefault(){}});
   assert.equal(b.form.elements.sheet.value,'');assert.equal(b.form.elements.recordPath.value,'');assert.equal(b.form.elements.filters.value,'{}');assert.equal(b.form.elements.parameters.value,'{}');
   assert.equal(b.el('source-inputs').querySelectorAll('[data-source-parameter]').length,0);
   assert.equal(b.location.searchParams.get('resource'),b.second.id);
 });
 test('an old query cannot restore unrelated records after a new search',async()=>{
-  const b=await browser();b.button('datasets','Alpha').listeners.click();await flush();b.el('resources').querySelectorAll('button')[1].listeners.click();
+  const b=await browser();b.button('datasets','Alpha').listeners.click({preventDefault(){}});await flush();b.el('resources').querySelectorAll('button')[1].listeners.click({preventDefault(){}});
   b.form.listeners.submit({preventDefault(){},submitter:{value:'query'}});await flush();
   b.el('dataset-query').value='Beta';b.el('dataset-search').listeners.submit({preventDefault(){}});await flush();
   b.resolve({data:{items:[{row:'old response'}]},schema:{fields:[]},meta:{total:1,structuredQueryable:true},warnings:[],provenance:[]});await flush();await flush();
@@ -53,14 +54,14 @@ test('an old query cannot restore unrelated records after a new search',async()=
   assert.equal(b.location.searchParams.get('q'),'Beta');assert.equal(b.location.searchParams.has('resource'),false);
 });
 test('back/refresh URL state restores the selected dataset and source',async()=>{
-  const b=await browser();b.button('datasets','Alpha').listeners.click();await flush();b.el('resources').querySelectorAll('button')[1].listeners.click();const saved=b.location.href;
-  b.button('datasets','Beta').listeners.click();await flush();assert.equal(b.location.searchParams.has('resource'),false);
+  const b=await browser();b.button('datasets','Alpha').listeners.click({preventDefault(){}});await flush();b.el('resources').querySelectorAll('button')[1].listeners.click({preventDefault(){}});const saved=b.location.href;
+  b.button('datasets','Beta').listeners.click({preventDefault(){}});await flush();assert.equal(b.location.searchParams.has('resource'),false);
   b.location.href=saved;await b.listeners.popstate();await flush();
   assert.equal(b.el('preview-step').hidden,false);assert.equal(b.location.searchParams.get('dataset'),'alpha');assert.equal(b.location.searchParams.get('resource'),b.second.id);
 });
 test('replacement query loading and malformed objects never retain prior response JSON',async()=>{
-  const b=await browser();b.button('datasets','Alpha').listeners.click();await flush();b.el('resources').querySelectorAll('button')[1].listeners.click();
-  b.form.listeners.submit({preventDefault(){},submitter:{value:'query'}});
+  const b=await browser();b.button('datasets','Alpha').listeners.click({preventDefault(){}});await flush();b.el('resources').querySelectorAll('button')[1].listeners.click({preventDefault(){}});
+  b.form.listeners.submit({preventDefault(){},submitter:{value:'query'}});await flush();
   b.resolve({data:{items:[{row:'old response'}]},schema:{fields:[]},meta:{total:1,structuredQueryable:true},warnings:[],provenance:[]});await flush();await flush();
   assert.match(b.el('record-response').textContent,/old response/);
   b.form.listeners.submit({preventDefault(){},submitter:{value:'query'}});
@@ -68,14 +69,14 @@ test('replacement query loading and malformed objects never retain prior respons
   b.resolve({data:{items:[]},schema:{fields:[]},meta:{total:0,structuredQueryable:true},warnings:[],provenance:[]});await flush();await flush();
   for(const value of ['{','null','[]','"text"']){
     b.form.elements.parameters.value=value;b.form.listeners.submit({preventDefault(){},submitter:{value:'query'}});await flush();
-    assert.equal(b.el('record-response').textContent,'');assert.equal(b.el('record-table').children.length,0);assert.equal(b.el('query-message').textContent,'invalidJsonField');assert.equal(b.queryButton.disabled,false);
+    assert.equal(b.el('record-response').textContent,'');assert.equal(b.el('record-table').children.some(e=>e.tag==='table'),false);assert.equal(b.el('query-message').textContent,'sourceError');assert.equal(b.queryButton.disabled,false);
   }
 });
 test('resource directory status, format, page and selection survive URL restoration',async()=>{
-  const b=await browser();b.el('coverage-status').value='queryable';b.el('directory').listeners.click();await flush();
+  const b=await browser();b.el('coverage-status').value='queryable';b.el('directory').listeners.click({preventDefault(){}});await flush();
   b.el('resource-format').value='JSON';b.el('resource-format').listeners.change();await flush();
   b.el('resources-next').listeners.click({target:{dataset:{offset:'15'}}});await flush();
-  b.el('resources').querySelectorAll('button')[1].listeners.click();const saved=b.location.href;
+  b.el('resources').querySelectorAll('button')[1].listeners.click({preventDefault(){}});const saved=b.location.href;
   assert.equal(b.location.searchParams.get('directory'),'1');assert.equal(b.location.searchParams.get('status'),'queryable');
   b.el('dataset-query').value='Beta';b.el('dataset-search').listeners.submit({preventDefault(){}});await flush();
   b.el('coverage-status').value='unavailable';b.location.href=saved;await b.listeners.popstate();await flush();

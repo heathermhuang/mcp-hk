@@ -1,0 +1,79 @@
+/* Real browser regressions with bounded deterministic provider responses. */
+import {chromium} from 'playwright';
+import assert from 'node:assert/strict';
+import {mkdir,writeFile} from 'node:fs/promises';
+const origin=process.env.MCP_HK_TEST_ORIGIN||'http://127.0.0.1:8765';
+const output=new URL('../../playwright-artifacts/ux/',import.meta.url);await mkdir(output,{recursive:true});
+const browser=await chromium.launch({headless:true,...(process.env.MCP_HK_CHROME?{executablePath:process.env.MCP_HK_CHROME}:{})});
+const receipts=[],errors=[];
+const coverage={datasets:{discovered:2},resources:{discovered:2,byStatus:{queryable:2}}};
+const dataset={id:'weather',title:'Current weather report',titleZhHant:'本港天氣報告',provider:'Hong Kong Observatory',providerType:'government',catalogue:'CSDI',sourceUrl:'https://example.gov.hk/weather',entryKind:'source_dataset'};
+const resource={id:'a'.repeat(32),datasetId:'weather',url:'https://example.gov.hk/weather.json',format:'GEOJSON',catalogue:'CSDI',validation:{status:'queryable',lastValidatedAt:1792895641,lastCheckedAt:1792895641}};
+const schema={recordPath:'features',fields:[{name:'geometry',types:['object']},{name:'properties',types:['object']}],queryFields:[{name:'properties.location',types:['string']},{name:'properties.rainfall',types:['number']},{name:'geometry.coordinates',types:['array']}]};
+const provenance=[{sourceUrl:'https://example.gov.hk/weather',termsUrl:'https://example.gov.hk/terms',attribution:'Fixture provider',lastValidatedAt:1792895641,publicationDate:'2022-08-08',referencePeriod:null}];
+const building={data:{id:'b1',name:'Fixture building',listingState:{message:null},stats:{lastUpdated:'2026-10-25'},listings:[{id:'1',title:'Sale advert',mode:'buy',priceHkd:1000000,source:'Provider',sourceUrl:null,freshness:{status:'stale',observedAt:'2026-10-01'},quality:{matchLevel:'building'}},{id:'2',title:'Rent advert',mode:'rent',priceHkd:20000,source:'Provider',sourceUrl:'https://example.com/advert',freshness:{status:'fresh',observedAt:'2026-10-25'},quality:{matchLevel:'estate'}}],listingQuality:{selection:'current',currentQualifiedCount:1,providerReturnedCount:2}}};
+async function setup(){const context=await browser.newContext();const page=await context.newPage(),calls=[];page.on('pageerror',e=>errors.push(e.message));await context.route('https://hk.app/**',r=>r.abort());
+ await context.route('**/api/v1/**',async route=>{const req=route.request(),u=new URL(req.url()),path=u.pathname;calls.push({path,query:u.search,body:req.postDataJSON()});let body={},status=200;
+ if(path==='/api/v1/coverage')body=coverage;
+ else if(path==='/api/v1/status')body={sources:[{sourceId:'enigma',providerType:'independent',sourceUrl:'https://example.com/archive',lastSuccess:null,stale:false}]};
+ else if(path==='/api/v1/catalogue/datasets'){const term=u.searchParams.get('q');if(term==='slow')await new Promise(resolve=>setTimeout(resolve,150));body={items:[{...dataset,title:term==='slow'?'Obsolete dataset':term==='fast'?'Latest dataset':dataset.title}],total:11,nextOffset:u.searchParams.get('offset')==='10'?null:10};}
+ else if(path.startsWith('/api/v1/catalogue/datasets/'))body=dataset;
+ else if(path==='/api/v1/resources')body={items:[resource],total:1,nextOffset:null};
+ else if(path.endsWith('/schema'))body={schema,provenance,recordCount:1};
+ else if(path.endsWith('/query')){assert.equal(req.postDataJSON().limit,5);assert.deepEqual(req.postDataJSON().fields,['properties.location','properties.rainfall']);body={schema,provenance,data:{items:[{'properties.location':'Central','properties.rainfall':2}]},meta:{total:1,structuredQueryable:true},warnings:[]};}
+ else if(path==='/api/v1/companies/updates/status')body={data:{coverage:{latestAcceptedCoverageEnd:'2026-10-18',moneyLenderCutoff:'2026-09-30'}}};
+ else if(path==='/api/v1/companies'){assert.equal(u.searchParams.get('groupBy'),'organisation');if(u.searchParams.get('view')==='latest_observed'){if(u.searchParams.get('q')==='10')body={data:{items:[{entity_id:'cr:local:00000001',name1:'Official fixture',identifier:{namespace:'cr:local:brn',value:'00000001'}}]},meta:{version:'official-'+'a'.repeat(32),groupBy:'organisation',view:'latest_observed'},provenance:[],warnings:[]};else{status=503;body={error:{code:'PACK_UNAVAILABLE',message:'Fixture official failure'}};}}else body={data:{items:[{entity_id:1,name1:'HSBC fixture',matched_fact_count:30,matched_names:[{display_name:'HSBC alias',name_kind:'former_name'}]}]},meta:{version:'fixture-v1',groupBy:'organisation',view:'archive'},provenance:[],warnings:[]};}
+ else if(path==='/api/v1/companies/cr:local:00000001'||path==='/api/v1/companies/cr%3Alocal%3A00000001')body={data:{entity_id:'cr:local:00000001',name1:'Official fixture',observations:[]},meta:{version:'official-'+'a'.repeat(32),view:'latest_observed'},provenance:[],warnings:[]};
+ else if(path==='/api/v1/companies/1')body={data:{entity_id:1,kind:'organisation',name1:'HSBC fixture',inc_raw:'1900',inc_precision:'year',dissolved_raw:null,dissolved_precision:'unknown',identifiers:[]},meta:{version:'fixture-v1'},provenance:[],warnings:[]};
+ else if(path==='/api/v1/properties/search')body={data:{candidates:[{id:'b1',name:'Fixture building',district:'Southern'}]}};
+ else if(path==='/api/v1/properties/building')body=building;
+ else if(path==='/api/v1/properties/price-history')body={data:{buildingId:'b1',generatedAt:'2026-10-25',events:[]}};
+ else if(path==='/api/v1/plates/search')body={data:{items:[],total:0,query:'AA88'},provenance:[]};
+ else if(path==='/api/v1/plates/comparables')body={data:{items:[],method:'Historical fixture cohort',sampleSize:0},provenance:[]};
+ else {status=503;body={error:{code:'PACK_UNAVAILABLE',message:'Fixture unavailable'}};}
+ await route.fulfill({status,contentType:'application/json',body:JSON.stringify(body)});
+ });
+ await context.route('**/downloads/companies/**',r=>r.fulfill({status:503,contentType:'application/json',body:JSON.stringify({error:{code:'PACK_UNAVAILABLE',message:'No fixture export'}})}));return {context,page,calls};}
+async function run(name,fn){const b=await setup();try{await fn(b);receipts.push({name,passed:true});}catch(e){console.error({name,errors,calls:b.calls});await b.page.screenshot({path:new URL('failure.png',output).pathname,fullPage:true});throw e;}finally{await b.context.close();}}
+try{
+await run('scope, pagination, history, focused detail and preview budget',async({page,calls})=>{
+ await page.goto(origin+'/coverage?access=sources&lang=en');await page.locator('#datasets a').first().waitFor();await page.locator('#dataset-query').fill('weather');await page.locator('#dataset-search').evaluate(f=>f.requestSubmit());await page.waitForURL('**/coverage?**q=weather**');assert.equal(new URL(page.url()).searchParams.get('access'),'sources');
+ await page.locator('#datasets-next').click();assert.equal(new URL(page.url()).searchParams.get('offset'),'10');await page.locator('#datasets-previous').click();assert.equal(new URL(page.url()).searchParams.has('offset'),false);
+ await page.locator('#datasets h3 a').click();await page.locator('#resources article button').waitFor();assert.equal(await page.locator('#search-step').isVisible(),false);assert.equal(await page.locator('#resource-heading').evaluate(e=>e===document.activeElement),true);
+ await page.locator('#resources article button').click();const start=calls.length;await page.getByRole('button',{name:'Show records',exact:true}).click();await page.getByRole('cell',{name:'Central',exact:true}).waitFor();assert.deepEqual(calls.slice(start).map(x=>x.path.split('/').pop()),['schema','query']);
+ await page.reload();await page.locator('#preview-step').waitFor();assert.equal(await page.locator('#record-table').innerText(),'');
+ await page.locator('#back-results').click();await page.goBack();await page.locator('#preview-step').waitFor();assert.equal(new URL(page.url()).searchParams.get('access'),'sources');
+ await page.screenshot({path:new URL('coverage-en.png',output).pathname,fullPage:true});
+});
+await run('one company controller, partial source failure, grouping and focus',async({page,calls})=>{
+ await page.goto(origin+'/companies?lang=en');await page.locator('#company-query').fill('HSBC');await page.locator('#company-submit').click();await page.getByRole('button',{name:'HSBC fixture',exact:true}).waitFor();assert.equal(new URL(page.url()).searchParams.get('companySource'),'both');assert.equal(calls.filter(c=>c.path==='/api/v1/companies').length,2);assert.match(await page.locator('#official-status').innerText(),/unavailable/);assert.equal(await page.locator('#official-search').count(),0);
+ await page.getByRole('button',{name:'HSBC fixture',exact:true}).click();await page.locator('.company-overview-name').waitFor();assert.equal(await page.locator('#company-record-heading').evaluate(e=>e===document.activeElement),true);assert.equal(new URL(page.url()).searchParams.get('version'),'fixture-v1');
+ await page.screenshot({path:new URL('companies-en.png',output).pathname,fullPage:true});
+});
+await run('property private text, selected URL, filter, refresh and history',async({page})=>{
+ await page.goto(origin+'/properties?lang=en');await page.locator('#property-query').fill('Private search text');await page.locator('#property-search').evaluate(f=>f.requestSubmit());await page.getByRole('button',{name:/Fixture building/}).click();await page.getByRole('heading',{name:'Sale advert'}).waitFor();assert.equal(new URL(page.url()).searchParams.get('building'),'b1');assert.equal(page.url().includes('Private'),false);
+ await page.locator('#property-mode').selectOption('rent');assert.equal(await page.getByRole('heading',{name:'Sale advert'}).count(),0);assert.equal(await page.getByRole('heading',{name:'Rent advert'}).count(),1);await page.reload();await page.getByRole('heading',{name:'Rent advert'}).waitFor();assert.equal(await page.locator('#property-mode').inputValue(),'rent');await page.locator('#property-history').click();await page.goBack();await page.getByRole('heading',{name:'Rent advert'}).waitFor();
+});
+await run('late searches cannot replace current results; official legacy URL retains identity',async({page,calls})=>{
+ await page.goto(origin+'/coverage?access=sources&lang=en');await page.locator('#datasets a').first().waitFor();await page.locator('#dataset-query').fill('slow');await page.locator('#dataset-search').evaluate(f=>f.requestSubmit());await page.locator('#dataset-query').fill('fast');await page.locator('#dataset-search').evaluate(f=>f.requestSubmit());await page.getByRole('link',{name:'Latest dataset',exact:true}).waitFor();await page.waitForTimeout(200);assert.equal(await page.getByRole('link',{name:'Obsolete dataset',exact:true}).count(),0);
+ const start=calls.length;await page.goto(origin+'/companies?official_q=10&official_entity=cr%3Alocal%3A00000001&official_version=official-'+ 'a'.repeat(32)+'&lang=en');await page.locator('#official-detail h3').waitFor();assert.equal(await page.locator('#company-query').inputValue(),'10');assert.equal(await page.locator('#company-results-section').isVisible(),false);assert.equal(calls.slice(start).filter(c=>c.path==='/api/v1/companies').length,1);assert.match(await page.locator('#official-detail').innerText(),/cr:local:00000001/);
+});
+await run('plate modes expose honoured filters and restore URL state',async({page})=>{
+ await page.goto(origin+'/plates?lang=en');await page.getByRole('button',{name:'Auction history',exact:true}).click();await page.locator('#mhk-plate-form .mhk-plate-filters').waitFor();await page.getByRole('button',{name:'Similar plates',exact:true}).click();assert.equal(await page.locator('#mhk-plate-form .mhk-plate-filters').isVisible(),false);assert.equal(new URL(page.url()).searchParams.get('plateMode'),'comparables');await page.reload();await page.getByText('Historical fixture cohort').waitFor();assert.equal(await page.locator('#mhk-plate-form .mhk-plate-filters').isVisible(),false);
+});
+await run('all public pages, bilingual mobile/reflow, source status',async({page})=>{
+ const routes=['/','/coverage','/demo','/companies','/properties','/plates','/connect','/sources','/guides','/guides/hong-kong-open-data-api','/guides/connect-ai-to-hong-kong-data','/guides/data-sources-and-freshness','/about','/terms','/privacy','/docs'];
+ for(const lang of ['en','zh-Hant'])for(const path of routes){await page.setViewportSize({width:320,height:800});await page.goto(origin+path+'?lang='+lang);await page.waitForLoadState('networkidle');assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,`${path} ${lang} overflows`);assert.equal(await page.locator('.mhk-nav .mhk-navbutton').count(),4);}
+ await page.goto(origin+'/sources?lang=zh-Hant');await page.locator('#mhk-status article').waitFor();assert.equal((await page.locator('#mhk-status').innerText()).includes('source_enigma'),false);await page.screenshot({path:new URL('sources-zh-mobile.png',output).pathname,fullPage:true});
+});
+await run('initial analytics choice stays in flow and sends no optional requests',async({context,page})=>{
+ let optional=0;await context.route(/https:\/\/(www\.)?(google-analytics\.com|googletagmanager\.com)\//,r=>{optional++;return r.abort();});
+ await context.route('https://mcp.hk/**',async route=>{const u=new URL(route.request().url());if(u.pathname.startsWith('/api/')||u.pathname.startsWith('/downloads/'))return route.fallback();if(u.pathname==='/assets/site-config.json')return route.fulfill({contentType:'application/json',body:JSON.stringify({googleAnalyticsId:'G-TEST123456'})});const response=await context.request.get(origin+u.pathname+u.search);return route.fulfill({response});});
+ await page.setViewportSize({width:320,height:800});await page.goto('https://mcp.hk/?lang=en');await page.locator('#mhk-privacy-choice[open]').waitFor();assert.equal(optional,0);const notice=await page.locator('#mhk-privacy-choice').boundingBox(),task=await page.locator('#mhk-discovery-form').boundingBox();assert.ok(notice.y+notice.height<=task.y);await page.getByRole('button',{name:'Reject analytics',exact:true}).click();assert.equal(optional,0);assert.equal(await page.locator('#mhk-privacy-choice').isVisible(),false);
+});
+await run('responsive widths, zoom reflow and keyboard navigation',async({page})=>{
+ for(const width of [390,768,1280])for(const path of ['/coverage','/companies','/properties','/connect']){await page.setViewportSize({width,height:900});await page.goto(origin+path+'?lang=zh-Hant');assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,path+' width '+width);}
+ await page.goto(origin+'/coverage?access=sources&lang=en');await page.keyboard.press('Tab');assert.equal(await page.locator('.mhk-skip-link').evaluate(e=>e===document.activeElement),true);await page.keyboard.press('Enter');assert.equal(await page.locator('#main-content').evaluate(e=>e===document.activeElement),true);await page.setViewportSize({width:320,height:900});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+});
+assert.deepEqual(errors,[]);console.log(JSON.stringify({browser:browser.version(),receipts,errors},null,2));await writeFile(new URL('result.json',output),JSON.stringify({browser:browser.version(),receipts,errors},null,2));
+}finally{await browser.close();}

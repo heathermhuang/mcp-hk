@@ -73,3 +73,12 @@ body{margin:0;padding:20px;background:#f8f7f2;color-scheme:light dark}#mhk-previ
 
 /* Optional first-visit analytics must not make the public page inert. */
 #mhk-privacy-choice[open]:not(:modal){position:fixed;inset:auto 16px 16px auto;margin:0;max-width:420px;width:calc(100% - 32px);padding:20px;z-index:30}
+
+/* UX completion: readable evidence, keyboard targets and reflow. */
+#mhk-preview .mhk-small,#mhk-preview .mhk-note,#mhk-preview small{font-size:14px;line-height:1.65}#mhk-preview input,#mhk-preview select{font-size:16px;max-width:100%;box-sizing:border-box}#mhk-preview button,#mhk-preview .mhk-navbutton{min-height:44px}#mhk-preview :focus-visible{outline:2px solid var(--mhk-accent);outline-offset:4px}#mhk-preview p{overflow-wrap:anywhere}#mhk-preview .mhk-nav nav{display:flex;flex-wrap:wrap}#mhk-preview pre{font-size:13px}#mhk-preview .mhk-pagelead{max-width:72ch}@media(max-width:700px){#mhk-preview .mhk-nav{flex-wrap:wrap}#mhk-preview .mhk-nav nav{order:3;width:100%}#mhk-preview .mhk-navbutton{font-size:14px;padding:8px}#mhk-preview .mhk-search{flex-wrap:wrap}#mhk-preview .mhk-search input{min-width:0;flex:1 1 180px}}
+
+#property-candidates{display:flex;flex-direction:column;align-items:stretch}#mhk-preview .property-candidate{text-align:left;white-space:normal}
+
+#mhk-preview{font-size:16px}#mhk-preview .mhk-pack-detail,#mhk-preview .mhk-result-sub,#mhk-preview .mhk-code-source,#mhk-preview .mhk-codebox-head{font-size:14px}
+
+#mhk-privacy-choice[open]:not(:modal){position:static;inset:auto;margin:0 0 24px;max-width:100%;width:100%;padding:16px;z-index:auto}#mhk-privacy-choice[open]:not(:modal) h2{font-size:18px;margin-bottom:6px}#mhk-privacy-choice[open]:not(:modal) p{margin:6px 0}#mhk-privacy-choice[open]:not(:modal) button{margin-top:8px}

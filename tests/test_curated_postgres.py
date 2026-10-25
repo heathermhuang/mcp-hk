@@ -537,6 +537,14 @@ async def test_gateway_rest_mcp_and_discovery_share_real_backend(
             {"entityId": 1, "version": version},
         ),
     ]
+    cases.append(
+        (
+            "/api/v1/companies",
+            {"q": "foo", "groupBy": "organisation"},
+            "hk_company_search",
+            {"q": "foo", "groupBy": "organisation"},
+        )
+    )
     with TestClient(app) as http:
         responses = [http.get(path, params=params) for path, params, _, _ in cases]
         assert all(response.status_code == 200 for response in responses), [
@@ -686,6 +694,16 @@ def test_official_idempotence_exact_joins_failures_and_rollback(model):
             .format(sql.Identifier(role))
         )
         official = OfficialReader(reader)
+        grouped = official.search(name="10", groupBy="organisation", limit=1)
+        assert grouped["groupBy"] == "organisation"
+        assert len(grouped["data"][0]["matched_names"]) <= 3
+        assert grouped["data"][0]["matched_fact_count"] >= 1
+        grouped_next = official.search(
+            name="10", groupBy="organisation", limit=1, cursor=grouped["nextCursor"]
+        )
+        assert grouped_next["data"][0]["entity_id"] != grouped["data"][0]["entity_id"]
+        with pytest.raises(ReadError, match="does not match"):
+            official.search(name="10", cursor=grouped["nextCursor"])
         first = official.search(name="10", limit=1)
         assert first["nextCursor"]
         assert (
@@ -1299,3 +1317,50 @@ def test_official_address_stages_count_legacy_and_require_enlarged_restore(
         policy.set_stage(conn, 250)
         assert policy.usage(conn)["remaining"] == 150
         assert state.pointer(conn) is None
+
+
+def test_grouped_search_bounds_aliases_before_pagination_and_binds_cursor(model):
+    from psycopg import sql
+
+    version, manifest, reader, role, owner = model
+    # More matching facts than a page; two source entities keep identical names.
+    with connect(owner) as conn:
+        conn.execute(
+            sql.SQL("SET LOCAL search_path TO {},pg_catalog").format(
+                sql.Identifier(schema_name(version))
+            )
+        )
+        for n in range(25):
+            conn.execute(
+                "INSERT INTO entity_names(fact_id,entity_id,language,display_name,search_key,name_kind,until_precision) VALUES(%s,1,'en','Foo shared',%s,'former_name','unknown')",
+                (f"alias-{n:03}", f"foo alias {n:03}"),
+            )
+        conn.execute(
+            "INSERT INTO entity_names(fact_id,entity_id,language,display_name,search_key,name_kind,until_precision) VALUES('same-name',2,'en','Foo shared','foo shared','former_name','unknown')"
+        )
+    local_accept(version, owner)
+    first = reader.search(name="foo", groupBy="organisation", limit=1)
+    assert first["groupBy"] == "organisation"
+    assert first["data"][0]["entity_id"] == 1
+    assert first["data"][0]["matched_fact_count"] == 27
+    assert len(first["data"][0]["matched_names"]) == 3
+    second = reader.search(
+        name="foo", groupBy="organisation", limit=1, cursor=first["nextCursor"]
+    )
+    assert second["data"][0]["entity_id"] == 2
+    assert second["nextCursor"] is None
+    assert {
+        r["display_name"] for r in reader.related(1, "names", limit=100)["data"]
+    } >= {"Foo shared"}
+    assert len(reader.search(name="foo")["data"]) == 20  # default is still name facts
+    with pytest.raises(ReadError, match="does not match"):
+        reader.search(name="foo", cursor=first["nextCursor"])
+    with pytest.raises(ReadError, match="at most 20"):
+        reader.search(name="foo", groupBy="organisation", limit=21)
+    exact = reader.search(
+        namespace="webb:incorporation:1", value="0000123", groupBy="organisation"
+    )
+    assert exact["data"][0]["entity_id"] == 1
+    assert not reader.search(
+        namespace="webb:incorporation:1", value="123", groupBy="organisation"
+    )["data"]

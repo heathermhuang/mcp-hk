@@ -11,7 +11,7 @@
   const title = document.createElement('h2'); title.id='mhk-consent-title';
   const copy = document.createElement('p'), status = document.createElement('p'), privacy = document.createElement('a'), reject = document.createElement('button'), accept = document.createElement('button'), close = document.createElement('button');
   privacy.href='/privacy'; reject.type=accept.type=close.type='button';
-  dialog.append(title,copy,status,privacy,reject,accept,close); document.body.append(dialog);
+  dialog.append(title,copy,status,privacy,reject,accept,close); const main=document.querySelector('.mhk-main');if(main)main.prepend(dialog);else document.body.append(dialog);
   function render() {
     title.textContent=t('analyticsChoiceTitle'); copy.textContent=t('analyticsChoiceCopy'); privacy.textContent=t('privacyTitle');
     reject.textContent=t('analyticsReject'); accept.textContent=t('analyticsAllow'); close.textContent=t('close');

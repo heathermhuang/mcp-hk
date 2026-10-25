@@ -69,7 +69,8 @@
       stamp.textContent = t('coverageAsOf') + ' · ' + new Date(coverage.asOf).toLocaleString(lang === 'en' ? 'en-HK' : 'zh-HK', {timeZone: 'Asia/Hong_Kong', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'}) + ' (HKT)'; box.append(stamp);
     }
   }
-  window.MhkI18n = {get lang() {return lang;}, get locale() {return lang === 'en' ? 'en' : 'zh-Hant';}, t, apply, setLanguage, coverageSummary};
+  function date(value){ if(typeof value==='string'&&/^\d{4}(?:-\d{2})?(?:-\d{2})?$/.test(value))return value;if(value==null||value==='')return t('notChecked');const d=new Date(typeof value==='number'?value*1000:value);return Number.isNaN(d.valueOf())?String(value):d.toLocaleString(lang==='en'?'en-HK':'zh-HK',{timeZone:'Asia/Hong_Kong',dateStyle:'medium',timeStyle:'short',hour12:false})+' HKT';}
+  window.MhkI18n = {date,get lang() {return lang;}, get locale() {return lang === 'en' ? 'en' : 'zh-Hant';}, t, apply, setLanguage, coverageSummary};
   document.querySelectorAll('.mhk-language').forEach(button => button.addEventListener('click', () => setLanguage(lang === 'en' ? 'zh' : 'en')));
   window.addEventListener('popstate', () => { const value = normalize(new URL(location.href).searchParams.get('lang')); if (value && value !== lang) { lang = value; apply(); window.dispatchEvent(new Event('mhk:language')); } });
   apply();

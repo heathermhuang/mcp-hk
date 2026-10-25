@@ -128,6 +128,7 @@ class PlateComparablesQuery(Model):
 
 
 class CompanySearchQuery(Model):
+    groupBy: Literal["organisation"] | None = None
     q: str | None = Field(default=None, min_length=2, max_length=200)
     namespace: str | None = Field(default=None, max_length=100)
     value: str | None = Field(default=None, max_length=200)
@@ -138,6 +139,8 @@ class CompanySearchQuery(Model):
 
     @model_validator(mode="after")
     def choose_search(self):
+        if self.groupBy and self.limit > 20:
+            raise ValueError("Grouped search returns at most 20 organisations")
         if self.q is not None:
             self.q = self.q.strip()
             if len(self.q) < 2 or self.namespace is not None or self.value is not None:

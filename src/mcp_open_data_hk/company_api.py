@@ -8,6 +8,7 @@ from .contracts import CompanySearchQuery, CompanyHistoryQuery, CompanyReadQuery
 def register_company_tools(server, current):
     @server.tool(annotations={"readOnlyHint": True, "destructiveHint": False})
     async def hk_company_search(
+        groupBy: Literal["organisation"] | None = None,
         q: str | None = None,
         namespace: str | None = None,
         value: str | None = None,
@@ -18,6 +19,7 @@ def register_company_tools(server, current):
     ) -> dict:
         """Search organisation name prefixes or explicit identifiers. view=archive selects Enigma; view=latest_observed selects the separately maintained official Registry subset (cr:local:brn, cr:foreign:brn, cr:mlr). Historical observations, not current company verification. Preserve source IDs and leading zeros. Multiple name facts can match one organisation. Pass returned version to detail/history reads and the signed cursor to the next page."""
         query = CompanySearchQuery(
+            groupBy=groupBy,
             q=q,
             namespace=namespace,
             value=value,

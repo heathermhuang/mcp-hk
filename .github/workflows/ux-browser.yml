@@ -1,0 +1,31 @@
+name: UX browser regressions
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  rendered-browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: deploy/cloudflare/package-lock.json
+      - run: pip install -r requirements.lock && pip install --no-deps -e .
+      - run: npm --prefix deploy/cloudflare ci --ignore-scripts
+      - run: cd deploy/cloudflare && npx playwright install --with-deps chromium
+      - name: Render and exercise public journeys
+        run: |
+          PYTHONPATH=src MCP_HK_DATABASE=/tmp/mcp-hk-ux.sqlite3 python -m uvicorn mcp_open_data_hk.api:create_app --factory --host 127.0.0.1 --port 8765 --no-access-log > /tmp/mcp-hk-ux-server.log 2>&1 &
+          for attempt in $(seq 1 30); do curl -fsS http://127.0.0.1:8765/healthz && break; sleep 1; done
+          node deploy/cloudflare/ux-browser.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ux-browser-evidence
+          path: playwright-artifacts/ux/

@@ -19,7 +19,7 @@ function browser(url='https://mcp.hk/',saved=null,denied=false,server=false) {
   const label=new Element();label.dataset.i18n='navData';
   const placeholder=new Element({'data-i18n-placeholder':'datasetPlaceholder'}),button=new Element();
   const link=new Element({href:'/coverage?q=weather#results'}),skip=new Element({href:'#main-content'}),external=new Element({href:'https://data.gov.hk/en/'}),api=new Element({href:'/api/v1/coverage'}),localeLink=new Element({href:'https://mcp.hk/coverage?lang=zh-Hant',hreflang:'zh-Hant'});
-  const nav=['/','/coverage','/connect','/sources'].map(href=>new Element({href}));
+  const nav=['/coverage','/connect','/guides','/sources'].map(href=>new Element({href}));
   const location=new URL(url),events=[],navigations=[];
   location.assign=value=>navigations.push(value);location.replace=value=>navigations.push(value);
   const document={documentElement:server?{dataset:{discovery:'true'},lang:url.includes('lang=zh-Hant')?'zh-Hant':'en'}:{},createElement:()=>new Element(),querySelectorAll:selector=>({'.mhk-navbutton':nav,'[data-i18n]':[label],'[data-i18n-placeholder]':[placeholder],'.mhk-language':[button],'a[href]':[link,skip,external,api,localeLink]}[selector] || [])};
@@ -36,7 +36,7 @@ test('one interactive language switch preserves discovery state without query-be
 });
 test('server-rendered pages retain their canonical locale and switch using a complete document',()=>{
   const en=browser('https://mcp.hk/guides?lang=en','zh',false,true);
-  assert.equal(en.label.textContent,'Browse data');
+  assert.equal(en.label.textContent,'Find data');
   const saved=browser('https://mcp.hk/guides','zh',false,true);
   assert.deepEqual(saved.navigations,['/guides?lang=zh-Hant']);
   en.button.listeners.click();assert.deepEqual(en.navigations,['/guides?lang=zh-Hant']);
@@ -45,7 +45,7 @@ test('server-rendered pages retain their canonical locale and switch using a com
 });
 test('language selection updates UI, accessible labels, URL and persistent navigation',()=>{
   const b=browser();b.button.listeners.click();
-  assert.equal(b.document.documentElement.lang,'zh-Hant');assert.equal(b.label.textContent,'瀏覽數據');
+  assert.equal(b.document.documentElement.lang,'zh-Hant');assert.equal(b.label.textContent,'尋找資料');
   assert.match(b.placeholder.attrs.placeholder,/天氣/);assert.equal(b.button.attrs['aria-label'],'Switch to English');
   assert.equal(b.stored(),'zh');assert.equal(b.location.search,'?lang=zh-Hant');
   assert.equal(b.link.attrs.href,'/coverage?q=weather&lang=zh-Hant#results');
@@ -53,8 +53,8 @@ test('language selection updates UI, accessible labels, URL and persistent navig
   assert.equal(b.external.attrs.href,'https://data.gov.hk/en/');assert.equal(b.api.attrs.href,'/api/v1/coverage');assert.deepEqual(b.events,['mhk:language']);
 });
 test('saved locale survives pages; explicit links override it and storage denial still works',()=>{
-  assert.equal(browser('https://mcp.hk/connect','zh').label.textContent,'瀏覽數據');assert.equal(browser('https://mcp.hk/?lang=en','zh').label.textContent,'Browse data');
-  const b=browser('https://mcp.hk/coverage?lang=zh-Hant',null,true);b.button.listeners.click();assert.equal(b.label.textContent,'Browse data');assert.equal(b.location.search,'?lang=en');
+  assert.equal(browser('https://mcp.hk/connect','zh').label.textContent,'尋找資料');assert.equal(browser('https://mcp.hk/?lang=en','zh').label.textContent,'Find data');
+  const b=browser('https://mcp.hk/coverage?lang=zh-Hant',null,true);b.button.listeners.click();assert.equal(b.label.textContent,'Find data');assert.equal(b.location.search,'?lang=en');
 });
 test('landing and explorer have complete dictionaries and shared language controls',()=>{
   const b=browser(),dictionary=vm.runInContext('translations',b.context);assert.deepEqual(Object.keys(dictionary.en).sort(),Object.keys(dictionary.zh).sort());
@@ -83,7 +83,7 @@ test('static translation does not overwrite generated HTTP/MCP request examples'
 test('primary routes have one active item and examples are outside primary navigation',()=>{
   for(const path of ['/','/coverage','/demo','/plates','/connect','/sources','/data']) for(const lang of ['en','zh-Hant']) {
     const b=browser('https://mcp.hk'+path+'?lang='+lang);
-    const expected=['/demo','/plates'].includes(path)?['/coverage']:[path==='/data'?'/coverage':path];
+    const expected=path==='/'?[]:['/demo','/plates','/data'].includes(path)?['/coverage']:[path];
     assert.deepEqual(b.nav.filter(link=>link.attrs['aria-current']==='page').map(link=>link.attrs.href),expected);
     b.button.listeners.click();
     assert.equal(b.nav.filter(link=>link.attrs['aria-current']==='page').length,expected.length);
@@ -96,7 +96,7 @@ test('data browser shares the same complete navigation and footer as the other p
   assert.equal(shell('legal.html','header'),shell('coverage.html','header'));
   assert.equal(shell('legal.html','footer'),shell('coverage.html','footer'));
   const links=[...shell('coverage.html','header').matchAll(/class="mhk-navbutton"[^>]*href="([^"]+)"/g)].map(m=>m[1]);
-  assert.deepEqual(links,['/','/coverage','/connect','/sources']);
+  assert.deepEqual(links,['/coverage','/connect','/guides','/sources']);
   const examples=read('index.html').match(/<div class="mhk-packs mhk-demos">([\s\S]*?)<\/div>/)[1];
   for(const path of ['/demo','/plates']) assert.ok(examples.includes('href="'+path+'"'),path+' remains accessible as a homepage example');
 });

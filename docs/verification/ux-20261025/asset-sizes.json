@@ -1,0 +1,58 @@
+[
+  {
+    "asset": "index.html",
+    "baselineBytes": 17951,
+    "finalBytes": 18599,
+    "baselineGzip": 5559,
+    "finalGzip": 5672
+  },
+  {
+    "asset": "app.js",
+    "baselineBytes": 19975,
+    "finalBytes": 21570,
+    "baselineGzip": 6197,
+    "finalGzip": 6717
+  },
+  {
+    "asset": "coverage.js",
+    "baselineBytes": 22180,
+    "finalBytes": 28162,
+    "baselineGzip": 6736,
+    "finalGzip": 8469
+  },
+  {
+    "asset": "companies.js",
+    "baselineBytes": 18928,
+    "finalBytes": 21532,
+    "baselineGzip": 5685,
+    "finalGzip": 6207
+  },
+  {
+    "asset": "company-updates.js",
+    "baselineBytes": 13935,
+    "finalBytes": 13527,
+    "baselineGzip": 5251,
+    "finalGzip": 5140
+  },
+  {
+    "asset": "properties.js",
+    "baselineBytes": 5882,
+    "finalBytes": 7944,
+    "baselineGzip": 2008,
+    "finalGzip": 2633
+  },
+  {
+    "asset": "style.css",
+    "baselineBytes": 19193,
+    "finalBytes": 20659,
+    "baselineGzip": 4169,
+    "finalGzip": 4415
+  },
+  {
+    "asset": "translations.js",
+    "baselineBytes": 52928,
+    "finalBytes": 59319,
+    "baselineGzip": 16898,
+    "finalGzip": 19069
+  }
+]

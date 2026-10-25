@@ -50,10 +50,13 @@
     const kind=location.pathname === '/terms' ? 'terms' : 'privacy', lang=MhkI18n.lang;
     const root=document.getElementById('mhk-legal'), title=document.createElement('h1'); title.textContent=MhkI18n.t(kind+'Title'); root.replaceChildren(title);
     document.title=title.textContent+' · mcp.hk';
-    for(const [heading,text] of policies[lang][kind]) { const h=document.createElement('h2'),p=document.createElement('p');h.textContent=heading;p.textContent=text;root.append(h,p); }
+    const summary=document.createElement('p');summary.textContent=lang==='en'?'Reading aid only: the full sections below govern. Public reads require no account. Source rights and service limits apply; optional analytics can be rejected.':'以下為閱讀提示，完整條文以各節內容為準。公開讀取毋須帳戶；仍須遵守來源權利及流量限制，可拒絕可選分析。';root.append(summary);
+    const toc=document.createElement('nav');toc.setAttribute('aria-label',lang==='en'?'On this page':'本頁目錄');policies[lang][kind].forEach(([heading],i)=>{const a=document.createElement('a');a.href='#policy-'+i;a.textContent=heading;toc.append(a,document.createTextNode(' · '));});root.append(toc);
+    let index=0;
+    for(const [heading,text] of policies[lang][kind]) { const h=document.createElement('h2'),p=document.createElement('p');h.id='policy-'+index++;h.textContent=heading;p.textContent=text;root.append(h,p); }
     const links=document.createElement('p');
     for(const [href,label] of [['/terms',MhkI18n.t('termsTitle')],['/privacy',MhkI18n.t('privacyTitle')],['https://data.gov.hk/en/terms-and-conditions','DATA.GOV.HK'],['https://policies.google.com/privacy','Google'],['https://www.cloudflare.com/privacypolicy/','Cloudflare'],['https://github.com/heathermhuang/mcp-hk/issues','mcp.hk GitHub']]) {const a=document.createElement('a');a.href=href;a.textContent=label;links.append(a,document.createTextNode(' · '));}
-    root.append(links); MhkI18n.apply();
+    const choices=document.createElement('button');choices.type='button';choices.textContent=MhkI18n.t('analyticsSettings');choices.addEventListener('click',()=>document.querySelector('[data-analytics-settings]')?.click());root.append(choices);root.append(links); MhkI18n.apply();
   }
   window.addEventListener('mhk:language',render);render();
 })();
