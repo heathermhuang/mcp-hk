@@ -16,6 +16,9 @@ free=$(df -Pk /srv/mcp-hk-curated | awk 'NR==2 {print $4}')
 image=$(docker compose -p curated -f deploy/curated/production.compose.yaml images -q backend)
 docker exec curated-postgres-1 createdb -U postgres "$database"
 docker exec -i curated-postgres-1 pg_restore -U postgres -d "$database" --exit-on-error --single-transaction --no-owner --no-acl < "$file"
+# Logical dumps do not preserve planner statistics. Qualify a prepared restore,
+# without racing asynchronous autovacuum or loosening the read latency gate.
+docker exec curated-postgres-1 vacuumdb -U postgres -d "$database" --analyze-only --schema=curated
 # Exact existing reader only. The restore name is derived from this owning job.
 printf 'REVOKE ALL ON DATABASE "%s" FROM PUBLIC; GRANT CONNECT ON DATABASE "%s" TO curated_reader; GRANT USAGE ON SCHEMA curated TO curated_reader; GRANT SELECT ON ALL TABLES IN SCHEMA curated TO curated_reader;\n' "$database" "$database" | docker exec -i curated-postgres-1 psql -U postgres -d "$database" -v ON_ERROR_STOP=1 > /dev/null
 if docker run --rm --user 0 --read-only --cap-drop ALL --memory 256m --cpus 1 --network curated_default --env-file /etc/mcp-hk-curated/backend.env --mount type=bind,src="$folder",dst=/evidence,readonly "$image" python -m mcp_open_data_hk.curated.official_restore_check --database "$database" --source "/evidence/source-$job.json" --receipt "/evidence/receipt-$job.json" > "$folder/restore-$job.json"; then
