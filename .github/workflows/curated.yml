@@ -35,6 +35,10 @@ jobs:
       - run: PYTHONPATH=src python -m pytest tests/test_curated_postgres.py tests/test_sfc_postgres.py tests/test_hkex_postgres.py tests/test_racing_postgres.py tests/test_webb_sdi_postgres.py -v
         env:
           CURATED_TEST_CONTAINER: ${{ job.services.postgres.id }}
+      - name: Private backend import works without gateway filesystem access
+        run: |
+          docker build -f deploy/curated/Dockerfile -t mcp-hk-curated-smoke .
+          docker run --rm --read-only --network none --entrypoint python mcp-hk-curated-smoke -c "import sys; import mcp_open_data_hk.curated.backend; assert 'mcp_open_data_hk.server' not in sys.modules"
   # Existing main-only workflows do not run on a stacked PR's feature base.
   stacked-python:
     if: github.event_name == 'pull_request' && github.base_ref != 'main'

@@ -1,4 +1,8 @@
-# Working real archive; production activation pending
+# Initial local build receipt
+
+Subsequent production source qualification and consumer activation work is tracked
+in [ACTIVATION.md](ACTIVATION.md). The results below were captured before those
+production steps; they are retained as the original local build receipt.
 
 25 October 2026. The build uses the original already-released Webb archive and its
 existing reuse notice. The earlier new-permission-first sequencing was corrected;
