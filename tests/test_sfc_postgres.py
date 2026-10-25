@@ -208,12 +208,19 @@ def test_policy_revocation_during_run_and_before_read_publication(model):
         state.activate(policy, "0" * 64)
 
 
-def test_physical_restore_every_fact_capture_control_and_pointer(model, tmp_path):
+@pytest.mark.parametrize("history_allowed", [False, True])
+def test_physical_restore_every_fact_capture_control_and_pointer(
+    model, tmp_path, history_allowed
+):
     from psycopg import sql
     from psycopg.conninfo import conninfo_to_dict, make_conninfo
     from mcp_open_data_hk.curated.backup import backup, restore
 
     state, policy, reader, role = model
+    if history_allowed:
+        policy = fake_policy(modes={**policy.modes, "history": "allowed"})
+        state.activate(policy, policy.sha256)
+        reader = SfcReader(reader.reader, policy)
     version, sha, run = stage(state, policy, ("ZZZ001", "ZZZ002"))
     with pytest.raises(Rejected, match="RESTORE_REQUIRED"):
         state.publish(version, None)
@@ -267,6 +274,54 @@ def test_physical_restore_every_fact_capture_control_and_pointer(model, tmp_path
             reader.verify("ZZZ001", mode="history")
         with pytest.raises(ReadError):
             SfcReader(Reader(state.dsn, b"x" * 32), policy).verify("ZZZ001")
+        # A second independently restored version can publish and roll back;
+        # exact version reads retain their original observations throughout.
+        newer, _, _ = stage(state, policy, ("ZZZ001", "ZZZ002"))
+        second = backup(
+            container, config["dbname"], newer, tmp_path / "sfc-second.dump"
+        )
+        second_name = "sfc_restore_" + uuid.uuid4().hex[:10]
+        second_target = State(make_conninfo(**dict(config, dbname=second_name)))
+        with connect(DSN, autocommit=True) as admin:
+            admin.execute(
+                sql.SQL("CREATE DATABASE {}").format(sql.Identifier(second_name))
+            )
+        try:
+            restore(
+                container, second_name, tmp_path / "sfc-second.dump", second["sha256"]
+            )
+            state.qualify_restore(
+                newer, second_target, tmp_path / "sfc-second.dump", second["sha256"]
+            )
+            # Owner-side corruption after restore cannot publish.
+            with state.connection() as c:
+                c.execute(
+                    "UPDATE curated_sfc.corporations SET fact=jsonb_set(fact,'{statusCode}','\"CHANGED\"') WHERE version=%s AND ce='ZZZ001'",
+                    (newer,),
+                )
+            with pytest.raises(Rejected, match="RESTORE_REQUIRED"):
+                state.publish(newer, version)
+            with state.connection() as c:
+                c.execute(
+                    "UPDATE curated_sfc.corporations SET fact=jsonb_set(fact,'{statusCode}','\"SOURCE_ACTIVE\"') WHERE version=%s AND ce='ZZZ001'",
+                    (newer,),
+                )
+            state.publish(newer, version)
+            assert reader.verify("ZZZ001")["version"] == newer
+            if history_allowed:
+                assert reader.verify("ZZZ001", version) == found
+            else:
+                with pytest.raises(ReadError, match="policy"):
+                    reader.verify("ZZZ001", version)
+            assert reader.verify("ZZZ001", newer)["version"] == newer
+            state.publish(version, newer)
+            assert reader.verify("ZZZ001")["version"] == version
+            assert reader.verify("ZZZ001", version) == found
+        finally:
+            with connect(DSN, autocommit=True) as admin:
+                admin.execute(
+                    sql.SQL("DROP DATABASE {}").format(sql.Identifier(second_name))
+                )
         # New failure never changes the accepted pointer or source status.
         failed, _ = state.start(datetime.now(timezone.utc), ["ZZZ001"], policy.sha256)
         a = state.reserve(failed, "ZZZ001", "detail")
@@ -294,3 +349,12 @@ def test_staging_cannot_exceed_reserved_bytes(model):
         state.stage(run, {"ZZZ001": (json.dumps(fake_fact()).encode(), a)})
     with state.connection() as c:
         assert not c.execute("SELECT * FROM curated_sfc.versions").fetchone()
+
+
+def test_unqualified_tracked_identity_cannot_consume_source_budget(model):
+    state, policy, _, _ = model
+    with pytest.raises(Rejected, match="COHORT_UNQUALIFIED"):
+        state.start(datetime.now(timezone.utc), ["ZZZ999"], policy.sha256)
+    with state.connection() as c:
+        assert not c.execute("SELECT * FROM curated_sfc.runs").fetchone()
+        assert not c.execute("SELECT * FROM curated_sfc.budgets").fetchone()
