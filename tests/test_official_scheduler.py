@@ -100,3 +100,103 @@ def test_partial_backfill_still_requests_recovery_milestone(tmp_path):
     assert result.returncode == 1
     assert marker.exists()
     assert '"milestoneNeeded":10' in result.stdout
+
+
+def test_timer_provenance_uses_typed_monotonic_value(tmp_path):
+    for mode in ["freshness", "offsite"]:
+        folder = tmp_path / mode
+        release = folder / "release" / "deploy" / "curated"
+        release.mkdir(parents=True)
+        source = (
+            ROOT
+            / "deploy/curated"
+            / ("run-official.sh" if mode == "freshness" else "run-offsite.sh")
+        )
+        config = folder / "uploader.json"
+        config.write_text("{}")
+        runner = release / source.name
+        state = folder / "state"
+        state.mkdir()
+        runner.write_text(
+            source.read_text()
+            .replace("/etc/mcp-hk-curated/official-uploader.json", str(config))
+            .replace("/srv/mcp-hk-curated", str(state))
+        )
+        executable(release / "backup-official.sh", "exit 0")
+        binaries = folder / "bin"
+        binaries.mkdir()
+        executable(binaries / "flock", "exit 0")
+        executable(binaries / "systemctl", 'printf "1d 5h 42min 31.861600s\\n"')
+        executable(binaries / "busctl", 'printf "t 99999000\\n"')
+        executable(
+            binaries / "awk",
+            'case "$1" in *MemAvailable*) printf "2097152\\n";; *NR==2*) printf "20971520\\n";; *) printf "100000000\\n";; esac',
+        )
+        arguments = folder / "arguments"
+        executable(
+            binaries / "docker",
+            f"""[ "$1" = compose ] && {{ printf 'fixture-image\\n'; exit 0; }}
+printf '%s\\n' "$@" > '{arguments}'
+printf '%s\\n' '{{"status":"success","jobId":""}}'""",
+        )
+        result = subprocess.run(
+            ["sh", str(runner)],
+            env=dict(
+                os.environ,
+                PATH=str(binaries) + ":" + os.environ["PATH"],
+                MCP_HK_MAINTENANCE_LOCK=str(folder / "lock"),
+            ),
+            capture_output=True,
+            text=True,
+        )
+        assert result.returncode == 0, result.stderr
+        values = arguments.read_text().splitlines()
+        stamp = values[values.index("--scheduled-for") + 1]
+        assert stamp.endswith("T05:00:00Z" if mode == "freshness" else "T05:17:00Z")
+        assert "Illegal number" not in result.stderr
+
+
+def test_restore_prepares_statistics_before_reader_qualification(tmp_path):
+    release = tmp_path / "release" / "deploy" / "curated"
+    release.mkdir(parents=True)
+    runner = release / "restore-official.sh"
+    runner.write_text(
+        (ROOT / "deploy/curated/restore-official.sh")
+        .read_text()
+        .replace("/srv/mcp-hk-curated", str(tmp_path))
+    )
+    job = "a" * 32
+    evidence = tmp_path / "official-offsite"
+    evidence.mkdir()
+    (evidence / ("retrieved-" + job + ".dump")).write_bytes(b"retained dump")
+    binaries = tmp_path / "bin"
+    binaries.mkdir()
+    executable(binaries / "stat", 'printf "128\\n"')
+    executable(binaries / "awk", 'printf "20971520\\n"')
+    marker = tmp_path / "analyzed"
+    calls = tmp_path / "calls"
+    executable(
+        binaries / "docker",
+        f"""printf '%s\\n' "$*" >> '{calls}'
+[ "$1" = compose ] && {{ printf 'fixture-image\\n'; exit 0; }}
+case "$*" in
+ *vacuumdb*) touch '{marker}';;
+ *official_restore_check*) [ -f '{marker}' ] || exit 1; printf '%s\\n' '{{"freshOffsiteRestoreVerified":true}}';;
+esac
+exit 0""",
+    )
+    result = subprocess.run(
+        ["sh", str(runner), job],
+        env=dict(os.environ, PATH=str(binaries) + ":" + os.environ["PATH"]),
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    log = calls.read_text()
+    assert "--analyze-only --schema=curated" in log
+    assert (
+        log.index("pg_restore")
+        < log.index("vacuumdb")
+        < log.index("official_restore_check")
+    )
+    assert log.index("official_restore_check") < log.index("dropdb")
