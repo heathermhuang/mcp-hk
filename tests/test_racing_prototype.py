@@ -182,7 +182,7 @@ def test_collection_resume_versions_and_private_reader(store):
     assert len(profile["data"]["appearances"]) == 2
     assert profile["data"]["identity"]["nameZhHant"] == "測試馬"
     with store.connect() as db:
-        assert db.execute("select count(*) from prototype_attempts").fetchone()[0] == 4
+        assert db.execute("select count(*) from racing_attempts").fetchone()[0] == 4
 
     def amended(request):
         q = parse_qs(request.url.query.decode())
@@ -254,6 +254,9 @@ def test_provider_holds_survive_new_collector_and_cannot_be_layout_reconciled(
         prototype_store.Path(prototype_store.__file__)
         .with_name("public_results.py")
         .read_bytes()
+        + prototype_store.Path(prototype_store.__file__)
+        .with_name("normalize.py")
+        .read_bytes()
     ).hexdigest()
     with pytest.raises(RacingRejected, match="HOLD_NOT_RECONCILABLE"):
         store.reconcile_parser_fix(1, digest)
@@ -265,7 +268,7 @@ def test_interrupted_reservation_and_daily_budget_persist(store):
         PrototypeStore(store.path).reserve(BASE)
     with store.connect() as db:
         db.execute(
-            "update prototype_attempts set state='success',bytes=?", (64 * 1024 * 1024,)
+            "update racing_attempts set state='success',bytes=?", (64 * 1024 * 1024,)
         )
     with pytest.raises(RacingRejected, match="DAILY_BUDGET"):
         store.reserve(BASE)
@@ -287,7 +290,7 @@ def test_checksum_detection_and_archive_manifest(store):
         assert "'---" in archive.read("results.csv").decode("utf-8-sig")
     with store.connect() as db:
         db.execute(
-            "update prototype_snapshots set payload=replace(payload,?,?)",
+            "update racing_snapshots set payload=replace(payload,?,?)",
             ("100.39", "100.38"),
         )
     with pytest.raises(RacingRejected, match="CHECKSUM_MISMATCH"):
@@ -344,8 +347,9 @@ async def test_private_rest_mcp_parity_and_local_boundary(store):
         assert (await remote.get("/api/v1/racing/status")).status_code == 403
 
 
-def test_no_production_qualification_change():
-    from mcp_open_data_hk import racing
+def test_private_import_does_not_publish_production(tmp_path):
+    from mcp_open_data_hk.racing_store import RacingStore
 
-    assert racing.status()["data"]["liveQualified"] is False
-    assert racing.status()["data"]["acceptedVersion"] is None
+    public = RacingStore(tmp_path / "production.sqlite3")
+    assert public.meetings() == []
+    assert public.pending() is None

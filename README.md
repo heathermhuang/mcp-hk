@@ -16,6 +16,7 @@ The upstream MIT licence and author attribution are preserved.
   previously accepted snapshot.
 - **District population:** all 18 districts, published reference year, population in
   persons, area and density.
+- **Racing:** stored HKJC factual results and participant identities, explicit coverage, pinned REST/MCP and CSV/JSON downloads. [Racing explorer](https://mcp.hk/racing); [pipeline and limits](docs/verification/racing-20261025/PRODUCTION.md).
 - **SeeHouse / 睇樓:** Hong Kong building search, source-linked sale/rental listings,
   observed asking-price changes and coverage from our existing pipeline. [Search properties](https://mcp.hk/properties). [Pack contract](docs/seehouse.md).
 - **Plate.hk (first external pack):** independent auction-history index, historical

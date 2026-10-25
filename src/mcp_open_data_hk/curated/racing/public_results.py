@@ -271,7 +271,8 @@ def parse_results(text, url):
     ):
         raise RacingRejected("DUPLICATE_OR_EMPTY_RUNNERS")
     winners = [r for r in rows if r["placing"] == 1]
-    if not winners or any(r["status"] != "finished" for r in winners):
+    void = all(r["status"] == "race_void" for r in rows)
+    if (not winners and not void) or any(r["status"] != "finished" for r in winners):
         raise RacingRejected("COMPLETED_RESULTS_REQUIRED")
     details = [cells(tr) for tr in info.one("tbody").all("tr")]
     details = [c for c in details if len(c) >= 3 and c[0].text()]
@@ -285,6 +286,7 @@ def parse_results(text, url):
             "id": race_id,
             "number": number,
             "annualIndex": annual_index,
+            "status": "void" if void else "completed",
             "distanceM": int(distance[1]),
             "classRaw": details[0][0].text(),
             "goingRaw": details[0][2].text(),

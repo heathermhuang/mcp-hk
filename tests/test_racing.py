@@ -24,7 +24,6 @@ from mcp_open_data_hk.curated.racing.validate import validate_bundle
 from mcp_open_data_hk.api import create_app
 from mcp_open_data_hk.services import Service
 from mcp_open_data_hk.storage import Store
-from mcp_open_data_hk import racing
 
 
 def row(**changes):
@@ -199,32 +198,30 @@ def test_export_exactness_manifest_safe_paths_and_denial():
 
 
 @pytest.mark.asyncio
-async def test_public_rest_mcp_gate_no_traffic_or_fake_empty(tmp_path):
+async def test_public_rest_mcp_empty_state_has_no_fake_data_or_scrape(tmp_path):
     service = Service(Store(str(tmp_path / "racing.sqlite")))
     app = create_app(service)
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app), base_url="http://testserver"
     ) as client:
         status = await client.get("/api/v1/racing/status")
-        assert status.json() == racing.status()
-        for route in (
-            "races",
-            "races/a/results",
-            "participants/a",
-            "observations",
-            "exports",
-        ):
-            response = await client.get(
-                "/api/v1/racing/" + route + "?enabled=true&url=https://evil.test"
-            )
-            assert response.status_code == 503
-            assert response.json()["error"]["code"] == "RACING_SOURCE_UNQUALIFIED"
+        assert status.json()["data"]["state"] == "ingestion_in_progress"
+        response = await client.get("/api/v1/racing/races")
+        assert response.status_code == 503
+        assert response.json()["error"]["code"] == "RACING_DATA_NOT_READY"
+        assert (
+            await client.get("/api/v1/racing/races?enabled=true&url=https://evil.test")
+        ).status_code == 400
         schema = (await client.get("/openapi.json")).json()
-        assert "/api/v1/racing/status" in schema["paths"]
-        assert "/api/v1/racing/races" not in schema["paths"]
+        assert "/api/v1/racing/races" in schema["paths"]
         tools = await app.state.mcp.get_tools()
-        assert "hk_racing_status" in tools and "hk_racing_search" not in tools
-        assert tools["hk_racing_status"].fn() == racing.status()
+        assert {
+            "hk_racing_status",
+            "hk_racing_search",
+            "hk_racing_results",
+            "hk_racing_profile",
+        } <= tools.keys()
+        assert (await tools["hk_racing_status"].fn())["data"]["acceptedVersion"] is None
 
 
 @pytest.mark.parametrize("chinese", [False, True])

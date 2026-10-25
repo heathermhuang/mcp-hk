@@ -248,7 +248,7 @@ async def test_mcp_http_parity_and_preserved_tools(service):
     app = create_app(service)
     async with Client(app.state.mcp) as client:
         tools = await client.list_tools()
-        assert len(tools) == 32
+        assert len(tools) == 35
         assert {
             "hk_sfc_status",
             "hk_hkex_status",

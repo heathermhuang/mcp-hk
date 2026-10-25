@@ -199,10 +199,14 @@ def register_operations(app, service):
         path, digest = await asyncio.to_thread(
             checkpoint, service.store.path, compresslevel
         )
+        candidate = await asyncio.to_thread(service.racing.store.pending)
         return FileResponse(
             path,
             media_type="application/gzip",
-            headers={"X-Snapshot-SHA256": digest},
+            headers={
+                "X-Snapshot-SHA256": digest,
+                **({"X-Racing-Candidate": candidate} if candidate else {}),
+            },
             background=BackgroundTask(path.unlink, missing_ok=True),
         )
 
@@ -211,6 +215,73 @@ def register_operations(app, service):
         if not authorized(request.headers.get("authorization")):
             raise DomainError("NOT_FOUND", "Not found", 404)
         return await send_checkpoint()
+
+    @app.post("/__ops/racing", include_in_schema=False)
+    async def racing_operator(request: Request):
+        if not authorized(request.headers.get("authorization")):
+            raise DomainError("NOT_FOUND", "Not found", 404)
+        if refresh_lock.locked():
+            raise DomainError("REFRESH_IN_PROGRESS", "Another refresh is running", 409)
+        raw = bytearray()
+        async for chunk in request.stream():
+            raw.extend(chunk)
+            if len(raw) > 16 * 1024 * 1024:
+                raise DomainError("BODY_LIMIT", "Racing import exceeds bound", 413)
+        import json
+        from .curated.racing.policy import RacingRejected
+
+        try:
+            body = json.loads(raw)
+            async with refresh_lock:
+                if body.get("action") == "import":
+                    await asyncio.to_thread(
+                        service.racing.store.import_bundle, body["bundle"]
+                    )
+                elif body.get("action") == "enqueue":
+                    await asyncio.to_thread(
+                        service.racing.store.enqueue,
+                        body["meetings"],
+                        body.get("refresh", False),
+                    )
+                elif body.get("action") == "advance":
+                    await asyncio.to_thread(service.racing.advance, 40)
+                elif body.get("action") == "calendar":
+                    await asyncio.to_thread(
+                        service.racing.store.calendar, body["year"], body["month"]
+                    )
+                elif body.get("action") == "reconcile_parser":
+                    await asyncio.to_thread(
+                        service.racing.store.reconcile_parser_fix,
+                        body["attempt"],
+                        body["transformSha256"],
+                    )
+                else:
+                    raise DomainError(
+                        "INVALID_QUERY", "Unknown racing operator action", 400
+                    )
+                return await send_checkpoint(compresslevel=1)
+        except (ValueError, KeyError, TypeError, RacingRejected) as exc:
+            raise DomainError(
+                "RACING_INGEST_REJECTED",
+                "Racing import/collection was not accepted; inspect the preserved source receipt",
+                400,
+            ) from exc
+
+    @app.post("/__ops/racing/qualify", include_in_schema=False)
+    async def racing_qualify(request: Request):
+        if not authorized(request.headers.get("authorization")):
+            raise DomainError("NOT_FOUND", "Not found", 404)
+        raw = await request.body()
+        if len(raw) > 1024:
+            raise DomainError("BODY_LIMIT", "Qualification body exceeds bound", 413)
+        import json
+
+        body = json.loads(raw)
+        async with refresh_lock:
+            await asyncio.to_thread(
+                service.racing.qualify_checkpoint, body["version"], body["backupSha256"]
+            )
+            return await send_checkpoint(compresslevel=1)
 
     @app.post("/__ops/refresh", include_in_schema=False)
     async def refresh_data(request: Request, pack: str):
@@ -223,6 +294,7 @@ def register_operations(app, service):
             "catalogue",
             "resources",
             "resources-recovery",
+            "racing",
         }:
             raise DomainError("INVALID_PACK", "Unknown pack", 400)
         if refresh_lock.locked():
@@ -230,6 +302,9 @@ def register_operations(app, service):
         from .ingest import refresh
 
         async with refresh_lock:
+            if pack == "racing":
+                await asyncio.to_thread(service.racing.advance, 40)
+                return await send_checkpoint(compresslevel=1)
             if pack == "catalogue":
                 from .catalogue_sync import sync
 
@@ -244,6 +319,8 @@ def register_operations(app, service):
                 )
 
                 recovery = pack == "resources-recovery"
+                # One bounded source step; unchanged/held racing never blocks other packs.
+                await asyncio.to_thread(service.racing.advance, 1)
                 await service.resources.audit(
                     RECOVERY_BATCH_SIZE if recovery else BATCH_SIZE,
                     max_seconds=RECOVERY_SECONDS if recovery else RUN_SECONDS,
