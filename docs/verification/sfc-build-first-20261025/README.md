@@ -57,7 +57,7 @@ One bounded internal development read used an exact CE already present in our
 Webb archive. The 21,035-byte licence page matched the legacy `licRecordData`
 protocol and parsed all five declared source intervals. Its raw checksum was
 `e3262ec6d17793829b5bdf7333cca43d349dacf81da70c83b7e376687e6fd3e4`.
-Raw source bytes remain in ignored private development storage. This small read
+Raw source bytes from interface inspection remain in ignored private development storage. This small read
 proves the interface/parser path; it is not a register-wide coverage, current-status,
 public redistribution, daily-update or full 25-corporation acceptance claim.
 
@@ -92,3 +92,16 @@ The fixed route template is `https://apps.sfc.hk/publicregWeb/corp/{ce}/licences
 An unknown policy cannot enable public fresh results. The build proceeds using
 Webb's existing grant and internal development evidence; a paid-feed/licence
 purchase or unsolicited provider outreach is not part of this work.
+
+
+## Real private collector run
+
+The complete implemented collector was subsequently run for one exact archived CE
+under the explicit `connector_development` purpose, with **one source read allowed**
+and every public output mode denied. It fetched the actual official page, parsed
+and staged all five expected activity intervals, reconciled the supplied dates,
+then made a physical backup and restored it into a second isolated PostgreSQL DB.
+All ten source tables and all facts matched. No accepted/public pointer was created.
+Both disposable databases and the development dump were removed after proof.
+See [the source-free aggregate receipt](real-pipeline.json). This is an internal
+working-build observation, not an unattended job or a public fresh-feed launch.

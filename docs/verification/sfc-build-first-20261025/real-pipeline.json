@@ -1,0 +1,17 @@
+{
+  "scope": "private connector development only",
+  "cohortCount": 1,
+  "networkReads": 1,
+  "allFiveIntervalsIndependentlyReconciled": true,
+  "unknownOverallStatusPreserved": true,
+  "sourceCutoffUnknown": true,
+  "exactRawDatesPreserved": true,
+  "rawHtmlRetainedByCollector": false,
+  "allTenSourceTablesRestored": true,
+  "allFactsEqualAfterRestore": true,
+  "privateBackupSha256": "03a83e1f5e1594abc89831e85b2bab1916526974e79b23548febe802eafc033c",
+  "noPublishedPointer": true,
+  "allPublicModesDenied": true,
+  "noProductionMutation": true,
+  "enquirySent": false
+}
