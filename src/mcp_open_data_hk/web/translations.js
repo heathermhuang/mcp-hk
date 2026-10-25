@@ -1,6 +1,8 @@
 /* Shared UI strings. Source records and API identifiers remain in their original language. */
 const translations = {
   "en": {
+    "racingTitle": "Racing results",
+    "racingIntro": "Browse factual results, withdrawals and participant identities. Coverage and observation times are shown for every imported meeting.",
     "rawSourceQualification": "Raw source response. Headers, units and analytical meaning have not been semantically verified.",
     "validationRefreshDue": "The previous read is outside the query-cache window. A new source read is needed before treating it as recently validated.",
     "validationCounts": "{expired} previously read sources need a query-cache refresh; {due} are due for cadence-based review. Neither count measures the age of the underlying observations.",
@@ -580,6 +582,8 @@ const translations = {
     "webbVersion": "Pinned archive version"
   },
   "zh": {
+    "racingTitle": "賽馬賽果",
+    "racingIntro": "查閱實際賽果、退出記錄及參賽者身份。每個賽事日均列明覆蓋範圍及觀測時間。",
     "rawSourceQualification": "原始來源回應。欄位標題、單位及分析含義尚未經語義核實。",
     "validationRefreshDue": "上次讀取已超出查詢快取時限。必須重新讀取來源，才可視為近期已驗證。",
     "validationCounts": "曾讀取的來源中，{expired} 個已超出查詢快取時限，{due} 個已到按更新頻率覆核的時間。這些數字不代表原始觀察紀錄的年齡。",

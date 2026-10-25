@@ -5,6 +5,16 @@ import unicodedata
 from .sources import SOURCES, available_packs
 
 DISPLAY = {
+    "racing": (
+        "Hong Kong racing results",
+        "香港賽馬賽果",
+        "Browse actual racing results, withdrawals and participant identities with version-pinned downloads and explicit coverage.",
+        "查閱實際賽果、退出記錄、參賽者身份，以及指定版本下載和覆蓋範圍。",
+        "racing hkjc horse jockey trainer race results odds 賽馬 賽果 馬匹 騎師 練馬師 跑馬地 沙田",
+        "/racing",
+        "Browse racing results",
+        "查看賽馬賽果",
+    ),
     "addresses": (
         "Hong Kong address lookup",
         "香港地址查詢",

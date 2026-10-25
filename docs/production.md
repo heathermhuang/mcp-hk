@@ -451,3 +451,11 @@ remain unresolved. A live dataset release still requires its real cohort,
 route/parser/output qualification, atomic source pointer, source-scoped offsite
 restore and ordinary occurrence. Do not silently apply `003_sfc.sql`, enable a
 collector or add SFC to the CR offsite inventory during an unrelated gateway release.
+
+## Racing factual results
+
+The [racing pipeline](verification/racing-20261025/PRODUCTION.md) uses source-specific
+SQLite tables in the existing full R2 checkpoint, with Durable Object admission
+before each provider request. A candidate is restored from R2 and compared before
+its accepted pointer advances. Racing reads never collect. The existing five
+schedules are preserved; resource maintenance performs one bounded racing step.

@@ -11,30 +11,43 @@ from pathlib import Path
 
 import httpx
 
-from .policy import RacingRejected, canonical, checksum
+from .policy import RacingRejected, canonical, checksum, utc
 from .public_results import parse_results, result_url
 
 MAX_PAGE = 400 * 1024
 
 
-class PrototypeStore:
+class ResultsStore:
+    version_prefix = "private-results-v1-"
+
     def __init__(self, filename):
         self.path = Path(filename).resolve()
         self.path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
         with self.connect() as db:
+            db.execute("BEGIN IMMEDIATE")
+            existing = {
+                r[0]
+                for r in db.execute("SELECT name FROM sqlite_master WHERE type='table'")
+            }
+            for suffix in ("pages", "attempts", "snapshots", "current"):
+                old, new = "prototype_" + suffix, "racing_" + suffix
+                if old in existing:
+                    if new in existing:
+                        raise RacingRejected("RACING_NAMESPACE_CONFLICT")
+                    db.execute(f"ALTER TABLE {old} RENAME TO {new}")
             db.executescript(
                 """
-                CREATE TABLE IF NOT EXISTS prototype_pages(
+                CREATE TABLE IF NOT EXISTS racing_pages(
                     url TEXT PRIMARY KEY, observed TEXT NOT NULL,
                     sha256 TEXT NOT NULL, bytes INTEGER NOT NULL, payload TEXT NOT NULL);
-                CREATE TABLE IF NOT EXISTS prototype_attempts(
+                CREATE TABLE IF NOT EXISTS racing_attempts(
                     id INTEGER PRIMARY KEY, at REAL NOT NULL, url TEXT NOT NULL,
                     state TEXT NOT NULL, bytes INTEGER NOT NULL DEFAULT 409600,
                     error TEXT);
-                CREATE TABLE IF NOT EXISTS prototype_snapshots(
+                CREATE TABLE IF NOT EXISTS racing_snapshots(
                     version TEXT PRIMARY KEY, meeting TEXT NOT NULL,
                     created TEXT NOT NULL, payload TEXT NOT NULL);
-                CREATE TABLE IF NOT EXISTS prototype_current(
+                CREATE TABLE IF NOT EXISTS racing_current(
                     meeting TEXT PRIMARY KEY, version TEXT NOT NULL);
             """
             )
@@ -54,13 +67,14 @@ class PrototypeStore:
         """Reconcile a known completed-response parser failure; never HTTP/unknown holds."""
         actual = hashlib.sha256(
             Path(__file__).with_name("public_results.py").read_bytes()
+            + Path(__file__).with_name("normalize.py").read_bytes()
         ).hexdigest()
         if parser_sha256 != actual:
             raise RacingRejected("DEVELOPMENT_FIX_CHECKSUM_MISMATCH")
         with self.connect() as db:
             db.execute("BEGIN IMMEDIATE")
             changed = db.execute(
-                "UPDATE prototype_attempts SET state='reviewed_parser',error=error||? WHERE id=? AND state='held' AND error IN ('PUBLIC_RESULTS_LAYOUT_DRIFT','INVALID_RACING_ID')",
+                "UPDATE racing_attempts SET state='reviewed_parser',error=error||? WHERE id=? AND state='held' AND error IN ('PUBLIC_RESULTS_LAYOUT_DRIFT','INVALID_RACING_ID','UNKNOWN_RESULT_CODE')",
                 ("; reviewed parser correction:" + parser_sha256, attempt),
             ).rowcount
             if changed != 1:
@@ -81,7 +95,7 @@ class PrototypeStore:
     def page(self, url):
         with self.connect() as db:
             row = db.execute(
-                "SELECT * FROM prototype_pages WHERE url=?", (url,)
+                "SELECT * FROM racing_pages WHERE url=?", (url,)
             ).fetchone()
         return dict(row) if row else None
 
@@ -91,17 +105,17 @@ class PrototypeStore:
         with self.connect() as db:
             db.execute("BEGIN IMMEDIATE")
             if db.execute(
-                "SELECT 1 FROM prototype_attempts WHERE state IN ('reserved','held','unknown') LIMIT 1"
+                "SELECT 1 FROM racing_attempts WHERE state IN ('reserved','held','unknown') LIMIT 1"
             ).fetchone():
                 raise RacingRejected("DEVELOPMENT_SOURCE_HELD")
             count, size = db.execute(
-                "SELECT count(*),coalesce(sum(bytes),0) FROM prototype_attempts WHERE at>=?",
+                "SELECT count(*),coalesce(sum(bytes),0) FROM racing_attempts WHERE at>=? AND state<>'admission_denied'",
                 (day,),
             ).fetchone()
             if count >= 200 or size + MAX_PAGE > 64 * 1024 * 1024:
                 raise RacingRejected("DEVELOPMENT_DAILY_BUDGET")
             cur = db.execute(
-                "INSERT INTO prototype_attempts(at,url,state) VALUES(?,?,'reserved')",
+                "INSERT INTO racing_attempts(at,url,state) VALUES(?,?,'reserved')",
                 (now, url),
             )
             return cur.lastrowid
@@ -109,22 +123,22 @@ class PrototypeStore:
     def settled(self, attempt, state, size, error=None, page=None):
         with self.connect() as db:
             db.execute(
-                "UPDATE prototype_attempts SET state=?,bytes=?,error=? WHERE id=?",
+                "UPDATE racing_attempts SET state=?,bytes=?,error=? WHERE id=?",
                 (state, size, error, attempt),
             )
             if page:
                 db.execute(
-                    "INSERT OR REPLACE INTO prototype_pages VALUES(?,?,?,?,?)", page
+                    "INSERT OR REPLACE INTO racing_pages VALUES(?,?,?,?,?)", page
                 )
 
     def publish(self, payload):
         if len(canonical(payload)) > 2 * 1024 * 1024:
             raise RacingRejected("DEVELOPMENT_OUTPUT_LIMIT")
-        version = "private-results-v1-" + checksum(payload)
+        version = self.version_prefix + checksum(payload)
         payload = dict(payload, version=version)
         with self.connect() as db:
             db.execute(
-                "INSERT OR IGNORE INTO prototype_snapshots VALUES(?,?,?,?)",
+                "INSERT OR IGNORE INTO racing_snapshots VALUES(?,?,?,?)",
                 (
                     version,
                     payload["meeting"]["id"],
@@ -133,7 +147,7 @@ class PrototypeStore:
                 ),
             )
             db.execute(
-                "INSERT OR REPLACE INTO prototype_current VALUES(?,?)",
+                "INSERT OR REPLACE INTO racing_current VALUES(?,?)",
                 (payload["meeting"]["id"], version),
             )
         return payload
@@ -142,12 +156,12 @@ class PrototypeStore:
         with self.connect() as db:
             if version:
                 row = db.execute(
-                    "SELECT payload FROM prototype_snapshots WHERE version=?",
+                    "SELECT payload FROM racing_snapshots WHERE version=?",
                     (version,),
                 ).fetchone()
             else:
                 rows = db.execute(
-                    "SELECT s.payload FROM prototype_snapshots s JOIN prototype_current c ON s.version=c.version ORDER BY s.created DESC LIMIT 100"
+                    "SELECT s.payload FROM racing_snapshots s JOIN racing_current c ON s.version=c.version ORDER BY s.created DESC LIMIT 100"
                 ).fetchall()
                 row = next(
                     (
@@ -163,7 +177,7 @@ class PrototypeStore:
         payload = json.loads(row[0])
         original = dict(payload)
         found_version = original.pop("version")
-        if found_version != "private-results-v1-" + checksum(original):
+        if found_version != self.version_prefix + checksum(original):
             raise RacingRejected("DEVELOPMENT_SNAPSHOT_CHECKSUM_MISMATCH")
         if (
             day
@@ -177,7 +191,7 @@ class PrototypeStore:
     def meetings(self):
         with self.connect() as db:
             rows = db.execute(
-                "SELECT s.payload FROM prototype_snapshots s JOIN prototype_current c ON s.version=c.version ORDER BY s.created DESC LIMIT 100"
+                "SELECT s.payload FROM racing_snapshots s JOIN racing_current c ON s.version=c.version ORDER BY s.created DESC LIMIT 100"
             ).fetchall()
         return [
             {
@@ -191,25 +205,46 @@ class PrototypeStore:
         ]
 
 
+PrototypeStore = ResultsStore
+
+
 class PilotCollector:
-    def __init__(self, store, client=None, refresh=False):
+    validate_url = staticmethod(result_url)
+    parse_page = staticmethod(parse_results)
+
+    def __init__(
+        self,
+        store,
+        client=None,
+        refresh=False,
+        max_requests=40,
+        max_seconds=600,
+        refresh_after=None,
+    ):
         self.store = store
         self.client = client
         self.refresh = refresh
+        self.max_requests = min(40, max_requests)
+        self.max_seconds = min(600, max_seconds)
+        self.refresh_after = refresh_after or (
+            datetime.now(timezone.utc).isoformat() if refresh else None
+        )
         self.attempts = self.bytes = 0
         self.started = time.monotonic()
 
     def fetch(self, url, client):
-        result_url(url)
+        self.validate_url(url)
         cached = self.store.page(url)
-        if cached and not self.refresh:
+        if cached and (
+            not self.refresh_after or utc(cached["observed"]) >= utc(self.refresh_after)
+        ):
             return json.loads(cached["payload"]), {
                 k: cached[k] for k in ("url", "observed", "sha256", "bytes")
             }
         if (
-            self.attempts >= 40
+            self.attempts >= self.max_requests
             or self.bytes + MAX_PAGE > 16 * 1024 * 1024
-            or time.monotonic() - self.started >= 600
+            or time.monotonic() - self.started >= self.max_seconds
         ):
             raise RacingRejected("DEVELOPMENT_RUN_BUDGET")
         attempt = self.store.reserve(url)
@@ -230,7 +265,7 @@ class PilotCollector:
                     raw.extend(chunk)
                     if len(raw) > MAX_PAGE:
                         raise RacingRejected("RESULT_BODY_LIMIT")
-            parsed = parse_results(raw.decode("utf-8"), url)
+            parsed = self.parse_page(raw.decode("utf-8"), url)
         except RacingRejected as exc:
             self.store.settled(attempt, "held", MAX_PAGE, str(exc))
             raise
@@ -258,7 +293,7 @@ class PilotCollector:
     def collect(self, day, venue):
         if (
             venue not in {"ST", "HV"}
-            or date.fromisoformat(day) >= datetime.now(timezone.utc).date()
+            or date.fromisoformat(day) > datetime.now(timezone.utc).date()
         ):
             raise RacingRejected("COMPLETED_PAST_MEETING_REQUIRED")
         base = (
@@ -271,9 +306,9 @@ class PilotCollector:
             self.store.collector_lock(),
             self.client
             or httpx.Client(
-                timeout=40,
+                timeout=15,
                 follow_redirects=False,
-                headers={"User-Agent": "mcp.hk-private-development/1.0"},
+                headers={"User-Agent": "mcp.hk-racing/1.0"},
             ) as client,
         ):
             first, receipt = self.fetch(base, client)

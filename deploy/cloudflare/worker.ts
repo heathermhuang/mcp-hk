@@ -11,6 +11,8 @@ import {relayApprovedSource} from './source-relay';
 import {saveOverview, serveOverview} from './overview';
 import {normalizeBackendResponse, recoveringResponse} from './recovery';
 import {saveBackup, requireCheckpoint, safeOperationError} from './backup';
+import {completeRacingPublication} from './racing-publication';
+import {RacingAdmission} from './racing-admission';
 import {curatedContainerEnv} from './curated';
 import {UsageStore, LIMITS, clientKey, describeRequest, meterResponse} from './usage';
 
@@ -62,6 +64,13 @@ export class AgentAuth extends DurableObject<Env> {
 }
 
 export class McpContainer extends Container<Env> {
+  racingAdmission(input:{action:string;id?:string;state?:string;bytes?:number;code?:string|null}){
+    const admission=new RacingAdmission(this.ctx.storage.sql);
+    if(input.action==='reserve')return admission.reserve(String(input.id));
+    if(input.action==='settle')return admission.settle(String(input.id),String(input.state),Number(input.bytes),input.code??null);
+    if(input.action==='status')return admission.report();
+    throw new Error('RACING_ADMISSION_ACTION');
+  }
   private downloads = companyDownloads(this.env.BACKUPS);
   defaultPort = 8000;
   // Keep the runtime warm across the five-minute review cadence.
@@ -85,6 +94,35 @@ export class McpContainer extends Container<Env> {
     const owner = await this.claimSeedLease();
     try {return await publishCompanyDownload(this.env.BACKUPS,input);}
     finally {await this.releaseSeedLease(owner);}
+  }
+
+  private async acceptRacingCandidate(response: Response, receipt: Awaited<ReturnType<typeof saveBackup>>) {
+    return completeRacingPublication(response,receipt,
+      (version,digest)=>this.containerFetch(`${this.env.PUBLIC_ORIGIN}/__ops/racing/qualify`,{method:'POST',headers:{'Authorization':`Bearer ${this.env.OPS_TOKEN}`,'x-mcp-edge-token':this.env.OPS_TOKEN,'Content-Type':'application/json'},body:JSON.stringify({version,backupSha256:digest})}),
+      accepted=>saveBackup(this.env,accepted,'racing-accepted'));
+  }
+
+  async racingOperation(body: Uint8Array) {
+    const health=await this.containerFetch(`${this.env.PUBLIC_ORIGIN}/healthz`,{headers:{'x-mcp-edge-token':this.env.OPS_TOKEN},signal:AbortSignal.timeout(15000)});
+    if(!health.ok||JSON.parse(new TextDecoder().decode(await boundedBody(health,2000))).racingPipeline!=='results-r2-v1')throw new Error('RACING_PIPELINE_RUNTIME_NOT_READY');
+    const owner=await this.claimSeedLease();
+    try {
+      const input=JSON.parse(new TextDecoder().decode(body));
+      if(input.action==='import'){
+        const attempts=input.bundle?.attempts;if(!Array.isArray(attempts)||attempts.length>200)throw new Error('RACING_IMPORT_ATTEMPTS');
+        const events=[];
+        for(const attempt of attempts){
+          if(typeof attempt.url!=='string'||!attempt.url.startsWith('https://racing.hkjc.com/')||!['success','reviewed_parser','reviewed_layout','reviewed_input'].includes(attempt.state))throw new Error('RACING_IMPORT_RECEIPT');
+          const raw=new TextEncoder().encode(attempt.url+'\0'+attempt.at),hash=await crypto.subtle.digest('SHA-256',raw);
+          events.push({id:'import-'+Array.from(new Uint8Array(hash),b=>b.toString(16).padStart(2,'0')).join(''),at:Number(attempt.at)*1000,bytes:Number(attempt.bytes)});
+        }
+        new RacingAdmission(this.ctx.storage.sql).seed(events);
+      }
+      const response=await this.containerFetch(`${this.env.PUBLIC_ORIGIN}/__ops/racing`,{method:'POST',headers:{'Authorization':`Bearer ${this.env.OPS_TOKEN}`,'x-mcp-edge-token':this.env.OPS_TOKEN,'Content-Type':'application/json'},body});
+      if(!response.ok){await response.body?.cancel();throw new Error('RACING_OPERATION_REJECTED');}
+      const receipt=await saveBackup(this.env,response,'racing-operator');
+      return await this.acceptRacingCandidate(response,receipt);
+    } finally {await this.releaseSeedLease(owner);}
   }
 
   async runScheduled(pack: string, scheduledAt: number) {
@@ -134,6 +172,7 @@ export class McpContainer extends Container<Env> {
     // already replaced by the trusted edge Worker for quota accounting.
     const headers = dataRequestHeaders(request,request.headers.get('x-mcp-client-ip')||'unknown');
     headers.set('x-mcp-edge-token', this.env.OPS_TOKEN);
+    headers.set('x-mcp-racing-budget',JSON.stringify(new RacingAdmission(this.ctx.storage.sql).report()));
     const forwarded = new Request(request.url, {method: request.method, headers, body: body ?? request.body, redirect:'manual'});
     let response: Response;
     try { response = await this.downloads(forwarded) || await this.containerFetch(forwarded); }
@@ -148,6 +187,7 @@ export class McpContainer extends Container<Env> {
 
   async maintain(pack: string) {
     new UsageStore(this.ctx.storage.sql).cleanup();
+    new RacingAdmission(this.ctx.storage.sql).cleanup();
     const now = Date.now();
     const lease = await this.ctx.storage.get<number>('maintenanceLease');
     if (lease && lease > now) throw new Error('Maintenance already running');
@@ -174,7 +214,8 @@ export class McpContainer extends Container<Env> {
       const path = pack === 'backup' ? '/__ops/backup' : `/__ops/refresh?pack=${pack}`;
       const response = await this.containerFetch(`${this.env.PUBLIC_ORIGIN}${path}`, {method: 'POST', headers: {'Authorization': `Bearer ${this.env.OPS_TOKEN}`, 'x-mcp-edge-token': this.env.OPS_TOKEN}});
       if (!response.ok) throw new Error(`Maintenance source returned ${response.status}`);
-      const receipt = await saveBackup(this.env, response, pack);
+      const saved = await saveBackup(this.env, response, pack);
+      const receipt = await this.acceptRacingCandidate(response,saved);
       let overview;
       try { overview = await this.publishOverview(); }
       catch (error) { overview = {status: 'failed', error: safeOperationError(error, this.env.OPS_TOKEN)}; }
@@ -261,6 +302,16 @@ export default {
     }
     if (url.pathname.startsWith('/__ops/')) {
       if (!(await authorized(request, env.OPS_TOKEN))) return new Response('Not found', {status: 404});
+      if(url.pathname==='/__ops/racing'&&request.method==='POST') {
+        try {
+          const body=await boundedBody(request,16*1024*1024);
+          return Response.json(await env.APP.get(env.APP.idFromName('production')).racingOperation(body),{headers:{'Cache-Control':'no-store'}});
+        } catch {return Response.json({error:{code:'RACING_OPERATION_NOT_CONFIRMED',message:'Inspect the preserved source/candidate receipt and owning lease before retrying.'}},{status:409,headers:{'Cache-Control':'no-store'}});}
+      }
+      if(url.pathname==='/__ops/racing/admission'&&request.method==='POST'){
+        try {const input=JSON.parse(new TextDecoder().decode(await boundedBody(request,1024)));return Response.json(await env.APP.get(env.APP.idFromName('production')).racingAdmission(input),{headers:{'Cache-Control':'no-store'}});}
+        catch {return Response.json({error:{code:'RACING_ADMISSION_NOT_CONFIRMED'}},{status:409});}
+      }
       if(url.pathname==='/__ops/agent-auth/revoke-all'&&request.method==='POST') {
         await env.AGENT_AUTH.get(env.AGENT_AUTH.idFromName('production')).revokeAll();
         return Response.json({revoked:true},{headers:{'Cache-Control':'no-store'}});
@@ -298,7 +349,7 @@ export default {
       }
       if (url.pathname === '/__ops/run' && request.method === 'POST') {
         const pack = maintenancePackForRequest(url.searchParams.get('pack') || 'backup');
-        if (!['backup', 'restaurants', 'population', 'all', 'catalogue', 'resources'].includes(pack)) return new Response('Invalid pack', {status: 400});
+        if (!['backup', 'restaurants', 'population', 'all', 'catalogue', 'resources', 'racing'].includes(pack)) return new Response('Invalid pack', {status: 400});
         return maintenanceResponse(env.APP.get(env.APP.idFromName('production')), pack, error => safeOperationError(error, env.OPS_TOKEN));
       }
       if (url.pathname === '/__ops/publish-overview' && request.method === 'POST') return Response.json(await env.APP.get(env.APP.idFromName('production')).publishOverview());

@@ -52,6 +52,14 @@ SOURCES = {
         "accessMode": "live_api",
         "termsUrl": "https://plate.hk/about.html",
     },
+    "racing": {
+        "sourceUrl": "https://racing.hkjc.com/en-us/local/information/localresults",
+        "attribution": "The Hong Kong Jockey Club public factual racing results; independent mcp.hk dataset",
+        "provider": "The Hong Kong Jockey Club",
+        "providerType": "independent",
+        "accessMode": "stored_factual_results",
+        "freshnessSeconds": 86400,
+    },
 }
 
 PACKS = [
@@ -109,6 +117,24 @@ PACKS = [
             "hk_property_building",
             "hk_property_price_history",
             "hk_property_coverage",
+        ],
+    },
+    {
+        "id": "racing",
+        "title": "Hong Kong racing results and participant identities",
+        "provider": "The Hong Kong Jockey Club",
+        "providerType": "independent",
+        "accessMode": "stored_factual_results",
+        "http": [
+            "/api/v1/racing/status",
+            "/api/v1/racing/races",
+            "/api/v1/racing/exports",
+        ],
+        "tools": [
+            "hk_racing_status",
+            "hk_racing_search",
+            "hk_racing_results",
+            "hk_racing_profile",
         ],
     },
 ]

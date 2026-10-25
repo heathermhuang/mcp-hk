@@ -76,3 +76,8 @@ test('SeeHouse operations retain only bounded names and count returned rows, nev
     assert.equal(result.items,2);assert.equal(result.op.dataset,'seehouse');
   }
 });
+
+test('racing counts returned result rows rather than coverage denominators',()=>{
+ const op={protocol:'http',operation:'racing',dataset:'racing',resource:'',sourceCalls:0};
+ assert.equal(inspectResponse(JSON.stringify({data:{results:[{},{}]},coverage:{resultRows:100000}}),op,200).items,2);
+});
