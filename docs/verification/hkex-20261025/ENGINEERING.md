@@ -100,3 +100,37 @@ its timers, accepted pointers and existing offsite capability remain separately 
 The FAQ checked on 25 October (updated 14 February 2026) describes 17:00 HKT normal
 business-day and 13:00 half-day publication. The proposed 18:30 check remains disabled;
 calendar handling and actual completeness/lag require source-qualified evidence.
+
+## Operator commands after qualification
+
+Use protected environment files for `HKEX_DSN`, `HKEX_RESTORED_DSN`,
+`HKEX_POLICY_SHA256` and `CURATED_CURSOR_SECRET`; never place credentials in arguments.
+Create a dedicated source owner/schema and existing dedicated read grants through
+the approved host process. Do not give the source writer access to other schemas.
+The actual storage mount must be set as `HKEX_STORAGE_ROOT`; an unrelated container
+filesystem reading does not qualify database-host headroom.
+
+```sh
+python -m mcp_open_data_hk.curated.hkex migrate
+python -m mcp_open_data_hk.curated.hkex activate-policy /owned/reviewed-policy.json --reviewed-sha256 <reviewed-hash>
+python -m mcp_open_data_hk.curated.hkex grant-reader <dedicated-reader-role>
+python -m mcp_open_data_hk.curated.hkex backup /owned/new-hkex.dump
+# Transfer through the separately qualified existing offsite capability; download
+# and independently verify the complete archive before the following steps.
+python -m mcp_open_data_hk.curated.hkex restore /owned/downloaded-hkex.dump --sha256 <archive-hash>
+python -m mcp_open_data_hk.curated.hkex qualify-restore <version> --sha256 <archive-hash>
+python -m mcp_open_data_hk.curated.hkex publish <version> --expected-version NONE
+python -m mcp_open_data_hk.curated.hkex export <version> /owned/new-export.zip
+```
+
+`restore` reads the isolated target from `HKEX_DSN`; `qualify-restore` compares the
+source `HKEX_DSN` to `HKEX_RESTORED_DSN`. A later publication requires the exact old
+version rather than `NONE`. A rollback uses the same compare-and-swap publication
+operation with a retained compatible previously published version and currently
+valid rights; it does not reverse schema or delete source history.
+
+Gateway activation, when independently authorised, reads the operator-owned
+`MCP_HK_HKEX_POLICY_FILE` and `MCP_HK_HKEX_POLICY_SHA256`. These are not public
+parameters. The current Worker supplies neither, and no live DI configuration is
+checked in. Each future allowed consumer must have its own mode; no umbrella
+feature switch substitutes for source rights or an actual accepted version.

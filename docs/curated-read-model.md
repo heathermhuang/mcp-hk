@@ -395,3 +395,18 @@ coverage: it inventories CR tables. Coordinate its explicit coverage extension
 with its owner after source backup/retention rights are known. The general curated
 backup's `curated_*` schema selection includes the SFC schema, as verified by a
 physical synthetic restore, but this alone grants no offsite/publication authority.
+
+## Gated HKEX DI normalized intake
+
+The optional `curated/hkex/` implementation uses an independent `hkex` schema and
+`004_hkex.sql`; it does not depend on the SFC/racing migrations. Its collector has
+no default live provider adapter. HKEX access/output rights, real response formats,
+filing inventory and live pilot remain unqualified. Public status is available;
+HKEX data tools/routes stay unadvertised without a reviewed, checksum-pinned policy
+and matching backend qualification. `/hkex` shows the bilingual gate by default.
+
+See [engineering and operator commands](verification/hkex-20261025/ENGINEERING.md)
+and [the unsent source decision](verification/hkex-20261025/REQUEST-UNSENT.md).
+No production schema, accepted dataset, source schedule or new offsite capability
+is installed merely by shipping the disabled gateway integration. Local source-wide
+restore tests do not establish actual offsite recovery or unattended operation.
