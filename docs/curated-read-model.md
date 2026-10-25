@@ -410,3 +410,12 @@ and [the unsent source decision](verification/hkex-20261025/REQUEST-UNSENT.md).
 No production schema, accepted dataset, source schedule or new offsite capability
 is installed merely by shipping the disabled gateway integration. Local source-wide
 restore tests do not establish actual offsite recovery or unattended operation.
+
+## Racing source integration (disabled)
+
+The independent racing engineering contracts and gate-only surfaces are described
+in [racing verification](verification/racing-20261025/STATUS.md). No HKJC dataset,
+source collection/retention permission, historical range or public export has been
+qualified. `/racing`, `/api/v1/racing/status` and `hk_racing_status` report the gate;
+no racing data tool is advertised. The current official-only offsite job does not
+cover racing; production growth requires coordinated complete source recovery.

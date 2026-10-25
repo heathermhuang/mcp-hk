@@ -203,6 +203,20 @@ def create_app(service=None):
 
     register_hkex_rest(app, service)
 
+    from . import racing
+
+    @app.get("/api/v1/racing/status")
+    def racing_status():
+        return racing.status()
+
+    @app.get("/api/v1/racing/races", include_in_schema=False)
+    @app.get("/api/v1/racing/races/{race_id}/results", include_in_schema=False)
+    @app.get("/api/v1/racing/participants/{participant_id}", include_in_schema=False)
+    @app.get("/api/v1/racing/observations", include_in_schema=False)
+    @app.get("/api/v1/racing/exports", include_in_schema=False)
+    def racing_unavailable():
+        return racing.unavailable()
+
     @app.get("/api/v1/companies")
     async def company_search(query: Annotated[CompanySearchQuery, Query()]):
         return await service.companies.query("search", query.model_dump())
