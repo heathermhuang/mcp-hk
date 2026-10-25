@@ -428,3 +428,16 @@ raw CSV values, IDs, dates and multiplicities are unchanged. See the
 [Microsoft XLS XF definition](https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/993d15c4-ec04-43e9-ba36-594dfb336c6d).
 Saved-byte replay supplies the original `fetchedAt`; `reparsedAt` identifies the
 later transform. Old rejected captures and accepted public versions remain intact.
+
+### UX release adoption observation (25 October 2026)
+
+For the source-aware UX release, public headers and the new gateway capability
+were current while the controller still reported its old environment. The CLI's
+immediate flag and a same-version activation did not establish adoption. With
+resource cron already paused, propagation complete and no maintenance/seed lease,
+setting `durable_objects.code_update_strategy` to `{"mode":"immediate"}` in the
+**temporary** four-schedule config and activating the verified version produced the
+expected private `controllerContract` and release. Preserve the normal checked-in
+schedules/defaults; this is not permission to force code adoption during maintenance.
+Always verify actual diagnostics, backend readiness and required recovery before
+restoring the five schedules. See `docs/verification/ux-20261025/RELEASED.md`.

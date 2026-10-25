@@ -1,0 +1,13 @@
+{
+  "snapshotSha256": "6604b58b90aa826892ae41f1569b98e9f087e472655f363b9d3ab8d6798bbcf9",
+  "archiveBytes": 63007757,
+  "integrity": "ok",
+  "generation": "f8d8e9945a694617b6a2a9eb565e2a03",
+  "datasets": 4984,
+  "resources": 63360,
+  "acceptedPacks": {
+    "population": 18,
+    "restaurants": 17276
+  },
+  "isolated": true
+}

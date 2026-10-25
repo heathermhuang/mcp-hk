@@ -1,0 +1,143 @@
+{
+  "resource": {
+    "id": "1c6ef227b07c5b90a068b859f789ab10",
+    "datasetId": "hk-dpo-statistic-cal",
+    "url": "https://www.1823.gov.hk/common/ical/en.json",
+    "format": "JSON",
+    "catalogue": "DATA.GOV.HK",
+    "aliases": [
+      {
+        "id": "7ce98bb9-6330-414d-83fa-48aa4f253789",
+        "shared_id": "df79253e553211f1ba0b0a58c0a82840",
+        "name": "Hong Kong Public Holidays Data (English)",
+        "inLanguage": "en, zh-Hant,zh-Hans",
+        "format": "JSON"
+      }
+    ],
+    "sourceUrl": "https://data.gov.hk/en-data/dataset/hk-dpo-statistic-cal",
+    "publicationDate": "2024-05-10",
+    "sourceModified": null,
+    "isApi": false,
+    "termsUrl": "https://data.gov.hk/en/terms-and-conditions"
+  },
+  "scope": "calendar_events",
+  "recordPath": "vcalendar/0/vevent",
+  "data": {
+    "items": [
+      {
+        "dtstart": [
+          "20250101",
+          {
+            "value": "DATE"
+          }
+        ],
+        "dtend": [
+          "20250102",
+          {
+            "value": "DATE"
+          }
+        ],
+        "dtstamp": "20250506T035044Z",
+        "transp": "TRANSPARENT",
+        "uid": "20250101@1823.gov.hk",
+        "summary": "The first day of January"
+      },
+      {
+        "dtstart": [
+          "20250129",
+          {
+            "value": "DATE"
+          }
+        ],
+        "dtend": [
+          "20250130",
+          {
+            "value": "DATE"
+          }
+        ],
+        "dtstamp": "20250506T035044Z",
+        "transp": "TRANSPARENT",
+        "uid": "20250129@1823.gov.hk",
+        "summary": "Lunar New Year\u2019s Day"
+      },
+      {
+        "dtstart": [
+          "20250130",
+          {
+            "value": "DATE"
+          }
+        ],
+        "dtend": [
+          "20250131",
+          {
+            "value": "DATE"
+          }
+        ],
+        "dtstamp": "20250506T035044Z",
+        "transp": "TRANSPARENT",
+        "uid": "20250130@1823.gov.hk",
+        "summary": "The second day of Lunar New Year"
+      },
+      {
+        "dtstart": [
+          "20250131",
+          {
+            "value": "DATE"
+          }
+        ],
+        "dtend": [
+          "20250201",
+          {
+            "value": "DATE"
+          }
+        ],
+        "dtstamp": "20250506T035044Z",
+        "transp": "TRANSPARENT",
+        "uid": "20250131@1823.gov.hk",
+        "summary": "The third day of Lunar New Year"
+      },
+      {
+        "dtstart": [
+          "20250404",
+          {
+            "value": "DATE"
+          }
+        ],
+        "dtend": [
+          "20250405",
+          {
+            "value": "DATE"
+          }
+        ],
+        "dtstamp": "20250506T035044Z",
+        "transp": "TRANSPARENT",
+        "uid": "20250404@1823.gov.hk",
+        "summary": "Ching Ming Festival"
+      }
+    ]
+  },
+  "meta": {
+    "total": 51,
+    "offset": 0,
+    "nextOffset": 5,
+    "version": "8d797fb380825eec3f53fe456cc85ad30e2f91635675081abb671eca3bfd757d",
+    "pagination": "Pass version on every subsequent page; changed content returns 409.",
+    "structuredQueryable": true
+  },
+  "provenance": [
+    {
+      "sourceUrl": "https://www.1823.gov.hk/common/ical/en.json",
+      "originalResourceUrl": "https://www.1823.gov.hk/common/ical/en.json",
+      "catalogueUrl": "https://data.gov.hk/en-data/dataset/hk-dpo-statistic-cal",
+      "attribution": "Digital Policy Office / DATA.GOV.HK",
+      "termsUrl": "https://data.gov.hk/en/terms-and-conditions",
+      "retrievedAt": 1792495300.253377,
+      "lastCheckedAt": 1792899669.3199577,
+      "lastValidatedAt": 1792899669.3199577,
+      "publicationDate": "2024-05-10",
+      "referencePeriod": null,
+      "contentHash": "8d797fb380825eec3f53fe456cc85ad30e2f91635675081abb671eca3bfd757d",
+      "stale": false
+    }
+  ]
+}

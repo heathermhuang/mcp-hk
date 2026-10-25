@@ -1,0 +1,84 @@
+{
+  "health": {
+    "capabilities": [
+      "company-search-groupBy-organisation-v1"
+    ],
+    "status": "ready",
+    "version": "enigma251227-hk-v1",
+    "view": "archive"
+  },
+  "moduleSha256": "6aea9d3ff6212cc0604c8988231c90e9a3a74e23bbf2ebd683c18dd2847821d9",
+  "queries": [
+    {
+      "source": "archive",
+      "prefix": "HSBC",
+      "version": "enigma251227-hk-v1",
+      "organisations": 20,
+      "hasMore": true,
+      "elapsedSeconds": 0.3107,
+      "bytes": 11066
+    },
+    {
+      "source": "archive",
+      "prefix": "HONG KONG",
+      "version": "enigma251227-hk-v1",
+      "organisations": 20,
+      "hasMore": true,
+      "elapsedSeconds": 0.1336,
+      "bytes": 10799
+    },
+    {
+      "source": "archive",
+      "prefix": "\u9999\u6e2f",
+      "version": "enigma251227-hk-v1",
+      "organisations": 20,
+      "hasMore": true,
+      "elapsedSeconds": 0.053,
+      "bytes": 10278
+    },
+    {
+      "source": "official",
+      "prefix": "HSBC",
+      "version": "official-8d70e15e57b12485adc5ea176daec66a",
+      "organisations": 0,
+      "hasMore": false,
+      "elapsedSeconds": 0.082,
+      "bytes": 3242
+    },
+    {
+      "source": "official",
+      "prefix": "HONG KONG",
+      "version": "official-8d70e15e57b12485adc5ea176daec66a",
+      "organisations": 20,
+      "hasMore": true,
+      "elapsedSeconds": 0.136,
+      "bytes": 15796
+    },
+    {
+      "source": "official",
+      "prefix": "\u9999\u6e2f",
+      "version": "official-8d70e15e57b12485adc5ea176daec66a",
+      "organisations": 20,
+      "hasMore": true,
+      "elapsedSeconds": 0.125,
+      "bytes": 16026
+    }
+  ],
+  "plans": [
+    {
+      "prefix": "hsbc",
+      "version": "enigma251227-hk-v1",
+      "executionMs": 5.382
+    },
+    {
+      "prefix": "hong kong",
+      "version": "enigma251227-hk-v1",
+      "executionMs": 4.841
+    },
+    {
+      "prefix": "\u9999\u6e2f",
+      "version": "enigma251227-hk-v1",
+      "executionMs": 2.497
+    }
+  ]
+}
