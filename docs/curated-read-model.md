@@ -368,3 +368,12 @@ fact rows to the grouped consumer. Deploy/qualify the backend before the UI/gate
 Existing prefix and entity indexes are reused. No accepted schema or data migration
 is needed. Roll back backend code only after disabling/reverting the grouped UI;
 legacy callers and retained versions remain compatible throughout.
+
+## Racing source integration (disabled)
+
+The independent racing engineering contracts and gate-only surfaces are described
+in [racing verification](verification/racing-20261025/STATUS.md). No HKJC dataset,
+source collection/retention permission, historical range or public export has been
+qualified. `/racing`, `/api/v1/racing/status` and `hk_racing_status` report the gate;
+no racing data tool is advertised. The current official-only offsite job does not
+cover racing; production growth requires coordinated complete source recovery.

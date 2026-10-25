@@ -22,6 +22,10 @@ def register_data_tools(server, service=None):
 
     register_mcp(server, current)
 
+    from .racing import register_tools
+
+    register_tools(server)
+
     from .company_api import register_company_tools
 
     from .companies import settings
