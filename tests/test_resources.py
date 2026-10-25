@@ -1073,3 +1073,36 @@ async def test_large_weather_geometry_requires_projection_without_relaxing_byte_
     ]
     assert result["meta"]["version"] == "fixture-weather-version"
     assert len(rows[0]["geometry"]["coordinates"][0]) == 520000
+
+
+@pytest.mark.asyncio
+async def test_schema_exposes_bounded_workbook_choices_without_querying_records(
+    resource_service, monkeypatch
+):
+    book = Workbook()
+    book.active.title = "English"
+    book.active.append(["value"])
+    book.active.append(["English row"])
+    chinese = book.create_sheet("中文")
+    chinese.append(["value"])
+    chinese.append(["中文紀錄"])
+    data = io.BytesIO()
+    book.save(data)
+    with pytest.raises(DomainError) as error:
+        parse(data.getvalue(), "XLSX")
+    assert error.value.code == "SHEET_REQUIRED"
+    assert error.value.sheets == ["English", "中文"]
+    calls = []
+
+    async def load(*args, **kwargs):
+        calls.append(args)
+        raise error.value
+
+    monkeypatch.setattr(resource_service.resources, "load", load)
+    result = await resource_service.resources.schema("r1")
+    assert len(calls) == 1
+    assert result["selectionRequired"] == "sheet"
+    assert result["sheets"] == ["English", "中文"]
+    assert result["sheetCount"] == 2 and result["recordCount"] is None
+    rows, schema = parse(data.getvalue(), "XLSX", sheet="中文")
+    assert schema["sheet"] == "中文" and rows == [{"value": "中文紀錄"}]

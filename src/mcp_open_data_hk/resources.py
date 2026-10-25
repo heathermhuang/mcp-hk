@@ -857,6 +857,15 @@ class Resources:
                 resource_id, record_path, sheet, layer, require_fresh, parameters
             )
         except DomainError as exc:
+            if exc.code == "SHEET_REQUIRED" and getattr(exc, "sheets", None):
+                return {
+                    "resource": self.catalogue.resource(resource_id),
+                    "selectionRequired": "sheet",
+                    "sheets": exc.sheets,
+                    "sheetCount": exc.sheet_count,
+                    "recordCount": None,
+                    "structuredQueryable": False,
+                }
             if self.catalogue.check(resource_id).get("checked", 0) < started:
                 await asyncio.to_thread(
                     self.catalogue.failure,
