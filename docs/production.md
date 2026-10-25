@@ -441,3 +441,13 @@ expected private `controllerContract` and release. Preserve the normal checked-i
 schedules/defaults; this is not permission to force code adoption during maintenance.
 Always verify actual diagnostics, backend readiness and required recovery before
 restoring the five schedules. See `docs/verification/ux-20261025/RELEASED.md`.
+
+### SFC capability-only integration
+
+The SFC engineering branch adds a static gated capability page/status. It installs
+no production SFC schema or scheduler and changes no accepted PostgreSQL pointer.
+Only source-free status may be released while [SFC rights](verification/sfc-20261025/RIGHTS.md)
+remain unresolved. A live dataset release still requires its real cohort,
+route/parser/output qualification, atomic source pointer, source-scoped offsite
+restore and ordinary occurrence. Do not silently apply `003_sfc.sql`, enable a
+collector or add SFC to the CR offsite inventory during an unrelated gateway release.
