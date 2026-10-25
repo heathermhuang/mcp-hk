@@ -90,6 +90,16 @@ def test_declared_inventory_and_dead_heat():
         reconcile(["r"], {"r": declared[:1]}, {"r": rows[:1]})
 
 
+@pytest.mark.parametrize("raw", ["2 DH", "2 平頭馬"])
+def test_bilingual_dead_heat_suffix_preserves_source_placing(raw):
+    result = result_row(row(placing=raw), "synthetic-race")
+    assert result["placingRaw"] == raw
+    assert result["placing"] == 2 and result["deadHeat"] is True
+    assert result["status"] == "finished" and result["timeSeconds"] == "69.23"
+    with pytest.raises(RacingRejected, match="UNKNOWN_RESULT_CODE"):
+        result_row(row(placing="2 新代碼"), "synthetic-race")
+
+
 def test_policy_modes_expiry_routes_revocation_and_pin():
     policy = source_policy()
     pin = checksum(policy)
