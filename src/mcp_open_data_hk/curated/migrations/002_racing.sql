@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS racing.captures (
 CREATE TABLE IF NOT EXISTS racing.meetings (
  version text REFERENCES racing.versions, meeting_id text NOT NULL, season text NOT NULL,
  local_date date NOT NULL, venue text NOT NULL CHECK(venue IN ('ST','HV')),
- status text NOT NULL CHECK(status IN ('completed','abandoned','postponed','cancelled')),
+ status text NOT NULL CHECK(status IN ('scheduled','in_progress','completed','abandoned','postponed','cancelled')),
  capture_id text NOT NULL, PRIMARY KEY(version,meeting_id),
  FOREIGN KEY(version,capture_id) REFERENCES racing.captures
 );

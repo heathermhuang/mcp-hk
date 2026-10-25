@@ -62,3 +62,8 @@ Prospective receipt correction: the requested window end is used for trailing-ga
 accounting but is not an extra observed sample. Measured intervals now contain
 only differences between actual sample timestamps; the exact interval-list test
 rejects a phantom zero interval when the window ends at the final observation.
+
+Prospective meeting correction: the meeting status dictionary now admits explicit
+scheduled/in-progress metadata as well as completed/exceptional meetings. A real
+PostgreSQL test stages an upcoming race inventory without manufacturing completed
+results or runner coverage. This metadata contract does not qualify a live series.

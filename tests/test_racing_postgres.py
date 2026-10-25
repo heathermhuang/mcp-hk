@@ -487,3 +487,24 @@ def test_real_sibling_migrations_in_every_order(db, order):
             ).fetchone()["n"]
             == 3
         )
+
+
+def test_prospective_meeting_does_not_require_completed_results(db):
+    owner, _, digest, _, _ = db
+    manifest, tables = bundle(digest)
+    manifest["families"] = ["races"]
+    tables["captures"][0]["family"] = "races"
+    tables["meetings"][0]["status"] = "scheduled"
+    tables["races"][0]["status"] = "scheduled"
+    for name in ("participants", "runners", "results"):
+        tables[name] = []
+    tables["coverage"] = [row for row in tables["coverage"] if row["family"] == "races"]
+    result = store.stage(owner, "prospective-metadata", digest, manifest, tables)
+    assert result["meetings"]["rows"] == 1 and result["results"]["rows"] == 0
+    with connect(owner) as conn:
+        assert (
+            conn.execute(
+                "SELECT status FROM racing.meetings WHERE version='prospective-metadata'"
+            ).fetchone()["status"]
+            == "scheduled"
+        )
