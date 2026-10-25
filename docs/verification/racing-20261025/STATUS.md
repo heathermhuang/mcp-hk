@@ -9,9 +9,18 @@ analytics notice focus defect; the explicitly approved correction is merged in
 [PR #80](https://github.com/heathermhuang/mcp-hk/pull/80). Final release receipts
 are recorded in [RELEASED.md](RELEASED.md).
 
-No HKJC capture, production racing schema/data/writer, source schedule, provider
-contract or outreach was created. All collection/retention/public-output modes
-remain unqualified. The prepared permission enquiry remains **unsent**.
+That initial gate-only release created no HKJC capture, production racing
+schema/data/writer, source schedule, provider contract or outreach. Production
+collection/retention/public-output modes remain unqualified. The prepared permission enquiry remains **unsent**.
+
+## Current development stage
+
+The user subsequently clarified that the working product should be built before
+licensing is resolved. A [working private real-data prototype](DEVELOPMENT.md) now
+exists: 9/9 Happy Valley result races on 21 October, 104 rows, bilingual factual
+reconciliation, explorer/REST/MCP/downloads and isolated local restore. Its source
+licence remains unverified. It is a separate loopback process; production data
+modes remain unchanged. Do not treat the unsent enquiry as a development blocker.
 
 ## Execution checklist
 
@@ -62,8 +71,9 @@ All identifiers are strings. Horse number and draw are separate. Times/weights a
 money/odds are Decimal text/NUMERIC with explicit units; unknown outcome codes fail
 closed. Each fact references capture checksum/transform/run/policy/time precision.
 Current profiles do not imply past effective values. Private source bytes can be buffered only with explicit raw-retention permission,
-checksum and expiry; replay rechecks current policy and expiry. No actual HKJC
-bytes have been collected or persisted by this engineering release.
+checksum and expiry; replay rechecks current policy and expiry. The initial gate-only release collected no actual HKJC bytes. The subsequent
+private prototype transiently parses public results pages, retaining normalized
+factual fields and checksums, not page bodies; see DEVELOPMENT.md.
 
 The full-version restore hashes every row of each racing fact/coverage/capture
 relation using a bounded server cursor, and compares policy/version metadata in a
@@ -88,12 +98,15 @@ data. Source status is truthful and independent of base readiness.
 
 ## Deterministic continuation
 
-Do not poll providers or rerun full audits while permission is unchanged. The next
-source-dependent step is an existing written grant or explicit authority to send
-the prepared enquiry. When a grant arrives, hash/qualify each route/field/mode,
-implement/review permitted real-capture parsers, then run the
-complete meeting -> season -> bounded family/history -> prospective sequence.
+Continue the working private prototype with independently reconciled declarations,
+additional meetings/venues and bounded finished-season coverage. Source and mode
+assessment for an intended public launch can proceed independently; the unsent
+permission enquiry is not a blanket development prerequisite. Preserve its honest
+unverified licence status and do not infer terms acceptance, outreach, paid access,
+access-control bypass or production publication from private build authorization.
+
 Recheck current main, host recovery/combined capacity and the shared slot before
-integration/release. Live activation needs backend/schema-first rollout, complete
-source backup/offsite download/restore, actual runtime adoption, restored five
-schedules and an ordinary permitted occurrence. Manual tests do not prove daily RPO.
+any production integration/release. Source activation still needs a deliberate
+backend/schema-first rollout, source-specific backup/restore, actual runtime
+adoption and measured ordinary operation. Local pilot results are not a claim of
+finished-season/history/series completion or daily production RPO.

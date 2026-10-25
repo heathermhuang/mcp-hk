@@ -22,7 +22,7 @@ Stripe Directory CLI/plugin was absent; its public setup page returned unsupport
 Markdown via the available web reader. No new provider/tool was purchased or
 provisioned. Official HKJC pages supplied the primary evidence above.
 
-All access/cache/history/REST/MCP/browser/link/export/scheduling modes below are
+All **production** access/cache/history/REST/MCP/browser/link/export/scheduling modes below are
 **unknown/unqualified**, not operator-enabled. Public status links to terms only;
 no source fact links or downloads are exposed. A runtime flag cannot change this.
 No service entitlement, historical range or provider-approved quota is claimed.
@@ -51,8 +51,18 @@ Declared-runner reconciliation additionally requires an independently qualified
 Race Card/Entries source: results alone may omit scratched runners. No arbitrary
 URL, hidden endpoint, proxy, login/session replay or source anti-bot bypass exists.
 
-Proposed pilot: 21 October 2026 Happy Valley; proposed finished season: 2025/26.
+At the initial gate baseline, the proposed pilot was 21 October 2026 Happy Valley
+and the proposed finished season was 2025/26. The subsequent private results pilot
+is recorded below; the original baseline qualifications were as follows.
 These are targets for qualified official inventory, **not pinned/reconciled accepted
 coverage**. Earliest/latest historical dates, all meeting/race/runner denominators,
 source-amendment windows and prospective start remain null until authorised reads.
 The request is prepared in [permission-request-UNSENT.md](permission-request-UNSENT.md).
+
+## Development-stage clarification
+
+After the user clarified build-first scope, a separate local prototype read and
+reconciled eighteen ordinary public bilingual results pages for 21 October 2026,
+Happy Valley (nine races, 104 result rows). This is actual technical source evidence
+for private development, not a source licence or production-mode grant. See
+[DEVELOPMENT.md](DEVELOPMENT.md) for exact scope and reproducible evidence.
