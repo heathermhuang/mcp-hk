@@ -1,0 +1,12 @@
+#hkex-workspace { margin-block: 2rem; }
+#hkex-search { display: flex; flex-wrap: wrap; align-items: end; gap: .75rem; }
+#hkex-search label { flex-basis: 100%; }
+#hkex-search input { min-height: 44px; max-width: 100%; width: 12rem; }
+#hkex-issuers, #hkex-list, #hkex-revisions { display: flex; flex-wrap: wrap; gap: .75rem; margin-block: 1rem; }
+#hkex-dates { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,2fr); gap: .5rem 1rem; }
+#hkex-dates dd { margin: 0; overflow-wrap: anywhere; }
+.hkex-table { overflow: auto; max-width: 100%; margin-block: 1rem; }
+.hkex-table table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+.hkex-table td, .hkex-table th { padding: .65rem; border-bottom: 1px solid var(--line, #d5e2d9); text-align: start; white-space: nowrap; }
+#hkex-coverage, #hkex-window, #hkex-version { overflow-wrap: anywhere; }
+@media (max-width: 390px) { #hkex-dates { grid-template-columns: 1fr; } #hkex-search input, #hkex-search button { width: 100%; } }

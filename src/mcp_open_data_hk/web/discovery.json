@@ -721,6 +721,20 @@
         "heading": "證監會法團牌照核實",
         "description": "mcp.hk 尚未提供最新官方法團牌照觀察紀錄。"
       }
+    },
+    "/hkex": {
+      "en": {
+        "title": "HKEX disclosure qualification · mcp.hk",
+        "heading": "HKEX disclosure notices",
+        "description": "Live HKEX DI data is unavailable while access and output rights are being qualified. No pilot window is accepted."
+      },
+      "zh-Hant": {
+        "title": "港交所披露來源審核 · mcp.hk",
+        "heading": "港交所權益披露通知",
+        "description": "港交所 DI 存取及輸出權限仍在審核，現未提供即時資料，亦未接納任何試行日期範圍。"
+      },
+      "template": "hkex.html",
+      "noindex": true
     }
   },
   "faq": {
