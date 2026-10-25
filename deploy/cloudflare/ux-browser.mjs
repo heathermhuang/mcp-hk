@@ -24,6 +24,7 @@ async function setup(){const context=await browser.newContext();const page=await
  else if(path==='/api/v1/companies/updates/status')body={data:{coverage:{latestAcceptedCoverageEnd:'2026-10-18',moneyLenderCutoff:'2026-09-30'}}};
  else if(path==='/api/v1/companies'){assert.equal(u.searchParams.get('groupBy'),'organisation');if(u.searchParams.get('view')==='latest_observed'){if(u.searchParams.get('q')==='10')body={data:{items:[{entity_id:'cr:local:00000001',name1:'Official fixture',identifier:{namespace:'cr:local:brn',value:'00000001'}}]},meta:{version:'official-'+'a'.repeat(32),groupBy:'organisation',view:'latest_observed'},provenance:[],warnings:[]};else{status=503;body={error:{code:'PACK_UNAVAILABLE',message:'Fixture official failure'}};}}else body={data:{items:[{entity_id:1,name1:'HSBC fixture',matched_fact_count:30,matched_names:[{display_name:'HSBC alias',name_kind:'former_name'}]}]},meta:{version:'fixture-v1',groupBy:'organisation',view:'archive'},provenance:[],warnings:[]};}
  else if(path==='/api/v1/companies/cr:local:00000001'||path==='/api/v1/companies/cr%3Alocal%3A00000001')body={data:{entity_id:'cr:local:00000001',name1:'Official fixture',observations:[]},meta:{version:'official-'+'a'.repeat(32),view:'latest_observed'},provenance:[],warnings:[]};
+ else if(path==='/api/v1/companies/1/licences'){assert.equal(u.searchParams.get('version'),'fixture-v1');body={data:{items:[{company_id:1,activity_label:'Fixture securities',start_raw:null,start_precision:'unknown',end_raw:'2020-06-15',end_precision:'day'}]},meta:{version:'fixture-v1',nextCursor:null}};}
  else if(path==='/api/v1/companies/1')body={data:{entity_id:1,kind:'organisation',name1:'HSBC fixture',inc_raw:'1900',inc_precision:'year',dissolved_raw:null,dissolved_precision:'unknown',identifiers:[]},meta:{version:'fixture-v1'},provenance:[],warnings:[]};
  else if(path==='/api/v1/properties/search')body={data:{candidates:[{id:'b1',name:'Fixture building',district:'Southern'}]}};
  else if(path==='/api/v1/properties/building')body=building;
@@ -89,6 +90,15 @@ await run('SFC gates, both languages, keyboard and no source reads',async({page,
  await page.goto(origin+'/sfc?lang=en');await page.keyboard.press('Tab');await page.keyboard.press('Enter');assert.equal(await page.locator('#main-content').evaluate(e=>e===document.activeElement),true);
  await page.locator('.mhk-language').click();await page.waitForURL(u=>u.pathname==='/sfc'&&u.searchParams.get('lang')==='zh-Hant');assert.match(await page.locator('h1').innerText(),/證監會/);
  await page.screenshot({path:new URL('sfc-zh-Hant.png',output).pathname,fullPage:true});
+});
+await run('SFC archive lookup works without fresh-source activation',async({page,calls,context})=>{
+ await page.goto(origin+'/sfc?lang=en');await page.locator('#sfc-archive-ce').fill('ZZZ001');await page.locator('#sfc-archive-search').evaluate(f=>f.requestSubmit());
+ await page.getByRole('cell',{name:'Fixture securities',exact:true}).waitFor();assert.match(await page.locator('#sfc-archive-record').innerText(),/fixture-v1/);assert.match(await page.locator('#sfc-archive-record').innerText(),/Unknown/);
+ const company=calls.find(x=>x.path==='/api/v1/companies');assert.ok(company);assert.equal(calls.some(x=>x.path.startsWith('/api/v1/sfc/corporations')),false);
+ for(const width of [320,390,768,1280]){await page.setViewportSize({width,height:900});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);}
+ await context.route('**/api/v1/companies?**',r=>r.fulfill({status:503,contentType:'application/json',body:JSON.stringify({error:{code:'PACK_UNAVAILABLE',message:'Fixture failure'}})}));
+ await page.locator('#sfc-archive-ce').fill('ZZZ002');await page.locator('#sfc-archive-search').evaluate(f=>f.requestSubmit());await page.getByText(/Any prior result remains labelled/).waitFor();assert.equal(await page.getByRole('cell',{name:'Fixture securities',exact:true}).count(),1);
+ await page.screenshot({path:new URL('sfc-working-archive.png',output).pathname,fullPage:true});
 });
 assert.deepEqual(errors,[]);console.log(JSON.stringify({browser:browser.version(),receipts,errors},null,2));await writeFile(new URL('result.json',output),JSON.stringify({browser:browser.version(),receipts,errors},null,2));
 }finally{await browser.close();}

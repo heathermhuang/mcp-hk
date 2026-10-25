@@ -54,6 +54,18 @@ class Strict(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
 
+def source_day_value(raw):
+    if not isinstance(raw, str):
+        raise ValueError("Source day is missing")
+    if re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", raw):
+        return raw
+    match = re.fullmatch(r"([A-Za-z]{3}) ([0-9]{1,2}), ([0-9]{4}) 12:00:00 AM", raw)
+    months = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split()
+    if not match or match[1] not in months:
+        raise ValueError("Unsupported source day representation")
+    return f"{match[3]}-{months.index(match[1])+1:02d}-{int(match[2]):02d}"
+
+
 class SourceDate(Strict):
     raw: str | None = Field(None, max_length=100)
     value: str | None = Field(None, max_length=10)
@@ -70,12 +82,13 @@ class SourceDate(Strict):
             "month": r"\d{4}-\d{2}",
             "year": r"\d{4}",
         }[self.precision]
-        if self.raw != self.value or not re.fullmatch(
-            pattern, self.value or "", re.ASCII
-        ):
+        if not re.fullmatch(pattern, self.value or "", re.ASCII):
             raise ValueError(
                 "Normalised date must retain the exact source value and precision"
             )
+        expected = source_day_value(self.raw) if self.precision == "day" else self.raw
+        if expected != self.value:
+            raise ValueError("Parsed date differs from the retained source date")
         date.fromisoformat(
             self.value + {"day": "", "month": "-01", "year": "-01-01"}[self.precision]
         )
