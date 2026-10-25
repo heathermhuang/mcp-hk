@@ -1,3 +1,5 @@
+Completed: see [RELEASED.md](RELEASED.md) for the final live acceptance and recovery results. The preparation record below is retained for chronology.
+
 # Archive activation and backend startup correction
 
 The original archive feature is merged in PR #81. The production source schema

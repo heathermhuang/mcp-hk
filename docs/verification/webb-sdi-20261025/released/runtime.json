@@ -1,0 +1,10 @@
+{
+  "name": "mcp-hk-mcpcontainer",
+  "id": "a0311e26-5d76-46e6-beb5-67ed6bfefe03",
+  "version": 48,
+  "image": "registry.cloudflare.com/63a7fe52c985c63bb9e69ce47efdc569/mcp-hk-mcpcontainer@sha256:d8713b65865d6d3c150c5d8b5b94dcda27226c05d0ebe79386072f2ee5a930d6",
+  "workerVersion": "7a6467b4-1bf1-46f0-a100-1a4d4b2d1c0b",
+  "source": "84273bf3fef493f84b6db30222f903143f39a008",
+  "controllerAdopted": true,
+  "actualArchiveHttpAvailable": true
+}
