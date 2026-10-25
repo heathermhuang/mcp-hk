@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Literal
 
 import httpx
-from pydantic import Field, model_validator
+from pydantic import Field, field_validator, model_validator
 
 from .contracts import DomainError
 from .curated.hkex.contracts import (
@@ -51,7 +51,7 @@ class IssuerQuery(Strict):
 
 
 class DisclosuresQuery(Strict):
-    issuerId: str = Field(pattern=r"^[A-Za-z0-9_-]{1,80}$")
+    issuerId: str = Field(pattern=r"^(?:hkex:issuer:)?[A-Za-z0-9_-]{1,80}$")
     start: str
     end: str
     basis: Literal["filed", "published", "event"]
@@ -60,6 +60,11 @@ class DisclosuresQuery(Strict):
     limit: int = Field(20, ge=1, le=100, strict=True)
     cursor: str | None = Field(None, max_length=2048)
     version: str | None = Field(None, pattern=r"^hkex-[a-f0-9]{32}$")
+
+    @field_validator("issuerId")
+    @classmethod
+    def source_issuer(cls, value):
+        return value.removeprefix("hkex:issuer:")
 
     @model_validator(mode="after")
     def window(self):
@@ -74,8 +79,13 @@ class DisclosuresQuery(Strict):
 
 
 class DetailQuery(Strict):
-    filingId: str = Field(pattern=r"^[A-Za-z0-9_-]{1,80}$")
+    filingId: str = Field(pattern=r"^(?:hkex:di:)?[A-Za-z0-9_-]{1,80}$")
     version: str = Field(pattern=r"^hkex-[a-f0-9]{32}$")
+
+    @field_validator("filingId")
+    @classmethod
+    def source_serial(cls, value):
+        return value.removeprefix("hkex:di:")
 
 
 def configured_policy():

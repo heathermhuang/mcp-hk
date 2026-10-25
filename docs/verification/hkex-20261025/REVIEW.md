@@ -25,6 +25,9 @@ claimed. Findings below were fixed in this checkout and covered by focused tests
   Fingerprints stream rows and sort fixed-size hashes rather than buffering history.
 - Surface integration: real ASGI REST/MCP parity caught and fixed a dispatch parameter
   collision. Route-level ID/version validation now yields typed query errors.
+- Identity round-trip: the exact returned `hkex:di:` and `hkex:issuer:` identifiers
+  are accepted by public detail/list contracts, retaining original serial values and
+  forbidding cross-namespace coercion.
 - Resource discipline: no live transport, new source timer, paid resource, provider
   outreach, source sweep or production data mutation is hidden in registration.
 

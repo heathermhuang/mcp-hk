@@ -28,7 +28,7 @@ def register_rest(app, service):
 
     @app.get("/api/v1/hkex/browser/disclosures/{filing_id}", include_in_schema=False)
     async def browser_disclosure(
-        filing_id: Annotated[str, Path(pattern=r"^[A-Za-z0-9_-]{1,80}$")],
+        filing_id: Annotated[str, Path(pattern=r"^(?:hkex:di:)?[A-Za-z0-9_-]{1,80}$")],
         version: Annotated[str, Query(pattern=r"^hkex-[a-f0-9]{32}$")],
     ):
         query = DetailQuery(filingId=filing_id, version=version)
@@ -47,7 +47,7 @@ def register_rest(app, service):
         include_in_schema=adapter.enabled("rest"),
     )
     async def hkex_disclosure(
-        filing_id: Annotated[str, Path(pattern=r"^[A-Za-z0-9_-]{1,80}$")],
+        filing_id: Annotated[str, Path(pattern=r"^(?:hkex:di:)?[A-Za-z0-9_-]{1,80}$")],
         version: Annotated[str, Query(pattern=r"^hkex-[a-f0-9]{32}$")],
     ):
         query = DetailQuery(filingId=filing_id, version=version)

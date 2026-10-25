@@ -385,6 +385,12 @@ async def test_real_private_rest_mcp_and_browser_contract_parity(
         browser = public.get("/api/v1/hkex/browser/disclosures/TEST_001", params=params)
         assert rest.status_code == browser.status_code == 200, rest.text
         assert rest.json() == browser.json()
+        assert (
+            public.get(
+                "/api/v1/hkex/disclosures/hkex:di:TEST_001", params=params
+            ).json()
+            == rest.json()
+        )
         assert "raw_bytes" not in rest.text and "source_location" not in rest.text
         assert rest.json()["data"]["capture"]["observed_at"]
         assert (

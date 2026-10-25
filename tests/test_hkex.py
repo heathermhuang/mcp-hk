@@ -26,6 +26,21 @@ def test_lossless_typed_interests_dates_and_scoped_parties():
     assert row.published_date.value is None
     assert row.event_date.value.year == 2020
     assert row.filed_date.value.year == 2026
+    from mcp_open_data_hk.hkex import DetailQuery
+
+    assert (
+        DetailQuery(filingId="hkex:di:TEST_001", version="hkex-" + "a" * 32).filingId
+        == "TEST_001"
+    )
+    assert (
+        DisclosuresQuery(
+            issuerId="hkex:issuer:TEST_ISSUER",
+            start="2026-10-12",
+            end="2026-10-19",
+            basis="filed",
+        ).issuerId
+        == "TEST_ISSUER"
+    )
     assert row.particulars[0].shares is None
     for field in (
         "email",
