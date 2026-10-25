@@ -107,3 +107,10 @@ test('badge policy update uses the same effective date in both languages',()=>{
  assert.equal((policy.match(/Effective 21 October 2026/g)||[]).length,2);
  assert.equal((policy.match(/2026 年 10 月 21 日/g)||[]).length,2);
 });
+
+test('configured archive status makes no claim of a successful availability check',()=>{
+ const b=browser(),dictionary=vm.runInContext('translations',b.context);
+ assert.match(dictionary.en.archiveQueryable,/access checked on request/);
+ assert.doesNotMatch(dictionary.en.archiveQueryable,/available|successful|recent/);
+ assert.match(dictionary.zh.archiveQueryable,/查詢時才檢查存取狀態/);
+});

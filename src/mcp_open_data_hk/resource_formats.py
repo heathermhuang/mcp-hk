@@ -329,10 +329,10 @@ def parse(body, fmt, record_path="", sheet=""):
         try:
             info["availableSheets"] = book.sheetnames
             if not sheet and len(book.sheetnames) != 1:
-                invalid(
-                    "Select a workbook sheet: " + ", ".join(book.sheetnames)[:500],
-                    "SHEET_REQUIRED",
-                )
+                error = DomainError("SHEET_REQUIRED", "Select a workbook sheet", 422)
+                error.sheets = book.sheetnames[:100]
+                error.sheet_count = len(book.sheetnames)
+                raise error
             if sheet and sheet not in book.sheetnames:
                 invalid("Workbook sheet not found", "INVALID_SHEET")
             ws = book[sheet or book.sheetnames[0]]
@@ -348,10 +348,10 @@ def parse(body, fmt, record_path="", sheet=""):
         try:
             info["availableSheets"] = book.sheet_names()
             if not sheet and book.nsheets != 1:
-                invalid(
-                    "Select a workbook sheet: " + ", ".join(book.sheet_names())[:500],
-                    "SHEET_REQUIRED",
-                )
+                error = DomainError("SHEET_REQUIRED", "Select a workbook sheet", 422)
+                error.sheets = book.sheet_names()[:100]
+                error.sheet_count = book.nsheets
+                raise error
             ws = book.sheet_by_name(sheet) if sheet else book.sheet_by_index(0)
             info["sheet"] = ws.name
             info["warning"] = (
