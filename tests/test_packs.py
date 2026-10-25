@@ -55,6 +55,7 @@ def test_api_docs_assets_work_with_the_actual_security_policy(service):
             super().__init__()
             self.urls = []
             self.inline_scripts = 0
+            self.metadata = []
 
         def handle_starttag(self, tag, attrs):
             attrs = dict(attrs)
@@ -64,7 +65,10 @@ def test_api_docs_assets_work_with_the_actual_security_policy(service):
                 else:
                     self.inline_scripts += 1
             if tag == "link":
-                self.urls.append(attrs["href"])
+                if attrs.get("rel") in {"canonical", "alternate"}:
+                    self.metadata.append(attrs["href"])
+                else:
+                    self.urls.append(attrs["href"])
 
     with TestClient(create_app(service)) as client:
         response = client.get("/docs")
@@ -78,6 +82,11 @@ def test_api_docs_assets_work_with_the_actual_security_policy(service):
         assets.feed(response.text)
         assert assets.urls
         assert assets.inline_scripts == 0
+        assert set(assets.metadata) == {
+            "https://mcp.hk/docs",
+            "https://mcp.hk/docs?lang=en",
+            "https://mcp.hk/docs?lang=zh-Hant",
+        }
         for url in assets.urls:
             assert url.startswith("/assets/")
             asset = client.get(url)
