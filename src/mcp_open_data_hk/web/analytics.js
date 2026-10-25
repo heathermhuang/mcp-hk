@@ -62,8 +62,11 @@
     if (respectsOptOut()) { if(id)window['ga-disable-'+id]=true;removeCookies();return; }
     if (choice?.allowed) start(); else if (id && !choice && !dialog.open) {
       const previousFocus=document.activeElement;
-      dialog.show();
-      previousFocus?.focus?.({preventScroll:true});
+      // The initial body is not normally focusable, unlike an active search input.
+      const temporaryBodyFocus=previousFocus===document.body&&!previousFocus.hasAttribute('tabindex');
+      if(temporaryBodyFocus)previousFocus.setAttribute('tabindex','-1');
+      try { dialog.show(); previousFocus?.focus?.({preventScroll:true}); }
+      finally { if(temporaryBodyFocus)previousFocus.removeAttribute('tabindex'); }
     }
   }).catch(()=>{/* Optional analytics never prevents use of the service. */});
 })();

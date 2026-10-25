@@ -67,3 +67,10 @@ Prospective meeting correction: the meeting status dictionary now admits explici
 scheduled/in-progress metadata as well as completed/exceptional meetings. A real
 PostgreSQL test stages an upcoming race inventory without manufacturing completed
 results or runner coverage. This metadata contract does not qualify a live series.
+
+Live keyboard correction: production's configured passive consent notice moved
+initial focus to its privacy link because `body.focus()` had no effect. A real
+Chrome comparison of exact old/new scripts reproduced false/true first-Tab skip
+behavior. The fix temporarily makes the initial body focusable, restores it and
+removes the temporary attribute; focused inputs and explicit modal settings keep
+their prior behavior. The HTTPS production-like consent scenario asserts this.
