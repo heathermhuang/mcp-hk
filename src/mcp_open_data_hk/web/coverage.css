@@ -26,3 +26,5 @@
 #mhk-preview .source-inputs>p{flex-basis:100%;margin:0;color:var(--mhk-muted);font-size:13px}
 #mhk-preview .source-inputs label{flex:1 1 180px;max-width:340px}
 #mhk-preview #record-path-choices select{display:block;max-width:100%;margin-top:8px}
+
+#mhk-preview table,#mhk-preview .catalogue-result .data-capability,#mhk-preview .catalogue-result .mhk-button{font-size:14px}#mhk-preview .table-scroll{max-width:100%;outline-offset:2px}

@@ -164,7 +164,8 @@
           {
             "heading": "Corrections and contributions",
             "paragraphs": [
-              "Report a broken source, unclear field or software issue in the public repository. Include the dataset or resource identifier and a reproducible example. Do not post credentials, private queries or personal information. Source providers remain the authority for the original records."
+              "Report a broken source, unclear field or software issue in the public repository. Include the dataset or resource identifier and a reproducible example. Do not post credentials, private queries or personal information. Source providers remain the authority for the original records.",
+              "If you need a private contact route, request one before sharing personal information in a public issue."
             ],
             "links": [
               [
@@ -223,7 +224,8 @@
           {
             "heading": "更正及參與開發",
             "paragraphs": [
-              "如發現來源無法讀取、欄位意思不清或軟件問題，可於公開儲存庫回報。請提供數據集或來源識別碼及可重現的範例，切勿發布憑證、私人查詢或個人資料。原始記錄應以供應者發布的內容為準。"
+              "如發現來源無法讀取、欄位意思不清或軟件問題，可於公開儲存庫回報。請提供數據集或來源識別碼及可重現的範例，切勿發布憑證、私人查詢或個人資料。原始記錄應以供應者發布的內容為準。",
+              "如須私人聯絡途徑，請先提出要求，切勿在公開議題發布個人資料。"
             ],
             "links": [
               [
@@ -243,12 +245,12 @@
       "en": {
         "title": "Hong Kong data guides for developers and AI · mcp.hk",
         "heading": "Hong Kong data guides for developers and AI",
-        "description": "Practical guides to the Hong Kong open data API, MCP connections, source attribution and freshness checks."
+        "description": "Choose a task: connect an AI assistant (requires a supported client), make your first API request (requires a terminal), or understand sources and dates (for every reader). Each guide explains how to recognize success."
       },
       "zh-Hant": {
         "title": "開發者及 AI 的香港數據指南 · mcp.hk",
         "heading": "開發者及 AI 的香港數據指南",
-        "description": "了解香港開放數據 API、MCP 連接、來源標示及數據時效檢查。"
+        "description": "選擇工作：連接 AI（已有支援的客戶端）、第一次 API 請求（可使用終端機），或了解來源及日期（所有讀者）。每篇均附可辨認的完成步驟。"
       }
     },
     "/guides/hong-kong-open-data-api": {
@@ -258,48 +260,50 @@
         "description": "Discover a dataset, inspect its source and read supported records through mcp.hk. Keep catalogue metadata, query access and source reliability distinct.",
         "sections": [
           {
-            "heading": "1. Find the dataset",
+            "heading": "1. Make your first request",
             "paragraphs": [
-              "Start with the catalogue and choose the dataset that matches the question. A catalogue entry describes a resource; it does not prove that its rows can be read through mcp.hk. A source may require parameters, a worksheet, a JSON record path or an adapter."
+              "No account or key is needed. Copy this command to read the 18 district names and IDs. Records are in data.items; provenance identifies their sources."
             ],
-            "links": [
-              [
-                "Search the catalogue",
-                "/coverage"
-              ],
-              [
-                "HTTP API reference",
-                "/docs"
-              ]
-            ],
-            "code": "curl \"https://mcp.hk/api/v1/catalogue/datasets?q=public%20holidays\""
+            "code": "curl -fsS 'https://mcp.hk/api/v1/districts'"
           },
           {
-            "heading": "2. Inspect the resource before querying",
+            "heading": "2. From catalogue to weather records",
             "paragraphs": [
-              "List the dataset resources and check format, access status, provider and source URL. Use the schema endpoint to inspect supported fields, then query only the records needed. Do not treat a blocked, unsupported, held or failed source as an empty dataset."
+              "Commands checked on 25 October 2026. Discover the dataset, list its resources, inspect fields, then read a weather bulletin. This RSS source returns one bulletin, rather than one row per station. Its description retains source HTML: display it as text, never execute it."
             ],
+            "code": "curl -fsS 'https://mcp.hk/api/v1/catalogue/datasets?q=current%20weather&access=sources&limit=5'\ncurl -fsS 'https://mcp.hk/api/v1/resources?datasetId=hk-hko-rss-current-weather-report&limit=10'\ncurl -fsS -H 'Content-Type: application/json' -d '{}' 'https://mcp.hk/api/v1/resources/770e68f0676dcbf8e65e2b4e1c6f6e60/schema'\ncurl -fsS -H 'Content-Type: application/json' -d '{\"fields\":[\"item.title\",\"item.pubDate\",\"item.description\",\"item.link\"],\"limit\":5}' 'https://mcp.hk/api/v1/resources/770e68f0676dcbf8e65e2b4e1c6f6e60/query'",
             "links": [
               [
-                "Resource API contracts",
-                "https://github.com/heathermhuang/mcp-hk/blob/main/docs/resources.md"
+                "Preview this source",
+                "/coverage?access=sources&dataset=hk-hko-rss-current-weather-report&resource=770e68f0676dcbf8e65e2b4e1c6f6e60"
               ]
-            ],
-            "code": "GET /api/v1/resources?datasetId=DATASET_ID\nPOST /api/v1/resources/RESOURCE_ID/schema\nPOST /api/v1/resources/RESOURCE_ID/query"
+            ]
           },
           {
-            "heading": "3. Preserve the evidence",
+            "heading": "3. Recognize success and keep evidence",
             "paragraphs": [
-              "Retain original source URLs, attribution, reference periods, warnings, retrieval/check timestamps and snapshot identifiers where supplied. A source read can succeed while its observations are old. Validate field meaning and units before using the records in an answer or analysis."
+              "Captured response excerpt, 25 October 2026, not live weather: item.title was Bulletin updated at 10:02 HKT 25/10/2026; item.pubDate was Sun, 25 Oct 2026 02:02:00 GMT; item.description included an Observatory temperature of 27 degrees Celsius. Preserve original values, source links and warnings. provenance.publicationDate dates the resource, not the weather observation."
             ],
             "links": [
               [
-                "Source and freshness guide",
+                "Understand sources and dates",
                 "/guides/data-sources-and-freshness"
+              ]
+            ]
+          },
+          {
+            "heading": "4. When a source changes",
+            "paragraphs": [
+              "For later pages pass meta.version and meta.nextOffset. On RESOURCE_VERSION_CHANGED restart at the first page. SCHEMA_DRIFT means changed fields, not zero records; explicitly choose another listed source or visit the publisher. On 429 wait for Retry-After; do not loop through sources."
+            ],
+            "links": [
+              [
+                "Back to guides",
+                "/guides"
               ],
               [
-                "Current source status",
-                "/sources"
+                "API reference",
+                "/docs"
               ]
             ]
           }
@@ -311,48 +315,50 @@
         "description": "透過 mcp.hk 搜尋數據集、檢查來源及讀取支援的記錄，並分清目錄資料、查詢能力及來源可靠程度。",
         "sections": [
           {
-            "heading": "1. 找到合適的數據集",
+            "heading": "1. 先取得地區資料",
             "paragraphs": [
-              "先搜尋目錄，選擇與問題相關的數據集。目錄項目只描述來源，並不代表 mcp.hk 一定能讀取當中的記錄。部分來源須指定參數、工作表、JSON 記錄路徑，或另行開發轉接器。"
+              "毋須帳戶或密鑰。複製以下指令，可取得 18 區的名稱及識別碼；data.items 是紀錄，provenance 是來源。"
             ],
-            "links": [
-              [
-                "搜尋目錄",
-                "/coverage"
-              ],
-              [
-                "HTTP API 文件",
-                "/docs"
-              ]
-            ],
-            "code": "curl \"https://mcp.hk/api/v1/catalogue/datasets?q=public%20holidays\""
+            "code": "curl -fsS 'https://mcp.hk/api/v1/districts'"
           },
           {
-            "heading": "2. 查詢前先檢查來源",
+            "heading": "2. 從目錄到天氣紀錄",
             "paragraphs": [
-              "列出數據集的來源，查看格式、存取狀態、供應者及來源網址。先用 schema 端點檢查支援的欄位，再查詢所需記錄。來源被拒絕存取、尚未支援、暫停或讀取失敗，都不代表數據集沒有記錄。"
+              "以下指令於 2026 年 10 月 25 日核對。依次尋找天氣數據集、來源、欄位及一項天氣報告。這是 RSS 報告，並非每站一列的數據表；description 保留來源 HTML，應以文字顯示，切勿直接執行。"
             ],
+            "code": "curl -fsS 'https://mcp.hk/api/v1/catalogue/datasets?q=current%20weather&access=sources&limit=5'\ncurl -fsS 'https://mcp.hk/api/v1/resources?datasetId=hk-hko-rss-current-weather-report&limit=10'\ncurl -fsS -H 'Content-Type: application/json' -d '{}' 'https://mcp.hk/api/v1/resources/770e68f0676dcbf8e65e2b4e1c6f6e60/schema'\ncurl -fsS -H 'Content-Type: application/json' -d '{\"fields\":[\"item.title\",\"item.pubDate\",\"item.description\",\"item.link\"],\"limit\":5}' 'https://mcp.hk/api/v1/resources/770e68f0676dcbf8e65e2b4e1c6f6e60/query'",
             "links": [
               [
-                "來源 API 規格",
-                "https://github.com/heathermhuang/mcp-hk/blob/main/docs/resources.md"
+                "預覽同一來源",
+                "/coverage?access=sources&dataset=hk-hko-rss-current-weather-report&resource=770e68f0676dcbf8e65e2b4e1c6f6e60"
               ]
-            ],
-            "code": "GET /api/v1/resources?datasetId=DATASET_ID\nPOST /api/v1/resources/RESOURCE_ID/schema\nPOST /api/v1/resources/RESOURCE_ID/query"
+            ]
           },
           {
-            "heading": "3. 保留查證依據",
+            "heading": "3. 辨認成功及保留來源",
             "paragraphs": [
-              "保留回應提供的原始來源網址、標示、參考期、警告、擷取及檢查時間，以及快照識別碼。即使成功讀取來源，當中的觀測數據仍可能過時。用於回答或分析前，應先確認欄位意思及單位。"
+              "以下為 2026 年 10 月 25 日擷取的回應節錄，並非即時天氣：item.title 為 Bulletin updated at 10:02 HKT 25/10/2026；item.pubDate 為 Sun, 25 Oct 2026 02:02:00 GMT；item.description 包括香港天文台氣溫 27 degrees Celsius。請保留原始值、來源連結及警告。provenance.publicationDate 是來源發布日期，不是天氣觀測時間。"
             ],
             "links": [
               [
-                "來源及數據時效指南",
+                "來源及日期指南",
                 "/guides/data-sources-and-freshness"
+              ]
+            ]
+          },
+          {
+            "heading": "4. 版本或來源有變時",
+            "paragraphs": [
+              "後續分頁須傳回 meta.version 及 meta.nextOffset。收到 RESOURCE_VERSION_CHANGED 時，重新從第一頁開始。SCHEMA_DRIFT 代表欄位變更，並非沒有紀錄；可明確改選 RSS 來源或查看原始來源。429 請按 Retry-After 等候，切勿循環重試。"
+            ],
+            "links": [
+              [
+                "返回指南",
+                "/guides"
               ],
               [
-                "目前來源狀態",
-                "/sources"
+                "API 文件",
+                "/docs"
               ]
             ]
           }
@@ -409,6 +415,22 @@
                 "/openapi.json"
               ]
             ]
+          },
+          {
+            "heading": "Recognize a successful connection",
+            "paragraphs": [
+              "Finish only after the client lists a tool such as hk_district_list and returns a district record with its source. Copying settings or checking HTTP health does not establish a client connection. Choose Codex, Claude Code or Cursor on Connect AI; other apps need custom remote Streamable HTTP MCP support."
+            ],
+            "links": [
+              [
+                "Client settings and troubleshooting",
+                "/connect"
+              ],
+              [
+                "Back to guides",
+                "/guides"
+              ]
+            ]
           }
         ]
       },
@@ -459,6 +481,22 @@
               [
                 "OpenAPI 描述",
                 "/openapi.json"
+              ]
+            ]
+          },
+          {
+            "heading": "辨認連接成功",
+            "paragraphs": [
+              "客戶端須列出 hk_district_list 等工具，並實際回傳附來源的地區紀錄，才算完成。網站複製成功或 HTTP 健康檢查不等於 AI 已連接。請在連接頁選擇 Codex、Claude Code 或 Cursor；其他客戶端須支援自訂遠端 Streamable HTTP MCP。"
+            ],
+            "links": [
+              [
+                "客戶端設定及排解問題",
+                "/connect"
+              ],
+              [
+                "返回指南",
+                "/guides"
               ]
             ]
           }
@@ -542,6 +580,22 @@
                 "/terms"
               ]
             ]
+          },
+          {
+            "heading": "A citation and the next action",
+            "paragraphs": [
+              "Citation example (captured 25 October 2026): “Hong Kong Observatory, Current Weather Report, 25 October 2026 10:02 HKT, accessed through mcp.hk.” The bulletin date and service-read time are separate. An archive does not verify current registration. Preview available: read a bounded page. Settings needed: choose inputs first. Temporarily unavailable: follow retry guidance. Source link only: visit the publisher."
+            ],
+            "links": [
+              [
+                "Hong Kong Observatory",
+                "https://rss.weather.gov.hk/rss/CurrentWeather.xml"
+              ],
+              [
+                "Back to guides",
+                "/guides"
+              ]
+            ]
           }
         ]
       },
@@ -619,6 +673,22 @@
               [
                 "軟件及數據條款",
                 "/terms"
+              ]
+            ]
+          },
+          {
+            "heading": "引用及下一步",
+            "paragraphs": [
+              "引用例子（2026 年 10 月 25 日擷取）：「香港天文台，本港天氣報告，2026 年 10 月 25 日 10:02 HKT，透過 mcp.hk 讀取。」報告日期與服務讀取日期分開；歷史存檔不能證明目前註冊狀態。可預覽：讀取有界紀錄；須設定：先選參數；暫時不可用：按建議時間再試；只提供來源連結：前往提供者。"
+            ],
+            "links": [
+              [
+                "Hong Kong Observatory",
+                "https://rss.weather.gov.hk/rss/CurrentWeather.xml"
+              ],
+              [
+                "返回指南",
+                "/guides"
               ]
             ]
           }

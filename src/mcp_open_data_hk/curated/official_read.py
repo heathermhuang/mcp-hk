@@ -84,7 +84,13 @@ class OfficialReader:
             },
         }
 
-    def search(self, name=None, namespace=None, value=None, limit=20, cursor=None):
+    def search(
+        self, name=None, namespace=None, value=None, limit=20, cursor=None, groupBy=None
+    ):
+        if groupBy not in {None, "organisation"} or groupBy and not 1 <= limit <= 20:
+            raise ReadError(
+                "INVALID_QUERY", "Grouped search allows at most 20 organisations"
+            )
         if type(limit) is not int or not 1 <= limit <= 100:
             raise ReadError("INVALID_LIMIT", "Limit must be 1 through 100")
         if name is not None:
@@ -114,6 +120,8 @@ class OfficialReader:
             filters = {"namespace": namespace, "value": value}
             condition = "r.entity_id=%s"
             params = (namespace.replace(":brn", "") + ":" + value,)
+        if groupBy:
+            filters["groupBy"] = groupBy
         state = (
             self.archive.unseal(cursor, "official_search", filters) if cursor else None
         )
@@ -163,7 +171,23 @@ class OfficialReader:
                 }
                 for row in rows
             ]
-            return self.result(release, data, token)
+            result = self.result(release, data, token)
+            if groupBy:
+                result["groupBy"] = groupBy
+                for item in data:
+                    matches = conn.execute(
+                        "SELECT r.fact_id,r.record->>'name1' AS display_name,r.record->>'chinese_name' AS chinese_name FROM curated.official_records r JOIN curated.official_members m USING(capture_id) WHERE m.version=%s AND r.entity_id=%s AND "
+                        + condition
+                        + " ORDER BY r.fact_id LIMIT 3",
+                        (release["version"], item["entity_id"], *params),
+                    ).fetchall()
+                    item["matched_names"] = matches
+                    item["matched_fact_count"] = conn.execute(
+                        "SELECT count(*) FROM curated.official_records r JOIN curated.official_members m USING(capture_id) WHERE m.version=%s AND r.entity_id=%s AND "
+                        + condition,
+                        (release["version"], item["entity_id"], *params),
+                    ).fetchone()["count"]
+            return result
 
     def get(self, entity_id, version=None):
         if not re.fullmatch(

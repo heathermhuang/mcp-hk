@@ -86,3 +86,21 @@ coverage and time semantics, preserved source terms/provenance, correct empty an
 failure states, real HTTP/MCP query proof, and desktop/mobile browse-to-result
 verification. The registry regression checks that every declared pack is included
 in connected discovery. No provider-specific tool may be the only route to find it.
+
+## UX completion release (25 October 2026)
+
+The primary navigation is Find data, Connect AI, Guides and Data status. Anonymous
+read-only access and existing routes remain supported. Dataset detail retains list
+context; scope and offsets survive deliberate navigation. Preview restores only a
+selection, never arbitrary source arguments or record POSTs. One deliberate preview
+makes at most one schema and one record request, projects scalar source fields and
+keeps the 512,000-byte item cap. Geometry is omitted explicitly, not truncated.
+
+Company name entry dispatches one bounded grouped request to each selected source.
+Official observations and Webb archival organisations remain separate identities.
+Old archive and official URL forms are parsed explicitly. Property URLs contain
+public building IDs, view and filters; typed addresses remain current-tab state.
+
+`deploy/cloudflare/ux-browser.mjs` exercises actual browser history, focus, request
+fan-out, source failure, shareable selection, mobile reflow and both authored locales.
+The fixtures prove deterministic UI contracts, not live provider availability.

@@ -9,7 +9,7 @@ class Element {
 }
 async function browser({stored=null,id='G-TEST123456',url='https://mcp.hk/coverage?q=private-query#secret',gpc=false,dnt=false}={}){
   let saved=stored,reloaded=false;const button=new Element('button'),body=new Element('body'),head=new Element('head'),calls=[];
-  const document={body,head,cookie:'',activeElement:null,createElement:tag=>Object.assign(new Element(tag),{ownerDocument:document}),querySelectorAll:()=>[button]};
+  const document={body,head,cookie:'',activeElement:null,createElement:tag=>Object.assign(new Element(tag),{ownerDocument:document}),querySelector:()=>null,querySelectorAll:()=>[button]};
   const initialFocus=document.createElement('input');document.activeElement=initialFocus;
   const location=new URL(url);location.reload=()=>{reloaded=true;};
   const listeners={};

@@ -48,3 +48,10 @@ test('official page exports retain their separate view and Registry attribution'
   assert.equal(pack.manifest.view,'latest_observed');assert.equal(pack.manifest.scope,'this_page');assert.equal(pack.manifest.currentVerification,false);assert.equal(pack.manifest.rowCount,1);
   await assert.rejects(pagePackage(payload,{},'Webb archive notice'));
 });
+
+test('grouped exports label organisation rows and retain only displayed name evidence',async()=>{
+ const payload={data:{items:[{entity_id:1,name1:'Same name',matched_fact_count:50,matched_names:[{display_name:'Former name',fact_id:'name-1'}]},{entity_id:2,name1:'Same name',matched_fact_count:1,matched_names:[]}]},meta:{version:'grouped-v1',view:'archive',groupBy:'organisation'},provenance:[{view:'archive'}],warnings:[]};
+ const pack=await pagePackage(payload,{family:'search',groupBy:'organisation'},'David Webb original notice');
+ assert.equal(pack.manifest.rowCount,2);assert.equal(pack.manifest.scope,'this_page');assert.equal(pack.manifest.selection.groupBy,'organisation');
+ const bytes=Buffer.from(await pack.blob.arrayBuffer());assert.ok(bytes.includes(Buffer.from('matched_fact_count')));assert.ok(bytes.includes(Buffer.from('Former name')));
+});

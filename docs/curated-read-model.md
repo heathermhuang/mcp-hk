@@ -349,3 +349,22 @@ Follow the normal gateway rollout/backup/restore procedure. During the approved
 cron pause and after lease drain, use an immediate Durable Object code update to
 avoid the CLI's deferred old controller environment. Verify controller adoption,
 actual download bytes and browser flows before restoring all five schedules.
+
+## Optional organisation search grouping (25 October 2026)
+
+HTTP `/api/v1/companies` and MCP `hk_company_search` accept
+`groupBy=organisation`. Omit it to retain the existing matching-name-fact contract.
+Grouped pages contain at most 20 source identities, ordered by their exact entity
+ID within the selected source/version. Archive and official namespaces remain
+separate. Signed cursors bind grouping and query as well as operation and version.
+Each name search includes `matched_fact_count` and at most three `matched_names`;
+counts concern matching facts/observations, not a global company total. Further
+archive name evidence uses the existing version-pinned names endpoint.
+
+The private backend advertises `company-search-groupBy-organisation-v1` in its
+health response and echoes `groupBy` in grouped responses. The gateway rejects a
+missing echo with `CAPABILITY_UNAVAILABLE`; mixed deployment cannot silently return
+fact rows to the grouped consumer. Deploy/qualify the backend before the UI/gateway.
+Existing prefix and entity indexes are reused. No accepted schema or data migration
+is needed. Roll back backend code only after disabling/reverting the grouped UI;
+legacy callers and retained versions remain compatible throughout.

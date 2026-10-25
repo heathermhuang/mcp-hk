@@ -196,7 +196,13 @@ class Reader:
                 row.pop("page_key")
             return self.result(release, rows, token)
 
-    def search(self, name=None, namespace=None, value=None, limit=20, cursor=None):
+    def search(
+        self, name=None, namespace=None, value=None, limit=20, cursor=None, groupBy=None
+    ):
+        if groupBy not in {None, "organisation"} or groupBy and not 1 <= limit <= 20:
+            raise ReadError(
+                "INVALID_QUERY", "Grouped search allows at most 20 organisations"
+            )
         if name is not None:
             if namespace is not None or value is not None or not isinstance(name, str):
                 raise ReadError("INVALID_QUERY", "Choose name or explicit identifier")
@@ -260,6 +266,21 @@ class Reader:
                     (namespace, value, last or 0, size),
                 )
 
+        if groupBy:
+            filters = dict(filters, groupBy=groupBy)
+            if name is not None:
+
+                def grouped_statement(last, size, params):
+                    return (
+                        "WITH selected AS (SELECT DISTINCT n.entity_id FROM entity_names n JOIN entities e USING(entity_id) WHERE e.kind='organisation' AND n.search_key >= %s AND n.search_key < %s AND n.entity_id > %s ORDER BY n.entity_id LIMIT %s) "
+                        "SELECT e.entity_id,e.name1,e.chinese_name,e.scope,e.entity_id AS page_key, a.matched_fact_count,a.matched_names FROM selected s JOIN entities e USING(entity_id) CROSS JOIN LATERAL (SELECT count(*) AS matched_fact_count, (SELECT jsonb_agg(sample) FROM (SELECT z.display_name,z.name_kind,z.language,z.fact_id FROM entity_names z WHERE z.entity_id=e.entity_id AND z.search_key >= %s AND z.search_key < %s ORDER BY z.fact_id LIMIT 3) sample) AS matched_names FROM entity_names x WHERE x.entity_id=e.entity_id AND x.search_key >= %s AND x.search_key < %s) a ORDER BY e.entity_id",
+                        (key, end, last or 0, size, key, end, key, end),
+                    )
+
+            query = grouped_statement if name is not None else statement
+            result = self.page("company_search", filters, query, (), limit, cursor)
+            result["groupBy"] = groupBy
+            return result
         return self.page("company_search", filters, statement, (), limit, cursor)
 
     def get(self, entity_id, version=None):

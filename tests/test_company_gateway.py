@@ -145,3 +145,30 @@ async def test_official_view_keeps_source_identity_and_version_separate(monkeypa
             "search", {"view": "latest_observed", "q": "香港", "requireFresh": True}
         )
     assert len(paths) == 2
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("view", ["archive", "latest_observed"])
+async def test_grouped_search_requires_adopted_backend_capability(monkeypatch, view):
+    from mcp_open_data_hk.companies import ARCHIVE_SHA
+
+    monkeypatch.setenv("MCP_HK_CURATED_ORIGIN", "https://archive.example")
+    monkeypatch.setenv("MCP_HK_CURATED_TOKEN", "x" * 32)
+
+    def upstream(request):
+        assert request.url.params["groupBy"] == "organisation"
+        return httpx.Response(
+            200,
+            json={
+                "version": "v1",
+                "data": [],
+                "provenance": {"view": view, "archiveSha256": ARCHIVE_SHA},
+            },
+        )
+
+    adapter = Companies(httpx.MockTransport(upstream))
+    with pytest.raises(DomainError) as error:
+        await adapter.query(
+            "search", {"q": "HSBC", "view": view, "groupBy": "organisation"}
+        )
+    assert error.value.code == "CAPABILITY_UNAVAILABLE"

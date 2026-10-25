@@ -417,6 +417,30 @@ def create_app(service=None):
             return RedirectResponse("/docs", status_code=308)
 
         app.mount("/assets", StaticFiles(directory=web), name="assets")
+    from fastapi.routing import APIRoute
+
+    groups = [
+        ("/api/v1/catalogue", "Discovery"),
+        ("/api/v1/resources", "Resource records"),
+        ("/api/v1/companies", "Companies"),
+        ("/api/v1/properties", "Properties"),
+        ("/api/v1/plates", "Plates"),
+        ("/api/v1/addresses", "Addresses, restaurants and districts"),
+        ("/api/v1/restaurants", "Addresses, restaurants and districts"),
+        ("/api/v1/districts", "Addresses, restaurants and districts"),
+    ]
+    app.openapi_tags = [
+        {"name": name}
+        for name in dict.fromkeys([name for _, name in groups] + ["Service status"])
+    ]
+    for route in app.routes:
+        if isinstance(route, APIRoute) and route.include_in_schema:
+            route.tags = [
+                next(
+                    (name for prefix, name in groups if route.path.startswith(prefix)),
+                    "Service status",
+                )
+            ]
     # The MCP app owns /mcp. Mount at root last to avoid /mcp/mcp and keep REST routes.
     app.mount("/", mcp_app)
     return app

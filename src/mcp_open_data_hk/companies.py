@@ -114,6 +114,15 @@ class Companies:
             ) from exc
         try:
             payload = await asyncio.wait_for(self.fetch(path, params), timeout=12)
+            if params.get("groupBy") and (
+                not isinstance(payload, dict)
+                or payload.get("groupBy") != params["groupBy"]
+            ):
+                raise DomainError(
+                    "CAPABILITY_UNAVAILABLE",
+                    "Grouped company search has not been adopted by the backend",
+                    503,
+                )
         except (asyncio.TimeoutError, httpx.TimeoutException) as exc:
             raise DomainError(
                 "QUERY_TIMEOUT", "Archival query exceeded its time bound", 504
@@ -215,6 +224,7 @@ class Companies:
                 "truncated": bool(cursor),
                 "returnedCount": len(data) if isinstance(data, list) else 1,
                 "countScope": "this_page",
+                **({"groupBy": payload["groupBy"]} if payload.get("groupBy") else {}),
             },
             provenance=[
                 dict(
@@ -282,6 +292,15 @@ class Companies:
             ) from exc
         try:
             payload = await asyncio.wait_for(self.fetch(path, params), timeout=12)
+            if params.get("groupBy") and (
+                not isinstance(payload, dict)
+                or payload.get("groupBy") != params["groupBy"]
+            ):
+                raise DomainError(
+                    "CAPABILITY_UNAVAILABLE",
+                    "Grouped company search has not been adopted by the backend",
+                    503,
+                )
         except (httpx.HTTPError, asyncio.TimeoutError) as exc:
             raise DomainError(
                 "PACK_UNAVAILABLE", "Official observations are unavailable"
@@ -323,6 +342,7 @@ class Companies:
                 "nextCursor": payload.get("nextCursor"),
                 "returnedCount": len(data) if isinstance(data, list) else 1,
                 "countScope": "this_page",
+                **({"groupBy": payload["groupBy"]} if payload.get("groupBy") else {}),
                 "currentVerification": False,
             },
             provenance=[source],

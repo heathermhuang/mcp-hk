@@ -84,3 +84,32 @@ For SeeHouse property data, use `hk_property_search` to choose a building, then
 `hk_property_building` and `hk_property_price_history`. Read `hk_property_coverage`
 for dated coverage and freshness. Prices are asking prices, not transactions.
 See the [SeeHouse pack contract](seehouse.md) or [browser search](https://mcp.hk/properties).
+
+## Verification and troubleshooting for this UX release
+
+Official configuration documentation was checked on 25 October 2026:
+[Codex MCP](https://learn.chatgpt.com/docs/extend/mcp),
+[Codex startup settings](https://learn.chatgpt.com/docs/config-file/config-reference),
+[Claude Code MCP](https://code.claude.com/docs/en/mcp), and
+[Cursor MCP](https://cursor.com/docs/mcp). Update an existing configuration rather
+than adding a duplicate server. Restart the client, inspect its tool list and ask:
+“Use `hk_district_list` and cite the original source for one Hong Kong district.”
+A returned source-linked record establishes success. Copying text, a settings entry
+or an HTTP health response does not establish a connected client.
+
+This release's installed-client matrix remains pending unless separately evidenced
+in the release report. The current task's remote MCP reads are service/connector
+proof, not a claim that every supported desktop client's setup was exercised.
+
+- No tools: check the exact client configuration destination, custom remote MCP
+  support, workspace permissions and reload step.
+- Slow first discovery: allow the documented two-minute startup window where the
+  client supports it; retain the actual failure if startup times out.
+- 429: honour `Retry-After` before the next attempt. Public access has shared limits.
+- A source/schema error after successful discovery: preserve that source's failure;
+  select a documented alternate source explicitly. Do not reconnect repeatedly or
+  report zero records.
+
+Other apps require support for custom remote Streamable HTTP MCP connections.
+Consumer-app plan availability is not inferred from CLI support. The complete
+[HTTP walkthrough](https://mcp.hk/guides/hong-kong-open-data-api) needs no MCP client.

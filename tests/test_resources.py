@@ -1016,3 +1016,60 @@ def test_calendar_preview_selects_source_events_and_retains_metadata():
     assert schema["calendarMetadata"]["x-wr-timezone"] == "Asia/Hong_Kong"
     wrapper, _ = parse(body, "JSON", record_path="vcalendar")
     assert wrapper == [calendar]
+
+
+@pytest.mark.asyncio
+async def test_large_weather_geometry_requires_projection_without_relaxing_byte_cap(
+    resource_service, monkeypatch
+):
+    # A single geometry can exceed the item cap: reducing only row count fails.
+    rows = [
+        {
+            "geometry": {"type": "MultiPolygon", "coordinates": ["x" * 520000]},
+            "properties": {
+                "location": "Central",
+                "url": "https://example.gov.hk/rainfall",
+            },
+        }
+    ]
+    value = {
+        "rows": rows,
+        "schema": {
+            "fields": [
+                {"name": "geometry", "types": ["object"]},
+                {"name": "properties", "types": ["object"]},
+            ],
+            "scope": "complete_file",
+        },
+    }
+    resource = {
+        "id": "r1",
+        "url": "https://example.gov.hk/rainfall",
+        "format": "GEOJSON",
+        "catalogue": "CSDI",
+        "datasetId": "sample",
+    }
+
+    async def load(*args, **kwargs):
+        return resource, value, {"hash": "fixture-weather-version"}, False
+
+    monkeypatch.setattr(resource_service.resources, "load", load)
+    monkeypatch.setattr(
+        resource_service.resources,
+        "envelope",
+        lambda *args: {"schema": value["schema"], "provenance": [], "warnings": []},
+    )
+    with pytest.raises(DomainError) as error:
+        await resource_service.resources.query("r1", limit=1)
+    assert error.value.code == "RESPONSE_TOO_LARGE"
+    result = await resource_service.resources.query(
+        "r1", limit=5, fields=["properties.location", "properties.url"]
+    )
+    assert result["data"]["items"] == [
+        {
+            "properties.location": "Central",
+            "properties.url": "https://example.gov.hk/rainfall",
+        }
+    ]
+    assert result["meta"]["version"] == "fixture-weather-version"
+    assert len(rows[0]["geometry"]["coordinates"][0]) == 520000

@@ -1,0 +1,318 @@
+{
+  "resource": {
+    "id": "770e68f0676dcbf8e65e2b4e1c6f6e60",
+    "datasetId": "hk-hko-rss-current-weather-report",
+    "url": "https://rss.weather.gov.hk/rss/CurrentWeather.xml",
+    "format": "RSS",
+    "catalogue": "DATA.GOV.HK",
+    "aliases": [
+      {
+        "id": "8d393a7f-0fe0-48e4-9bc3-0b6baf7673fe",
+        "shared_id": "fd863324821711ed919c0a58c0a84a4f",
+        "name": "Current Weather Report (English)",
+        "inLanguage": "en",
+        "format": "RSS"
+      }
+    ],
+    "sourceUrl": "https://data.gov.hk/en-data/dataset/hk-hko-rss-current-weather-report",
+    "publicationDate": "2012-06-29",
+    "sourceModified": null,
+    "isApi": false,
+    "termsUrl": "https://data.gov.hk/en/terms-and-conditions"
+  },
+  "dataset": {
+    "id": "hk-hko-rss-current-weather-report",
+    "catalogue": "DATA.GOV.HK",
+    "nativeId": "e81b9d35-ac4c-4860-a05d-97ca97862442",
+    "title": "Current weather report",
+    "description": "Provide current weather report of Hong Kong. The multiple file formats are available for datasets download in API.",
+    "provider": "Hong Kong Observatory",
+    "providerType": "government",
+    "providerClassificationEvidence": "Conservative provider-name rules; unresolved statutory/public bodies are unclassified.",
+    "sourceUrl": "https://data.gov.hk/en-data/dataset/hk-hko-rss-current-weather-report",
+    "dictionary": "https://data.weather.gov.hk/weatherAPI/doc/HKO_Open_Data_API_Documentation.pdf",
+    "updateCadence": "Hourly and when there is update",
+    "metadataModified": "2022-12-22T16:45:10.459833",
+    "licence": {
+      "id": null,
+      "title": null,
+      "termsUrl": "https://data.gov.hk/en/terms-and-conditions"
+    },
+    "referencePeriod": null
+  },
+  "schema": {
+    "format": "RSS",
+    "recordPath": null,
+    "sheet": null,
+    "normalization": "Source values retained; no inferred units or reference periods.",
+    "rootTag": "rss",
+    "readerContract": "rss-feed-root-1",
+    "fieldCompatibility": "RSS/Atom fields are optional and extensible; observed types are retained, not a fixed analytical schema.",
+    "rowMeaning": "Raw XML elements under the selected path; default selection is the direct feed container, not a count of all catalogue books.",
+    "fields": [
+      {
+        "name": "copyright",
+        "types": [
+          "string"
+        ],
+        "missingCount": 0,
+        "unit": null
+      },
+      {
+        "name": "description",
+        "types": [
+          "string"
+        ],
+        "missingCount": 0,
+        "unit": null
+      },
+      {
+        "name": "image",
+        "types": [
+          "object"
+        ],
+        "missingCount": 0,
+        "unit": null
+      },
+      {
+        "name": "item",
+        "types": [
+          "object"
+        ],
+        "missingCount": 0,
+        "unit": null
+      },
+      {
+        "name": "language",
+        "types": [
+          "string"
+        ],
+        "missingCount": 0,
+        "unit": null
+      },
+      {
+        "name": "link",
+        "types": [
+          "string"
+        ],
+        "missingCount": 0,
+        "unit": null
+      },
+      {
+        "name": "title",
+        "types": [
+          "string"
+        ],
+        "missingCount": 0,
+        "unit": null
+      },
+      {
+        "name": "{http://www.w3.org/2005/Atom}link",
+        "types": [
+          "object"
+        ],
+        "missingCount": 0,
+        "unit": null
+      }
+    ],
+    "queryFields": [
+      {
+        "name": "image.height",
+        "types": [
+          "string"
+        ],
+        "missingCount": 0,
+        "unit": null
+      },
+      {
+        "name": "image.link",
+        "types": [
+          "string"
+        ],
+        "missingCount": 0,
+        "unit": null
+      },
+      {
+        "name": "image.title",
+        "types": [
+          "string"
+        ],
+        "missingCount": 0,
+        "unit": null
+      },
+      {
+        "name": "image.url",
+        "types": [
+          "string"
+        ],
+        "missingCount": 0,
+        "unit": null
+      },
+      {
+        "name": "image.width",
+        "types": [
+          "string"
+        ],
+        "missingCount": 0,
+        "unit": null
+      },
+      {
+        "name": "item.author",
+        "types": [
+          "string"
+        ],
+        "missingCount": 0,
+        "unit": null
+      },
+      {
+        "name": "item.category",
+        "types": [
+          "string"
+        ],
+        "missingCount": 0,
+        "unit": null
+      },
+      {
+        "name": "item.description",
+        "types": [
+          "string"
+        ],
+        "missingCount": 0,
+        "unit": null
+      },
+      {
+        "name": "item.guid",
+        "types": [
+          "object"
+        ],
+        "missingCount": 0,
+        "unit": null
+      },
+      {
+        "name": "item.guid.#text",
+        "types": [
+          "string"
+        ],
+        "missingCount": 0,
+        "unit": null
+      },
+      {
+        "name": "item.guid.@isPermaLink",
+        "types": [
+          "string"
+        ],
+        "missingCount": 0,
+        "unit": null
+      },
+      {
+        "name": "item.link",
+        "types": [
+          "string"
+        ],
+        "missingCount": 0,
+        "unit": null
+      },
+      {
+        "name": "item.pubDate",
+        "types": [
+          "string"
+        ],
+        "missingCount": 0,
+        "unit": null
+      },
+      {
+        "name": "item.title",
+        "types": [
+          "string"
+        ],
+        "missingCount": 0,
+        "unit": null
+      },
+      {
+        "name": "{http://www.w3.org/2005/Atom}link.@href",
+        "types": [
+          "string"
+        ],
+        "missingCount": 0,
+        "unit": null
+      },
+      {
+        "name": "{http://www.w3.org/2005/Atom}link.@rel",
+        "types": [
+          "string"
+        ],
+        "missingCount": 0,
+        "unit": null
+      },
+      {
+        "name": "{http://www.w3.org/2005/Atom}link.@type",
+        "types": [
+          "string"
+        ],
+        "missingCount": 0,
+        "unit": null
+      }
+    ],
+    "sourceTransport": "direct",
+    "sourceResponseComplete": true,
+    "cacheTTLSeconds": 86400,
+    "scope": "complete_file",
+    "datasetCompleteness": "Not inferred from a file or a single API response.",
+    "resolvedSourceUrl": "https://rss.weather.gov.hk/rss/CurrentWeather.xml"
+  },
+  "quality": {
+    "level": "raw_source",
+    "semanticVerification": "not_performed",
+    "headerVerified": null,
+    "hasPositionalColumns": false,
+    "fieldUnitsAnnotated": false,
+    "sourceResponseScope": "complete_file",
+    "note": "A parsed source response is not a verified analytical table. Preserve source grain, units, dates and qualifications."
+  },
+  "validationFreshness": {
+    "lastValidatedAt": 1792896846.7630231,
+    "validationAgeSeconds": 47,
+    "cacheTtlSeconds": 86400,
+    "cacheExpired": false,
+    "reviewIntervalSeconds": 300,
+    "nextReviewAt": 1792897146.7630231,
+    "reviewOverdue": false,
+    "policyVersion": "source-review-11",
+    "scope": "Source validation only; publication dates, reference periods and record observations are separate."
+  },
+  "provenance": [
+    {
+      "sourceUrl": "https://rss.weather.gov.hk/rss/CurrentWeather.xml",
+      "originalResourceUrl": "https://rss.weather.gov.hk/rss/CurrentWeather.xml",
+      "catalogueUrl": "https://data.gov.hk/en-data/dataset/hk-hko-rss-current-weather-report",
+      "attribution": "Hong Kong Observatory / DATA.GOV.HK",
+      "termsUrl": "https://data.gov.hk/en/terms-and-conditions",
+      "retrievedAt": 1792893791.6117926,
+      "lastCheckedAt": 1792896846.7630231,
+      "lastValidatedAt": 1792896846.7630231,
+      "publicationDate": "2012-06-29",
+      "referencePeriod": null,
+      "contentHash": "e7a3b09f3f0c6386fe8009a0f49121adb2e9db3a6a6e8fcb3683e13d3487239d",
+      "stale": false
+    }
+  ],
+  "warnings": [],
+  "data": {
+    "items": [
+      {
+        "item.title": "Bulletin updated at 10:02 HKT 25/10/2026",
+        "item.pubDate": "Sun, 25 Oct 2026 02:02:00 GMT",
+        "item.description": "\n        \n         <img src=\"https://rss.weather.gov.hk/img/pic50.png\" style=\"vertical-align: middle;\">        <p>At \n        10 a.m. \n               at the Hong Kong Observatory :<br/>\n        Air temperature : 27 degrees Celsius<br/>\n        Relative Humidity : 60 per cent<br/>\n        During the past hour\n        the mean UV Index recorded at King's Park : 3<br/>\n        Intensity of UV radiation : moderate<br/>        \t\t \t\t\t\t\t\t\t\t\t\t        \t\t        \t\t\t\t\t\t\t\t\t\t    \t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<br/><font color=\"red\"><SPAN id='warning_message' >Please be reminded that:<br/>The Fire Danger Warning is Yellow and the fire risk is high.<br/></SPAN><br/>\t\t</font>                The air temperatures at other places were:\n                <br/>\n                <font size=\"-1\">\n    <table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n    <tr><td><font size=\"-1\">Hong Kong Observatory</font></td><td width=\"100\" align=\"right\"><font size=\"-1\">27 degrees ;</font></td></tr>\n    <tr><td><font size=\"-1\">King's Park</font></td><td width=\"100\" align=\"right\"><font size=\"-1\">27 degrees ;</font></td></tr>\n    <tr><td><font size=\"-1\">Wong Chuk Hang</font></td><td width=\"100\" align=\"right\"><font size=\"-1\">29 degrees ;</font></td></tr>\n    <tr><td><font size=\"-1\">Ta Kwu Ling</font></td><td width=\"100\" align=\"right\"><font size=\"-1\">27 degrees ;</font></td></tr>\n    <tr><td><font size=\"-1\">Lau Fau Shan</font></td><td width=\"100\" align=\"right\"><font size=\"-1\">26 degrees ;</font></td></tr>\n    <tr><td><font size=\"-1\">Tai Po</font></td><td width=\"100\" align=\"right\"><font size=\"-1\">27 degrees ;</font></td></tr>\n    <tr><td><font size=\"-1\">Sha Tin</font></td><td width=\"100\" align=\"right\"><font size=\"-1\">27 degrees ;</font></td></tr>\n    <tr><td><font size=\"-1\">Tuen Mun</font></td><td width=\"100\" align=\"right\"><font size=\"-1\">27 degrees ;</font></td></tr>\n    <tr><td><font size=\"-1\">Tseung Kwan O</font></td><td width=\"100\" align=\"right\"><font size=\"-1\">29 degrees ;</font></td></tr>\n    <tr><td><font size=\"-1\">Sai Kung</font></td><td width=\"100\" align=\"right\"><font size=\"-1\">26 degrees ;</font></td></tr>\n    <tr><td><font size=\"-1\">Cheung Chau</font></td><td width=\"100\" align=\"right\"><font size=\"-1\">27 degrees ;</font></td></tr>\n    <tr><td><font size=\"-1\">Chek Lap Kok</font></td><td width=\"100\" align=\"right\"><font size=\"-1\">27 degrees ;</font></td></tr>\n    <tr><td><font size=\"-1\">Tsing Yi</font></td><td width=\"100\" align=\"right\"><font size=\"-1\">27 degrees ;</font></td></tr>\n    <tr><td><font size=\"-1\">Shek Kong</font></td><td width=\"100\" align=\"right\"><font size=\"-1\">27 degrees ;</font></td></tr>\n    <tr><td><font size=\"-1\">Tsuen Wan Ho Koon</font></td><td width=\"100\" align=\"right\"><font size=\"-1\">25 degrees ;</font></td></tr>\n    <tr><td><font size=\"-1\">Tsuen Wan Shing Mun Valley</font></td><td width=\"100\" align=\"right\"><font size=\"-1\">28 degrees ;</font></td></tr>\n    <tr><td><font size=\"-1\">Hong Kong Park</font></td><td width=\"100\" align=\"right\"><font size=\"-1\">27 degrees ;</font></td></tr>\n    <tr><td><font size=\"-1\">Shau Kei Wan</font></td><td width=\"100\" align=\"right\"><font size=\"-1\">27 degrees ;</font></td></tr>\n    <tr><td><font size=\"-1\">Kowloon City</font></td><td width=\"100\" align=\"right\"><font size=\"-1\">27 degrees ;</font></td></tr>\n    <tr><td><font size=\"-1\">Happy Valley</font></td><td width=\"100\" align=\"right\"><font size=\"-1\">29 degrees ;</font></td></tr>\n    <tr><td><font size=\"-1\">Wong Tai Sin</font></td><td width=\"100\" align=\"right\"><font size=\"-1\">29 degrees ;</font></td></tr>\n    <tr><td><font size=\"-1\">Stanley</font></td><td width=\"100\" align=\"right\"><font size=\"-1\">28 degrees ;</font></td></tr>\n    <tr><td><font size=\"-1\">Kwun Tong</font></td><td width=\"100\" align=\"right\"><font size=\"-1\">27 degrees ;</font></td></tr>\n    <tr><td><font size=\"-1\">Sham Shui Po</font></td><td width=\"100\" align=\"right\"><font size=\"-1\">28 degrees ;</font></td></tr>\n    <tr><td><font size=\"-1\">Kai Tak Runway Park</font></td><td width=\"100\" align=\"right\"><font size=\"-1\">29 degrees ;</font></td></tr>\n    <tr><td><font size=\"-1\">Yuen Long Park</font></td><td width=\"100\" align=\"right\"><font size=\"-1\">29 degrees ;</font></td></tr>\n    <tr><td><font size=\"-1\">Tai Mei Tuk</font></td><td width=\"100\" align=\"right\"><font size=\"-1\">27 degrees .</font></td></tr>\n    </table></font></p>\nHere is the information on Tropical Storm Champi at 10 a.m.:\n<br/>Location: 29.3 degrees north, 124.9 degrees east.<br/><br/>        \n        ",
+        "item.link": "\n      https://www.weather.gov.hk/en/wxinfo/currwx/current.htm"
+      }
+    ]
+  },
+  "meta": {
+    "total": 1,
+    "offset": 0,
+    "nextOffset": null,
+    "version": "e7a3b09f3f0c6386fe8009a0f49121adb2e9db3a6a6e8fcb3683e13d3487239d",
+    "pagination": "Pass version on every subsequent page; changed content returns 409.",
+    "structuredQueryable": true
+  }
+}

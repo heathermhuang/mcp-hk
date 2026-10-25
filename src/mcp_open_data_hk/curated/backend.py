@@ -2,6 +2,7 @@
 
 import hmac
 import os
+from typing import Literal
 
 from fastapi import FastAPI, Header, HTTPException, Query
 from starlette.concurrency import run_in_threadpool
@@ -63,6 +64,7 @@ def create_app(reader, token):
 
     @app.get("/v1/official/companies")
     async def official_search(
+        groupBy: Literal["organisation"] | None = None,
         name: str | None = Query(None, max_length=200),
         namespace: str | None = Query(None, max_length=100),
         value: str | None = Query(None, max_length=200),
@@ -73,6 +75,7 @@ def create_app(reader, token):
         return await call(
             official.search,
             authorization,
+            groupBy=groupBy,
             name=name,
             namespace=namespace,
             value=value,
@@ -114,6 +117,7 @@ def create_app(reader, token):
         def check():
             with reader.request() as (_, release):
                 return {
+                    "capabilities": ["company-search-groupBy-organisation-v1"],
                     "status": "ready",
                     "version": release["version"],
                     "view": "archive",
@@ -123,6 +127,7 @@ def create_app(reader, token):
 
     @app.get("/v1/companies")
     async def search(
+        groupBy: Literal["organisation"] | None = None,
         name: str | None = Query(None, max_length=200),
         namespace: str | None = Query(None, max_length=100),
         value: str | None = Query(None, max_length=200),
@@ -133,6 +138,7 @@ def create_app(reader, token):
         return await call(
             reader.search,
             authorization,
+            groupBy=groupBy,
             name=name,
             namespace=namespace,
             value=value,

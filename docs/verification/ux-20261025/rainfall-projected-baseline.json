@@ -1,0 +1,220 @@
+{
+  "resource": {
+    "id": "34caeb756a0a82b09c0a0d3d6b152cbe",
+    "datasetId": "csdi:hko_rcd_1634806665997_63899",
+    "url": "https://portal.csdi.gov.hk/csdi-webpage/file-api?dataset_id=hko_rcd_1634806665997_63899&format=geojson&layer_name=current_weather_report_rainfall",
+    "format": "GEOJSON",
+    "catalogue": "CSDI",
+    "aliases": [
+      {
+        "name": "current_weather_report_current_weather_report_rainfall_converted.geojson",
+        "format": "FILE_API_GEOJSON"
+      }
+    ],
+    "sourceUrl": "https://portal.csdi.gov.hk/geoportal/rest/metadata/item/hko_rcd_1634806665997_63899/html",
+    "publicationDate": "2022-08-08T00:00:00Z",
+    "sourceModified": "2026-04-20T00:00:00Z",
+    "isApi": false,
+    "termsUrl": "https://portal.csdi.gov.hk/csdi-webpage/doc/TNC"
+  },
+  "dataset": {
+    "id": "csdi:hko_rcd_1634806665997_63899",
+    "nativeId": "hko_rcd_1634806665997_63899",
+    "catalogue": "CSDI",
+    "title": "Current weather report",
+    "titleZhHant": "本港地區天氣報告",
+    "description": "Provide current weather report of Hong Kong",
+    "provider": "Hong Kong Observatory",
+    "providerType": "government",
+    "sourceUrl": "https://portal.csdi.gov.hk/geoportal/rest/metadata/item/hko_rcd_1634806665997_63899/html",
+    "metadataModified": "2026-04-20T00:00:00Z",
+    "updateCadence": "unknown",
+    "licence": {
+      "termsUrl": "https://portal.csdi.gov.hk/csdi-webpage/doc/TNC"
+    },
+    "referencePeriod": null
+  },
+  "schema": {
+    "format": "GEOJSON",
+    "recordPath": "features",
+    "sheet": null,
+    "normalization": "Source values retained; no inferred units or reference periods.",
+    "encoding": "utf-8-sig",
+    "availableRecordPaths": [
+      "features"
+    ],
+    "sourceContext": {
+      "type": "FeatureCollection",
+      "name": "current_weather_report_rainfall",
+      "features": {
+        "sourceArrayLength": 18
+      }
+    },
+    "sourceCrs": null,
+    "coordinateReferenceSystem": "crs is preserved as source metadata; absent crs follows GeoJSON specification",
+    "fields": [
+      {
+        "name": "geometry",
+        "types": [
+          "object"
+        ],
+        "missingCount": 0,
+        "unit": null
+      },
+      {
+        "name": "properties",
+        "types": [
+          "object"
+        ],
+        "missingCount": 0,
+        "unit": null
+      },
+      {
+        "name": "type",
+        "types": [
+          "string"
+        ],
+        "missingCount": 0,
+        "unit": null
+      }
+    ],
+    "queryFields": [
+      {
+        "name": "geometry.coordinates",
+        "types": [
+          "array"
+        ],
+        "missingCount": 0,
+        "unit": null
+      },
+      {
+        "name": "geometry.type",
+        "types": [
+          "string"
+        ],
+        "missingCount": 0,
+        "unit": null
+      },
+      {
+        "name": "properties.fid",
+        "types": [
+          "string"
+        ],
+        "missingCount": 0,
+        "unit": null
+      },
+      {
+        "name": "properties.location_en",
+        "types": [
+          "string"
+        ],
+        "missingCount": 0,
+        "unit": null
+      },
+      {
+        "name": "properties.location_sc",
+        "types": [
+          "string"
+        ],
+        "missingCount": 0,
+        "unit": null
+      },
+      {
+        "name": "properties.location_tc",
+        "types": [
+          "string"
+        ],
+        "missingCount": 0,
+        "unit": null
+      },
+      {
+        "name": "properties.url",
+        "types": [
+          "string"
+        ],
+        "missingCount": 0,
+        "unit": null
+      }
+    ],
+    "sourceTransport": "direct",
+    "sourceResponseComplete": true,
+    "cacheTTLSeconds": 86400,
+    "scope": "complete_file",
+    "datasetCompleteness": "Not inferred from a file or a single API response.",
+    "resolvedSourceUrl": "https://portal.csdi.gov.hk/csdi-webpage/file-api?dataset_id=hko_rcd_1634806665997_63899&format=geojson&layer_name=current_weather_report_rainfall"
+  },
+  "quality": {
+    "level": "raw_source",
+    "semanticVerification": "not_performed",
+    "headerVerified": null,
+    "hasPositionalColumns": false,
+    "fieldUnitsAnnotated": false,
+    "sourceResponseScope": "complete_file",
+    "note": "A parsed source response is not a verified analytical table. Preserve source grain, units, dates and qualifications."
+  },
+  "validationFreshness": {
+    "lastValidatedAt": 1792895641.611824,
+    "validationAgeSeconds": 1142,
+    "cacheTtlSeconds": 86400,
+    "cacheExpired": false,
+    "reviewIntervalSeconds": 86400,
+    "nextReviewAt": 1792982041.611824,
+    "reviewOverdue": false,
+    "policyVersion": "source-review-11",
+    "scope": "Source validation only; publication dates, reference periods and record observations are separate."
+  },
+  "provenance": [
+    {
+      "sourceUrl": "https://portal.csdi.gov.hk/csdi-webpage/file-api?dataset_id=hko_rcd_1634806665997_63899&format=geojson&layer_name=current_weather_report_rainfall",
+      "originalResourceUrl": "https://portal.csdi.gov.hk/csdi-webpage/file-api?dataset_id=hko_rcd_1634806665997_63899&format=geojson&layer_name=current_weather_report_rainfall",
+      "catalogueUrl": "https://portal.csdi.gov.hk/geoportal/rest/metadata/item/hko_rcd_1634806665997_63899/html",
+      "attribution": "Hong Kong Observatory / Common Spatial Data Infrastructure (CSDI) Portal",
+      "termsUrl": "https://portal.csdi.gov.hk/csdi-webpage/doc/TNC",
+      "retrievedAt": 1792895641.611824,
+      "lastCheckedAt": 1792895641.611824,
+      "lastValidatedAt": 1792895641.611824,
+      "publicationDate": "2022-08-08T00:00:00Z",
+      "referencePeriod": null,
+      "contentHash": "8d43bf63607858448e0a1eacbeb4028df48c02fc4bb92ea7828c571a2060a071",
+      "stale": false
+    }
+  ],
+  "warnings": [],
+  "data": {
+    "items": [
+      {
+        "properties.location_en": "Central & Western District",
+        "properties.location_tc": "中西區",
+        "properties.url": "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/current_weather_report_central_and_western_district_rainfall.json"
+      },
+      {
+        "properties.location_en": "Eastern District",
+        "properties.location_tc": "東區",
+        "properties.url": "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/current_weather_report_eastern_district_rainfall.json"
+      },
+      {
+        "properties.location_en": "Kwai Tsing",
+        "properties.location_tc": "葵青",
+        "properties.url": "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/current_weather_report_kwai_tsing_rainfall.json"
+      },
+      {
+        "properties.location_en": "Islands District",
+        "properties.location_tc": "離島",
+        "properties.url": "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/current_weather_report_islands_district_rainfall.json"
+      },
+      {
+        "properties.location_en": "North District",
+        "properties.location_tc": "北區",
+        "properties.url": "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/current_weather_report_north_district_rainfall.json"
+      }
+    ]
+  },
+  "meta": {
+    "total": 18,
+    "offset": 0,
+    "nextOffset": 5,
+    "version": "8d43bf63607858448e0a1eacbeb4028df48c02fc4bb92ea7828c571a2060a071",
+    "pagination": "Pass version on every subsequent page; changed content returns 409.",
+    "structuredQueryable": true
+  }
+}

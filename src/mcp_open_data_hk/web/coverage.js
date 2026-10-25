@@ -3,11 +3,13 @@ import {fetchPublicJson} from './http.js';
 (() => {
   const $ = id => document.getElementById(id), t = (...args) => MhkI18n.t(...args);
   let searchSequence = 0, resourceSequence = 0, requestGeneration = 0;
+  let previousResult=null,retryUntil=0,retryTimer=null;
   let selected = null, nextRecords = null, lastQuery = null, searchOffset = 0, resourceOffset = 0;
   let datasetId = null, datasetTitle = '', access = 'connected', submittedQuery = '', directoryMode = false, busy = false;
   let inventory = null, inventoryFailed = false, datasets = null, resourceList = null, result = null;
   let searchError = null, resourceError = null, queryError = null, expiryTimer = null;
-  const api = fetchPublicJson;
+  const api = fetchPublicJson, controllers={};
+  function request(key,path,body){controllers[key]?.abort();const controller=typeof AbortController==='function'?new AbortController():null;controllers[key]=controller;return api(path,body,{signal:controller?.signal,attempts:key==='preview'?1:3});}
   const node = (tag, text) => { const e = document.createElement(tag); e.textContent = text; return e; };
   function link(url, title) { const a = node('a', title); if (/^https?:\/\//i.test(url)) { a.href = url; a.rel = 'noreferrer'; } return a; }
   function failure(error) { if(error.code==='INVALID_JSON')return t('invalidJsonField',{field:t(error.field)});const code=error.message.split(':')[0];const known={SOURCE_NOT_FOUND:'sourceUnavailablePlain',ACCESS_RESTRICTED:'sourceDeniedPlain',STALE_TRANSPORT_DATA:'sourceStalePlain',PARAMETERS_REQUIRED:'sourceSettingsPlain'}[code];if(known)return t(known);return MhkI18n.lang === 'en' ? error.message : `${t(error instanceof SyntaxError ? 'invalidJson' : 'sourceError')} (${error.message.split(':')[0].slice(0,80)})`; }
@@ -28,15 +30,16 @@ import {fetchPublicJson} from './http.js';
     history[push?'pushState':'replaceState'](null,'',u.pathname+u.search+u.hash);
   }
   function resetPreview() {
-    ++requestGeneration; selected=null;result=null;queryError=null;lastQuery=null;nextRecords=null;busy=false;
+    ++requestGeneration;controllers.preview?.abort();clearTimeout(retryTimer);retryUntil=0; previousResult=null;selected=null;result=null;queryError=null;lastQuery=null;nextRecords=null;busy=false;
     $('record-query').reset();$('source-inputs').replaceChildren();$('record-path-choices').replaceChildren();$('record-response').textContent='';$('resource-code').textContent=t('selectForCode');$('preview-step').hidden=true;renderSelection();renderQuery();
   }
-  function resetDataset() { ++resourceSequence;datasetId=null;datasetTitle='';resourceList=null;resourceError=null;directoryMode=false;resourceOffset=0;$('resource-format').value='';clearTimeout(expiryTimer);$('resource-step').hidden=true;resetPreview();renderResources(); }
+  function renderFocus(){ $('search-step').hidden=Boolean(datasetId||directoryMode); }
+  function resetDataset() { controllers.resources?.abort();++resourceSequence;datasetId=null;datasetTitle='';resourceList=null;resourceError=null;directoryMode=false;resourceOffset=0;$('resource-format').value='';clearTimeout(expiryTimer);$('resource-step').hidden=true;resetPreview();renderResources();renderFocus(); }
   function renderDatasets() {
     $('datasets').replaceChildren();
     document.querySelectorAll('[data-access]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.access===access)));
     if (!datasets) { $('datasets').textContent = searchError ? failure(searchError) : t('searching'); return; }
-    $('dataset-total').textContent = t('datasetMatches', {total: datasets.total, shown: datasets.items.length});
+    $('dataset-total').textContent = t('pageRange',{start:datasets.items.length?searchOffset+1:0,end:searchOffset+datasets.items.length,total:datasets.total});
     if (!datasets.items.length) {
       $('datasets').append(node('p',t(access==='connected'?'noConnectedResults':'noDatasets')));
       if(access!=='all'){const all=node('button',t('searchAllData'));all.type='button';all.addEventListener('click',()=>{access='all';searchOffset=0;search();});$('datasets').append(all);}
@@ -45,9 +48,9 @@ import {fetchPublicJson} from './http.js';
     for (const d of datasets.items) {
       const row = node('article', ''), heading=node('h3','');row.className='catalogue-result';
       const connected=d.entryKind==='connected_service';
-      const button=node(connected?'a':'button',title(d));
+      const button=node('a',title(d));
       if(connected){const a=internalLink(d.action.url,title(d));button.href=a.href;}
-      else {button.type='button';button.setAttribute('aria-pressed',String(datasetId===d.id));button.addEventListener('click',()=>{resetDataset();datasetId=d.id;datasetTitle=title(d);$('resource-step').hidden=false;syncUrl();resources().then(()=>focusSection('resource-heading'));renderDatasets();});}
+      else {button.href='/coverage?'+new URLSearchParams({q:submittedQuery,access,dataset:d.id,offset:searchOffset,lang:MhkI18n.locale});button.setAttribute('aria-pressed',String(datasetId===d.id));button.addEventListener('click',event=>{if(event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;event.preventDefault();resetDataset();datasetId=d.id;datasetTitle=title(d);$('resource-step').hidden=false;syncUrl();resources().then(()=>focusSection('resource-heading'));renderDatasets();renderFocus();});}
       heading.append(button);row.append(heading);
       const description=MhkI18n.lang==='zh'?d.descriptionZhHant||d.description:d.description;if(description)row.append(node('p',String(description).replace(/<[^>]*>/g,' ').slice(0,280)));
       const states=d.resourceSummary?.byStatus||{};
@@ -57,6 +60,7 @@ import {fetchPublicJson} from './http.js';
       else row.append(node('p',t('sourceCount',{total:d.resourceSummary?.total??'—'})));
       row.append(link(d.sourceUrl,t('originalSource')));$('datasets').append(row);
     }
+    $('datasets-previous').hidden = !searchOffset;
     $('datasets-next').hidden = datasets.nextOffset == null; $('datasets-next').dataset.offset = datasets.nextOffset;
   }
   async function search({readInput=true,push=true}={}) {
@@ -64,7 +68,7 @@ import {fetchPublicJson} from './http.js';
     resetDataset();syncUrl(push);
     const sequence = ++searchSequence; datasets = null; searchError = null; $('dataset-total').textContent = ''; $('datasets-next').hidden = true; renderDatasets();
     try {
-      const data = await api('/api/v1/catalogue/datasets?' + new URLSearchParams({q:submittedQuery,access,limit:10,offset:searchOffset}));
+      const data = await request('search','/api/v1/catalogue/datasets?' + new URLSearchParams({q:submittedQuery,access,limit:10,offset:searchOffset}));
       if (sequence !== searchSequence) return; datasets = data;
     } catch (e) { if (sequence !== searchSequence) return; searchError = e; }
     renderDatasets();
@@ -79,9 +83,12 @@ import {fetchPublicJson} from './http.js';
     $('resources').replaceChildren();$('dataset-context').textContent=datasetTitle;
     if (!resourceList) { $('resources').textContent = resourceError ? failure(resourceError) : t('loadingResources'); return; }
     if(resourceList.connected){const d=resourceList.connected;$('resources').append(node('p',t('connectedAccessHint')),internalLink(d.action.url,MhkI18n.lang==='zh'?d.action.labelZhHant:d.action.label));return;}
-    $('resources').append(node('p', t('resourceMatches', {total:resourceList.total,shown:resourceList.items.length})));
+    $('resources').append(node('p', t('pageRange',{start:resourceList.items.length?resourceOffset+1:0,end:resourceOffset+resourceList.items.length,total:resourceList.total})));
+    if(datasetId==='csdi:hko_rcd_1634806665997_63899')$('resources').append(internalLink('/coverage?access=sources&dataset=hk-hko-rss-current-weather-report&resource=770e68f0676dcbf8e65e2b4e1c6f6e60',t('weatherAlternative')));
+    const recommended=resourceList.items.find(r=>r.id==='770e68f0676dcbf8e65e2b4e1c6f6e60')||resourceList.items.find(r=>['JSON','CSV','GEOJSON','RSS','XML'].includes(r.format)&&r.validation?.status==='queryable'&&!r.transport?.requiredParameters?.length);
+    const other=node('details','');other.append(node('summary',t('otherFormats')));
     for (const r of resourceList.items) {
-      const row = node('article', ''), button = node('button', `${r.aliases?.[0]?.name || r.datasetId} · ${r.format}`); button.type = 'button';
+      const row = node('article', ''), button = node('button', `${resourceName(r)} · ${r.format}`); button.type = 'button';
       button.setAttribute('aria-pressed',String(selected?.id===r.id));
       button.addEventListener('click',()=>selectResource(r));
 
@@ -95,12 +102,15 @@ import {fetchPublicJson} from './http.js';
       row.append(button, node('p', `${r.catalogue} · ${t(r.transport?.operation === 'arrivals' && (v.status === 'stale' || expired) ? 'transportRefreshDue' : v.status)}${reason ? ' · ' + reason : ''} · ${t('lastCheck')}: ${v.lastCheckedAt ? new Date(v.lastCheckedAt*1000).toLocaleString(MhkI18n.locale,{timeZone:'Asia/Hong_Kong',hour12:false})+' HKT' : t('pending')}`), link(r.url, t('sourceLink')));
       if(r.validation.freshness?.cacheExpired && r.validation.status==='queryable')row.append(node('p',t('validationRefreshDue')));
       if(r.transport?.alternative){const alt=r.transport.alternative;row.append(alt.resourceId ? internalLink('/coverage?'+new URLSearchParams({dataset:'hk-td-wcms_8-ferry-services-tt-ft',resource:alt.resourceId,access:'sources'}),t('publishedTimetable')) : link(alt.url,t('publishedTimetable')));}
-      $('resources').append(row);
+      (r===recommended?$('resources'):other).append(row);
     }
+    if(other.children.length>1)$('resources').append(other);
+    $('resources-previous').hidden = !resourceOffset;
     $('resources-next').hidden = resourceList.nextOffset == null; $('resources-next').dataset.offset = resourceList.nextOffset;
     const deadlines = resourceList.items.filter(r => r.transport?.operation === 'arrivals' && r.validation.status === 'queryable').map(r => (r.validation.lastValidatedAt + r.transport.cacheTTLSeconds) * 1000 - Date.now()).filter(ms => ms > 0);
     if (deadlines.length) expiryTimer = setTimeout(renderResources, Math.min(...deadlines) + 25);
   }
+  function resourceName(r){const key={'34caeb756a0a82b09c0a0d3d6b152cbe':'rainfallDistrictLinks','770e68f0676dcbf8e65e2b4e1c6f6e60':'weatherBulletin'}[r.id];return key?t(key):r.aliases?.[0]?.name||r.datasetId;}
   function selectResource(r,push=true) {
     resetPreview();selected=r;$('preview-step').hidden=false;renderSourceInputs();renderSelection();renderQuery();syncUrl(push);
     $('resource-code').textContent=`GET ${location.origin}/api/v1/resources/${r.id}/schema\n\nMCP: hk_resource_schema(${JSON.stringify({resourceId:r.id})})`;renderResources();focusSection('query-heading');
@@ -117,22 +127,29 @@ import {fetchPublicJson} from './http.js';
       if ($('resource-format').value) params.format = $('resource-format').value;
       if (!directoryMode) params.datasetId = datasetId;
       if (directoryMode && $('coverage-status').value) params.status = $('coverage-status').value;
-      const data = await api('/api/v1/resources?' + new URLSearchParams(params));
+      const data = await request('resources','/api/v1/resources?' + new URLSearchParams(params));
       if (sequence !== resourceSequence) return; resourceList = data;
     } catch (e) { if (sequence !== resourceSequence) return; resourceError = e; }
     renderResources();
   }
   function renderQuery() {
     $('record-path-choices').querySelectorAll('select').forEach(e=>e.disabled=busy);
-    $('record-query').querySelectorAll('button').forEach(button => { button.disabled = !selected || busy; });
+    $('record-query').querySelectorAll('button').forEach(button => { button.disabled = !selected || busy || Date.now()<retryUntil; });
     $('record-table').replaceChildren(); $('resource-citations').replaceChildren();
     $('record-response').textContent = '';
-    if (queryError) { $('query-message').textContent = failure(queryError); return; }
+    if (queryError) {
+      $('query-message').textContent = (Date.now()<retryUntil?t('retryAfterSeconds',{seconds:Math.ceil((retryUntil-Date.now())/1000)})+' · ':'')+t(queryError.message.includes('RESPONSE_TOO_LARGE')?'previewTooLarge':'sourceError');
+      const details=node('details','');details.append(node('summary',t('technicalDetails')),node('pre',failure(queryError)));$('record-table').append(details);
+      if(/RESOURCE_VERSION_CHANGED|SERVICE_RECOVERING|QUERY_BUSY|RATE_LIMITED|SOURCE_UNAVAILABLE|UPSTREAM|TIMEOUT/.test(queryError.message)){const retry=node('button',t(queryError.message.includes('RESOURCE_VERSION_CHANGED')?'restartPreview':'retryRead'));retry.type='button';retry.disabled=Date.now()<retryUntil;retry.addEventListener('click',()=>query('query'));$('record-table').append(retry);}
+      const fields=node('button',t('chooseFields'));fields.type='button';fields.addEventListener('click',()=>{$('query-options').open=true;$('record-query').elements.fields.focus();});$('record-table').append(fields);
+      if(datasetId?.includes('hko'))$('record-table').append(internalLink('/coverage?access=sources&dataset=hk-hko-rss-current-weather-report&resource=770e68f0676dcbf8e65e2b4e1c6f6e60',t('weatherAlternative')));
+      $('record-table').append(link(selected?.url,t('originalSource')));if(previousResult){const old=node('details','');old.append(node('summary',t('previousResult')),node('pre',JSON.stringify(previousResult,null,2)));$('record-table').append(old);}return;
+    }
     if (busy) { $('query-message').textContent = t('readingSource'); return; }
     if (!result) { $('query-message').textContent = selected ? t('inspectHint') : ''; return; }
     $('record-response').textContent = JSON.stringify(result,null,2);
     if (result.selectionRequired) {
-      if(result.selectionRequired==='parameters')renderSourceInputs(result.parameters||[]);else $('query-options').open=true;
+      if(result.selectionRequired==='parameters')renderSourceInputs(result.parameters||[]);else renderRequiredSelection();
       $('query-message').textContent = t('chooseSelection',{kind:t(result.selectionRequired)}) + (result.selectionRequired==='parameters'?'':JSON.stringify(result.layers || result.featureTypes || result.sheets || result.parameters)); return;
     }
     if (result.data) {
@@ -148,13 +165,13 @@ import {fetchPublicJson} from './http.js';
             const details = node('details','');
             details.append(node('summary', t(Array.isArray(value) ? 'nestedItems' : 'nestedFields', {total:Object.keys(value).length})), node('pre',JSON.stringify(value,null,2)));
             cell.append(details);
-          } else cell.textContent = value == null ? '—' : String(value);
+          } else cell.textContent = value == null ? '—' : f==='item.description'?String(value).replace(/<br\s*\/?[^>]*>|<\/(?:p|tr)>/gi,'\n').replace(/<[^>]*>/g,' ').replace(/[ \t]+/g,' ').trim():String(value);
           row.append(cell);
         });
         tbody.append(row);
       }
-      table.append(tbody); const wrap = node('div',''); wrap.className = 'table-scroll'; wrap.append(table); $('record-table').append(wrap);
-      $('query-message').textContent = t('matchedRecords',{total:result.meta.total,shown:items.length}) + (!items.length ? ' · '+t('noMatches') : '') + (result.meta.structuredQueryable ? '' : ' · '+t('unverifiedText')) + (result.warnings.length ? ' · '+result.warnings.map(w=>w.code).join(', ') : '');
+      table.append(tbody); const wrap = node('div',''); wrap.className = 'table-scroll';wrap.tabIndex=0;wrap.setAttribute('aria-label',t('recordTable')); wrap.append(table); $('record-table').append(wrap);
+      $('query-message').textContent = t('matchedRecords',{total:result.meta.total,shown:items.length}) + (!items.length ? ' · '+t('noMatches') : '') + (result.meta.structuredQueryable ? '' : ' · '+t('unverifiedText')) + (lastQuery?.fields?.length?' · '+t('projectedFields',{fields:lastQuery.fields.join(', ')}):'') + (result.warnings.length ? ' · '+result.warnings.map(w=>w.code).join(', ') : '');
     } else { $('query-message').textContent = t('schemaSummary',{total:result.recordCount,scope:result.schema.scope,fields:result.schema.fields.map(f=>f.name).join(', ')}); }
     renderRecordPaths();
     if (result.quality?.semanticVerification==='not_performed') $('resource-citations').append(node('p',t('rawSourceQualification')));
@@ -162,9 +179,10 @@ import {fetchPublicJson} from './http.js';
     for (const p of result.provenance) $('resource-citations').append(link(p.sourceUrl,p.attribution+' ↗'),node('p',`${t('validated')}: ${new Date(p.lastValidatedAt*1000).toLocaleString(MhkI18n.locale,{timeZone:'Asia/Hong_Kong',hour12:false})+' HKT'} · ${t('publication')}: ${p.publicationDate || t('notSupplied')} · ${t('referencePeriod')}: ${p.referencePeriod || t('notSupplied')}`),link(p.termsUrl,t('sourceTerms')));
     $('records-next').hidden = !nextRecords;
   }
+  function renderRequiredSelection(){const key=result.selectionRequired,values=result.layers||result.featureTypes||result.sheets||[];const box=$('record-path-choices');box.replaceChildren();if(!values.length){$('query-options').open=true;return;}const label=node('label',t(key)),select=node('select','');select.setAttribute('aria-label',t(key));const blank=node('option',t('chooseSourceOption'));blank.value='';select.append(blank);for(const item of values){const option=node('option',typeof item==='object'?item.name||String(item.id):item);option.value=typeof item==='object'?item.id:item;select.append(option);}select.addEventListener('change',()=>{if(select.value==='')return;$('record-query').elements[key].value=select.value;query('query');});label.append(select);box.append(label);}
   function renderRecordPaths(){
     const box=$('record-path-choices');box.replaceChildren();const paths=result?.schema?.availableRecordPaths||[];if(paths.length<2||selected?.transport?.operation==='arrivals')return;
-    const label=node('label',t('recordListChoice')),select=node('select','');select.setAttribute('aria-label',t('recordListChoice'));for(const path of paths){const option=node('option',path||t('wholeSource'));option.value=path;option.selected=path===result.schema.recordPath;select.append(option);}label.append(select);box.append(label);select.addEventListener('change',()=>{$('record-query').elements.recordPath.value=select.value;query('query');});
+    const label=node('label',t('recordListChoice')),select=node('select','');select.setAttribute('aria-label',t('recordListChoice'));const blank=node('option',t('chooseSourceOption'));blank.value='';select.append(blank);for(const path of paths){const option=node('option',path||t('wholeSource'));option.value=path;option.selected=path===result.schema.recordPath;select.append(option);}label.append(select);box.append(label);select.addEventListener('change',()=>{if(!select.value)return;$('record-query').elements.recordPath.value=select.value;query('query');});
   }
   function jsonObject(value, field) {
     try {
@@ -174,23 +192,36 @@ import {fetchPublicJson} from './http.js';
     } catch { const error=new Error('INVALID_JSON');error.code='INVALID_JSON';error.field=field;throw error; }
   }
   async function query(kind, continuation = false) {
-    if (!selected || busy) { if (!selected) $('query-message').textContent = t('selectFirst'); return; }
+    if (!selected || busy || Date.now()<retryUntil) { if (!selected) $('query-message').textContent = t('selectFirst'); return; }
+    if(result?.data)previousResult=result;
     const generation = ++requestGeneration; busy = true; queryError = null; $('records-next').hidden = true; renderQuery();
     try {
       const form = new FormData($('record-query')), selectors = {recordPath:form.get('recordPath'),sheet:form.get('sheet')};
       if (form.get('layer') !== '') selectors.layer = Number(form.get('layer'));
       const parameters=jsonObject(form.get('parameters'),'parameters');$('source-inputs').querySelectorAll('[data-source-parameter]').forEach(e=>parameters[e.dataset.sourceParameter]=e.value);
-      const body = kind === 'schema' ? {...selectors,parameters} : continuation ? {...lastQuery,offset:nextRecords.offset,version:nextRecords.version} : {...selectors,parameters,filters:jsonObject(form.get('filters'),'filters'),fields:String(form.get('fields')).split(',').map(s=>s.trim()).filter(Boolean),limit:20};
+      let body = kind === 'schema' ? {...selectors,parameters} : continuation ? {...lastQuery,offset:nextRecords.offset,version:nextRecords.version} : {...selectors,parameters,filters:jsonObject(form.get('filters'),'filters'),fields:String(form.get('fields')).split(',').map(s=>s.trim()).filter(Boolean),limit:5};
+      if(kind!=='schema' && !continuation && !body.fields.length){
+        const schema=await request('preview',`/api/v1/resources/${selected.id}/schema`,{...selectors,parameters});
+        if(generation!==requestGeneration)return;
+        if(schema.selectionRequired){result=schema;return;}
+        result=schema;
+        const paths=(schema.schema?.availableRecordPaths||[]).filter(p=>!p.includes('/0/'));
+        if(!body.recordPath && paths.length>1 && schema.schema.scope==='source_response_object'){renderRecordPaths();return;}
+        // Scalar source fields only; do not return geometry or silently truncate nested values.
+        const fields=[...(schema.schema?.fields||[]),...(schema.schema?.queryFields||[])].filter(f=>f.types?.length && f.types.every(x=>!['object','array'].includes(x)) && !f.name.startsWith('geometry.') && f.name!=='type').map(f=>f.name);
+        body.fields=[...new Set(fields)].slice(0,12);
+        if(selected.id==='770e68f0676dcbf8e65e2b4e1c6f6e60')body.fields=['item.title','item.pubDate','item.description','item.link'];
+        $('record-query').elements.fields.value=body.fields.join(', ');
+      }
       const path = `/api/v1/resources/${selected.id}/` + (kind === 'schema' ? 'schema' : 'query');
-      const data = await api(path,body);
+      const data = await request('preview',path,body);
       if (generation !== requestGeneration) return;
       result = data; lastQuery = body; nextRecords = result.meta?.nextOffset == null ? null : {offset:result.meta.nextOffset,version:result.meta.version};
       $('resource-code').textContent = `POST ${location.origin}${path}\n${JSON.stringify(body,null,2)}\n\nMCP: ${kind === 'schema' ? 'hk_resource_schema' : 'hk_resource_query'}(${JSON.stringify({resourceId:selected.id,...body},null,2)})`;
-      coverage();
-    } catch (e) { if (generation !== requestGeneration) return; result=null;queryError=e;
-      if(/PARAMETERS_REQUIRED/.test(e.message)){try{const discovery=await api(`/api/v1/resources/${selected.id}/schema`);if(generation===requestGeneration){result=discovery;queryError=null;}}catch{}}
+      // No unbounded metadata refresh after a deliberate preview.
+    } catch (e) { if (generation !== requestGeneration) return; result=null;queryError=e;if(e.retryAfter){retryUntil=Date.now()+e.retryAfter*1000;clearTimeout(retryTimer);retryTimer=setTimeout(renderQuery,e.retryAfter*1000);}
       if(/SHEET_REQUIRED|INVALID_SHEET|LAYER_REQUIRED|INVALID_RECORD_PATH/.test(e.message))$('query-options').open=true;
-    } finally { if(generation===requestGeneration){busy=false;renderQuery();if(datasetId||directoryMode)resources();} }
+    } finally { if(generation===requestGeneration){busy=false;renderQuery();} }
   }
   function render() { MhkI18n.apply(); if (!selected) $('resource-code').textContent = t('selectForCode'); if (document.documentElement?.dataset?.discovery !== 'true') document.title = t('coveragePageTitle'); renderCoverage(); renderDatasets(); renderResources(); renderSelection(); renderQuery(); }
   async function restore() {
@@ -202,11 +233,14 @@ import {fetchPublicJson} from './http.js';
       if(wantedDirectory){directoryMode=true;$('coverage-status').value=wantedStatus;}
       else {const d=await api('/api/v1/catalogue/datasets/'+encodeURIComponent(wantedDataset));if(sequence!==searchSequence)return;datasetId=d.id;datasetTitle=title(d);}
       resourceOffset=wantedOffset;$('resource-format').value=wantedFormat;$('resource-step').hidden=false;await resources();if(sequence!==searchSequence)return;
-      if(wantedResource){const r=resourceList?.items.find(r=>r.id===wantedResource);if(r)selectResource(r,false);}syncUrl(false);renderDatasets();
+      if(wantedResource){const r=resourceList?.items.find(r=>r.id===wantedResource);if(r)selectResource(r,false);}syncUrl(false);renderDatasets();renderFocus();
     }catch(e){if(sequence===searchSequence){resourceError=e;$('resource-step').hidden=false;renderResources();}}
   }
-  $('dataset-search').addEventListener('submit',e=>{e.preventDefault();searchOffset=0;access='all';search();});
+  $('dataset-search').addEventListener('submit',e=>{e.preventDefault();searchOffset=0;search();});
   document.querySelectorAll('[data-access]').forEach(b=>b.addEventListener('click',()=>{access=b.dataset.access;searchOffset=0;search();}));
+  $('back-results').addEventListener('click',()=>{resetDataset();syncUrl();focusSection('search-heading');});
+  $('datasets-previous').addEventListener('click',()=>{searchOffset=Math.max(0,searchOffset-10);search();});
+  $('resources-previous').addEventListener('click',()=>{resetPreview();resourceOffset=Math.max(0,resourceOffset-15);syncUrl();resources();});
   $('datasets-next').addEventListener('click',e=>{searchOffset=Number(e.target.dataset.offset);search();});
   $('directory').addEventListener('click',()=>{resetDataset();directoryMode=true;$('resource-step').hidden=false;syncUrl();resources();});
   $('resource-format').addEventListener('change',()=>{resetPreview();resourceOffset=0;syncUrl();if(datasetId||directoryMode)resources();});
