@@ -465,7 +465,22 @@ const translations = {
     "restartPreview": "Restart preview",
     "retryAfterSeconds": "Wait at least {seconds} seconds before trying again",
     "propertyFiltered": "Showing {count} of {total} returned adverts",
-    "propertyNoMode": "No returned adverts match this sale/rental filter. Try All adverts."
+    "propertyNoMode": "No returned adverts match this sale/rental filter. Try All adverts.",
+    "sfcTitle": "SFC corporate verification",
+    "sfcLead": "Fresh official corporate licence observations are not available on mcp.hk yet.",
+    "sfcGate": "Source access and output rights remain unqualified. No corporate licence result is being served or collected.",
+    "sfcCe": "Exact corporate CE reference",
+    "sfcVerify": "Verification unavailable",
+    "sfcHint": "Format: three ASCII letters and three digits. This field stays disabled until a permitted verification service is qualified.",
+    "sfcRights": "Available modes",
+    "sfcModes": "Capability status only. Corporate verification, directory search, retained history and downloads are unavailable.",
+    "sfcDates": "Dates and meaning",
+    "sfcDateHelp": "The SFC states that its register is updated at the end of each day. Status may change between updates. A dated observation would not guarantee real-time status, performance or creditworthiness. Unknown end dates must remain unknown.",
+    "sfcHistory": "Historical Webb licence and staff records remain separate. They do not establish current SFC status. CE references are not inferred BRNs.",
+    "sfcOfficial": "Open the official SFC register",
+    "sfcLegal": "Register purposes and legal information",
+    "sfcStatus": "Read capability status (JSON)",
+    "sfcArchive": "Browse the historical company archive"
   },
   "zh": {
     "rawSourceQualification": "原始來源回應。欄位標題、單位及分析含義尚未經語義核實。",
@@ -932,6 +947,21 @@ const translations = {
     "restartPreview": "重新開始預覽",
     "retryAfterSeconds": "請至少等候 {seconds} 秒後再試",
     "propertyFiltered": "目前顯示 {count} 項，共回傳 {total} 項廣告",
-    "propertyNoMode": "回傳廣告中沒有符合此買賣／租盤篩選的項目，請試選擇全部。"
+    "propertyNoMode": "回傳廣告中沒有符合此買賣／租盤篩選的項目，請試選擇全部。",
+    "sfcTitle": "證監會法團牌照核實",
+    "sfcLead": "mcp.hk 尚未提供最新官方法團牌照觀察紀錄。",
+    "sfcGate": "來源存取及各項輸出權限仍待確認。目前沒有收集或提供法團牌照核實結果。",
+    "sfcCe": "法團的確切中央編號（CE）",
+    "sfcVerify": "核實功能尚未提供",
+    "sfcHint": "格式：三個 ASCII 英文字母及三個數字。獲確認可提供核實服務前，此欄位維持停用。",
+    "sfcRights": "可用功能",
+    "sfcModes": "僅提供功能狀態。法團核實、名錄搜尋、保留歷史及下載尚未提供。",
+    "sfcDates": "日期及含義",
+    "sfcDateHelp": "證監會說明其紀錄冊於每日結束時更新。兩次更新之間，牌照狀態可能改變。具日期的觀察紀錄不保證即時狀態、表現或信用。不明的結束日期必須保留為不明。",
+    "sfcHistory": "Webb 歷史牌照及職員紀錄屬獨立來源，不能證明目前的證監會狀態。中央編號不會被推斷為商業登記號碼。",
+    "sfcOfficial": "開啟證監會官方公眾紀錄冊",
+    "sfcLegal": "紀錄冊用途及法律資料",
+    "sfcStatus": "讀取功能狀態（JSON）",
+    "sfcArchive": "瀏覽公司歷史檔案"
   }
 };

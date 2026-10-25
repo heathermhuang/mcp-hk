@@ -141,7 +141,7 @@ def create_app(service=None):
                 buckets.popitem(last=False)
         response = await call_next(request)
         if (
-            request.url.path.startswith("/api/v1/resources")
+            request.url.path.startswith(("/api/v1/resources", "/api/v1/sfc"))
             or request.url.path == "/api/v1/coverage"
         ):
             response.headers["Cache-Control"] = "no-store"
@@ -330,6 +330,10 @@ def create_app(service=None):
         return service.envelope(
             {**payload, "capability": "catalogue_only"}, "catalogue"
         )
+
+    from .sfc import register_http as register_sfc_http
+
+    register_sfc_http(app)
 
     from .resource_api import register_http
 

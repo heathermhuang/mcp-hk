@@ -368,3 +368,30 @@ fact rows to the grouped consumer. Deploy/qualify the backend before the UI/gate
 Existing prefix and entity indexes are reused. No accepted schema or data migration
 is needed. Roll back backend code only after disabling/reverting the grouped UI;
 legacy callers and retained versions remain compatible throughout.
+
+## Fresh SFC corporate verification (disabled engineering contract)
+
+The `curated/sfc/` modules and independent `003_sfc.sql` migration model exact
+corporate CE observations in a separate `curated_sfc` schema. They preserve source
+status labels, unknown date bounds, source cutoff versus observation time and
+source-scoped policy/capture/version/pointer records. They do not join Webb IDs or
+BRNs by name. The normalized offline input contract is **not an official-page
+parser**, and its checksums identify normalized input, not official raw captures.
+
+Production exposes only `GET /api/v1/sfc/status`, `hk_sfc_status` and `/sfc` in both
+languages. The status contains no corporate source facts. Verification, search,
+history and export are not discoverable data capabilities; compatibility HTTP
+paths return `SFC_SOURCE_UNQUALIFIED`. No environment flag, request purpose or UI
+checkbox grants access. No live transport, SFC database migration, cohort or timer
+has been activated by this change. Optional SFC state does not enter base readiness.
+
+The reviewed [rights matrix](verification/sfc-20261025/RIGHTS.md),
+[unsent request](verification/sfc-20261025/REQUEST.md) and
+[execution checklist](verification/sfc-20261025/CHECKLIST.md) identify the precise
+remaining decisions. A checksum-pinned policy, qualified source route/parser,
+retention/deletion rules and full real-cohort/recovery evidence are prerequisites
+to data activation. The existing official daily offsite job is **not** SFC recovery
+coverage: it inventories CR tables. Coordinate its explicit coverage extension
+with its owner after source backup/retention rights are known. The general curated
+backup's `curated_*` schema selection includes the SFC schema, as verified by a
+physical synthetic restore, but this alone grants no offsite/publication authority.

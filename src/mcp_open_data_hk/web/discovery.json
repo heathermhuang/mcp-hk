@@ -707,6 +707,20 @@
         "description": "搜尋 David Webb 原始 Enigma 檔案中的機構，並按同一資料版本查看名稱、職位及證監會紀錄。"
       },
       "template": "companies.html"
+    },
+    "/sfc": {
+      "template": "sfc.html",
+      "noindex": true,
+      "en": {
+        "title": "SFC corporate verification status · mcp.hk",
+        "heading": "SFC corporate verification",
+        "description": "Fresh official corporate licence observations are not available on mcp.hk yet."
+      },
+      "zh-Hant": {
+        "title": "證監會法團牌照核實功能狀態 · mcp.hk",
+        "heading": "證監會法團牌照核實",
+        "description": "mcp.hk 尚未提供最新官方法團牌照觀察紀錄。"
+      }
     }
   },
   "faq": {
