@@ -1,0 +1,33 @@
+{
+  "restored": true,
+  "sha256": "b06cbb12706030d66e486decf94c9f21f83d8cd94df83bd433f38bb10e1639f2",
+  "bytes": 76405512,
+  "integrity": "ok",
+  "sources": [
+    {
+      "sourceId": "addresses",
+      "recordCount": null
+    },
+    {
+      "sourceId": "restaurants",
+      "recordCount": 17276
+    },
+    {
+      "sourceId": "population",
+      "recordCount": 18
+    },
+    {
+      "sourceId": "catalogue",
+      "recordCount": null
+    },
+    {
+      "sourceId": "seehouse",
+      "recordCount": null
+    },
+    {
+      "sourceId": "platehk",
+      "recordCount": null
+    }
+  ],
+  "scope": "gateway SQLite/captures only; no SFC PostgreSQL data has been collected or installed"
+}

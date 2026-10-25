@@ -1,0 +1,61 @@
+{
+  "receipts": [
+    {
+      "lang": "en",
+      "width": 320,
+      "overflow": false,
+      "dataRequests": 0,
+      "disabledCe": true
+    },
+    {
+      "lang": "en",
+      "width": 390,
+      "overflow": false,
+      "dataRequests": 0,
+      "disabledCe": true
+    },
+    {
+      "lang": "en",
+      "width": 768,
+      "overflow": false,
+      "dataRequests": 0,
+      "disabledCe": true
+    },
+    {
+      "lang": "en",
+      "width": 1280,
+      "overflow": false,
+      "dataRequests": 0,
+      "disabledCe": true
+    },
+    {
+      "lang": "zh-Hant",
+      "width": 320,
+      "overflow": false,
+      "dataRequests": 0,
+      "disabledCe": true
+    },
+    {
+      "lang": "zh-Hant",
+      "width": 390,
+      "overflow": false,
+      "dataRequests": 0,
+      "disabledCe": true
+    },
+    {
+      "lang": "zh-Hant",
+      "width": 768,
+      "overflow": false,
+      "dataRequests": 0,
+      "disabledCe": true
+    },
+    {
+      "lang": "zh-Hant",
+      "width": 1280,
+      "overflow": false,
+      "dataRequests": 0,
+      "disabledCe": true
+    }
+  ],
+  "errors": []
+}
