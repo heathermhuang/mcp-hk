@@ -89,7 +89,11 @@ def placing(raw):
             "status": STATUS[raw],
             "deadHeat": False,
         }
-    match = re.fullmatch(r"([1-9]\d?)(\s+DH)?", raw) if isinstance(raw, str) else None
+    match = (
+        re.fullmatch(r"([1-9]\d?)(\s+(?:DH|平頭馬))?", raw)
+        if isinstance(raw, str)
+        else None
+    )
     if not match:
         raise RacingRejected("UNKNOWN_RESULT_CODE")
     return {

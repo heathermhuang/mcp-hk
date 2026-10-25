@@ -353,3 +353,25 @@ def test_private_import_does_not_publish_production(tmp_path):
     public = RacingStore(tmp_path / "production.sqlite3")
     assert public.meetings() == []
     assert public.pending() is None
+
+
+def test_collector_reconciles_official_chinese_dead_heat_suffix(store):
+    def response(request):
+        query = parse_qs(request.url.query.decode())
+        zh = "/zh-hk/" in request.url.path
+        return httpx.Response(
+            200,
+            text=page(
+                int(query.get("RaceNo", ["1"])[0]),
+                zh=zh,
+                placing="1 平頭馬" if zh else "1 DH",
+            ),
+            headers={"content-type": "text/html"},
+        )
+
+    snapshot = PilotCollector(store, client(response)).collect("2026-10-21", "HV")
+    for race in snapshot["races"]:
+        result = race["results"][0]
+        assert result["placingRaw"] == "1 DH"
+        assert result["placing"] == 1 and result["deadHeat"] is True
+        assert result["horse"]["nameZhHant"] == "測試馬"
