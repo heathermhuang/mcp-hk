@@ -1,9 +1,17 @@
 # Racing execution state — 25 October 2026
 
-**Engineering in progress; no source-qualified or deployed racing facts.**
-Branch `codex/racing-onboarding-20261025` uses a fresh clone from main
-`9521ef6857e92250d35b45dca09337eb328ed3d2`. No source capture, production database,
-source schedule, external contract or provider outreach has been created.
+**Gate-only engineering released; no source-qualified racing facts.**
+[PR #73](https://github.com/heathermhuang/mcp-hk/pull/73) shipped the disabled racing
+engineering and public status gate. Its actual controller adoption was observed
+at source `cfb45e70cffdf18525a0c3b4d0a7a30e853f7de5`, Worker version
+`6999daed-6754-4496-898c-e9be5878589a`. The live browser check found a passive
+analytics notice focus defect; the explicitly approved correction is merged in
+[PR #80](https://github.com/heathermhuang/mcp-hk/pull/80). Final release receipts
+are recorded in [RELEASED.md](RELEASED.md).
+
+No HKJC capture, production racing schema/data/writer, source schedule, provider
+contract or outreach was created. All collection/retention/public-output modes
+remain unqualified. The prepared permission enquiry remains **unsent**.
 
 ## Execution checklist
 
@@ -20,9 +28,9 @@ source schedule, external contract or provider outreach has been created.
 - [x] Add source-specific offline immutable export and prospective gap/capacity
   contracts; exports remain denied in the public product.
 - [x] Run real PostgreSQL tests including independent full-source-version restore.
-- [ ] Complete fresh review/corrections, mandatory exact-HEAD checks and CI.
-- [ ] Acquire shared release slot, reconcile current main, PR/merge/gate-only deploy.
-- [ ] Verify live gate/legacy regressions, actual runtime adoption and recovery.
+- [x] Complete fresh review/corrections, mandatory exact-HEAD checks and CI.
+- [x] Acquire shared release slot, reconcile current main, PR/merge/gate-only deploy.
+- [x] Verify live gate/legacy regressions, actual runtime adoption and fresh gateway recovery.
 
 ## Milestone boundaries
 
@@ -36,8 +44,8 @@ source schedule, external contract or provider outreach has been created.
 | R06 | Resumable checkpoint and coverage tables | Complete 2025/26 official season inventory and reconciled facts |
 | R07 | Every mapped family accounted for; strict sectional/dividend units | Permitted real backfill, earliest/latest range, all gaps/amendments |
 | R08 | Prospective observation/gap/capacity contracts | Actual authorised start/cadence/retention and permitted ordinary occurrence |
-| R09 | Review/checks underway | Final pushed HEAD/CI receipts |
-| R10 | No production mutation yet | Gate-only release may proceed; full data activation remains source/recovery dependent |
+| R09 | Fresh review/corrections, 488 Python/112 Worker checks and required CI passed | Real source acceptance remains independent of engineering checks |
+| R10 | Public gate deployed and actual adoption observed; existing packs preserved | Full data activation remains source/coverage/recovery dependent; see release receipts |
 
 No full racing milestone (P8/P9/P10) is claimed complete. There is no betting,
 football, Mark Six, media replication, predicted outcome or vendor-history parity.

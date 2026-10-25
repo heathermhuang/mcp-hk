@@ -39,7 +39,9 @@ Correctness/security/data-semantics review fixed these actionable issues:
    permission, a checksum and expiry; each replay rechecks the current policy.
    Reordered/unknown source fields and unknown result codes fail closed.
 
-The added status tool changes unconfigured tool discovery from 28 to 29, so the
+At the initial integration, the added status tool changed unconfigured tool
+discovery from 28 to 29. The final combined SFC/HKEX/racing release exposes 31
+unconfigured tools; production also retains its configured archive tools. The
 two exact-count assertions changed with it; no gate was relaxed. Optional-driver
 startup and isolated PDF extraction both passed in the normal test environment.
 Their restricted-sandbox failures were not fixed by altering application behavior.

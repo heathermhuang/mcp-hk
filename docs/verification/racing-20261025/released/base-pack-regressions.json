@@ -1,0 +1,69 @@
+[
+  {
+    "path": "/api/v1/restaurants",
+    "status": 200,
+    "tool": "hk_restaurant_search",
+    "dataParity": true,
+    "meta": {
+      "requestId": "b80adca83d904efaa0af6b0559beba85",
+      "apiVersion": "v1",
+      "snapshotIds": [
+        "38a93d75cd9c4da7ba4cb3710426fbef"
+      ],
+      "truncated": true,
+      "nextCursor": "eyJmaWx0ZXIiOiAiMzZlMTEzMzM5MmM5MGQ2MzdjM2Q1NmU1ZDQzZTc1NTMyNjM1MDk2NDQwNzlhNWFkYjkyZGI3ZjE0NGNiOTU5YiIsICJzbmFwc2hvdCI6ICIzOGE5M2Q3NWNkOWM0ZGE3YmE0Y2IzNzEwNDI2ZmJlZiIsICJvZmZzZXQiOiAxfQ",
+      "total": 17276
+    }
+  },
+  {
+    "path": "/api/v1/districts/central-western/statistics",
+    "status": 200,
+    "tool": "hk_district_statistics",
+    "dataParity": true,
+    "meta": {
+      "requestId": "1ad8133ab9c54f3c8cf97c69acf1e14e",
+      "apiVersion": "v1",
+      "snapshotIds": [
+        "2ed6e64e4f3742b486f16e5c58c2f702"
+      ],
+      "truncated": false
+    }
+  },
+  {
+    "path": "/api/v1/plates/search",
+    "status": 200,
+    "tool": "hk_plate_search",
+    "dataParity": true,
+    "meta": {
+      "requestId": "62732bbb6f2b4f02ae7e3e21e318d960",
+      "apiVersion": "v1",
+      "snapshotIds": [],
+      "truncated": true,
+      "total": 2
+    }
+  },
+  {
+    "path": "/api/v1/properties/coverage",
+    "status": 200,
+    "tool": "hk_property_coverage",
+    "dataParity": true,
+    "meta": {
+      "requestId": "82b54d932f384ef09c1aad3f66d359a6",
+      "apiVersion": "v1",
+      "snapshotIds": [],
+      "truncated": false
+    }
+  },
+  {
+    "path": "/api/v1/addresses/search",
+    "status": 200,
+    "tool": "hk_address_search",
+    "dataParity": true,
+    "meta": {
+      "requestId": "2a8a7dc7e45046338e962141dc3e0c37",
+      "apiVersion": "v1",
+      "snapshotIds": [],
+      "truncated": false
+    }
+  }
+]

@@ -1,0 +1,48 @@
+{
+  "verifiedAt": "2026-10-25T07:56:11.343921+00:00",
+  "method": "authenticated GET existing accepted gateway snapshot; temporary local restore; no production mutation",
+  "sha256": "0a0a53fd444782ec756903cbc0c1c723765b1fa8de2325b95a7ef4d9ea945d83",
+  "bytes": 88205818,
+  "backup": {
+    "sha256": "0a0a53fd444782ec756903cbc0c1c723765b1fa8de2325b95a7ef4d9ea945d83",
+    "createdAt": "2026-10-25T07:38:43.621Z",
+    "bytes": 88205818,
+    "reason": "resources"
+  },
+  "pointerStableBeforeAfter": true,
+  "restored": true,
+  "requiredPacks": [
+    {
+      "sourceId": "addresses",
+      "recordCount": null
+    },
+    {
+      "sourceId": "restaurants",
+      "recordCount": 17276
+    },
+    {
+      "sourceId": "population",
+      "recordCount": 18
+    },
+    {
+      "sourceId": "catalogue",
+      "recordCount": null
+    },
+    {
+      "sourceId": "seehouse",
+      "recordCount": null
+    },
+    {
+      "sourceId": "platehk",
+      "recordCount": null
+    }
+  ],
+  "checks": [
+    "outer SHA256",
+    "safe archive paths/types",
+    "retained capture SHA256",
+    "SQLite integrity",
+    "required accepted packs"
+  ],
+  "newRacingProductionData": false
+}

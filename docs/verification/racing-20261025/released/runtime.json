@@ -1,0 +1,15 @@
+{
+  "workerVersion": "6577ea49-e74b-42b0-91ec-43a096b4f17c",
+  "sourceCommit": "9ed67301b3172b3d5d1a8df87726f976480d003d",
+  "controllerRelease": "9ed67301b3172b3d5d1a8df87726f976480d003d",
+  "controllerContract": "source-aware-ux-1",
+  "maintenancePolicy": "source-review-11",
+  "noMaintenanceOrSeedLeaseAtAdoption": true,
+  "backendHealth": {
+    "status": "ok",
+    "sourceReviewPolicy": "source-review-11"
+  },
+  "containerArtifactReportedByDeploy": "sha256:c899df6e629fa4e3f9a728959297d1bf57b42a0a506eaafb26f4b06e26b6a833",
+  "exactBackendImageHashIndependentlyExposed": false,
+  "actualBackendPolicyAndReadinessVerified": true
+}

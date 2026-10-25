@@ -4,7 +4,9 @@ Checked 25 October 2026. This is a permission/engineering inventory, not collect
 facts. Search scope: current mcp-hk docs/code, hk-app racing plans and Renavon
 source-map/assessment, and connected project email matching `(mcp.hk OR mcp-hk OR
 renavon) (hkjc OR "Jockey Club")`. No matching email or project-owned HKJC grant
-was found. This bounded search does not prove no grant exists elsewhere.
+was found. A subsequent bounded Drive metadata search for `HKJC`, `mcp.hk` and
+`Jockey Club` returned no candidate permission document; unrelated file contents
+were not read. This bounded search does not prove no grant exists elsewhere.
 
 The current [results page](https://racing.hkjc.com/en-us/local/information/localresults)
 shows a 25 October Sha Tin meeting placeholder, not a complete accepted result.

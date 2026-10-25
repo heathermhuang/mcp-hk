@@ -1,0 +1,15 @@
+{
+  "checkedCandidate": "1f5aa1e26c41083a291b080c7cb9c1ef06a20afb",
+  "mergedRelease": "9ed67301b3172b3d5d1a8df87726f976480d003d",
+  "mergeDifferenceFromCandidate": "accepted HKEX release documentation only; executable source unchanged",
+  "pythonPassed": 488,
+  "optionalNetworkSkipped": 7,
+  "workerPassed": 112,
+  "realPostgresContracts": 69,
+  "allSixRacingSfcHkexMigrationOrdersPassed": true,
+  "requiredCandidateAndMergedMainCi": "all green",
+  "runtimeImagePython": "3.11.17",
+  "unconfiguredTools": 31,
+  "networkDisabledImageSmokePassed": true,
+  "localDockerChromeJourneyPassed": true
+}
