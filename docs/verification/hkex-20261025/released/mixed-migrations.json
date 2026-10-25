@@ -1,0 +1,32 @@
+[
+  {
+    "order": [
+      "baseline",
+      "001_official_maintenance.sql",
+      "003_sfc.sql",
+      "004_hkex.sql"
+    ],
+    "sourceTableCounts": {
+      "curated": 16,
+      "curated_sfc": 10,
+      "hkex": 15
+    },
+    "hkexReentry": true,
+    "acceptedHkexVersions": 0
+  },
+  {
+    "order": [
+      "baseline",
+      "001_official_maintenance.sql",
+      "004_hkex.sql",
+      "003_sfc.sql"
+    ],
+    "sourceTableCounts": {
+      "curated": 16,
+      "curated_sfc": 10,
+      "hkex": 15
+    },
+    "hkexReentry": true,
+    "acceptedHkexVersions": 0
+  }
+]

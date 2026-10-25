@@ -12,8 +12,8 @@ Reviewed contracts are copied into `docs/designs/hkex-20261025/`.
 - [x] H05 private/shared reads, gated discovery and offline exports (live download publication gated).
 - [x] H06 bilingual issuer/filing/revision UI and honest unavailable state.
 - [x] H07 checkpoint/unchanged comparison and complete source dump/restore plumbing; actual ordinary/offsite operation gated.
-- [ ] H08 focused correctness/security/data review, fixes, exact HEAD checks and CI.
-- [ ] H09 shared merge slot and disabled integration release, where recovery permits.
+- [x] H08 focused correctness/security/data review, fixes, exact HEAD checks and CI.
+- [x] H09 shared-slot disabled gateway release, actual adoption, live gate checks, schedule restoration and fresh gateway recovery.
 - [ ] H04/H09/H10 authorised real pilot, live data activation, ordinary update/restore.
 
 ## Source decision
@@ -47,3 +47,6 @@ No timestamps are invented. No live acceptance or daily RPO is claimed.
 Implementation and activation details: [ENGINEERING.md](ENGINEERING.md).
 Focused review and fixes: [REVIEW.md](REVIEW.md).
 Exact external decision: [REQUEST-UNSENT.md](REQUEST-UNSENT.md).
+
+Final observed release: [RELEASED.md](RELEASED.md). The real HKEX data activation
+portions of H04/H09/H10 remain unpassed; this is an explicitly gated engineering release.

@@ -1,0 +1,69 @@
+{
+  "results": [
+    {
+      "lang": "en",
+      "width": 320,
+      "gate": true,
+      "providerRequests": 0,
+      "overflow": false,
+      "downloadAbsent": true
+    },
+    {
+      "lang": "en",
+      "width": 390,
+      "gate": true,
+      "providerRequests": 0,
+      "overflow": false,
+      "downloadAbsent": true
+    },
+    {
+      "lang": "en",
+      "width": 768,
+      "gate": true,
+      "providerRequests": 0,
+      "overflow": false,
+      "downloadAbsent": true
+    },
+    {
+      "lang": "en",
+      "width": 1280,
+      "gate": true,
+      "providerRequests": 0,
+      "overflow": false,
+      "downloadAbsent": true
+    },
+    {
+      "lang": "zh-Hant",
+      "width": 320,
+      "gate": true,
+      "providerRequests": 0,
+      "overflow": false,
+      "downloadAbsent": true
+    },
+    {
+      "lang": "zh-Hant",
+      "width": 390,
+      "gate": true,
+      "providerRequests": 0,
+      "overflow": false,
+      "downloadAbsent": true
+    },
+    {
+      "lang": "zh-Hant",
+      "width": 768,
+      "gate": true,
+      "providerRequests": 0,
+      "overflow": false,
+      "downloadAbsent": true
+    },
+    {
+      "lang": "zh-Hant",
+      "width": 1280,
+      "gate": true,
+      "providerRequests": 0,
+      "overflow": false,
+      "downloadAbsent": true
+    }
+  ],
+  "errors": []
+}
