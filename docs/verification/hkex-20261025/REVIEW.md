@@ -47,3 +47,7 @@ The follow-up preserves longer provider delays; forbidden or malformed/unreprese
 retry instructions create a persistent manual-review hold with no automatic expiry.
 New PostgreSQL cases prove no follow-up source request is dispatched in those states.
 No live provider adapter or source job is activated by this correction.
+
+Unknown request reservations also block dispatch across later occurrences, even
+after a policy is reactivated. They must be reconciled explicitly; a new run key
+does not convert a crashed/uncertain read into a blind retry.

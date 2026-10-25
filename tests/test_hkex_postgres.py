@@ -342,6 +342,11 @@ def test_midrun_revocation_and_unknown_request_are_charged(model):
             == 1
         )
         assert c.execute("SELECT count(*) FROM hkex.accepted").fetchone()[0] == 0
+    # A fresh occurrence cannot turn the prior unknown read into a blind retry.
+    p = model["policy"]
+    activate_policy(model["owner"], p.model_dump(mode="json"), digest(p))
+    again, adapter = collect(model)
+    assert again["code"] == "REQUEST_RECONCILIATION_REQUIRED" and adapter.calls == []
 
 
 def test_growth_and_backup_gates_stop_before_source_read(model, monkeypatch, tmp_path):

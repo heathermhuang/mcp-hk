@@ -99,6 +99,10 @@ class Collector:
             current_policy(c, self.store.policy_hash, ("collect", "retain"))
             control = c.execute("SELECT * FROM hkex.control WHERE singleton").fetchone()
             now = datetime.now(timezone.utc)
+            if c.execute(
+                "SELECT 1 FROM hkex.requests WHERE state='unknown' LIMIT 1"
+            ).fetchone():
+                raise ValueError("REQUEST_RECONCILIATION_REQUIRED")
             if control["hold_code"] in {
                 "SOURCE_403_MANUAL_REVIEW",
                 "SOURCE_RETRY_AFTER_UNQUALIFIED",
