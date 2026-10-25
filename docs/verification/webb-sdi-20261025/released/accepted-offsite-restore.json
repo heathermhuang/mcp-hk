@@ -1,0 +1,39 @@
+{
+  "source": "webb_sdi_archive",
+  "version": "webb-sdi-enigma251227-v1",
+  "backupSha256": "bcf56786545247fed4f9f644fbc2ae577c97e4b020dacd0e6ef0b939cdbc5341",
+  "backupBytes": 37477564,
+  "offsiteDownloaded": true,
+  "independentPhysicalRestore": true,
+  "everyRowAllSevenTablesMatched": true,
+  "fingerprints": {
+    "versions": {
+      "rows": 1,
+      "sha256": "9c875c34607fbf2fec5c2f716217806e402fc7f8b30927cc655c97fca8cddf69"
+    },
+    "accepted": {
+      "rows": 1,
+      "sha256": "02509dbf650cedd7fd15021279a6493b298dc6f802c557346138e3f42dc2cdec"
+    },
+    "issues": {
+      "rows": 35853,
+      "sha256": "fdfaf487476653ac4c6730eb897161bbfb29de0fb7e9aaa6bba350a54250cc87"
+    },
+    "filings": {
+      "rows": 341047,
+      "sha256": "51f2309be5893918d9e9ffc995364a829b2046d08ec345070bfcb0975f5c884c"
+    },
+    "capacities": {
+      "rows": 426219,
+      "sha256": "4ed835eba7a266a6c9cb7aed1dc79347fbdb0bc3aafebfa20d0878ba4d45b8e1"
+    },
+    "events": {
+      "rows": 345355,
+      "sha256": "1dc92dfeaa1c94d5ab11104b8b6647f9e724c77a44c0d08c0708b9f5275a33b4"
+    },
+    "dictionaries": {
+      "rows": 136,
+      "sha256": "92567b6a44fa88eef2b4c6541c8e9b274247a2f8b9a94a76d096507dc68fea18"
+    }
+  }
+}

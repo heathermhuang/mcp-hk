@@ -1,37 +1,24 @@
-# Working real archive; production activation pending
+# Released: working real Webb Form 3A archive
 
-25 October 2026. The build uses the original already-released Webb archive and its
-existing reuse notice. The earlier new-permission-first sequencing was corrected;
-no provider outreach is required to implement this historical archive.
+[Live explorer](https://mcp.hk/hkex) · [Release report](RELEASED.md) ·
+[Field/API/operations reference](../../data/webb-sdi.md)
 
-Implemented literal-only extraction, indexed source-scoped PostgreSQL loading,
-SELECT-only reads, full restore qualification and compare-and-swap publication,
-REST/MCP contracts, bilingual issuer/disclosure/detail browsing and bounded ZIP
-exports retaining source notice/provenance. Raw source rows/dumps remain ignored.
+All 341,047 historical disclosures are publicly queryable through the bilingual
+browser, REST and MCP. Source event dates extend through 2025-12-24; this is a
+Form 3A archive, not complete/current HKEX coverage or current holdings.
 
-Actual local results:
+The build uses Webb-site's actual already-released data and retained reuse notice.
+A new licence was not a prerequisite for this archive build. No provider request
+was sent and no fresh HKEX collection was started.
 
-- Complete 12,416,843,125-byte SQL member SHA256 matched the audited original.
-- All seven selected source-table censuses/checksums matched; 341,047 disclosures.
-- 577,748,992-byte indexed model, 3,064 issuer identities; no orphan event/capacity
-  parents. 145 absent revision serials remain explicitly unresolved.
-- Independent physical PostgreSQL dump/restore compared every row of all seven
-  database tables, including metadata, before local publication.
-- Real SELECT-only HSBC query: 2,591 disclosures, first event 2003-03-31, latest
-  2025-05-07. Real detail `webb:sdi:331188`; filing date remains null.
-- Eight real browser journeys across EN/ZH and 320/390/768/1280px passed, including
-  actual page navigation and 20-row ZIPs whose packaged checksums were verified.
-- Eight synthetic browser journeys passed revision gaps, large numeric strings,
-  unknown dates, pagination, failure-state clearing and download checksums.
+Production source acceptance, complete independent offsite physical restore, live
+REST/MCP parity, eight bilingual live browser/download journeys, all five restored
+schedules and a fresh independent gateway restore passed. The startup failure found
+during rollout was corrected, regression-tested and verified on the actual backend
+image. Existing company views passed live regressions.
 
-See `real-extraction.json`, `real-query-proof.json`, `real-browser-receipts.json`,
-`synthetic-browser-receipts.json` and [field/operations reference](../../data/webb-sdi.md).
-Synthetic PostgreSQL tests exercise source identity, restored-content failure,
-read-only grants, publication conflict, code reuse, tied dates, signed cursors and
-REST/MCP parity on an actual PostgreSQL instance.
-
-This receipt establishes a working local product. Production schema/data, offsite
-copy/restore and gateway activation have not yet been performed for this archive.
-The checked-in consumer flag remains off until those steps pass. Source-free
-status does not claim data availability. Existing fresh official HKEX gates remain
-independent. The shared release slot must be acquired before any merge/deployment.
+PRs #81 and #83 are merged. Deployed source is
+`84273bf3fef493f84b6db30222f903143f39a008`; the final evidence update is documentation.
+See [released/](released/) for inspectable public-safe receipts. Raw data and
+operator credentials remain outside Git. Fresh official HKEX coverage remains a
+separate workstream rather than a blocker on the working historical product.

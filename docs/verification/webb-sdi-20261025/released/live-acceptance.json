@@ -1,0 +1,34 @@
+[
+  {
+    "origin": "https://mcp.hk",
+    "archiveVersion": "webb-sdi-enigma251227-v1",
+    "rows": 341047,
+    "issuers": 3064,
+    "hsbcFilings": 2591,
+    "signedPagination": true,
+    "pinnedDetail": "webb:sdi:331188",
+    "unknownDatesPreserved": true,
+    "originalNoticeHashVerified": true,
+    "freshHkexIndependentGate": true,
+    "bothCompanyViewsPreserved": true
+  },
+  {
+    "origin": "https://mcp-hk.measurable.workers.dev",
+    "archiveVersion": "webb-sdi-enigma251227-v1",
+    "rows": 341047,
+    "issuers": 3064,
+    "hsbcFilings": 2591,
+    "signedPagination": true,
+    "pinnedDetail": "webb:sdi:331188",
+    "unknownDatesPreserved": true,
+    "originalNoticeHashVerified": true,
+    "freshHkexIndependentGate": true,
+    "bothCompanyViewsPreserved": true
+  },
+  {
+    "mcpToolCount": 43,
+    "archiveStatusParity": true,
+    "pinnedDetailRestMcpExactParity": true,
+    "freshHkexDataToolsAbsent": true
+  }
+]
