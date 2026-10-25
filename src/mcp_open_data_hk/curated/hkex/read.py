@@ -64,8 +64,13 @@ class HkexReader:
                     "SELECT hold_until,hold_code FROM hkex.control WHERE singleton"
                 ).fetchone()
                 coverage = accepted["manifest"]["coverage"] if accepted else None
+                retained = bool(accepted) and datetime.fromisoformat(
+                    accepted["manifest"]["retainedUntil"]
+                ) > datetime.now(timezone.utc)
                 if include_inventory:
                     policy.require(mode, "retain", "history")
+                    if not retained:
+                        raise ValueError("SOURCE_RETENTION_EXPIRED")
                 elif coverage:
                     # Status remains useful without exposing unqualified issuer,
                     # filing, name, security or inventory facts through a side door.
@@ -74,7 +79,7 @@ class HkexReader:
                         for key, value in coverage["window"].items()
                         if key != "issuer_id"
                     }
-                    if policy.modes.get(mode) == "allowed":
+                    if retained and policy.modes.get(mode) == "allowed":
                         window["issuer_id"] = coverage["window"]["issuer_id"]
                     coverage = {
                         "window": window,
@@ -85,7 +90,11 @@ class HkexReader:
                 current_policy(c, digest(policy))
                 return {
                     "source": "hkex_di",
-                    "state": "accepted" if accepted else "pilot_pending",
+                    "state": (
+                        "accepted"
+                        if retained
+                        else "version_expired" if accepted else "pilot_pending"
+                    ),
                     "acceptedVersion": accepted["version"] if accepted else None,
                     "modes": policy.modes,
                     "coverage": coverage,

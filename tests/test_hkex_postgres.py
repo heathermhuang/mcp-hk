@@ -432,3 +432,26 @@ def test_status_does_not_leak_filing_inventory_or_unqualified_identity(model, tm
     assert "issuer_id" not in status["coverage"]["window"]
     assert "expectedSerials" not in status["coverage"]
     assert "issuer" not in status["coverage"]
+
+
+def test_capture_retention_expiry_hides_identity_and_blocks_new_export(model, tmp_path):
+    result, _ = collect(model)
+    qualify(model, result["version"], tmp_path)
+    with connect(model["owner"]) as c:
+        c.execute(
+            "UPDATE hkex.versions SET manifest=jsonb_set(manifest,'{retainedUntil}',to_jsonb(%s::text)) WHERE version=%s",
+            (
+                (datetime.now(timezone.utc) - timedelta(seconds=1)).isoformat(),
+                result["version"],
+            ),
+        )
+    status = model["reader"].status(mode="browser")
+    assert status["state"] == "version_expired"
+    assert "issuer_id" not in status["coverage"]["window"]
+    with pytest.raises(ReadError, match="retention expired"):
+        model["reader"].query(
+            "disclosure", {"filingId": "TEST_001", "version": result["version"]}
+        )
+    with pytest.raises(ValueError, match="EXPORT_UNQUALIFIED"):
+        build_export(model["reader"], result["version"], tmp_path / "expired.zip")
+    assert not (tmp_path / "expired.zip").exists()
