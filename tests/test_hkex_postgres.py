@@ -251,7 +251,9 @@ def test_incomplete_or_failed_inventory_never_publishes(model, failure, expected
         assert c.execute("SELECT count(*) FROM hkex.accepted").fetchone()[0] == 0
         assert c.execute("SELECT count(*) FROM hkex.requests").fetchone()[0] >= 2
         if failure == "denied":
-            assert c.execute("SELECT hold_until>now() FROM hkex.control").fetchone()[0]
+            assert c.execute(
+                "SELECT hold_until IS NULL AND hold_code='SOURCE_403_MANUAL_REVIEW' FROM hkex.control"
+            ).fetchone()[0]
 
 
 def test_budget_resume_unknown_reservation_and_expiry_mid_run(model):
@@ -455,3 +457,30 @@ def test_capture_retention_expiry_hides_identity_and_blocks_new_export(model, tm
     with pytest.raises(ValueError, match="EXPORT_UNQUALIFIED"):
         build_export(model["reader"], result["version"], tmp_path / "expired.zip")
     assert not (tmp_path / "expired.zip").exists()
+
+
+@pytest.mark.parametrize(
+    "status,retry,manual",
+    [(429, 9 * 86400, False), (403, 0, True), (429, "unqualified", True)],
+)
+def test_provider_hold_never_shortens_delay_or_automatically_retries_denial(
+    model, status, retry, manual
+):
+    def deny(kind, key, doc):
+        return status, b"synthetic provider hold", retry
+
+    result, _ = collect(model, mutate=deny)
+    assert result["code"] == "SOURCE_" + str(status)
+    with connect(model["owner"], row_factory=dict_row) as c:
+        row = c.execute("SELECT hold_until,hold_code FROM hkex.control").fetchone()
+        if manual:
+            assert row["hold_until"] is None and row["hold_code"] in {
+                "SOURCE_403_MANUAL_REVIEW",
+                "SOURCE_RETRY_AFTER_UNQUALIFIED",
+            }
+        else:
+            assert row["hold_until"] > datetime.now(timezone.utc) + timedelta(
+                days=8, hours=23
+            )
+    again, adapter = collect(model)
+    assert again["code"] == "SOURCE_HOLD" and adapter.calls == []

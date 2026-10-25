@@ -38,3 +38,12 @@ No known blocking defect remains in the disabled engineering scope after the rec
 checks. Source rights, an actual provider parser/inventory, real pilot/offsite recovery,
 production data activation and ordinary-operation observation remain activation
 blockers. A tested normalized contract is not proof of those external properties.
+
+## Provider-hold correction before activation
+
+A final bounded-control inspection found that the normalized engine capped long
+Retry-After values at seven days and allowed a 403 hold to expire after one day.
+The follow-up preserves longer provider delays; forbidden or malformed/unrepresentable
+retry instructions create a persistent manual-review hold with no automatic expiry.
+New PostgreSQL cases prove no follow-up source request is dispatched in those states.
+No live provider adapter or source job is activated by this correction.
