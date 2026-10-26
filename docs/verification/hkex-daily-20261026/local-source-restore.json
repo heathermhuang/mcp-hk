@@ -1,0 +1,186 @@
+{
+  "proof": {
+    "backupSha256": "bcfcdf29f41055ca3268f7a2c5c898d7fb035a9fa76fecb4d4238390d20df770",
+    "independentlyRestored": true,
+    "allTables": {
+      "control": {
+        "rows": 1,
+        "sha256": "ed6832f8455c90187da54cf72872e392cc60f258b5112afacae28a3b187dc6e0"
+      },
+      "versions": {
+        "rows": 1,
+        "sha256": "077de3b36a72afe0c80e3aa556e2544ee561528fbdc71b52fb9ee6c93c0cdc85"
+      },
+      "reports": {
+        "rows": 32,
+        "sha256": "7bfa94966be0856c75781c588e9272732268aaf8b90a67ec4ed73d40576f6b18"
+      },
+      "records": {
+        "rows": 2008,
+        "sha256": "29d64382416c737fa1c6e55709290d1b8003decb0d8209c7377da0dc8d9cb18b"
+      },
+      "version_reports": {
+        "rows": 16,
+        "sha256": "f00978347f93ed5c0cac12d7af561ce402ea0e9e5d6862e35f82898108d1a428"
+      },
+      "runs": {
+        "rows": 2,
+        "sha256": "44f821ac1ab4d20a0bc3a533de551134899ee660a1588f3299611117699d3af4"
+      },
+      "requests": {
+        "rows": 47,
+        "sha256": "8514b28d215a4fd143def4baa985edcfac2434fdee302c46e7ae75aad608b671",
+        "sequence": {
+          "lastValue": 47,
+          "isCalled": true
+        }
+      }
+    }
+  },
+  "status": {
+    "source": "hkex_daily_summary",
+    "state": "available",
+    "version": "hkex-daily-2fe1c5f890338b1d71f0acf1c051fbc4",
+    "coverage": {
+      "view": "published_daily_summaries",
+      "scope": "Observed records in the four public daily-summary categories; full filing documents, Form 4 and s.309 notices are outside this feed",
+      "source": "hkex_daily_summary",
+      "reports": [
+        {
+          "day": "2026-10-20",
+          "category": 1,
+          "reportVersion": "f41d66b64ef0573b5fddc4ff891a54377ad38f1b84c304fb4b028323ecac90c9"
+        },
+        {
+          "day": "2026-10-20",
+          "category": 2,
+          "reportVersion": "9745e1f0b9d4d7e050c1f8107893302aab57c360e7a353c9092b5f4993b3aae7"
+        },
+        {
+          "day": "2026-10-20",
+          "category": 3,
+          "reportVersion": "3e635bcb4646d1cb7aaa24aa6f41066c75ce6c09f1284a0e943ca63ebc5536f9"
+        },
+        {
+          "day": "2026-10-20",
+          "category": 4,
+          "reportVersion": "32f9f1dbd87ef5422220c94997c2df62146733aa8588aaa0b07d7436936239ea"
+        },
+        {
+          "day": "2026-10-21",
+          "category": 1,
+          "reportVersion": "bf7d5507ce795995bf620a8bd3c5999ee91ffb04c75b7c58f819198a00f701f7"
+        },
+        {
+          "day": "2026-10-21",
+          "category": 2,
+          "reportVersion": "c3dcb99bd91d2a76da3debd4815e287f2b41613859433bf3bc381e18a5e426df"
+        },
+        {
+          "day": "2026-10-21",
+          "category": 3,
+          "reportVersion": "e2007b48ce4a662e6fce1adc5f33dbf4eac4291f068e30286848b905b6ac18c3"
+        },
+        {
+          "day": "2026-10-21",
+          "category": 4,
+          "reportVersion": "b531c4990cb89e89a08cbe5289a3c0f3bc0e48e1e40933be18e81c0868877a0a"
+        },
+        {
+          "day": "2026-10-22",
+          "category": 1,
+          "reportVersion": "91fdbb2fb8fe8912ca76e43dba2b2fbf3048c7d7071dda5926e4bfebcd29cf85"
+        },
+        {
+          "day": "2026-10-22",
+          "category": 2,
+          "reportVersion": "f56896a485eed3a7670dee7d2f3f5cccd75f9f505caa31feefa757846903451d"
+        },
+        {
+          "day": "2026-10-22",
+          "category": 3,
+          "reportVersion": "44cdbb9602f0294ebabef69e044b7e56f827e4fc73968c807a4be5c35f64e8c9"
+        },
+        {
+          "day": "2026-10-22",
+          "category": 4,
+          "reportVersion": "b2fdec5705cd9a9cb90d658e92ead5a763c74365518f8c6c1650baee1ae21d96"
+        },
+        {
+          "day": "2026-10-23",
+          "category": 1,
+          "reportVersion": "16580940d5686a008a04af94554b6b7c01cf42981330cf9249e2b11b2ebb6eb8"
+        },
+        {
+          "day": "2026-10-23",
+          "category": 2,
+          "reportVersion": "19530c292a763780f210d37bfc62aaf33c20b6834794899ac75485d8eff5c00b"
+        },
+        {
+          "day": "2026-10-23",
+          "category": 3,
+          "reportVersion": "e22fe2f93d053e46808f054a175e686726f8533829e92baeb98a5bc962a636f9"
+        },
+        {
+          "day": "2026-10-23",
+          "category": 4,
+          "reportVersion": "631cb74641612131f1ab9001818d8482e8a170ff3d04094015768b0ad543fabb"
+        }
+      ],
+      "dateBasis": "HKEX daily summary date, not event date or exact filing/publication timestamp",
+      "currentHoldings": false,
+      "transformSha256": "c84b4bf5fb6a85110c0bdc130668b5d16819f27b36aef8de23ec9f90299dfeb1",
+      "latestSummaryDate": "2026-10-23",
+      "providerLicenceClaimed": false,
+      "unavailableRecheckDates": [
+        "/di/summary/DSM20261017C1.htm",
+        "/di/summary/DSM20261017C2.htm",
+        "/di/summary/DSM20261017C3.htm",
+        "/di/summary/DSM20261017C4.htm",
+        "/di/summary/DSM20261018C1.htm",
+        "/di/summary/DSM20261018C2.htm",
+        "/di/summary/DSM20261018C3.htm",
+        "/di/summary/DSM20261018C4.htm",
+        "/di/summary/DSM20261019C1.htm",
+        "/di/summary/DSM20261019C2.htm",
+        "/di/summary/DSM20261019C3.htm",
+        "/di/summary/DSM20261019C4.htm"
+      ],
+      "rows": 1004,
+      "filings": 1004,
+      "first_summary": "2026-10-20",
+      "latest_summary": "2026-10-23"
+    },
+    "updater": {
+      "lastChecked": "2026-10-26 00:14:32.283213+00:00",
+      "lastSuccessfulRead": "2026-10-26 00:14:32.283213+00:00",
+      "lastChanged": "2026-10-26 00:47:39.912442+00:00",
+      "holdCode": null,
+      "holdUntil": null,
+      "lastRun": {
+        "id": "8776fd8ad5604901adf4ec67101f3b16",
+        "started_at": "2026-10-26 00:13:01.819974+00:00",
+        "finished_at": "2026-10-26 00:14:32.283213+00:00",
+        "scheduled_for": null,
+        "provenance": "manual",
+        "state": "staged",
+        "code": null,
+        "version": "hkex-daily-2fe1c5f890338b1d71f0acf1c051fbc4",
+        "request_count": 29,
+        "received_bytes": 2184896,
+        "latest_source_date": "2026-10-23"
+      },
+      "pendingVersion": null,
+      "schedule": "09:20, 13:20, 17:20, 18:20 and 22:20 Asia/Hong_Kong",
+      "reconciliation": "Recent seven calendar summary dates rechecked once per UTC day; current published summary rechecked every occurrence",
+      "limits": {
+        "requestsRun": 40,
+        "requestsDay": 100,
+        "concurrent": 1,
+        "minimumSecondsBetweenRequests": 3
+      }
+    },
+    "notice": "HKEX published daily-summary facts, not full filing documents, executed trades or current holdings. Summary date, relevant-event date and exact filing/publication time are different. Missing source dates remain unknown."
+  },
+  "candidateBytes": 228162
+}

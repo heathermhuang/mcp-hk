@@ -23,7 +23,7 @@ export function zipStore(files){
 }
 export async function pagePackage(envelope,context,notice){
   const rows=envelope?.data?.items,version=envelope?.meta?.version;
-  if(!Array.isArray(rows)||rows.length>100||!rows.length||typeof version!=='string'||!/^[A-Za-z0-9._-]{1,100}$/.test(version)||typeof notice!=='string'||!(envelope.meta.view==='latest_observed'?notice.includes('Companies Registry'):notice.includes('Webb')))throw Error('INVALID_PAGE_EXPORT');
+  if(!Array.isArray(rows)||rows.length>100||!rows.length||typeof version!=='string'||!/^[A-Za-z0-9._-]{1,100}$/.test(version)||typeof notice!=='string'||!((envelope.meta.view||'archive')==='latest_observed'?notice.includes('Companies Registry'):(envelope.meta.view||'archive')==='hkex_daily_summary'?notice.startsWith('Source: Hong Kong Exchanges and Clearing Limited (HKEX).'):['archive','webb_sdi_archive'].includes(envelope.meta.view||'archive')&&notice.includes('Webb')))throw Error('INVALID_PAGE_EXPORT');
   const columns=[...new Set(rows.flatMap(Object.keys))];
   const json=value=>utf8.encode(JSON.stringify(value,null,2)+'\n');
   const csv='\ufeff'+[columns.map(csvCell).join(','),...rows.map(row=>columns.map(k=>csvCell(row[k])).join(','))].join('\r\n')+'\r\n';

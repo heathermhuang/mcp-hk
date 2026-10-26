@@ -1,0 +1,12 @@
+[Unit]
+Description=Bounded HKEX summary update and independently verified offsite recovery
+After=docker.service network-online.target
+Requires=docker.service
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/mcp-hk-hkex-daily-current
+ExecStart=/opt/mcp-hk-hkex-daily-current/deploy/curated/run-hkex-daily.sh
+TimeoutStartSec=15min
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true

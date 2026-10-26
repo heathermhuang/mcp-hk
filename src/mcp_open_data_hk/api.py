@@ -234,6 +234,9 @@ def create_app(service=None):
     from .webb_sdi_api import register_http as register_webb_archive
 
     register_webb_archive(app, service)
+    from .hkex_daily import register_http as register_daily
+
+    register_daily(app, service)
     register_hkex_rest(app, service)
 
     from .racing_api import register_http as register_racing_http

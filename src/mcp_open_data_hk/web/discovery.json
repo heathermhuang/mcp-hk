@@ -724,14 +724,14 @@
     },
     "/hkex": {
       "en": {
-        "title": "HKEX directors’ disclosure archive · mcp.hk",
-        "heading": "HKEX disclosure archive",
-        "description": "Browse real historical Form 3A directors’ disclosures from David Webb / Webb-site, with source dates, capacity/reason codes and amendment links. Separate from fresh HKEX updates."
+        "title": "HKEX disclosures · mcp.hk",
+        "heading": "HKEX disclosures",
+        "description": "Latest published HKEX shareholder and director summary facts, automatic source checks, and the historical Webb Form 3A archive. Summary dates and event dates remain separate."
       },
       "zh-Hant": {
-        "title": "港交所董事權益披露檔案 · mcp.hk",
-        "heading": "港交所權益披露檔案",
-        "description": "瀏覽 David Webb／Webb-site 的真實表格 3A 董事披露歷史，保留來源日期、身分／原因代碼及修訂連結，與最新港交所更新分開。"
+        "title": "港交所權益披露 · mcp.hk",
+        "heading": "港交所權益披露",
+        "description": "最新港交所股東及董事摘要、自動來源檢查，以及 Webb 表格 3A 歷史檔案。摘要日期與事件日期分開保留。"
       },
       "template": "hkex.html"
     },
