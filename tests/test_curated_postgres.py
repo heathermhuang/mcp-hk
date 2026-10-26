@@ -1597,3 +1597,30 @@ def test_retained_restore_requalification_preserves_failure_and_requires_exact_d
             == "qualification"
         )
         assert state.pointer(conn) is None
+
+
+def test_health_followup_compares_recovery_checkpoint_without_writing_it(model):
+    from psycopg.rows import dict_row
+    from mcp_open_data_hk.curated import official_state as state
+    from mcp_open_data_hk.curated import official_health as health
+
+    _, _, _, _, owner = model
+    stamp = "2026-10-26T05:00:00Z"
+    with connect(owner, autocommit=True, row_factory=dict_row) as conn:
+        state.migrate(conn)
+        assert health.recheck_needed(conn, stamp)
+        health.check(conn, stamp)
+        before = conn.execute(
+            "SELECT * FROM curated.official_source_state WHERE family='health'"
+        ).fetchone()
+        assert not health.recheck_needed(conn, stamp)
+        conn.execute(
+            "INSERT INTO curated.official_source_state(family,checked_at,state) VALUES('performance',now()+interval '1 second','{\"status\":\"passed\"}')"
+        )
+        assert health.recheck_needed(conn, stamp)
+        assert (
+            conn.execute(
+                "SELECT * FROM curated.official_source_state WHERE family='health'"
+            ).fetchone()
+            == before
+        )

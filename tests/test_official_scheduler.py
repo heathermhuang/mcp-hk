@@ -200,3 +200,69 @@ exit 0""",
         < log.index("official_restore_check")
     )
     assert log.index("official_restore_check") < log.index("dropdb")
+
+
+def test_health_defers_all_database_writes_while_owning_backup_lock_is_busy(tmp_path):
+    release = tmp_path / "release" / "deploy" / "curated"
+    release.mkdir(parents=True)
+    runner = release / "verify-official.sh"
+    state = tmp_path / "state"
+    state.mkdir()
+    runner.write_text(
+        (ROOT / "deploy/curated/verify-official.sh")
+        .read_text()
+        .replace("/srv/mcp-hk-curated", str(state))
+    )
+    binaries = tmp_path / "bin"
+    binaries.mkdir()
+    executable(binaries / "flock", "exit 1")
+    executable(
+        binaries / "date",
+        'case "$1" in +%H) printf "05\\n";; *) printf "2026-10-26T05:00:00Z\\n";; esac',
+    )
+    marker = tmp_path / "database-write"
+    executable(
+        binaries / "docker",
+        f'touch "{marker}"; printf \'{{"status":"performance_or_restore_failure"}}\\n\'',
+    )
+    result = subprocess.run(
+        ["sh", str(runner)],
+        env=dict(
+            os.environ,
+            PATH=str(binaries) + ":" + os.environ["PATH"],
+            MCP_HK_MAINTENANCE_LOCK=str(tmp_path / "maintenance.lock"),
+        ),
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0, result.stderr
+    assert not marker.exists()
+    assert '"verificationDeferred":true' in result.stdout
+    assert (state / "official-health-running").read_text() == "2026-10-26T05:00:00Z"
+
+
+def test_hkex_timer_uses_typed_trigger_and_canonical_occurrence():
+    import importlib.util
+    from datetime import datetime, timezone
+
+    spec = importlib.util.spec_from_file_location(
+        "hkex_host_job", ROOT / "deploy/curated/hkex-daily-job.py"
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    current = datetime(2026, 10, 26, 5, 20, 0, 411112, tzinfo=timezone.utc)
+    assert module.scheduled_occurrence("t 99999000", 100000000, current) == (
+        "timer",
+        "2026-10-26T05:20:00Z",
+    )
+    assert module.scheduled_occurrence("t 1", 100000000, current)[0] == "manual"
+    assert (
+        module.scheduled_occurrence("1d 5h 42min 31.861600s", 100000000, current)[0]
+        == "manual"
+    )
+    assert module.scheduled_occurrence("t 100000001", 100000000, current)[0] == "manual"
+    catchup = datetime(2026, 10, 26, 0, 30, tzinfo=timezone.utc)
+    assert module.scheduled_occurrence("t 99999000", 100000000, catchup) == (
+        "timer",
+        "2026-10-25T14:20:00Z",
+    )

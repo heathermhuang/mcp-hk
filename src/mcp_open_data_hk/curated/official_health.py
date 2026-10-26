@@ -69,9 +69,24 @@ def check(conn, scheduled_for):
     return dict(summary, unchanged=unchanged)
 
 
+def recheck_needed(conn, scheduled_for):
+    row = conn.execute(
+        "SELECT checked_at,state FROM curated.official_source_state WHERE family='health'"
+    ).fetchone()
+    if not row or row["state"].get("summary", {}).get("scheduledFor") != scheduled_for:
+        return True
+    return (
+        conn.execute(
+            "SELECT 1 FROM curated.official_source_state WHERE family IN ('offsite','offsite_restore','performance') AND checked_at>%s LIMIT 1",
+            (row["checked_at"],),
+        ).fetchone()
+        is not None
+    )
+
+
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("operation", choices=["verify", "backup"])
+    parser.add_argument("operation", choices=["verify", "backup", "recheck-needed"])
     parser.add_argument("--scheduled-for")
     parser.add_argument("--job-id")
     parser.add_argument("--outcome", choices=["local_verified", "local_failed"])
@@ -100,6 +115,12 @@ def main():
             if not result:
                 raise SystemExit("Unknown backup job")
             print(json.dumps({"jobId": args.job_id, "backupStatus": args.outcome}))
+        elif args.operation == "recheck-needed":
+            if not args.scheduled_for:
+                parser.error("Expected scheduled occurrence required")
+            print(
+                json.dumps({"recheckNeeded": recheck_needed(conn, args.scheduled_for)})
+            )
         else:
             if not args.scheduled_for:
                 parser.error("Verifier requires expected scheduled occurrence")

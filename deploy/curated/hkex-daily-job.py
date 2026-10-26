@@ -14,7 +14,7 @@ import secrets
 import subprocess
 import urllib.error
 import urllib.request
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 CONFIG = Path("/etc/mcp-hk-curated/hkex-daily-uploader.json")
 ENV = "/etc/mcp-hk-curated/hkex-daily.env"
@@ -330,6 +330,20 @@ def prune_own_files():
         p.rmdir()
 
 
+def scheduled_occurrence(trigger, uptime, current):
+    """Typed systemd microseconds, never its human-formatted timespan display."""
+    matched = re.fullmatch(r"t ([0-9]+)", trigger)
+    recent = matched and 0 < int(matched[1]) <= uptime and uptime - int(matched[1]) < 60_000_000
+    if not recent:
+        return "manual", current.isoformat()
+    occurrences = [
+        (current - timedelta(days=offset)).replace(hour=hour,minute=20,second=0,microsecond=0)
+        for offset in (0,1) for hour in (1,5,9,10,14)
+    ]
+    stamp = max(value for value in occurrences if value <= current)
+    return "timer", stamp.isoformat().replace("+00:00","Z")
+
+
 def main():
     os.umask(0o077)
     if CONFIG.is_symlink() or CONFIG.stat().st_mode & 0o077:
@@ -347,29 +361,21 @@ def main():
     # Timer evidence is recorded separately from an ordinary operator start.
     trigger = subprocess.check_output(
         [
-            "systemctl",
-            "show",
-            "mcp-hk-hkex-daily.timer",
-            "--property=LastTriggerUSecMonotonic",
-            "--value",
+            "busctl", "get-property", "org.freedesktop.systemd1",
+            "/org/freedesktop/systemd1/unit/mcp_2dhk_2dhkex_2ddaily_2etimer",
+            "org.freedesktop.systemd1.Timer", "LastTriggerUSecMonotonic",
         ],
         text=True,
     ).strip()
     uptime = int(float(Path("/proc/uptime").read_text().split()[0]) * 1e6)
-    provenance = (
-        "timer"
-        if trigger.isdigit()
-        and 0 < int(trigger) <= uptime
-        and uptime - int(trigger) < 60_000_000
-        else "manual"
-    )
+    provenance, scheduled_for = scheduled_occurrence(trigger, uptime, datetime.now(timezone.utc))
     collected = runner(
         image,
         "collect",
         "--provenance",
         provenance,
         "--scheduled-for",
-        datetime.now(timezone.utc).isoformat(),
+        scheduled_for,
         expected_failure=True,
     )
     version = collected.get("version")
