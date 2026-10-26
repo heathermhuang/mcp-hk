@@ -1,0 +1,64 @@
+{
+  "origin": "https://mcp.hk",
+  "scope": "gate-only; no live racing facts",
+  "receipts": [
+    {
+      "lang": "en",
+      "width": 320,
+      "overflow": false,
+      "status": "source_permission_required",
+      "downloadStatus": 503
+    },
+    {
+      "lang": "en",
+      "width": 390,
+      "overflow": false,
+      "status": "source_permission_required",
+      "downloadStatus": 503
+    },
+    {
+      "lang": "en",
+      "width": 768,
+      "overflow": false,
+      "status": "source_permission_required",
+      "downloadStatus": 503
+    },
+    {
+      "lang": "en",
+      "width": 1280,
+      "overflow": false,
+      "status": "source_permission_required",
+      "downloadStatus": 503
+    },
+    {
+      "lang": "zh-Hant",
+      "width": 320,
+      "overflow": false,
+      "status": "source_permission_required",
+      "downloadStatus": 503
+    },
+    {
+      "lang": "zh-Hant",
+      "width": 390,
+      "overflow": false,
+      "status": "source_permission_required",
+      "downloadStatus": 503
+    },
+    {
+      "lang": "zh-Hant",
+      "width": 768,
+      "overflow": false,
+      "status": "source_permission_required",
+      "downloadStatus": 503
+    },
+    {
+      "lang": "zh-Hant",
+      "width": 1280,
+      "overflow": false,
+      "status": "source_permission_required",
+      "downloadStatus": 503
+    }
+  ],
+  "errors": [],
+  "sourceRequests": []
+}

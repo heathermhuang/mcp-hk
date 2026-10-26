@@ -6,6 +6,6 @@ export function curatedContainerEnv(env: object, origin: string): Record<string,
   try {
     const url = new URL(origin);
     if(url.protocol !== 'https:' || url.username || url.password || url.port || url.pathname !== '/' || url.search || url.hash) return disabled;
-    return {MCP_HK_CURATED_ORIGIN:url.origin,MCP_HK_CURATED_TOKEN:token};
+    return {MCP_HK_CURATED_ORIGIN:url.origin,MCP_HK_CURATED_TOKEN:token,...(Reflect.get(env,'WEBB_SDI_ARCHIVE_ENABLED')==='true'?{MCP_HK_WEBB_SDI_ENABLED:'true'}:{})};
   } catch {return disabled;}
 }

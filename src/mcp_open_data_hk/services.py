@@ -62,9 +62,15 @@ class Service:
         from .hkex import Hkex
 
         self.hkex = Hkex(self.companies)
+        from .webb_sdi import WebbSdi
+
+        self.webb_sdi = WebbSdi(self.companies)
         self.plates = PlateHK(self)
         self.properties = SeeHouse(self)
         self.resources = Resources(store)
+        from .racing_service import Racing
+
+        self.racing = Racing(store)
 
     def envelope(
         self,
@@ -311,6 +317,22 @@ class Service:
         checks = self.store.checks()
         sources = []
         for pack, source in SOURCES.items():
+            if pack == "racing":
+                state = self.racing.reader.status()["data"]
+                sources.append(
+                    {
+                        "sourceId": pack,
+                        "sourceUrl": source["sourceUrl"],
+                        "providerType": "independent",
+                        "attribution": source["attribution"],
+                        "availability": state["state"],
+                        "coverage": state["coverage"],
+                        "recordCount": state["coverage"]["resultRows"],
+                        "statusUrl": "/api/v1/racing/status",
+                        "currentVerification": False,
+                    }
+                )
+                continue
             if pack in {"enigma", "company_registry"}:
                 if self.companies.configured:
                     sources.append(

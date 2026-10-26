@@ -1,0 +1,22 @@
+{
+  "version": "private-results-v1-1529c68a72b9975d4c37537b708b239ebc37a93602962296c69898aed7a79c12",
+  "meeting": {
+    "date": "2026-10-21",
+    "id": "hkjc:meeting:v1:2026-10-21:HV",
+    "venue": "HV"
+  },
+  "coverage": {
+    "expectedRaces": 9,
+    "observedRaces": 9,
+    "resultRows": 104,
+    "resultRaceInventoryComplete": true,
+    "declaredRunnerReconciliation": "not_yet_verified",
+    "seasonComplete": false,
+    "profileCoverage": "identity_from_results_only",
+    "intradayOddsHistory": false
+  },
+  "sourceLicence": "unverified",
+  "publicRedistributionEnabled": false,
+  "observedAt": "2026-10-25T08:26:24.795469+00:00",
+  "captures": 18
+}

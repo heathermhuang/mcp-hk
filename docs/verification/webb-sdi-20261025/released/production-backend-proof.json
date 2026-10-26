@@ -1,0 +1,119 @@
+{
+  "backendCapability": [
+    "company-search-groupBy-organisation-v1",
+    "webb-sdi-archive-v1"
+  ],
+  "backendCompanyVersion": "enigma251227-hk-v1",
+  "archiveStatus": {
+    "source": "webb_sdi_archive",
+    "state": "available",
+    "version": "webb-sdi-enigma251227-v1",
+    "coverage": {
+      "view": "webb_sdi_archive",
+      "forms": {
+        "3": 341047
+      },
+      "scope": "All SDI records present in this original Webb release; not complete/current HKEX coverage",
+      "source": "webb_sdi_archive",
+      "tables": {
+        "sdi": {
+          "rows": 341047,
+          "sha256": "4563eedbd549600f6dbbe75c1df42036826aabed55d4adbd5d9a5f9edad02d44"
+        },
+        "issue": {
+          "rows": 35853,
+          "sha256": "4a60cde7c3a62bd864c1ea8858cbab7c76aa520a4e5f7a6eec61b327b198a50f"
+        },
+        "sdicap": {
+          "rows": 426219,
+          "sha256": "26421cdd7706e4c28fd9bbc8b9fe244f596ff9c8fd7e53a7f81735f9fc52924e"
+        },
+        "capacity": {
+          "rows": 33,
+          "sha256": "32525a6821dc1408e00aea5dde486ce25a0b35c394d1385fa0413e9a5bc5b3cf"
+        },
+        "sdievent": {
+          "rows": 345355,
+          "sha256": "5ff3782d805164751a3413e5b1a77903841b67d2ca5ac064c60d22ae54f887e8"
+        },
+        "sdireason": {
+          "rows": 84,
+          "sha256": "2210eb1b1014d65ac8cd7b24fd3922b49da1f65bda49907548059e223fe9aa39"
+        },
+        "currencies": {
+          "rows": 19,
+          "sha256": "b74c608f8186f6bdfe0225f7d8345f03391ce279767bf530c217f843590a81a5"
+        }
+      },
+      "version": "webb-sdi-enigma251227-v1",
+      "dateRanges": {
+        "awDate": [
+          "2001-04-05",
+          "2025-12-24"
+        ],
+        "relDate": [
+          "1994-09-19",
+          "2025-12-24"
+        ],
+        "modified": [
+          "2024-09-28",
+          "2025-12-24"
+        ],
+        "signDate": [
+          "2003-03-31",
+          "2025-12-24"
+        ]
+      },
+      "nullCounts": {
+        "awDate": 292589,
+        "legacyFilingKeyPresent": 206950
+      },
+      "attribution": "David Webb / Webb-site, original openly released Enigma archive",
+      "issuerCount": 3064,
+      "sourceBytes": 12416843125,
+      "noticeSha256": "a81aeeee21c0f3c1eae7185822a64dbf65513a1c1b212c591d9431e0f1ab02fe",
+      "sourceNotice": "webb-site-NOTICE.txt",
+      "archiveSha256": "9c2c42ae5e762d34b60954f43b37199b92b546033e229a292ed08b76323f6de2",
+      "uniqueSerials": 134097,
+      "databaseCounts": {
+        "events": 345355,
+        "issues": 35853,
+        "filings": 341047,
+        "capacities": 426219,
+        "dictionaries": 136
+      },
+      "elapsedSeconds": 43.338,
+      "filingDateKnown": false,
+      "projectionBytes": 270361844,
+      "sourceDataSha256": "39ca9e09601d2c99ef60a52a6f86f222d7304d885e13f25b9898d208dec578af",
+      "dateQualification": "relDate=relevant event; awDate=awareness; signDate=signature; modified=archive record edit. None is silently a filing/publication timestamp.",
+      "currentVerification": false,
+      "databaseBytesAtStage": 577748992,
+      "numericQualification": "Original FLOAT/DOUBLE storage; source dump numeric lexemes retained as strings, not reconstructed exact original decimal input",
+      "orphanEventParentIds": 0,
+      "publicationDateKnown": false,
+      "collectorQualification": "Released SDI.vb implements Form 3A. Original source director matching is heuristic and is not newly verified.",
+      "stockCodeQualification": "Numeric source stock codes are left-zero-padded to five digits for query/display; original source_stock_code is retained. Codes are not permanent issuer identities.",
+      "orphanCapacityParentIds": 0,
+      "unresolvedRevisionSerials": 145,
+      "numericOriginalPrecisionRecovered": false
+    },
+    "notice": "Historical Webb Form 3A archive, not complete/current HKEX coverage, current holdings or an executed-trade feed. Source FLOAT/DOUBLE numeric representations are preserved; original exact decimal input is not recoverable. Filing/publication dates are not recorded."
+  },
+  "issuer": {
+    "issuer_id": "webb:person:382",
+    "name": "HSBC Holdings plc",
+    "first_event": "2003-03-31",
+    "last_event": "2025-05-07",
+    "archive_filings": 2591,
+    "stock_codes": [
+      "00005"
+    ],
+    "source": "webb_sdi_archive",
+    "identityQualification": "Webb source issue-to-issuer mapping; stock code is not a permanent issuer identity"
+  },
+  "returned": 20,
+  "detailId": "webb:sdi:331188",
+  "backendImage": "sha256:0ac6c341baf7aa2d6ae141c598490e3884531b3629c3aaab56644bfefbad7520",
+  "immutableBackendSource": "cf0876e682f6f784a8cceca3286854ef9ec9940d"
+}

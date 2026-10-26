@@ -58,6 +58,12 @@ def elapsed(raw):
 # Deliberately finite. New source codes require dictionary/fixture review.
 STATUS = {
     "WV": "withdrawn",
+    "WV-A": "withdrawn",
+    "WX-A": "withdrawn",
+    "WXNR": "withdrawn",
+    "WR": "withdrawn",
+    "TNP": "took_no_part",
+    "VOID": "race_void",
     "WD": "withdrawn",
     "UR": "unseated",
     "DNF": "did_not_finish",
@@ -69,6 +75,13 @@ STATUS = {
 
 
 def placing(raw):
+    if raw == "":
+        return {
+            "placingRaw": "",
+            "placing": None,
+            "status": "not_reported",
+            "deadHeat": False,
+        }
     if raw in STATUS:
         return {
             "placingRaw": raw,
@@ -76,7 +89,11 @@ def placing(raw):
             "status": STATUS[raw],
             "deadHeat": False,
         }
-    match = re.fullmatch(r"([1-9]\d?)(\s+DH)?", raw) if isinstance(raw, str) else None
+    match = (
+        re.fullmatch(r"([1-9]\d?)(\s+(?:DH|平頭馬))?", raw)
+        if isinstance(raw, str)
+        else None
+    )
     if not match:
         raise RacingRejected("UNKNOWN_RESULT_CODE")
     return {

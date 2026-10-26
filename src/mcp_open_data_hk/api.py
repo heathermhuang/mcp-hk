@@ -98,14 +98,22 @@ def create_app(service=None):
             length = int(request.headers.get("content-length", "0"))
         except ValueError:
             return JSONResponse({"error": {"code": "INVALID_BODY"}}, status_code=400)
-        if length > 65536:
+        from .operations import authorized
+
+        body_cap = (
+            16 * 1024 * 1024
+            if request.url.path == "/__ops/racing"
+            and authorized(request.headers.get("authorization"))
+            else 65536
+        )
+        if length > body_cap:
             return JSONResponse({"error": {"code": "BODY_TOO_LARGE"}}, status_code=413)
         # Enforce the same cap for chunked bodies and dishonest Content-Length.
         if request.method in {"POST", "PUT", "PATCH"}:
             body = bytearray()
             async for chunk in request.stream():
                 body.extend(chunk)
-                if len(body) > 65536:
+                if len(body) > body_cap:
                     return JSONResponse(
                         {"error": {"code": "BODY_TOO_LARGE"}}, status_code=413
                     )
@@ -139,7 +147,25 @@ def create_app(service=None):
                 buckets.move_to_end(key)
             while len(buckets) > 10000:
                 buckets.popitem(last=False)
-        response = await call_next(request)
+        from .racing_service import ingestion_context
+
+        budget = None
+        if edge_mode:
+            raw = request.headers.get("x-mcp-racing-budget", "")
+            if raw and len(raw) <= 4096:
+                try:
+                    import json
+
+                    value = json.loads(raw)
+                    if isinstance(value, dict) and value.get("durable") is True:
+                        budget = value
+                except ValueError:
+                    pass
+        context_token = ingestion_context.set(budget)
+        try:
+            response = await call_next(request)
+        finally:
+            ingestion_context.reset(context_token)
         if (
             request.url.path.startswith(("/api/v1/resources", "/api/v1/sfc"))
             or request.url.path == "/api/v1/coverage"
@@ -183,7 +209,11 @@ def create_app(service=None):
     def health():
         from .quality import REVISION
 
-        return {"status": "ok", "sourceReviewPolicy": REVISION}
+        return {
+            "status": "ok",
+            "sourceReviewPolicy": REVISION,
+            "racingPipeline": "results-r2-v1",
+        }
 
     @app.get("/readyz")
     def ready():
@@ -201,21 +231,14 @@ def create_app(service=None):
 
     from .hkex_api import register_rest as register_hkex_rest
 
+    from .webb_sdi_api import register_http as register_webb_archive
+
+    register_webb_archive(app, service)
     register_hkex_rest(app, service)
 
-    from . import racing
+    from .racing_api import register_http as register_racing_http
 
-    @app.get("/api/v1/racing/status")
-    def racing_status():
-        return racing.status()
-
-    @app.get("/api/v1/racing/races", include_in_schema=False)
-    @app.get("/api/v1/racing/races/{race_id}/results", include_in_schema=False)
-    @app.get("/api/v1/racing/participants/{participant_id}", include_in_schema=False)
-    @app.get("/api/v1/racing/observations", include_in_schema=False)
-    @app.get("/api/v1/racing/exports", include_in_schema=False)
-    def racing_unavailable():
-        return racing.unavailable()
+    register_racing_http(app, service)
 
     @app.get("/api/v1/companies")
     async def company_search(query: Annotated[CompanySearchQuery, Query()]):

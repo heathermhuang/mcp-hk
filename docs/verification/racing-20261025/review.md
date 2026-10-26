@@ -39,7 +39,9 @@ Correctness/security/data-semantics review fixed these actionable issues:
    permission, a checksum and expiry; each replay rechecks the current policy.
    Reordered/unknown source fields and unknown result codes fail closed.
 
-The added status tool changes unconfigured tool discovery from 28 to 29, so the
+At the initial integration, the added status tool changed unconfigured tool
+discovery from 28 to 29. The final combined SFC/HKEX/racing release exposes 31
+unconfigured tools; production also retains its configured archive tools. The
 two exact-count assertions changed with it; no gate was relaxed. Optional-driver
 startup and isolated PDF extraction both passed in the normal test environment.
 Their restricted-sandbox failures were not fixed by altering application behavior.
@@ -67,3 +69,10 @@ Prospective meeting correction: the meeting status dictionary now admits explici
 scheduled/in-progress metadata as well as completed/exceptional meetings. A real
 PostgreSQL test stages an upcoming race inventory without manufacturing completed
 results or runner coverage. This metadata contract does not qualify a live series.
+
+Live keyboard correction: production's configured passive consent notice moved
+initial focus to its privacy link because `body.focus()` had no effect. A real
+Chrome comparison of exact old/new scripts reproduced false/true first-Tab skip
+behavior. The fix temporarily makes the initial body focusable, restores it and
+removes the temporary attribute; focused inputs and explicit modal settings keep
+their prior behavior. The HTTPS production-like consent scenario asserts this.

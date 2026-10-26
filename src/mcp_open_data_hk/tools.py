@@ -30,9 +30,13 @@ def register_data_tools(server, service=None):
 
     register_hkex_mcp(server, current)
 
-    from .racing import register_tools
+    from .webb_sdi_api import register_mcp as register_webb_archive
 
-    register_tools(server)
+    register_webb_archive(server, current)
+
+    from .racing_api import register_mcp as register_racing_mcp
+
+    register_racing_mcp(server, current)
 
     from .company_api import register_company_tools
 
