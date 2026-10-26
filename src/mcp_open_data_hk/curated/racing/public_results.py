@@ -13,6 +13,9 @@ from .policy import RacingRejected, checksum
 
 ORIGIN = "https://racing.hkjc.com"
 PATHS = {f"/{lang}/local/information/localresults" for lang in ("en-us", "zh-hk")}
+ARCHIVE_PATHS = {
+    f"/{lang}/local/information/archive/localresults" for lang in ("en-us", "zh-hk")
+}
 COLUMNS = (
     ("Pla.", "名次"),
     ("Horse No.", "馬號"),
@@ -115,7 +118,7 @@ def result_url(value):
         url.scheme != "https"
         or url.netloc != "racing.hkjc.com"
         or url.fragment
-        or url.path not in PATHS
+        or url.path not in PATHS | ARCHIVE_PATHS
         or len(lowered) != len(query)
         or set(lowered) - {"racedate", "racecourse", "raceno"}
         or any(len(v) != 1 for v in lowered.values())
@@ -125,6 +128,34 @@ def result_url(value):
     ):
         raise RacingRejected("DEVELOPMENT_ROUTE_REJECTED")
     return value
+
+
+def archive_redirect(original, location):
+    """The observed public archive redirect, with identical meeting/race/language.
+
+    No arbitrary redirect, credential, fragment, extra query or second hop is
+    accepted. The actual 15 July redirect was independently hash-matched to this
+    route; this does not qualify any other provider redirect or source family.
+    """
+    result_url(original)
+    source = urlsplit(original)
+    if (
+        source.path not in PATHS
+        or not isinstance(location, str)
+        or len(location) > 1000
+    ):
+        raise RacingRejected("RACING_ARCHIVE_REDIRECT_REJECTED")
+    target = urljoin(original, location)
+    result_url(target)
+    dest = urlsplit(target)
+    source_query = {k.lower(): v for k, v in parse_qs(source.query).items()}
+    target_query = {k.lower(): v for k, v in parse_qs(dest.query).items()}
+    if (
+        dest.path != source.path.replace("/localresults", "/archive/localresults")
+        or source_query != target_query
+    ):
+        raise RacingRejected("RACING_ARCHIVE_REDIRECT_REJECTED")
+    return target
 
 
 def cells(row):
@@ -207,7 +238,7 @@ def parse_results(text, url):
         p = urlsplit(href)
         q = {k.lower(): v for k, v in parse_qs(p.query).items()}
         if (
-            p.path in PATHS
+            p.path in PATHS | ARCHIVE_PATHS
             and q.get("racecourse") == [venue]
             and q.get("racedate") == [day.replace("-", "/")]
         ):

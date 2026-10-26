@@ -65,11 +65,12 @@ export class AgentAuth extends DurableObject<Env> {
 }
 
 export class McpContainer extends Container<Env> {
-  racingAdmission(input:{action:string;id?:string;referenceId?:string;state?:string;bytes?:number;code?:string|null}){
+  racingAdmission(input:{action:string;id?:string;referenceId?:string;inspectionId?:string;evidenceSha256?:string;state?:string;bytes?:number;code?:string|null}){
     const admission=new RacingAdmission(this.ctx.storage.sql);
     if(input.action==='reserve')return admission.reserve(String(input.id));
     if(input.action==='inspect_redirect')return admission.reserveRedirectInspection(String(input.referenceId),String(input.id));
     if(input.action==='inspect_redirect_shape')return admission.reserveRedirectInspection(String(input.referenceId),String(input.id),Date.now(),true);
+    if(input.action==='review_archive_redirect')return admission.reviewArchiveRedirect(String(input.id),String(input.inspectionId),String(input.evidenceSha256));
     if(input.action==='settle')return admission.settle(String(input.id),String(input.state),Number(input.bytes),input.code??null);
     if(input.action==='status')return admission.report();
     throw new Error('RACING_ADMISSION_ACTION');

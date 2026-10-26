@@ -1,0 +1,208 @@
+{
+  "scope": "actual deployed diagnostic and independent restore; archive handling fix not deployed by this receipt",
+  "gatewayCommit": "42e3b89847e83ff10eb74c294a1f1398f880cc5a",
+  "checkedHead": "c99abcf252d382a6a0c9e3cb9b7e91bfc6a297ae",
+  "workerVersion": "df9f7068-ec58-40f1-b284-2ce791a5f849",
+  "image": "sha256:e596a5e5bae49cc3e04ce5dfd40e613aa26eb88cd580f1851aa08636057e4598",
+  "inspection": {
+    "state": "received",
+    "inspectionKind": "routing_shape",
+    "originalAttempt": 298,
+    "inspectionAttempt": 300,
+    "sourceUrl": "https://racing.hkjc.com/en-us/local/information/localresults?racedate=2026/07/15&Racecourse=HV",
+    "originalHoldRetained": true,
+    "providerRequests": 1,
+    "observedAt": "2026-10-26T21:03:10.414341+00:00",
+    "rawHtmlRetained": false,
+    "responseStatus": 302,
+    "location": null,
+    "locationSha256": "65acd40e7bb27918951df989ac298a49ccd52c993c306ea92d05230cc6e9ba1c",
+    "locationShape": {
+      "present": true,
+      "scheme": "https",
+      "sameProviderHost": true,
+      "credentialsInAuthority": false,
+      "path": "/en-us/local/information/[redacted]/localresults",
+      "queryKeys": [
+        "racecourse",
+        "racedate"
+      ],
+      "queryValuesRetained": false
+    },
+    "bodySha256": "c0fbe4fff33f44559de9b787d744590251719b0bdf54d41434cc7e9080feea27",
+    "bytes": 200,
+    "truncated": false,
+    "settlementConfirmed": true,
+    "accountingState": "settled"
+  },
+  "checkpointSha256": "974c347c22d9e674e04faa1a96e4d4b4b0185b161a027b081ca673a0cc143024",
+  "restore": {
+    "sha256": "974c347c22d9e674e04faa1a96e4d4b4b0185b161a027b081ca673a0cc143024",
+    "isolatedRestore": true,
+    "inspectionRetained": {
+      "accountingState": "settled",
+      "bodySha256": "c0fbe4fff33f44559de9b787d744590251719b0bdf54d41434cc7e9080feea27",
+      "bytes": 200,
+      "inspectionAttempt": 300,
+      "inspectionKind": "routing_shape",
+      "location": null,
+      "locationSha256": "65acd40e7bb27918951df989ac298a49ccd52c993c306ea92d05230cc6e9ba1c",
+      "locationShape": {
+        "credentialsInAuthority": false,
+        "path": "/en-us/local/information/[redacted]/localresults",
+        "present": true,
+        "queryKeys": [
+          "racecourse",
+          "racedate"
+        ],
+        "queryValuesRetained": false,
+        "sameProviderHost": true,
+        "scheme": "https"
+      },
+      "observedAt": "2026-10-26T21:03:10.414341+00:00",
+      "originalAttempt": 298,
+      "originalHoldRetained": true,
+      "providerRequests": 1,
+      "rawHtmlRetained": false,
+      "responseStatus": 302,
+      "settlementConfirmed": true,
+      "sourceUrl": "https://racing.hkjc.com/en-us/local/information/localresults?racedate=2026/07/15&Racecourse=HV",
+      "state": "received",
+      "truncated": false
+    },
+    "originalHoldRetained": true,
+    "allTables": {
+      "racing_pages": {
+        "rows": 289,
+        "sha256": "57b32e64f5587af5bacd67d21937316c4fa44862247b7cb5d1c8272e316c7f0e"
+      },
+      "racing_attempts": {
+        "rows": 300,
+        "sha256": "495d96f7ee883a073aa7a41426d2f2655f664d6e1497a6e226ea3a0d560c1400"
+      },
+      "racing_snapshots": {
+        "rows": 14,
+        "sha256": "135da1547d05e8af7a7921390bde1db36a9ef5104b8277971e62725e4dfce6d9"
+      },
+      "racing_current": {
+        "rows": 14,
+        "sha256": "9c8b1c2ea008f9c2e416afa2f84bcd0c695b7fe43e6202ef614a0f02c6f9df19"
+      },
+      "racing_publications": {
+        "rows": 14,
+        "sha256": "f56591e7420bc15fdd74bc36705d1edee812dd753723717198f4a388ba437691"
+      },
+      "racing_accepted": {
+        "rows": 14,
+        "sha256": "82859fb871d7b31925ca00bf26700f9bf7010af387cb9c88d0344a3d3cffbf88"
+      },
+      "racing_queue": {
+        "rows": 102,
+        "sha256": "6bd25b5aa5dd106ba083f15928fda8a43441a4c99c8e9862aac3f9994a2a1175"
+      },
+      "racing_control": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "racing_calendar": {
+        "rows": 13,
+        "sha256": "9ca177d31f731c38124f234bda341c6561cf1a771365aabe80ff5db63a395659"
+      },
+      "racing_remote_requests": {
+        "rows": 231,
+        "sha256": "89d2d543b0f3706d377434238077455bf6e055a40cdc510e9514c90f17a1c745"
+      },
+      "racing_redirect_inspections": {
+        "rows": 2,
+        "sha256": "bb4385776c1afa4f6613c0fce3806edc28d9f0913e31b781e91207384730bd46"
+      },
+      "racing_profile_versions": {
+        "rows": 3,
+        "sha256": "f72627cfeab6ad8bc22da3f0a89ab61f3480b50122934ac8b5e4e610d0dcb04d"
+      },
+      "racing_profile_current": {
+        "rows": 3,
+        "sha256": "d099a9ac1cf16853ab8d86fd5e5df9f0f3fb2102e79505ea55e1b8253c112d2b"
+      },
+      "racing_profile_queue": {
+        "rows": 950,
+        "sha256": "44117f5f48f54b32f8eeb103fc1daebd26ba4b472f48a1467e4d91464763938d"
+      },
+      "racing_profile_meta": {
+        "rows": 4,
+        "sha256": "d9b0b9cbe67ffc96b82eec05a42fe572dd19ec159644d99c7753fa50706bf188"
+      }
+    },
+    "profilesUnchanged": [
+      {
+        "kind": "horse",
+        "version": "racing-profile-v1-a15d58967afdce9e6c615c9d8feab967828d631437b6f78938c636e26ec9be51",
+        "factsUnchanged": true
+      },
+      {
+        "kind": "jockey",
+        "version": "racing-profile-v1-12c2dd34ffd49fd550752cef6601d1f258d1aa2c6b392b66a5620b17c532040f",
+        "factsUnchanged": true
+      },
+      {
+        "kind": "trainer",
+        "version": "racing-profile-v1-125e4fa5284704cbb202f11bb5d3989eb32f0de4a71a83053cb74f00e6947ef8",
+        "factsUnchanged": true
+      }
+    ],
+    "acceptedResults": 14
+  },
+  "schedules": {
+    "crons": [
+      "0 1 * * *",
+      "0 2 * * *",
+      "0 3 * * SUN",
+      "0 4 * * SUN",
+      "2-59/5 * * * *"
+    ],
+    "count": 5
+  },
+  "durableIngestion": {
+    "attempts": 114,
+    "chargedBytes": 23817183,
+    "unresolved": [
+      {
+        "state": "held",
+        "records": 1
+      }
+    ],
+    "limits": {
+      "attempts": 200,
+      "bytes": 67108864
+    },
+    "resetsAt": "2026-10-27T00:00:00.000Z",
+    "durable": true
+  },
+  "replayOnIsolatedActualCheckpoint": {
+    "scope": "isolated replay of actual saved checkpoint; mock admission only; no live mutation or provider request",
+    "checkpointSha256": "974c347c22d9e674e04faa1a96e4d4b4b0185b161a027b081ca673a0cc143024",
+    "originalAttempt": 298,
+    "matchedLocationHash": "65acd40e7bb27918951df989ac298a49ccd52c993c306ea92d05230cc6e9ba1c",
+    "target": "https://racing.hkjc.com/en-us/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV",
+    "relatedQueueResumed": 1,
+    "globalHoldOnlyQueueResumed": 52,
+    "unchangedTables": [
+      "racing_snapshots",
+      "racing_current",
+      "racing_publications",
+      "racing_accepted",
+      "racing_calendar",
+      "racing_remote_requests",
+      "racing_redirect_inspections",
+      "racing_profile_versions",
+      "racing_profile_current",
+      "racing_profile_queue",
+      "racing_profile_meta"
+    ],
+    "providerRequests": 0,
+    "targetResultsVerified": false
+  },
+  "liveHoldResolved": false,
+  "targetResultsVerified": false,
+  "fourDatasetProgrammeComplete": false
+}
