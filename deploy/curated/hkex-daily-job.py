@@ -200,9 +200,14 @@ def source_backup(image, token, stage, version):
             )
         # This role owns only this source. The temporary database is newly
         # created by this invocation; no shared/live schema is restored over.
-        sql = "ALTER SCHEMA hkex_daily OWNER TO hkex_daily_writer;\n" + "".join(
-            "ALTER TABLE hkex_daily." + t + " OWNER TO hkex_daily_writer;\n"
-            for t in TABLES
+        sql = (
+            "GRANT CONNECT ON DATABASE "
+            + database
+            + " TO hkex_daily_writer;\nALTER SCHEMA hkex_daily OWNER TO hkex_daily_writer;\n"
+            + "".join(
+                "ALTER TABLE hkex_daily." + t + " OWNER TO hkex_daily_writer;\n"
+                for t in TABLES
+            )
         )
         execute(
             [
