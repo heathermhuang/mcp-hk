@@ -1451,6 +1451,8 @@ def test_official_prefix_limits_after_membership_and_preserves_literal_aliases(m
     from psycopg.rows import dict_row
     from mcp_open_data_hk.curated.official_ingest import save_capture, promote
     from mcp_open_data_hk.curated.official_read import OfficialReader
+    from mcp_open_data_hk.curated.official_queries import prefix_rows
+    from mcp_open_data_hk.curated.read import prefix_end
 
     _, _, reader, role, owner = model
 
@@ -1488,6 +1490,33 @@ def test_official_prefix_limits_after_membership_and_preserves_literal_aliases(m
             if key == "visible":
                 accepted = capture
         version = promote(conn, {"visible": accepted}, {"view": "latest_observed"})
+        key = "香港"
+        plan = conn.execute(
+            "EXPLAIN (ANALYZE, FORMAT JSON) " + prefix_rows(),
+            (
+                version,
+                key,
+                prefix_end(key),
+                key,
+                prefix_end(key),
+                "",
+                2,
+                key,
+                prefix_end(key),
+                key,
+                prefix_end(key),
+            ),
+        ).fetchone()["QUERY PLAN"][0]["Plan"]
+
+        def nodes(node):
+            yield node
+            for child in node.get("Plans", []):
+                yield from nodes(child)
+
+        assert not any(
+            node.get("CTE Name") == "matches" and node.get("Actual Rows", 0) > 2
+            for node in nodes(plan)
+        ), "A page must not materialize the entire matching identity cohort"
         conn.execute(
             sql.SQL("GRANT SELECT ON ALL TABLES IN SCHEMA curated TO {}").format(
                 sql.Identifier(role)
