@@ -63,7 +63,7 @@ async function capability(){
   const ready=Array.isArray(liveCapability?.enabledModes)&&['rest','browser'].every(m=>liveCapability.enabledModes.includes(m))&&/^sfc-[a-f0-9]{32}$/.test(liveCapability.acceptedVersion||'');
   liveInput.disabled=!ready;liveButton.disabled=!ready;
   liveStatus.textContent=t(ready?'sfcLiveReady':'sfcLiveUnavailable');
-  if(ready){document.querySelector('#sfc-ce-heading').textContent=t('sfcLiveReady');document.querySelector('#sfc-hint').textContent=t('sfcLiveScope');document.querySelector('label[for="sfc-ce"]').textContent=t('sfcArchiveCe');document.querySelector('[data-i18n="sfcModes"]').textContent=t('sfcLiveScope');}
+  if(ready){document.querySelector('#sfc-ce-heading').textContent=t('sfcLiveReady');document.querySelector('#sfc-hint').textContent=t('sfcLiveScope');document.querySelector('label[for="sfc-ce"]').textContent=t('sfcArchiveCe');document.querySelector('[data-i18n="sfcModes"]').textContent=t('sfcLiveScope');const q=new URLSearchParams(location.search);if(q.get('view')==='sfc_observation'&&/^[A-Z]{3}[0-9]{3}$/.test(q.get('ce')||'')){liveInput.value=q.get('ce');liveForm.requestSubmit();}}
  }catch(error){if(error.name!=='AbortError'&&run===liveGeneration){liveInput.disabled=true;liveButton.disabled=true;liveStatus.textContent=t('sfcLiveUnavailable');}}
 }
 liveForm?.addEventListener('submit',async event=>{
@@ -72,11 +72,12 @@ liveForm?.addEventListener('submit',async event=>{
  if(!/^[A-Z]{3}[0-9]{3}$/.test(ce)){liveInput.setCustomValidity(t('sfcArchiveInvalid'));liveInput.reportValidity();return;}liveInput.setCustomValidity('');
  const run=++liveGeneration;liveController?.abort();liveController=new AbortController();liveStatus.textContent=t('sfcArchiveLoading');
  try{
-  const version=liveCapability.acceptedVersion;
+  const currentQuery=new URLSearchParams(location.search);const version=currentQuery.get('ce')===ce&&/^sfc-[a-f0-9]{32}$/.test(currentQuery.get('version')||'')?currentQuery.get('version'):liveCapability.acceptedVersion;
   const response=await fetchPublicJson('/api/v1/sfc/corporations/'+ce+'?'+new URLSearchParams({version}),null,{signal:liveController.signal});
   if(run!==liveGeneration)return;
   const fact=response.data;
   if(response.meta?.version!==version||fact?.ce!==ce||!Array.isArray(fact.activities)||fact.activities.length>50)throw new Error('SOURCE_SCHEMA_CHANGED');
+  const shared=new URL(location.href);shared.searchParams.set('view','sfc_observation');shared.searchParams.set('ce',ce);shared.searchParams.set('version',version);history.replaceState(null,'',shared);
   const section=element('section');section.append(element('h3',fact.nameEn||fact.nameZhHant||ce),element('p',ce+' · '+(fact.statusLabel||t('sfcArchiveUnknown'))),element('p',t('sfcLiveScope')),element('p',t('sfcLiveObserved')+': '+fact.observedAt+' · '+version),element('p',t('sfcLiveSourceCutoff')+': '+date(fact.sourceCutoff?.raw,fact.sourceCutoff?.precision)));
   const scroll=element('div');scroll.className='company-table-wrap';scroll.tabIndex=0;scroll.setAttribute('role','region');scroll.setAttribute('aria-label',t('sfcArchiveIntervals'));
   const table=element('table'),thead=element('thead'),head=element('tr');

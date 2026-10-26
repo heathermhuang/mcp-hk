@@ -143,6 +143,8 @@ class Sfc:
                 or (version and actual_version != version)
                 or record.ce != ce
                 or payload["provenance"]["policySha256"] != self.policy.sha256
+                or payload["provenance"].get("captureFormat")
+                != "sfc-public-register-v1"
             ):
                 raise ValueError("identity")
             self.policy.require(mode, "retention")

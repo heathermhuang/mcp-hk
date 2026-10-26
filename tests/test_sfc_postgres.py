@@ -273,6 +273,23 @@ def test_physical_restore_every_fact_capture_control_and_pointer(
             and found["data"]["statusCode"] == "SOURCE_ACTIVE"
         )
         assert found["data"]["activities"][0]["end"]["value"] is None
+        with state.connection() as c:
+            original_manifest = c.execute(
+                "SELECT manifest FROM curated_sfc.versions WHERE version=%s", (version,)
+            ).fetchone()["manifest"]
+            c.execute(
+                'UPDATE curated_sfc.versions SET manifest=manifest||\'{"scope":"corrupted"}\'::jsonb WHERE version=%s',
+                (version,),
+            )
+        with pytest.raises(ReadError, match="manifest"):
+            reader.verify("ZZZ001")
+        with pytest.raises(ReadError, match="manifest"):
+            reader.status()
+        with state.connection() as c:
+            c.execute(
+                "UPDATE curated_sfc.versions SET manifest=%s::jsonb WHERE version=%s",
+                (json.dumps(original_manifest), version),
+            )
         with pytest.raises(Rejected, match="POINTER_CHANGED"):
             state.publish(version, None)
         with pytest.raises(ReadError, match="outside"):

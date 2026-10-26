@@ -23,3 +23,11 @@ test('HKEX daily-summary consumer activation is independent of the Webb archive'
  assert.equal(curatedContainerEnv(env,'https://curated.example').MCP_HK_WEBB_SDI_ENABLED,undefined);
  assert.equal(curatedContainerEnv({...env,HKEX_DAILY_ENABLED:'false'},'https://curated.example').MCP_HK_HKEX_DAILY_ENABLED,undefined);
 });
+test('SFC forwards only a bounded checksum-pinned policy and never writer credentials',()=>{
+ const env={CURATED_BACKEND_TOKEN:'x'.repeat(32),SFC_ENABLED:'true',SFC_WRITER_DSN:'private',SFC_BACKUP_TOKEN:'private'};
+ assert.equal(curatedContainerEnv(env,'https://curated.example').MCP_HK_SFC_POLICY_JSON,undefined);
+ const wired=curatedContainerEnv({...env,SFC_POLICY_JSON:'{}',SFC_POLICY_SHA256:'a'.repeat(64)},'https://curated.example');
+ assert.equal(wired.MCP_HK_SFC_POLICY_JSON,'{}');assert.equal(wired.MCP_HK_SFC_POLICY_SHA256,'a'.repeat(64));
+ assert.equal(Object.keys(wired).some(k=>/WRITER|BACKUP/.test(k)),false);
+ assert.equal(curatedContainerEnv({...env,SFC_POLICY_JSON:'x'.repeat(32769),SFC_POLICY_SHA256:'a'.repeat(64)},'https://curated.example').MCP_HK_SFC_POLICY_JSON,undefined);
+});

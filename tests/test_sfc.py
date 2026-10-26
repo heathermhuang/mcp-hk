@@ -301,6 +301,7 @@ async def test_public_sfc_reads_use_private_reader_and_pin_identity(tmp_path):
                     "sourceId": "sfc_register",
                     "policySha256": policy.sha256,
                     "view": "sfc_observation",
+                    "captureFormat": "sfc-public-register-v1",
                 },
             },
         )
@@ -349,3 +350,22 @@ def test_private_development_is_not_blocked_by_a_feed_licence_or_public_grant():
             fake_policy(
                 purpose="connector_development", modes={**modes, mode: "allowed"}
             )
+
+
+def test_runtime_policy_requires_matching_checksum_not_an_enable_flag(monkeypatch):
+    from mcp_open_data_hk.curated.sfc.policy import configured_policy
+
+    monkeypatch.setenv("MCP_HK_SFC_ENABLED", "true")
+    for name in [
+        "MCP_HK_SFC_POLICY_FILE",
+        "MCP_HK_SFC_POLICY_JSON",
+        "MCP_HK_SFC_POLICY_SHA256",
+    ]:
+        monkeypatch.delenv(name, raising=False)
+    assert configured_policy() == POLICY
+    policy = fake_policy()
+    monkeypatch.setenv("MCP_HK_SFC_POLICY_JSON", policy.model_dump_json())
+    monkeypatch.setenv("MCP_HK_SFC_POLICY_SHA256", "0" * 64)
+    assert configured_policy() == POLICY
+    monkeypatch.setenv("MCP_HK_SFC_POLICY_SHA256", policy.sha256)
+    assert configured_policy() == policy

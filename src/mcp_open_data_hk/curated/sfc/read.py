@@ -9,6 +9,27 @@ from .contracts import Corporation, Rejected, ce_reference, digest, encoded
 from .policy import POLICY, Policy, configured_policy
 
 
+def qualified_manifest(row):
+    proof = row["restore_proof"] or {}
+    if (
+        not row["published_at"]
+        or proof.get("manifestSha256") != digest(encoded(row["manifest"]))
+        or proof.get("factsSha256") != row["facts_sha256"]
+    ):
+        raise ReadError(
+            "SFC_SCHEMA_CHANGED",
+            "Accepted source manifest differs from restore qualification",
+        )
+
+
+def source_reader_safe(conn):
+    unsafe = conn.execute(
+        "SELECT has_schema_privilege('curated_sfc','CREATE') AS creates, EXISTS(SELECT 1 FROM pg_tables WHERE schemaname='curated_sfc' AND (tableowner=current_user OR has_table_privilege(quote_ident(schemaname)||'.'||quote_ident(tablename),'INSERT,UPDATE,DELETE,TRUNCATE,TRIGGER,REFERENCES'))) AS writes"
+    ).fetchone()
+    if any(unsafe.values()):
+        raise ReadError("UNSAFE_READER", "SFC reader has write privileges")
+
+
 def capability_status():
     return {
         "sourceId": "sfc_register",
@@ -59,6 +80,7 @@ class SfcReader:
                 result.update(
                     state="not_activated", reasonCode="SFC_POLICY_NOT_ACTIVATED"
                 )
+                source_reader_safe(conn)
                 active = conn.execute(
                     "SELECT sha256,record FROM curated_sfc.policies WHERE active AND revoked_at IS NULL"
                 ).fetchone()
@@ -77,6 +99,7 @@ class SfcReader:
                     "SELECT v.* FROM curated_sfc.versions v JOIN curated_sfc.pointer p USING(version)"
                 ).fetchone()
                 if row:
+                    qualified_manifest(row)
                     result.update(
                         acceptedVersion=row["version"],
                         publishedAt=row["published_at"],
@@ -208,11 +231,7 @@ class SfcReader:
                     raise ReadError(
                         "UNSAFE_READER", "Use a dedicated SELECT-only reader"
                     )
-                unsafe = conn.execute(
-                    "SELECT has_schema_privilege('curated_sfc','CREATE') AS creates, EXISTS(SELECT 1 FROM pg_tables WHERE schemaname='curated_sfc' AND (tableowner=current_user OR has_table_privilege(quote_ident(schemaname)||'.'||quote_ident(tablename),'INSERT,UPDATE,DELETE,TRUNCATE,TRIGGER,REFERENCES'))) AS writes"
-                ).fetchone()
-                if any(unsafe.values()):
-                    raise ReadError("UNSAFE_READER", "SFC reader has write privileges")
+                source_reader_safe(conn)
                 row = conn.execute(
                     "SELECT v.*,p.record FROM curated_sfc.versions v JOIN curated_sfc.policies p ON p.sha256=v.policy_sha256 WHERE v.version=COALESCE(%s,(SELECT version FROM curated_sfc.pointer)) AND v.published_at IS NOT NULL AND p.active AND p.revoked_at IS NULL",
                     (version,),
@@ -221,6 +240,7 @@ class SfcReader:
                     raise ReadError(
                         "SFC_VERSION_UNAVAILABLE", "No qualified SFC observation"
                     )
+                qualified_manifest(row)
                 active = Policy.model_validate(row["record"])
                 if (
                     active.sha256 != self.policy.sha256
@@ -269,6 +289,8 @@ class SfcReader:
                         "freshnessBasis": "dated_observation_not_realtime",
                         "scope": "tracked_corporate_subset",
                         "completeRegulatoryHistory": False,
+                        "captureFormat": row["manifest"].get("format"),
+                        "sourceUrl": active.route.replace("{ce}", ce),
                     },
                 }
                 # Recheck the pointer: a concurrent publication can turn this

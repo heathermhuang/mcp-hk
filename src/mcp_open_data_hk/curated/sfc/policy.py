@@ -124,11 +124,14 @@ POLICY = Policy(
 def configured_policy():
     """Existing operator file plus an independent checksum; flags grant no modes."""
     path = os.environ.get("MCP_HK_SFC_POLICY_FILE")
+    raw = os.environ.get("MCP_HK_SFC_POLICY_JSON")
     checksum = os.environ.get("MCP_HK_SFC_POLICY_SHA256")
-    if not path or not checksum:
+    if not (path or raw) or not checksum:
         return POLICY
     try:
-        policy = Policy.model_validate_json(Path(path).read_bytes())
+        if raw and len(raw.encode()) > 32768:
+            return POLICY
+        policy = Policy.model_validate_json(raw or Path(path).read_bytes())
         if policy.sha256 != checksum:
             return POLICY
         return policy
