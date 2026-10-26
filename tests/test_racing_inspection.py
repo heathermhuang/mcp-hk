@@ -13,7 +13,11 @@ from test_racing_public import service as base_service
 from mcp_open_data_hk.api import create_app
 
 from mcp_open_data_hk.racing_store import RacingStore
-from mcp_open_data_hk.racing_inspection import inspect_redirect, location_metadata
+from mcp_open_data_hk.racing_inspection import (
+    inspect_redirect,
+    location_metadata,
+    location_shape,
+)
 from mcp_open_data_hk.curated.racing.policy import RacingRejected
 
 URL = "https://racing.hkjc.com/en-us/local/information/localresults?racedate=2026/07/15&Racecourse=HV"
@@ -37,7 +41,7 @@ def model(tmp_path, monkeypatch):
         calls.append(body)
         return (
             {"allowed": True}
-            if body["action"] == "inspect_redirect"
+            if body["action"] in {"inspect_redirect", "inspect_redirect_shape"}
             else {"settled": True}
         )
 
@@ -150,6 +154,69 @@ def test_response_timeout_is_preserved_unknown_without_second_source_request(mod
     with pytest.raises(RacingRejected, match="ALREADY_RECORDED"):
         inspect_redirect(store, old)
     assert len(calls) == 1
+
+
+def test_shape_requires_completed_opaque_302_then_permits_only_one_instrumented_read(
+    model,
+):
+    store, old, calls = model
+    target = "http://racing.hkjc.com/racing/NoInformation.aspx?code=secret"
+    with pytest.raises(RacingRejected, match="PRIOR_PROOF_REQUIRED"):
+        inspect_redirect(store, old, shape=True)
+
+    def client():
+        return httpx.Client(
+            transport=httpx.MockTransport(
+                lambda _: httpx.Response(
+                    302, content=b"moved", headers={"location": target}
+                )
+            )
+        )
+
+    first = inspect_redirect(store, old, client())
+    assert first["location"] is None
+    with pytest.raises(RacingRejected, match="PRIOR_PROOF_REQUIRED"):
+        inspect_redirect(store, old, shape=True)
+    # An actual pre-shape receipt had only the hash; preserve that historical form.
+    legacy = dict(first)
+    legacy.pop("locationShape")
+    with store.connect() as db:
+        db.execute(
+            "UPDATE racing_redirect_inspections SET payload=? WHERE inspection_attempt=?",
+            (json.dumps(legacy), first["inspectionAttempt"]),
+        )
+    second = inspect_redirect(store, old, client(), shape=True)
+    assert (
+        second["inspectionKind"] == "routing_shape"
+        and second["locationShape"]["scheme"] == "http"
+        and second["locationShape"]["path"] == "/racing/NoInformation.aspx"
+    )
+    assert (
+        "secret" not in json.dumps(second)
+        and calls[2]["action"] == "inspect_redirect_shape"
+    )
+    with pytest.raises(RacingRejected, match="ALREADY_RECORDED"):
+        inspect_redirect(store, old, shape=True)
+    with store.connect() as db:
+        assert (
+            db.execute(
+                "SELECT state FROM racing_attempts WHERE id=?", (old,)
+            ).fetchone()[0]
+            == "held"
+        )
+
+
+def test_shape_masks_opaque_path_and_values_without_hiding_static_error_route():
+    shape = location_shape(
+        URL,
+        "https://racing.hkjc.com/racing/abcdefghijklmnopqrstuvwxyz012345/InfoSecretCredential.aspx?token=secret&code=other",
+    )
+    assert (
+        "secret" not in json.dumps(shape).lower()
+        and "[redacted]" in shape["path"]
+        and shape["queryKeys"] == ["code", "token"]
+    )
+    assert location_shape(URL, None)["present"] is False
 
 
 def test_new_denial_is_an_additional_hold_not_a_successful_inspection(model):

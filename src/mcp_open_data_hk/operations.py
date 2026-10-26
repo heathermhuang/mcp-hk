@@ -252,11 +252,18 @@ def register_operations(app, service):
                         body["record"],
                         body["sha256"],
                     )
-                elif body.get("action") == "inspect_redirect":
+                elif body.get("action") in {
+                    "inspect_redirect",
+                    "inspect_redirect_shape",
+                }:
                     from .racing_inspection import inspect_redirect
 
                     inspection = await asyncio.to_thread(
-                        inspect_redirect, service.racing.store, body["attempt"]
+                        inspect_redirect,
+                        service.racing.store,
+                        body["attempt"],
+                        None,
+                        body["action"] == "inspect_redirect_shape",
                     )
                 elif body.get("action") == "enqueue":
                     await asyncio.to_thread(

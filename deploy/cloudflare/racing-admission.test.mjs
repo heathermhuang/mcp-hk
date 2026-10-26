@@ -54,3 +54,11 @@ test('diagnostics refuse denials, unknowns, other outstanding requests and quota
  const {admission,sql}=store();admission.reserve(id(1),now);admission.settle(id(1),'held',409600,'DEVELOPMENT_HTTP_302');sql.exec("INSERT INTO racing_admissions VALUES(?,?,?,?,'pending',NULL)",id(2),Math.floor(now/86400000),now,409600);assert.equal(admission.reserveRedirectInspection(id(1),id(3),now).code,'RACING_SOURCE_HELD');
  const full=store().admission;for(let n=1;n<200;n++){full.reserve(id(n),now);full.settle(id(n),'success',1,null);}full.reserve(id(200),now);full.settle(id(200),'held',409600,'DEVELOPMENT_HTTP_302');assert.equal(full.reserveRedirectInspection(id(200),id(201),now).code,'RACING_DAILY_BUDGET');
 });
+test('one routing-shape read requires the completed first diagnostic and retains the original hold',()=>{
+ const {admission}=store();admission.reserve(id(1),now);admission.settle(id(1),'held',409600,'HTTP_302');
+ assert.equal(admission.reserveRedirectInspection(id(1),id(2),now,true).code,'RACING_INSPECTION_PRIOR_PROOF_REQUIRED');
+ admission.reserveRedirectInspection(id(1),id(2),now);assert.equal(admission.reserveRedirectInspection(id(1),id(3),now,true).code,'RACING_INSPECTION_PRIOR_PROOF_REQUIRED');
+ admission.settle(id(2),'success',200,'REDIRECT_INSPECTION_COMPLETE');assert.equal(admission.reserveRedirectInspection(id(1),id(3),now,true).allowed,true);
+ admission.settle(id(3),'success',200,'REDIRECT_INSPECTION_COMPLETE');assert.equal(admission.reserveRedirectInspection(id(1),id(4),now,true).code,'RACING_INSPECTION_ALREADY_ADMITTED');
+ assert.equal(admission.report(now).attempts,3);assert.deepEqual(admission.report(now).unresolved.map(r=>({...r})),[{state:'held',records:1}]);assert.equal(admission.reserve(id(5),now).code,'RACING_SOURCE_HELD');
+});
