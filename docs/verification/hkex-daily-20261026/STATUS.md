@@ -1,22 +1,17 @@
-# Current HKEX summaries: implementation verification
+# HKEX daily summaries: released
 
-26 October 2026. Current task: get published HKEX DI summary facts and maintain them
-with deterministic scheduled code, while preserving the historical Webb archive.
+26 October 2026. The public feed is live at <https://mcp.hk/hkex>, with REST and MCP reads from both production domains. Released source: `ed59dfa1355df088e55dba515515b19e936a774f`; PRs #89 and #90 are merged. The actual controller reports that release, and the deployed container serves the new reader. Source/backend credentials remain outside Git and the public container has no source writer or backup-upload credential.
 
-The public source menu currently points to 23 October 2026. All four latest pages
-were fetched normally: 169 shareholder, 66 director share, 10 associated-corporation
-summary rows and an explicitly structured empty debenture report. A bounded seven-
-calendar-day collector staged 1,004 observations across four published dates,
-20–23 October. Unavailable older pages remain gaps, not inferred zero filings.
+The latest source menu still points to **23 October 2026**. The accepted feed contains **1,004 observations across 20–23 October**, including 245 on the latest day: 169 shareholder, 66 director share, 10 associated-corporation rows and a validated empty debenture report. Missing older pages remain explicit coverage gaps. These are published daily-summary facts; full filing documents, Form 4/s.309 notices, exact filing timestamps and current holdings are outside this feed.
 
-Actual local PostgreSQL whole-schema physical restore compared all seven tables
-and the request sequence before local publication; SELECT-only queries passed.
-Synthetic source/PostgreSQL contracts cover holds, unchanged 304s, quotas, writer
-locks, source date/identity drift, unknown dispatches, pinned cursors, recovery gates
-and exact REST/MCP parity. Eight real-data and eight synthetic responsive EN/ZH browser/download journeys passed at 320/390/768/1280px. ZIP contents and packaged checksums were verified.
+The independent host timer is enabled and active at **09:20, 13:20, 17:20, 18:20 and 22:20 HKT**. Its next ordinary occurrence is 26 October at 13:20 HKT (05:20 UTC). That future occurrence has not yet been observed. A manually started run completed the actual collection, scoped R2 upload/download, fresh-database physical restore, all-seven-table/request-sequence comparison, publication and accepted recovery-pointer verification. The first backup attempt encountered the preceding controller during rollout; it retained the candidate and prior accepted data. After actual controller adoption, the retained candidate resumed without repeating source reads and completed successfully. Failed/unknown receipts remain retained.
 
-Production deployment, timer activation, actual ordinary occurrence, and offsite
-recovery are not yet established by this preparation receipt. The consumer flag
-remains off in checked-in deployment configuration until backend/source acceptance.
-No HKEX provider licence or permission grant is claimed. See
-[the field/operations reference](../../data/hkex-daily.md) for exact scope and use basis.
+The accepted source version is `hkex-daily-b27b6e1b67b48fe3696bab69f2ce7090`, publication revision 2. Its independently downloaded and restored accepted dump is 256,091 bytes, SHA-256 `b14d20b8afec2909efe7de2df795eb22774de6f7b37cd27d3c62dd91df04bf52`. All seven source tables and the request sequence matched before the accepted offsite pointer advanced. Immutable source copies have a 30-day lifecycle; the current recovery reference is outside the expiring prefix.
+
+Live checks passed for stock 00595 (seven rows), pinned pagination/detail, exact REST/MCP value parity, and required-version errors on both domains. Eight real-data English/Traditional Chinese browser journeys passed at 320/390/768/1280px, including filtering, detail focus, overflow checks and checksum-verified ZIP downloads. The 341,047-record Webb archive, both company views, historical SFC licence lookup and the separate unqualified fresh-SFC capability were preserved. Relevant automated checks passed: 590 Python tests (seven optional network checks skipped), 133 Worker tests, PostgreSQL contracts, types/lint/format and all five PR CI workflows.
+
+All five existing gateway crons are restored. A fresh accepted gateway checkpoint was independently downloaded, checksum-verified and restored into isolated SQLite with accepted packs ready. That gateway backup is separate from the source PostgreSQL backup; both recovery paths passed. Free host space was 51,670,794,240 bytes at verification. Other source pointers, timers and company-maintenance ownership were preserved.
+
+No HKEX provider licence or permission grant is asserted. The operator-directed public-source use basis, source terms, attribution, field limits, request/byte quotas, holds and recovery procedure are documented in [the source reference](../../data/hkex-daily.md). This release makes no outreach or licence purchase.
+
+Evidence: [release/controller/timer](release.json), [live API/MCP](public-production.json), [real browser journeys](browser-production.json), [accepted source recovery](source-offsite-accepted.json), [independent gateway restore](gateway-restore.json). Earlier local and production source-qualification receipts remain alongside these files.

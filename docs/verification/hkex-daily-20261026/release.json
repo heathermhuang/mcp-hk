@@ -1,0 +1,64 @@
+{
+  "observedAt": "2026-10-26T02:25:39.135936+00:00",
+  "sourceCommit": "ed59dfa1355df088e55dba515515b19e936a774f",
+  "workerVersion": "4501fb4f-e3cf-4caf-bb88-5114d88cd7da",
+  "controller": {
+    "workerRelease": "ed59dfa1355df088e55dba515515b19e936a774f",
+    "controllerContract": "source-aware-ux-1",
+    "maintenancePolicy": "source-review-11",
+    "leaseUntil": null,
+    "seedLease": false
+  },
+  "gatewayCrons": [
+    "0 1 * * *",
+    "0 2 * * *",
+    "0 3 * * SUN",
+    "0 4 * * SUN",
+    "2-59/5 * * * *"
+  ],
+  "timer": {
+    "enabled": true,
+    "active": true,
+    "timesHkt": [
+      "09:20",
+      "13:20",
+      "17:20",
+      "18:20",
+      "22:20"
+    ],
+    "nextOccurrenceUtc": "2026-10-26T05:20:00Z",
+    "ordinaryOccurrenceObserved": false
+  },
+  "manualEndToEnd": {
+    "result": "success",
+    "publishedVersion": "hkex-daily-b27b6e1b67b48fe3696bab69f2ce7090",
+    "publicationRevision": 2,
+    "restoreVerified": true,
+    "verifiedAt": "2026-10-26T02:20:57.426852+00:00"
+  },
+  "backendImage": "sha256:3c3aef78655018aafd41bb8ac5fb0d2a460401ae4e9d961fd6aef3878106f924",
+  "hostFreeBytes": 51670794240,
+  "validation": {
+    "pythonPassed": 590,
+    "pythonOptionalNetworkSkipped": 7,
+    "workerPassed": 133,
+    "browserRealJourneys": 8,
+    "pullRequest90CiWorkflows": "all five passed"
+  },
+  "rolloutReceipts": {
+    "firstBackupAttempt": "not_confirmed_during_controller_propagation",
+    "retainedCandidateResumedWithoutSourceRefetch": true,
+    "sourceRowsPreservedDuringFailure": 1004,
+    "recoveryNowConfirmed": true
+  },
+  "containerApplication": {
+    "id": "a0311e26-5d76-46e6-beb5-67ed6bfefe03",
+    "name": "mcp-hk-mcpcontainer",
+    "state": "active",
+    "instances": 1,
+    "image": "registry.cloudflare.com/63a7fe52c985c63bb9e69ce47efdc569/mcp-hk-mcpcontainer@sha256:b6378e775e34f9e19ffe0b78064c65d842f8a3ee8eac77ed57266b5d4a4ced47",
+    "version": 52,
+    "updated_at": "2026-10-26T02:17:22.486000128Z",
+    "created_at": "2026-10-16T10:42:41.713999872Z"
+  }
+}
