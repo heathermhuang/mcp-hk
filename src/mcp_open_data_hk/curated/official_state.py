@@ -13,31 +13,33 @@ LOCK = 68002406
 
 
 def migrate(conn):
-    source = (
-        files(__package__)
-        .joinpath("migrations/001_official_maintenance.sql")
-        .read_text()
-    )
-    sha = digest(source.encode())
-    with conn.transaction():
-        conn.execute("SELECT pg_advisory_xact_lock(%s)", (LOCK + 1,))
-        conn.execute("CREATE SCHEMA IF NOT EXISTS curated")
-        conn.execute(
-            "CREATE TABLE IF NOT EXISTS curated.official_migrations(version text PRIMARY KEY,sha256 text NOT NULL,applied_at timestamptz NOT NULL DEFAULT now())"
-        )
-        applied = conn.execute(
-            "SELECT sha256 FROM curated.official_migrations WHERE version='001'"
-        ).fetchone()
-        if applied:
-            if applied["sha256"] != sha:
-                raise SourceRejected("MIGRATION_SOURCE_CHANGED")
-            return
-        conn.execute(DDL)
-        conn.execute(source)
-        conn.execute(
-            "INSERT INTO curated.official_migrations(version,sha256) VALUES('001',%s)",
-            (sha,),
-        )
+    for version, filename in [
+        ("001", "001_official_maintenance.sql"),
+        ("007", "007_official_address_queue.sql"),
+    ]:
+        source = files(__package__).joinpath("migrations/" + filename).read_text()
+        sha = digest(source.encode())
+        with conn.transaction():
+            conn.execute("SELECT pg_advisory_xact_lock(%s)", (LOCK + 1,))
+            conn.execute("CREATE SCHEMA IF NOT EXISTS curated")
+            conn.execute(
+                "CREATE TABLE IF NOT EXISTS curated.official_migrations(version text PRIMARY KEY,sha256 text NOT NULL,applied_at timestamptz NOT NULL DEFAULT now())"
+            )
+            applied = conn.execute(
+                "SELECT sha256 FROM curated.official_migrations WHERE version=%s",
+                (version,),
+            ).fetchone()
+            if applied:
+                if applied["sha256"] != sha:
+                    raise SourceRejected("MIGRATION_SOURCE_CHANGED")
+                continue
+            if version == "001":
+                conn.execute(DDL)
+            conn.execute(source)
+            conn.execute(
+                "INSERT INTO curated.official_migrations(version,sha256) VALUES(%s,%s)",
+                (version, sha),
+            )
 
 
 def transform_hash():

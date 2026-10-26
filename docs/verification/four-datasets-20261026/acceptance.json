@@ -1,0 +1,758 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-10-26T03:02:53.756921+00:00",
+  "overallState": "incomplete",
+  "sourcePlan": "../../../../../../docs/designs/mcp-hk-four-datasets-completion-20261026.md",
+  "originalInventories": {
+    "companies": {
+      "weekPairs": 94,
+      "csvFiles": 188
+    },
+    "sfc": {
+      "pilotMaximumExactCE": 25
+    },
+    "racing": {
+      "historicalSeason": "2025/26",
+      "recentSeason": "2026/27"
+    },
+    "hkex": {
+      "pilotIssuers": 1,
+      "pilotWindowCalendarDays": 7
+    }
+  },
+  "items": [
+    {
+      "id": "W00.baseline-main-runtime",
+      "workPackage": "W00",
+      "state": "partial",
+      "dependency": [],
+      "actualCoverage": {
+        "remoteMainMatchesHandoff": true,
+        "maintenanceRelease": "17c68a9ae2e20262a278b3829f3b47288db38ece"
+      },
+      "version": "cabdd1a6ddad38a2b4da7d735576b678243f4a05",
+      "evidence": [
+        "baseline.json"
+      ],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W00.source-jobs-locks-capacity",
+      "workPackage": "W00",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W00.source-policy-refresh",
+      "workPackage": "W00",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W00.acceptance-ledger",
+      "workPackage": "W00",
+      "state": "passed",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [
+        "acceptance.json"
+      ],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Update each item only from observed receipts"
+    },
+    {
+      "id": "W01.exact-registry-no-match",
+      "workPackage": "W01",
+      "state": "in_progress",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Run real-DB regressions, review, exact-head checks and release"
+    },
+    {
+      "id": "W01.prior-address-facts-retained",
+      "workPackage": "W01",
+      "state": "in_progress",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Run real-DB regressions, review, exact-head checks and release"
+    },
+    {
+      "id": "W01.retry-categories-lineage",
+      "workPackage": "W01",
+      "state": "in_progress",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Run real-DB regressions, review, exact-head checks and release"
+    },
+    {
+      "id": "W01.fair-cohort-scheduling",
+      "workPackage": "W01",
+      "state": "in_progress",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Run real-DB regressions, review, exact-head checks and release"
+    },
+    {
+      "id": "W01.capacity-age-backlog-status",
+      "workPackage": "W01",
+      "state": "in_progress",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Run real-DB regressions, review, exact-head checks and release"
+    },
+    {
+      "id": "W01.crash-and-quota-accounting",
+      "workPackage": "W01",
+      "state": "in_progress",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Run real-DB regressions, review, exact-head checks and release"
+    },
+    {
+      "id": "W01.live-failed-control-examples",
+      "workPackage": "W01",
+      "state": "in_progress",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Run real-DB regressions, review, exact-head checks and release"
+    },
+    {
+      "id": "W02.original-94-pairs-reconciled",
+      "workPackage": "W02",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W02.staged-bytes-reused",
+      "workPackage": "W02",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W02.full-state-offsite-restore",
+      "workPackage": "W02",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W02.full-state-performance",
+      "workPackage": "W02",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W02.same-version-188-rest-mcp-pairs",
+      "workPackage": "W02",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W02.same-version-bilingual-explorer-pairs",
+      "workPackage": "W02",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W02.actual-browser-zips",
+      "workPackage": "W02",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W02.ordinary-daily-source",
+      "workPackage": "W02",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W02.ordinary-daily-offsite-rpo",
+      "workPackage": "W02",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W03.company-archive-preserved",
+      "workPackage": "W03",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W03.current-dissolution-restoration",
+      "workPackage": "W03",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W03.current-appointments",
+      "workPackage": "W03",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W03.current-ownership",
+      "workPackage": "W03",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W03.exact-identity-crosswalks",
+      "workPackage": "W03",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W04.sfc-archive-preserved",
+      "workPackage": "W04",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W04.sfc-production-schema-config",
+      "workPackage": "W04",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W04.sfc-bounded-scheduled-collector",
+      "workPackage": "W04",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W04.sfc-persisted-status",
+      "workPackage": "W04",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W04.sfc-real-reader-wiring",
+      "workPackage": "W04",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W04.sfc-independent-restored-candidate",
+      "workPackage": "W04",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W04.sfc-publication-rollback",
+      "workPackage": "W04",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W04.sfc-25-ce-pilot",
+      "workPackage": "W04",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W04.sfc-rest-mcp-browser-export",
+      "workPackage": "W04",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W04.sfc-ordinary-jobs-failure-retention",
+      "workPackage": "W04",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W04.sfc-wider-cohort-disposition",
+      "workPackage": "W04",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W05.racing-2025-26-results",
+      "workPackage": "W05",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W05.racing-recent-results",
+      "workPackage": "W05",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W05.racing-declarations-reconciliation",
+      "workPackage": "W05",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W05.racing-full-participant-profiles",
+      "workPackage": "W05",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W05.racing-sectionals-dividends",
+      "workPackage": "W05",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W05.racing-trials-rankings",
+      "workPackage": "W05",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W05.racing-track-conditions-jackpots",
+      "workPackage": "W05",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W05.racing-odds-pool-changes-series",
+      "workPackage": "W05",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W05.racing-narrative-output-disposition",
+      "workPackage": "W05",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W05.racing-rest-mcp-browser-zips",
+      "workPackage": "W05",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W05.racing-ordinary-ingestion-fresh-recovery",
+      "workPackage": "W05",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W06.hkex-webb-archive-preserved",
+      "workPackage": "W06",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W06.hkex-145-amendment-reference-audit",
+      "workPackage": "W06",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W06.hkex-daily-ordinary-occurrence",
+      "workPackage": "W06",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W06.hkex-daily-report-gap-handling",
+      "workPackage": "W06",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W06.hkex-daily-fresh-recovery",
+      "workPackage": "W06",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W06.hkex-real-listing-document-transport-parser",
+      "workPackage": "W06",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W06.hkex-filing-window-revision-closure",
+      "workPackage": "W06",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W06.hkex-one-issuer-seven-day-pilot",
+      "workPackage": "W06",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W06.hkex-declared-coverage-expansion",
+      "workPackage": "W06",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W06.hkex-rest-mcp-browser-exports",
+      "workPackage": "W06",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W07.four-family-archive-live-discovery",
+      "workPackage": "W07",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W07.source-bound-deterministic-health",
+      "workPackage": "W07",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W07.bilingual-mobile-keyboard-states",
+      "workPackage": "W07",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W08.source-scoped-pr-review",
+      "workPackage": "W08",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W08.exact-head-checks-real-postgres-ci",
+      "workPackage": "W08",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W08.serialized-release-runtime-adoption",
+      "workPackage": "W08",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W08.all-five-crons-source-timers-restored",
+      "workPackage": "W08",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W08.live-parity-rollback-fresh-restores",
+      "workPackage": "W08",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    },
+    {
+      "id": "W08.final-four-family-matrix",
+      "workPackage": "W08",
+      "state": "pending",
+      "dependency": [],
+      "actualCoverage": null,
+      "version": null,
+      "evidence": [],
+      "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
+      "nextAction": "Implement and verify against the saved completion plan"
+    }
+  ]
+}

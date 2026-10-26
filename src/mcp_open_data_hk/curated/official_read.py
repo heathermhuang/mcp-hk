@@ -311,7 +311,7 @@ class OfficialReader:
                     "SELECT job_id,operation,scheduled_for,started_at,finished_at,published_at,status,collection_status,publication_status,backup_status FROM curated.official_jobs WHERE family IN ('cr','recovery') ORDER BY started_at DESC LIMIT 6"
                 ).fetchall()
                 queue = conn.execute(
-                    "SELECT count(*) AS eligible,count(*) FILTER(WHERE last_success IS NOT NULL) AS observed,count(*) FILTER(WHERE outcome NOT IN ('success','never')) AS held,count(*) FILTER(WHERE next_due<=now()) AS due,count(*) FILTER(WHERE last_success<now()-interval '90 days') AS olderThan90Days,count(*) FILTER(WHERE last_success>=now()-interval '7 days') AS checkedWithin7Days,count(*) FILTER(WHERE last_success<now()-interval '7 days' AND last_success>=now()-interval '30 days') AS checked8To30DaysAgo,count(*) FILTER(WHERE last_success<now()-interval '30 days' AND last_success>=now()-interval '90 days') AS checked31To90DaysAgo,min(last_success) AS oldestObservation,max(last_success) AS newestObservation FROM curated.official_address_queue"
+                    "SELECT count(*) AS eligible,count(*) FILTER(WHERE last_success IS NOT NULL) AS observed,count(*) FILTER(WHERE outcome IN ('SOURCE_HOLD','SOURCE_HTTP_429','SOURCE_HTTP_503')) AS held,count(*) FILTER(WHERE next_due<=now()) AS due,count(*) FILTER(WHERE last_success<now()-interval '90 days') AS olderThan90Days,count(*) FILTER(WHERE last_success>=now()-interval '7 days') AS checkedWithin7Days,count(*) FILTER(WHERE last_success<now()-interval '7 days' AND last_success>=now()-interval '30 days') AS checked8To30DaysAgo,count(*) FILTER(WHERE last_success<now()-interval '30 days' AND last_success>=now()-interval '90 days') AS checked31To90DaysAgo,min(last_success) AS oldestObservation,max(last_success) AS newestObservation FROM curated.official_address_queue"
                 ).fetchone()
                 for old, new in [
                     ("olderthan90days", "olderThan90Days"),
@@ -346,7 +346,38 @@ class OfficialReader:
                     for r in jobs
                 ]
                 from .official_address_stage import usage as address_usage
+                from .official_address_queue import capacity
                 from .official_offsite_job import gate
+
+                policy = address_usage(conn)
+                queue.update(
+                    conn.execute(
+                        "SELECT count(*) FILTER(WHERE last_attempt IS NULL) AS unattempted,count(*) FILTER(WHERE last_success IS NULL) AS unobserved,count(*) FILTER(WHERE last_success IS NOT NULL AND next_due<=now()) AS refresh_due,count(*) FILTER(WHERE last_success IS NULL AND next_due<=now()) AS initial_due FROM curated.official_address_queue"
+                    ).fetchone()
+                )
+                queue["outcomes"] = {
+                    r["outcome"]: r["n"]
+                    for r in conn.execute(
+                        "SELECT outcome,count(*) AS n FROM curated.official_address_queue GROUP BY outcome"
+                    )
+                }
+                queue["capacity"] = capacity(queue["eligible"], policy["dailyLimit"])
+                queue["heldBasis"] = (
+                    "last observed source throttle/hold outcome; shared hold deadline is separate"
+                )
+                queue["ageBasis"] = (
+                    "last successful check of retained address; not an effective move date"
+                )
+                expanded = conn.execute(
+                    "SELECT 1 FROM information_schema.columns WHERE table_schema='curated' AND table_name='official_address_queue' AND column_name='priority'"
+                ).fetchone()
+                if expanded:
+                    queue["cohorts"] = conn.execute(
+                        "SELECT CASE WHEN priority THEN 'priority' WHEN last_success IS NOT NULL THEN 'refresh' WHEN last_attempt IS NULL THEN 'initial' ELSE 'retry' END AS cohort,count(*) AS eligible,count(*) FILTER(WHERE next_due<=now()) AS due,min(last_success) AS oldest_successful_check,max(last_success) AS newest_successful_check FROM curated.official_address_queue GROUP BY 1 ORDER BY 1"
+                    ).fetchall()
+                    queue["recentAchieved"] = conn.execute(
+                        "SELECT cohort,count(*) AS attempts,count(*) FILTER(WHERE outcome='success') AS successes,count(*) FILTER(WHERE outcome='SOURCE_NO_MATCH') AS source_no_matches,count(*) FILTER(WHERE outcome='unknown') AS interrupted_or_unknown FROM curated.official_address_checks WHERE checked_at>=now()-interval '7 days' GROUP BY cohort ORDER BY cohort NULLS FIRST"
+                    ).fetchall()
 
                 recovery = {
                     r["family"]: r["state"]
@@ -377,7 +408,7 @@ class OfficialReader:
                         "targetRpoHours": 24,
                     },
                     "backfillRecoveryGateOpen": coverage_current,
-                    "addressPolicy": address_usage(conn),
+                    "addressPolicy": policy,
                     "nextConfiguredDueAt": next_due.isoformat(),
                     "sourceChecks": conn.execute(
                         "SELECT family,checked_at,hold_until,state->>'status' AS status FROM curated.official_source_state WHERE family NOT IN ('inventory_baseline','health') AND family NOT LIKE 'address:%%' ORDER BY family LIMIT 110"

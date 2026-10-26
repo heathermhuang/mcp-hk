@@ -1,6 +1,8 @@
 """One bounded ordinary-scheduler run; owner credentials never reach readers."""
 
 import argparse
+from collections import Counter
+import json
 import os
 import resource
 import sys
@@ -73,7 +75,34 @@ class Collector:
                         seconds = 3600
                 state.hold(self.conn, seconds)
             if response.status_code != 200:
-                raise SourceRejected("SOURCE_HTTP_" + str(response.status_code))
+                # Errors are evidence too. Read at most 4 KiB; an interrupted or
+                # truncated body retains the full pre-dispatch byte reservation.
+                body = bytearray()
+                truncated = False
+                for chunk in response.iter_bytes():
+                    remaining = 4096 - len(body)
+                    body.extend(chunk[:remaining])
+                    self.bytes += min(len(chunk), remaining)
+                    if self.bytes > 64 * 1024 * 1024:
+                        raise SourceRejected("RUN_BYTE_OR_TIME_BUDGET")
+                    if len(chunk) > remaining:
+                        truncated = True
+                        break
+                    if time.monotonic() > self.deadline:
+                        raise SourceRejected("RUN_BYTE_OR_TIME_BUDGET")
+                code = "SOURCE_HTTP_" + str(response.status_code)
+                if not truncated and registry_no_match(url, params, response, body):
+                    code = "SOURCE_NO_MATCH"
+                check.update(
+                    sha256=digest(body),
+                    bytes=len(body),
+                    bodyTruncated=truncated,
+                    outcome=code,
+                    durationSeconds=round(time.monotonic() - read_started, 3),
+                )
+                if self.conn and not truncated:
+                    state.settle_bytes(self.conn, reserved, len(body))
+                raise SourceRejected(code)
             body = bytearray()
             for chunk in response.iter_bytes():
                 self.bytes += len(chunk)
@@ -95,6 +124,38 @@ class Collector:
 
     def close(self):
         self.client.close()
+
+
+def registry_no_match(url, params, response, body):
+    """Only the qualified exact-BRN route's documented negative response."""
+    if (
+        url
+        not in {
+            f"https://data.cr.gov.hk/cr/api/api/v1/api_builder/json/{scope}/search"
+            for scope in ("local", "foreign")
+        }
+        or not isinstance(params, dict)
+        or set(params) != {"query[0][key1]", "query[0][key2]", "query[0][key3]"}
+        or params.get("query[0][key1]") != "Brn"
+        or params.get("query[0][key2]") != "equal"
+        or not isinstance(params.get("query[0][key3]"), str)
+        or len(params["query[0][key3]"]) != 8
+        or not params["query[0][key3]"].isascii()
+        or not params["query[0][key3]"].isdigit()
+        or response.status_code != 400
+        or response.headers.get("content-type", "").split(";")[0].strip().lower()
+        != "application/json"
+    ):
+        return False
+    try:
+        value = json.loads(body)
+    except (ValueError, UnicodeError):
+        return False
+    return (
+        isinstance(value, dict)
+        and type(value.get("status")) is int
+        and value == {"status": 400, "message": "No result found."}
+    )
 
 
 def current_members(conn):
@@ -357,14 +418,13 @@ def collect_lenders(conn, collector):
 
 def collect_addresses(conn, collector, job_id, limit):
     from .official_address_stage import usage
+    from .official_address_queue import targets as address_targets, retry
 
     limit = min(limit, usage(conn)["remaining"])
     state.seed_queue(conn)
-    targets = conn.execute(
-        "SELECT entity_id FROM curated.official_address_queue WHERE next_due<=now() ORDER BY next_due,last_success NULLS FIRST,entity_id LIMIT %s",
-        (limit,),
-    ).fetchall()
+    targets = address_targets(conn, limit)
     failures = []
+    outcomes = Counter()
     for target in targets:
         entity = target["entity_id"]
         scope, brn = entity.split(":")[1:]
@@ -375,11 +435,21 @@ def collect_addresses(conn, collector, job_id, limit):
             "query[0][key3]": brn,
         }
         cap, outcome = None, "success"
+        check_start = len(collector.checks)
         # Claim before the read; a crash leaves a bounded per-entity hold.
-        conn.execute(
-            "UPDATE curated.official_address_queue SET last_attempt=now(),next_due=now()+interval '1 day',outcome='unknown' WHERE entity_id=%s",
-            (entity,),
-        )
+        with conn.transaction():
+            conn.execute(
+                "UPDATE curated.official_address_queue SET last_attempt=now(),next_due=now()+interval '1 day',outcome='unknown' WHERE entity_id=%s",
+                (entity,),
+            )
+            conn.execute(
+                "INSERT INTO curated.official_source_state(family,state) VALUES('address_scheduler',%s) ON CONFLICT(family) DO UPDATE SET state=EXCLUDED.state",
+                (Jsonb({"offset": target["next_offset"]}),),
+            )
+            conn.execute(
+                "INSERT INTO curated.official_address_checks(job_id,entity_id,outcome,retry_category,cohort) VALUES(%s,%s,'unknown','interrupted_or_unknown',%s)",
+                (job_id, entity, target["cohort"]),
+            )
         try:
             body, headers = collector.get(url, params)
             previous = conn.execute(
@@ -431,14 +501,17 @@ def collect_addresses(conn, collector, job_id, limit):
                 else "SOURCE_NETWORK_FAILURE"
             )
             failures.append({"entityId": entity, "code": outcome})
+        outcomes[outcome] += 1
+        category, days = retry(outcome)
+        check = collector.checks[-1] if len(collector.checks) > check_start else {}
         with conn.transaction():
             conn.execute(
-                "INSERT INTO curated.official_address_checks(job_id,entity_id,outcome,capture_id) VALUES(%s,%s,%s,%s)",
-                (job_id, entity, outcome, cap),
+                "UPDATE curated.official_address_checks SET outcome=%s,capture_id=%s,receipt=%s,retry_category=%s WHERE job_id=%s AND entity_id=%s",
+                (outcome, cap, Jsonb(check), category, job_id, entity),
             )
             conn.execute(
-                "UPDATE curated.official_address_queue SET outcome=%s,last_success=CASE WHEN %s::text IS NOT NULL THEN now() ELSE last_success END,latest_capture=coalesce(%s,latest_capture),next_due=now()+CASE WHEN %s::text IS NOT NULL THEN interval '90 days' ELSE interval '7 days' END WHERE entity_id=%s",
-                (outcome, cap, cap, cap, entity),
+                "UPDATE curated.official_address_queue SET outcome=%s,last_success=CASE WHEN %s::text IS NOT NULL THEN now() ELSE last_success END,latest_capture=coalesce(%s,latest_capture),next_due=now()+(%s*interval '1 day') WHERE entity_id=%s",
+                (outcome, cap, cap, days, entity),
             )
         if outcome in {
             "SOURCE_HTTP_429",
@@ -456,6 +529,8 @@ def collect_addresses(conn, collector, job_id, limit):
                 {
                     "status": "partial" if failures else "success",
                     "selected": len(targets),
+                    "attempted": sum(outcomes.values()),
+                    "outcomes": dict(outcomes),
                     "failures": len(failures),
                 }
             ),

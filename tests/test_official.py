@@ -149,6 +149,131 @@ def test_collector_limits_and_upstream_failures_have_bounded_codes():
         collector.close()
 
 
+@pytest.mark.parametrize(
+    "status,payload,content_type,route,expected",
+    [
+        (
+            400,
+            {"status": 400, "message": "No result found."},
+            "application/json",
+            "foreign",
+            "SOURCE_NO_MATCH",
+        ),
+        (
+            400,
+            {"status": 400, "message": "No result found."},
+            "application/json; charset=utf-8",
+            "local",
+            "SOURCE_NO_MATCH",
+        ),
+        (
+            400,
+            {"status": 400, "message": "Invalid query"},
+            "application/json",
+            "foreign",
+            "SOURCE_HTTP_400",
+        ),
+        (
+            400,
+            {"status": "400", "message": "No result found."},
+            "application/json",
+            "foreign",
+            "SOURCE_HTTP_400",
+        ),
+        (
+            400,
+            {"status": 400, "message": "No result found.", "denied": True},
+            "application/json",
+            "foreign",
+            "SOURCE_HTTP_400",
+        ),
+        (
+            403,
+            {"status": 400, "message": "No result found."},
+            "application/json",
+            "foreign",
+            "SOURCE_HTTP_403",
+        ),
+        (
+            400,
+            {"status": 400, "message": "No result found."},
+            "text/html",
+            "foreign",
+            "SOURCE_HTTP_400",
+        ),
+        (
+            400,
+            {"status": 400, "message": "No result found."},
+            "application/json",
+            "other",
+            "SOURCE_HTTP_400",
+        ),
+    ],
+)
+def test_registry_no_match_requires_exact_error_and_qualified_route(
+    status, payload, content_type, route, expected
+):
+    import httpx
+    from mcp_open_data_hk.curated.official_ingest import Collector
+    from mcp_open_data_hk.curated.official import digest
+
+    body = json.dumps(payload).encode()
+    collector = Collector()
+    collector.client.close()
+    collector.client = httpx.Client(
+        transport=httpx.MockTransport(
+            lambda request: httpx.Response(
+                status, content=body, headers={"content-type": content_type}
+            )
+        )
+    )
+    params = {
+        "query[0][key1]": "Brn",
+        "query[0][key2]": "equal",
+        "query[0][key3]": "00562995",
+    }
+    try:
+        with pytest.raises(SourceRejected, match="^" + expected + "$"):
+            collector.get(
+                f"https://data.cr.gov.hk/cr/api/api/v1/api_builder/json/{route}/search",
+                params,
+            )
+        assert collector.checks[0]["sha256"] == digest(body)
+        assert collector.checks[0]["bytes"] == len(body)
+        assert collector.checks[0]["outcome"] == expected
+    finally:
+        collector.close()
+
+
+def test_registry_error_body_is_bounded_and_invalid_json_cannot_match():
+    import httpx
+    from mcp_open_data_hk.curated.official_ingest import Collector
+
+    url = "https://data.cr.gov.hk/cr/api/api/v1/api_builder/json/foreign/search"
+    params = {
+        "query[0][key1]": "Brn",
+        "query[0][key2]": "equal",
+        "query[0][key3]": "00562995",
+    }
+    for body in [b'{"status":400,"message":"No result found."} garbage', b"x" * 8192]:
+        collector = Collector()
+        collector.client.close()
+        collector.client = httpx.Client(
+            transport=httpx.MockTransport(
+                lambda request: httpx.Response(
+                    400, content=body, headers={"content-type": "application/json"}
+                )
+            )
+        )
+        try:
+            with pytest.raises(SourceRejected, match="SOURCE_HTTP_400"):
+                collector.get(url, params)
+            assert collector.checks[0]["bytes"] <= 4096
+            assert collector.checks[0]["bodyTruncated"] == (len(body) > 4096)
+        finally:
+            collector.close()
+
+
 def test_xls_quote_prefix_requires_explicit_metadata_and_preserves_csv(monkeypatch):
     import xlrd
     from types import SimpleNamespace

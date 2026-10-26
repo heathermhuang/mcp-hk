@@ -1,0 +1,31 @@
+{
+  "checkedAt": "2026-10-26T02:57:33Z",
+  "remoteMain": "cabdd1a6ddad38a2b4da7d735576b678243f4a05",
+  "releaseSlotPresent": false,
+  "host": {
+    "availableBytes": 51721068544,
+    "availableMemoryMiB": 2943,
+    "maintenanceRelease": "17c68a9ae2e20262a278b3829f3b47288db38ece",
+    "sourceTimers": 6,
+    "nextOrdinarySource": "2026-10-26T05:00:00Z",
+    "nextOrdinaryOffsite": "2026-10-26T05:17:00Z",
+    "nextOrdinaryHkexDaily": "2026-10-26T05:20:00Z"
+  },
+  "companies": {
+    "version": "official-74c0460422870d185125947b48319d84",
+    "weeklyInventoryFiles": 188,
+    "stagedMembershipsAllFamilies": 806,
+    "eligibleAddresses": 133108,
+    "addressQueueOutcomes": {
+      "never": 132409,
+      "success": 679,
+      "RUN_BYTE_OR_TIME_BUDGET": 1,
+      "SOURCE_HTTP_400": 19
+    },
+    "addressDailyCap": 250,
+    "restoredQualifiedWeekPairs": 48,
+    "restoredStagedP95Ms": 601.4066869975068
+  },
+  "ordinaryOccurrencesObservedThisRun": false,
+  "productionChangesThisRun": false
+}
