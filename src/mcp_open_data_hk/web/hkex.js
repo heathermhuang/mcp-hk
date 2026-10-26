@@ -70,7 +70,7 @@ async function detail(serial){
     for(const line of row.interests){const r=document.createElement('tr');for(const v of [label(line.instrument),security(line.security_id),party(line.party_ref),label(line.position),label(line.nature),label(line.phase),code(line.capacity_code,'capacity'),line.shares,line.percentage,line.unit])r.append(text('td',v));tbody.append(r);}
     table.append(tbody);wrap.append(table);$('hkex-interests').replaceChildren(wrap);
     const particulars=row.particulars||[];$('hkex-particulars').hidden=!particulars.length;
-    const priceKinds={highest:'hkexHighestPrice',average:'hkexAveragePrice',average_consideration:'hkexAverageConsideration'};
+    const priceKinds={highest:'hkexHighestPrice',average:'hkexAveragePrice'};
     factualTable('hkex-particulars-table',['hkexReason','hkexPosition','hkexSecurity','hkexShares','hkexCapacityBefore','hkexCapacityAfter','hkexPrices'],particulars.map(p=>{
       const prices=p.prices?.length?p.prices:p.price==null?[]:[{kind:null,value:p.price,currency:p.currency,unit:p.unit}];
       return [code(p.reason_code,'reason'),label(p.position??'unknown'),security(p.security_id),p.shares,code(p.capacity_before,'capacity'),code(p.capacity_after,'capacity'),prices.length?prices.map(v=>`${priceKinds[v.kind]?t(priceKinds[v.kind]):t('hkexUnknown')}: ${v.value} ${v.currency??t('hkexUnknown')} · ${v.unit==='per_share'?t('hkexPerShare'):v.unit??t('hkexUnknown')}`).join('\n'):t('hkexUnknown')];

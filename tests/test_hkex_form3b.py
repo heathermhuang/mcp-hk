@@ -194,6 +194,7 @@ def test_repeated_position_amount_in_one_source_cell_is_not_double_counted():
             "NONCASH_CONSIDERATION_UNQUALIFIED",
         ),
         ({"lblDEvtReason3": "1101 Third event"}, "EXTRA_EVENT_LAYOUT"),
+        ({"lblDEvtAConsider": "1.00"}, "CONSIDERATION_UNIT_UNQUALIFIED"),
     ],
 )
 def test_material_unqualified_event_fields_are_never_silently_omitted(change, code):
