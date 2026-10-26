@@ -87,6 +87,8 @@ class OfficialReader:
     def search(
         self, name=None, namespace=None, value=None, limit=20, cursor=None, groupBy=None
     ):
+        from .official_queries import PREFIX, prefix_rows
+
         if groupBy not in {None, "organisation"} or groupBy and not 1 <= limit <= 20:
             raise ReadError(
                 "INVALID_QUERY", "Grouped search allows at most 20 organisations"
@@ -105,7 +107,7 @@ class OfficialReader:
                     "INVALID_QUERY", "Choose a name prefix or exact official identifier"
                 )
             filters = {"name": key}
-            condition = "((r.name_key >= %s AND r.name_key < %s) OR (r.name2_key >= %s AND r.name2_key < %s))"
+            condition = PREFIX
             params = (key, prefix_end(key), key, prefix_end(key))
         else:
             if (
@@ -127,17 +129,28 @@ class OfficialReader:
         )
         with self.request() as conn:
             release = self.version(conn, state["version"] if state else None)
-            rows = conn.execute(
-                "SELECT DISTINCT ON(r.entity_id) r.entity_id,r.record FROM curated.official_records r JOIN curated.official_members m USING(capture_id) WHERE m.version=%s AND "
-                + condition
-                + " AND r.entity_id>%s ORDER BY r.entity_id, r.record->>'coverageEnd' DESC NULLS LAST,r.fact_id LIMIT %s",
-                (
+            if name is not None:
+                query = prefix_rows()
+                query_params = (
                     release["version"],
                     *params,
                     state["last"] if state else "",
                     limit + 1,
-                ),
-            ).fetchall()
+                    *params,
+                )
+            else:
+                query = (
+                    "SELECT DISTINCT ON(r.entity_id) r.entity_id,r.record FROM curated.official_records r JOIN curated.official_members m USING(capture_id) WHERE m.version=%s AND "
+                    + condition
+                    + " AND r.entity_id>%s ORDER BY r.entity_id, r.record->>'coverageEnd' DESC NULLS LAST,r.fact_id LIMIT %s"
+                )
+                query_params = (
+                    release["version"],
+                    *params,
+                    state["last"] if state else "",
+                    limit + 1,
+                )
+            rows = conn.execute(query, query_params).fetchall()
             more = len(rows) > limit
             rows = rows[:limit]
             token = (

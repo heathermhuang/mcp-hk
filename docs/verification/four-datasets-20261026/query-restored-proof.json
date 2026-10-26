@@ -1,0 +1,21 @@
+{
+  "freshOffsiteRestoreVerified": true,
+  "backupSha256": "8ad5eb9e51e49296b99f51f5f944b0884890e5b3b1758b82738ce731eba540cd",
+  "prefix": "curated/official/daily/20261026T040702Z-a0b7d758",
+  "allTableFingerprintsMatch": true,
+  "rawCaptureChecksumsVerified": 892,
+  "officialVersion": "official-74c0460422870d185125947b48319d84",
+  "readOnlyRestoredQueries": true,
+  "stagedReadP95Ms": 375.7182550034486,
+  "stagedReadMaxMs": 391.99812000151724,
+  "qualifiedWeekPairs": 72,
+  "performancePassed": true,
+  "migrations": {
+    "001": "99d1a3593cb5bc9bc26b440a061e2b1142a0a78f44670e3a6c86f32b4f147bfb",
+    "007": "64d3bb4974e92f4c2e3b96965cac247b20e8b55cdb00274e7ac9342229cf5ec8"
+  },
+  "readQuerySha256": "5ba4cf35a433e9bffd89badd6d33a4e2ad442486294840cba7161a7aa1c6876e",
+  "verifiedAt": "2026-10-26T04:32:18.257585+00:00",
+  "effectiveMembershipSha256": "027a05f20ef07533e290c1fc4f96363af3211336835360976935fbf19062f839",
+  "membershipVerifiedAt": "2026-10-26T04:39:22.467780+00:00"
+}

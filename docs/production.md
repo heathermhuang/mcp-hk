@@ -512,3 +512,13 @@ verified complete logical object through that manifest. Prior single-object back
 remain readable. No manifest, accepted pointer or growth qualification advances on
 partial transfer. Failed/unknown artifacts and the prior recovery copy remain.
 This avoids the current zone's 100 MB request-body ceiling without a plan upgrade.
+
+Company prefix reads select eligible identity/capture keys with the existing
+`text_pattern_ops` indexes before fetching the bounded returned JSON records.
+Numeric, English and Chinese prefixes use the same literal range semantics; `%`,
+`_` and backslashes are ordinary characters. Retained-dump qualification can use
+`official_offsite_job requalify-retained-restore --scheduled-for <aware-occurrence>
+--receipt <exact-proof-file>` after a measured read repair. The proof must bind
+the unchanged dataset, latest dump, current schema/query code and real restore/
+performance checks. It creates a new qualification receipt and preserves the
+original failure and upload time; it does not count as ordinary daily operation.

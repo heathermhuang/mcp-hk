@@ -49,6 +49,18 @@ def snapshot(conn):
     }
 
 
+def membership_hash(conn):
+    from .official_queries import EFFECTIVE_MEMBERS
+    from .official import encoded
+
+    rows = conn.execute(
+        "WITH members AS ("
+        + EFFECTIVE_MEMBERS
+        + ") SELECT source_key,capture_id FROM members ORDER BY source_key"
+    ).fetchall()
+    return digest(encoded(rows))
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--commit", required=True)
