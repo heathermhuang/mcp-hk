@@ -1,3 +1,10 @@
+> Released build-first update, 26 October 2026: [the working archive lookup,
+> collector build and live recovery proof](../sfc-build-first-20261025/RELEASED.md).
+> The user directed implementation to
+> continue without waiting for a licence enquiry. The enquiry remains unsent.
+> See [the completed collector/parser and working Webb archive journey](../sfc-build-first-20261025/README.md).
+> The release record below describes the earlier capability-only checkpoint.
+
 # SFC execution status — 25 October 2026
 
 Fresh SFC corporate verification is **not live accepted**. The production change

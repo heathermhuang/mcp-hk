@@ -1,0 +1,5 @@
+#mhk-preview #sfc .company-table-wrap{max-width:100%;min-width:0;overflow-x:auto;margin:16px 0}
+#mhk-preview #sfc table{width:100%;border-collapse:collapse;font-size:14px;text-align:left}
+#mhk-preview #sfc th,#mhk-preview #sfc td{padding:12px 10px;border-bottom:1px solid var(--mhk-line);vertical-align:top;overflow-wrap:anywhere}
+#mhk-preview #sfc th{font-weight:500;color:var(--mhk-muted)}
+#mhk-preview #sfc-archive-record{margin-top:24px;padding-top:16px;border-top:1px solid var(--mhk-line);min-width:0}

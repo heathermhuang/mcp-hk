@@ -1,0 +1,86 @@
+{
+  "origin": "https://mcp.hk",
+  "receipts": [
+    {
+      "lang": "en",
+      "width": 320,
+      "realArchiveRows": 5,
+      "exactCe": true,
+      "version": "enigma251227-hk-v1",
+      "sourceDateVerified": "2020-06-15",
+      "overflow": false,
+      "failedReplacementRetained": true
+    },
+    {
+      "lang": "en",
+      "width": 390,
+      "realArchiveRows": 5,
+      "exactCe": true,
+      "version": "enigma251227-hk-v1",
+      "sourceDateVerified": "2020-06-15",
+      "overflow": false,
+      "failedReplacementRetained": true
+    },
+    {
+      "lang": "en",
+      "width": 768,
+      "realArchiveRows": 5,
+      "exactCe": true,
+      "version": "enigma251227-hk-v1",
+      "sourceDateVerified": "2020-06-15",
+      "overflow": false,
+      "failedReplacementRetained": true
+    },
+    {
+      "lang": "en",
+      "width": 1280,
+      "realArchiveRows": 5,
+      "exactCe": true,
+      "version": "enigma251227-hk-v1",
+      "sourceDateVerified": "2020-06-15",
+      "overflow": false,
+      "failedReplacementRetained": true
+    },
+    {
+      "lang": "zh-Hant",
+      "width": 320,
+      "realArchiveRows": 5,
+      "exactCe": true,
+      "version": "enigma251227-hk-v1",
+      "sourceDateVerified": "2020-06-15",
+      "overflow": false,
+      "failedReplacementRetained": true
+    },
+    {
+      "lang": "zh-Hant",
+      "width": 390,
+      "realArchiveRows": 5,
+      "exactCe": true,
+      "version": "enigma251227-hk-v1",
+      "sourceDateVerified": "2020-06-15",
+      "overflow": false,
+      "failedReplacementRetained": true
+    },
+    {
+      "lang": "zh-Hant",
+      "width": 768,
+      "realArchiveRows": 5,
+      "exactCe": true,
+      "version": "enigma251227-hk-v1",
+      "sourceDateVerified": "2020-06-15",
+      "overflow": false,
+      "failedReplacementRetained": true
+    },
+    {
+      "lang": "zh-Hant",
+      "width": 1280,
+      "realArchiveRows": 5,
+      "exactCe": true,
+      "version": "enigma251227-hk-v1",
+      "sourceDateVerified": "2020-06-15",
+      "overflow": false,
+      "failedReplacementRetained": true
+    }
+  ],
+  "errors": []
+}

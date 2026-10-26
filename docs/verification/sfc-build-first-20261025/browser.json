@@ -1,0 +1,31 @@
+{
+  "receipts": [
+    {
+      "lang": "en",
+      "matchedRealCe": true,
+      "archiveVersion": "enigma251227-hk-v1",
+      "allFiveIntervals": true,
+      "endDateVerified": true,
+      "widths": [
+        320,
+        390,
+        768,
+        1280
+      ]
+    },
+    {
+      "lang": "zh-Hant",
+      "matchedRealCe": true,
+      "archiveVersion": "enigma251227-hk-v1",
+      "allFiveIntervals": true,
+      "endDateVerified": true,
+      "widths": [
+        320,
+        390,
+        768,
+        1280
+      ]
+    }
+  ],
+  "errors": []
+}

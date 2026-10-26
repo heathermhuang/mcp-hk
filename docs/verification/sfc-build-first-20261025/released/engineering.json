@@ -1,0 +1,44 @@
+{
+  "checkedHead": "31a30bff7d6963c97003fc0fabd1db9aaaeeb508",
+  "mergedCommit": "afb79374398f9a26c2ba984bbce50c9fe21065b3",
+  "python": {
+    "passed": 569,
+    "optionalNetworkSkipped": 7,
+    "realPostgresIncluded": true
+  },
+  "worker": {
+    "passed": 123,
+    "failed": 0
+  },
+  "formattingLintAndTypes": "passed",
+  "renderedJourneys": 12,
+  "realArchiveScenarios": 8,
+  "reviewFinding": "Continuation cursors produce a bilingual partial-page notice and pinned link to the paginated licence history",
+  "ci": [
+    {
+      "id": 40250590651,
+      "name": "Deployment checks",
+      "conclusion": "success"
+    },
+    {
+      "id": 40250590665,
+      "name": "Code Quality",
+      "conclusion": "success"
+    },
+    {
+      "id": 40250590715,
+      "name": "CI",
+      "conclusion": "success"
+    },
+    {
+      "id": 40250590667,
+      "name": "UX browser regressions",
+      "conclusion": "success"
+    },
+    {
+      "id": 40250590708,
+      "name": "Curated read model",
+      "conclusion": "success"
+    }
+  ]
+}

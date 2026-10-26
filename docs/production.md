@@ -442,15 +442,20 @@ schedules/defaults; this is not permission to force code adoption during mainten
 Always verify actual diagnostics, backend readiness and required recovery before
 restoring the five schedules. See `docs/verification/ux-20261025/RELEASED.md`.
 
-### SFC capability-only integration
+### SFC archive and collector build
 
-The SFC engineering branch adds a static gated capability page/status. It installs
-no production SFC schema or scheduler and changes no accepted PostgreSQL pointer.
-Only source-free status may be released while [SFC rights](verification/sfc-20261025/RIGHTS.md)
-remain unresolved. A live dataset release still requires its real cohort,
-route/parser/output qualification, atomic source pointer, source-scoped offsite
-restore and ordinary occurrence. Do not silently apply `003_sfc.sql`, enable a
-collector or add SFC to the CR offsite inventory during an unrelated gateway release.
+The bilingual SFC page queries the attributed Webb archive by exact corporate CE,
+with version-pinned corporate licence intervals and original date precision. The
+operator collector supports a private `connector_development` purpose which cannot
+enable public output modes. This working build needs no licence enquiry as an
+engineering prerequisite.
+
+This gateway release installs no production SFC schema or scheduler and changes no
+accepted PostgreSQL pointer. Fresh official-source publication remains a separate
+activation: qualify the real cohort, routes/parser/output modes, atomic source
+pointer, source-scoped offsite restore and ordinary occurrence. Do not apply
+`003_sfc.sql`, enable collection, or add SFC to CR offsite inventory during an
+unrelated gateway release. Build proof: [SFC verification](verification/sfc-build-first-20261025/README.md).
 
 ## Racing factual results
 

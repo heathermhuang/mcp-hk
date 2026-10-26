@@ -1,0 +1,31 @@
+[
+  {
+    "origin": "https://mcp.hk",
+    "ready": true,
+    "controllerAndBackendContract": true,
+    "realArchiveCe": "AAB241",
+    "archiveRows": 5,
+    "archiveVersion": "enigma251227-hk-v1",
+    "pinnedCompanyViewsUnchanged": true,
+    "webbArchiveVersion": "webb-sdi-enigma251227-v1",
+    "racingMeetings": 9,
+    "freshSfcPublicFeedEnabled": false
+  },
+  {
+    "origin": "https://mcp-hk.measurable.workers.dev",
+    "ready": true,
+    "controllerAndBackendContract": true,
+    "realArchiveCe": "AAB241",
+    "archiveRows": 5,
+    "archiveVersion": "enigma251227-hk-v1",
+    "pinnedCompanyViewsUnchanged": true,
+    "webbArchiveVersion": "webb-sdi-enigma251227-v1",
+    "racingMeetings": 9,
+    "freshSfcPublicFeedEnabled": false
+  },
+  {
+    "mcpStatusParity": true,
+    "companyRacingAndWebbToolsPreserved": true,
+    "toolCount": 46
+  }
+]

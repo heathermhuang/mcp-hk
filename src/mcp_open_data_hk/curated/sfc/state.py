@@ -212,7 +212,11 @@ class State:
                 (run_id, ce, kind, max_bytes),
             ).fetchone()["attempt_id"]
 
-    def settle(self, attempt_id, outcome, *, hold_until=None):
+    def settle(
+        self, attempt_id, outcome, *, hold_until=None, hold_reason="rate_limited"
+    ):
+        if hold_reason not in {"forbidden", "rate_limited", "uncertain"}:
+            raise Rejected("SFC_INVALID_HOLD")
         if outcome not in {"ok", "not_modified", "missing", "rejected", "failed"}:
             raise Rejected("SFC_INVALID_OUTCOME")
         if hold_until and (hold_until.tzinfo is None or hold_until.utcoffset() is None):
@@ -227,8 +231,8 @@ class State:
                 raise Rejected("SFC_ATTEMPT_SETTLED")
             if hold_until:
                 conn.execute(
-                    "INSERT INTO curated_sfc.holds(singleton,until_at,reason) VALUES(true,%s,'rate_limited') ON CONFLICT(singleton) DO UPDATE SET until_at=GREATEST(holds.until_at,EXCLUDED.until_at),reason=EXCLUDED.reason",
-                    (hold_until,),
+                    "INSERT INTO curated_sfc.holds(singleton,until_at,reason) VALUES(true,%s,%s) ON CONFLICT(singleton) DO UPDATE SET until_at=GREATEST(holds.until_at,EXCLUDED.until_at),reason=EXCLUDED.reason",
+                    (hold_until, hold_reason),
                 )
 
     def finish(self, run_id, state="partial"):
@@ -240,7 +244,7 @@ class State:
                 (state, run_id),
             )
 
-    def stage(self, run_id, payloads):
+    def stage(self, run_id, payloads, source_metadata=None):
         """payloads: CE -> (normalised bytes, settled attempt ID). No raw retained.
 
         This is the offline normalised-input boundary, not an official-page parser.
@@ -282,6 +286,34 @@ class State:
                 record.model_dump(mode="json")
                 for ce, (record, _, _, _) in sorted(parsed.items())
             ]
+            if source_metadata is not None:
+                from .public_register import ROUTE
+                import re
+
+                if set(source_metadata) != set(parsed):
+                    raise Rejected("SFC_CAPTURE_COHORT_DIFFERS")
+                for ce, meta in source_metadata.items():
+                    if (
+                        set(meta)
+                        != {
+                            "sourceUrl",
+                            "rawSha256",
+                            "sourceTransformSha256",
+                            "retrievedAt",
+                            "rawRetained",
+                            "scope",
+                        }
+                        or meta["sourceUrl"] != ROUTE.replace("{ce}", ce)
+                        or not re.fullmatch(r"[a-f0-9]{64}", meta["rawSha256"])
+                        or not re.fullmatch(
+                            r"[a-f0-9]{64}", meta["sourceTransformSha256"]
+                        )
+                        or meta["rawRetained"] is not False
+                        or meta["scope"] != "SFO_corporate_licence_intervals_only"
+                        or datetime.fromisoformat(meta["retrievedAt"])
+                        != parsed[ce][0].observedAt
+                    ):
+                        raise Rejected("SFC_CAPTURE_METADATA_DIFFERS")
             sha = digest(encoded(facts))
             version = "sfc-" + uuid.uuid4().hex
             transform = digest(files(__package__).joinpath("contracts.py").read_bytes())
@@ -298,6 +330,10 @@ class State:
                 "format": "normalised-offline-v1",
                 "completeRegulatoryHistory": False,
             }
+            if source_metadata is not None:
+                manifest.update(
+                    format="sfc-public-register-v1", sourceCaptures=source_metadata
+                )
             conn.execute(
                 "INSERT INTO curated_sfc.versions(version,run_id,policy_sha256,manifest,facts_sha256,expires_at) VALUES(%s,%s,%s,%s,%s,%s)",
                 (version, run_id, policy.sha256, Jsonb(manifest), sha, expires),
@@ -332,7 +368,7 @@ class State:
                         version,
                         ce,
                         attempt,
-                        policy.route,
+                        policy.route.replace("{ce}", ce),
                         record.observedAt,
                         payload_sha,
                         transform,
@@ -384,7 +420,7 @@ class State:
             if expected != self.snapshot(target):
                 raise Rejected("SFC_RESTORE_DIFFERS")
             row = source.execute(
-                "SELECT facts_sha256 FROM curated_sfc.versions WHERE version=%s",
+                "SELECT facts_sha256,manifest FROM curated_sfc.versions WHERE version=%s",
                 (version,),
             ).fetchone()
             if not row or digest(encoded(self.facts(version))) != row["facts_sha256"]:
@@ -393,6 +429,7 @@ class State:
 
             proof = {
                 "artifactSha256": artifact_sha256,
+                "manifestSha256": digest(encoded(row["manifest"])),
                 "factsSha256": row["facts_sha256"],
                 "allSourceTablesSha256": digest(encoded(expected)),
                 "independentDatabase": True,
@@ -428,7 +465,8 @@ class State:
             self.policy(conn, row["policy_sha256"], "retention", "backup")
             proof = row["restore_proof"] or {}
             if (
-                not proof.get("independentDatabase")
+                proof.get("manifestSha256") != digest(encoded(row["manifest"]))
+                or not proof.get("independentDatabase")
                 or proof.get("factsSha256") != row["facts_sha256"]
                 or row["expires_at"] <= datetime.now(timezone.utc)
                 or digest(
