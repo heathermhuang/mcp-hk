@@ -24,7 +24,8 @@ async function select(row,version,run,signal){
   const body=element('tbody');for(const row of rows){const tr=element('tr');tr.append(element('td',row.registered_institution===0?t('sfcArchiveCorporation'):row.registered_institution===1?t('sfcArchiveInstitution'):t('sfcArchiveUnknown')),element('td',row.activity_label||String(row.activity_id)),element('td',date(row.start_raw,row.start_precision)),element('td',date(row.end_raw,row.end_precision)));body.append(tr);}table.append(body);scroll.append(table);content.append(scroll);
  }
 
- const link=element('a',t('sfcArchiveMore'));link.href='/companies?companySource=archive&entity='+row.entity_id+'&version='+encodeURIComponent(version);content.append(link);
+ if(response.meta.nextCursor)content.append(element('p',t('sfcArchivePartial')));
+ const link=element('a',t('sfcArchiveMore'));link.href='/companies?'+new URLSearchParams({companySource:'archive',entity:String(row.entity_id),version,tab:'licences',lang:window.MhkI18n.locale});content.append(link);
  record.replaceChildren(content);record.hidden=false;status.textContent=t('sfcArchiveLoaded');
 }
 form?.addEventListener('submit',async event=>{

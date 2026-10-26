@@ -100,5 +100,14 @@ await run('SFC archive lookup works without fresh-source activation',async({page
  await page.locator('#sfc-archive-ce').fill('ZZZ002');await page.locator('#sfc-archive-search').evaluate(f=>f.requestSubmit());await page.getByText(/Any prior result remains labelled/).waitFor();assert.equal(await page.getByRole('cell',{name:'Fixture securities',exact:true}).count(),1);
  await page.screenshot({path:new URL('sfc-working-archive.png',output).pathname,fullPage:true});
 });
+await run('SFC paginated intervals are explicitly partial and link to pinned history',async({page,context})=>{
+ const items=Array.from({length:20},(_,i)=>({company_id:1,registered_institution:0,activity_label:'Page-one activity '+i,start_raw:null,start_precision:'unknown',end_raw:null,end_precision:'unknown'}));
+ await context.route('**/api/v1/companies/1/licences?**',r=>r.fulfill({contentType:'application/json',body:JSON.stringify({data:{items},meta:{version:'fixture-v1',nextCursor:'fixture-next-page'}})}));
+ for(const lang of ['en','zh-Hant']){
+  await page.goto(origin+'/sfc?lang='+lang);await page.locator('#sfc-archive-ce').fill('ZZZ001');await page.locator('#sfc-archive-search').evaluate(f=>f.requestSubmit());await page.locator('#sfc-archive-record tbody tr').first().waitFor();assert.equal(await page.locator('#sfc-archive-record tbody tr').count(),20);
+  assert.match(await page.locator('#sfc-archive-record').innerText(),lang==='en'?/Only the first page is shown/:/只顯示第一頁/);
+  const link=new URL(await page.locator('#sfc-archive-record a').getAttribute('href'),origin);assert.equal(link.searchParams.get('tab'),'licences');assert.equal(link.searchParams.get('version'),'fixture-v1');assert.equal(link.searchParams.get('entity'),'1');assert.equal(link.searchParams.get('lang'),lang);
+ }
+});
 assert.deepEqual(errors,[]);console.log(JSON.stringify({browser:browser.version(),receipts,errors},null,2));await writeFile(new URL('result.json',output),JSON.stringify({browser:browser.version(),receipts,errors},null,2));
 }finally{await browser.close();}

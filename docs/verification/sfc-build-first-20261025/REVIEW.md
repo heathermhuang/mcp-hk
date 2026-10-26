@@ -25,6 +25,10 @@ Corrections made during review:
 - Archive UI pins the response version, bounds rows and identifiers, uses text
   nodes, distinguishes empty from failed, preserves labelled prior results on a
   failed replacement request, and contains its table at mobile widths.
+- A continuation cursor now produces an explicit bilingual first-page notice;
+  the full-history link preserves the archive version and language and opens the
+  licences tab with its existing pagination. A rendered regression exercises a
+  full 20-row first page with more intervals, in both languages.
 
 No blocking findings remain in the build under the exercised contracts. Saved
 public-page replay and one bounded private development observation establish the
