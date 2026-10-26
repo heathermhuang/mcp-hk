@@ -129,6 +129,7 @@ class RacingStore(ResultsStore):
               CREATE TABLE IF NOT EXISTS racing_control(key TEXT PRIMARY KEY,value TEXT NOT NULL);
               CREATE TABLE IF NOT EXISTS racing_calendar(period TEXT PRIMARY KEY,observed TEXT NOT NULL,state TEXT NOT NULL,payload TEXT NOT NULL,receipt TEXT NOT NULL);
               CREATE TABLE IF NOT EXISTS racing_remote_requests(local_id INTEGER PRIMARY KEY,remote_id TEXT UNIQUE NOT NULL);
+              CREATE TABLE IF NOT EXISTS racing_redirect_inspections(inspection_attempt INTEGER PRIMARY KEY,original_attempt INTEGER NOT NULL,payload TEXT NOT NULL);
             """
             )
         from .racing_profiles import Profiles
@@ -371,6 +372,7 @@ class RacingStore(ResultsStore):
                 "racing_control",
                 "racing_calendar",
                 "racing_remote_requests",
+                "racing_redirect_inspections",
             ) + PROFILE_TABLES:
                 digest = hashlib.sha256()
                 count = 0
