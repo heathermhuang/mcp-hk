@@ -1,0 +1,784 @@
+{
+  "observedAt": "2026-10-26T22:00:46.551438+00:00",
+  "scope": "archive routing repair and one restored historical meeting; four-family programme incomplete",
+  "release": {
+    "merge": "8ebe763e96d2dc2f213f81de725356e1be7f6a3a",
+    "checkedHead": "5bd003ad5382d2f8a4665ee92552b4d6ff8a3aa1",
+    "tree": "574fc7efac4f94c42dfb04a6691c166247f2a26a",
+    "workerVersion": "f9bdd6f6-595c-4057-81de-84ca4d6a4c69",
+    "actualController": "8ebe763e96d2dc2f213f81de725356e1be7f6a3a",
+    "privateBackendUnchanged": "3aeaaafbd7f51636c314e707de82911c48567632",
+    "pythonPassed": 675,
+    "optionalLiveSkipped": 7,
+    "workerPassed": 145,
+    "allRequiredCiPassed": true,
+    "image": "sha256:caaa26dc760519907c867c7172c5ccbd513954654b1bc9c3cfc93f0712fb883d"
+  },
+  "originalHold": {
+    "attempt": 298,
+    "state": "reviewed_redirect",
+    "originalErrorRetained": "DEVELOPMENT_HTTP_302",
+    "originalChargedBytesRetained": 409600,
+    "originalUrlRequestsIncludingTwoDiagnostics": 3,
+    "routingReconciliationProviderReads": 0,
+    "matchingQueueResumed": 1,
+    "globalHoldOnlyQueueResumed": 52
+  },
+  "acceptedCheckpoint": {
+    "sha256": "82b83c48f1e01dbf4542e4261bced3b7f6fbe5f6e91b0ece128b318f50593bfe",
+    "bytes": 89688123,
+    "independentRestore": true,
+    "sourceTables": {
+      "racing_pages": {
+        "rows": 330,
+        "sha256": "817144a588c2a2d8aa3f1cfdc6cdf1dca50beb8b8de04fb155a3d006175295db"
+      },
+      "racing_attempts": {
+        "rows": 379,
+        "sha256": "b18e0dba91f0acf2519e4e090d9ad3c1c20cba0abcff97887826ae6e63b39857"
+      },
+      "racing_snapshots": {
+        "rows": 17,
+        "sha256": "6a7155b6cc438f9b017bd267ee845b9b84f2636fea544554cce7b5c9a59986e0"
+      },
+      "racing_current": {
+        "rows": 15,
+        "sha256": "bb53387ca05875bb405204e7dc4572f11ad8de0ed13541d0701b7d9460c2480d"
+      },
+      "racing_publications": {
+        "rows": 17,
+        "sha256": "92858045e5898d8f0cc51a7fbb5b0654c6b4f54754f8dc5f84a3af857eb747ff"
+      },
+      "racing_accepted": {
+        "rows": 15,
+        "sha256": "b303486f0aca94f5468ff61b38ed4ed7bc5a8632a0824e938ab717c2180462b7"
+      },
+      "racing_queue": {
+        "rows": 102,
+        "sha256": "0378f11748f447fc88fa99b2220558ebef11c4483029ef7e3af8b15c6fdb726c"
+      },
+      "racing_control": {
+        "rows": 2,
+        "sha256": "e27e7a2185881b3e9ce84c1177f840f64e6cba132739c0ea69c6ef21714e1e38"
+      },
+      "racing_calendar": {
+        "rows": 13,
+        "sha256": "ebf7a5ddded3c30aa9527f94a69646599afc528cced4c7856112200037f94957"
+      },
+      "racing_remote_requests": {
+        "rows": 310,
+        "sha256": "efb55503aff94fd647e373431afa513b73608f5eb4e9a40a5429e9ffabff23db"
+      },
+      "racing_redirect_inspections": {
+        "rows": 2,
+        "sha256": "bb4385776c1afa4f6613c0fce3806edc28d9f0913e31b781e91207384730bd46"
+      },
+      "racing_profile_versions": {
+        "rows": 5,
+        "sha256": "41f5ac598c953e29fe328d4d2ac7669022242bdb301da98c5764cb1c10e907f7"
+      },
+      "racing_profile_current": {
+        "rows": 5,
+        "sha256": "01d7a5219a14db34607786b95658c3ef2e2f32fe46f9901cc28c65860a2f6612"
+      },
+      "racing_profile_queue": {
+        "rows": 950,
+        "sha256": "7692fe2bf57d6231e519717fad26dc6a08fd063e6c3d7efe698b772c4cc47bb6"
+      },
+      "racing_profile_meta": {
+        "rows": 4,
+        "sha256": "1a8e3e1118f4349684417afbad4c2de00d4ddf88532de26be6953d62bcf0aa42"
+      }
+    },
+    "all14PriorAcceptedMeetingVersionsRetainedUnchanged": true,
+    "all3OriginalProfilesUnchanged": true
+  },
+  "target": {
+    "day": "2026-07-15",
+    "venue": "HV",
+    "version": "racing-results-v1-7338db3c7faf9638cbb6c736d67c8c2cf6bb660d7914c39297cdb62ed913bede",
+    "coverage": {
+      "declaredRunnerReconciliation": "not_yet_verified",
+      "expectedRaces": 9,
+      "intradayOddsHistory": false,
+      "observedRaces": 9,
+      "profileCoverage": "identity_from_results_only",
+      "resultRaceInventoryComplete": true,
+      "resultRows": 107,
+      "seasonComplete": false,
+      "unreportedStatusRows": 0
+    },
+    "sourceCaptures": [
+      {
+        "bytes": 214753,
+        "observed": "2026-10-26T21:50:40.335572+00:00",
+        "sha256": "2125d860c0d19a93e5ee6db58f3e6776b15a22f51c84170ddf852d5a25e24f6c",
+        "url": "https://racing.hkjc.com/en-us/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV"
+      },
+      {
+        "bytes": 211609,
+        "observed": "2026-10-26T21:50:41.601187+00:00",
+        "sha256": "ccdcf3ccc5dd86bbde2cd473cd1765e13f14e6c64980c7c0e42baad07b803e53",
+        "url": "https://racing.hkjc.com/zh-hk/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV"
+      },
+      {
+        "bytes": 213100,
+        "observed": "2026-10-26T21:50:45.046036+00:00",
+        "sha256": "b7eeb5cc14b0bd2d34f61ec96d5016016a24ea0f8538b0bbd927deacbd372f38",
+        "url": "https://racing.hkjc.com/en-us/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV&RaceNo=2"
+      },
+      {
+        "bytes": 210081,
+        "observed": "2026-10-26T21:50:48.482733+00:00",
+        "sha256": "5a356e1165c1bee04bcf7ea8bb1fcfeb8569e27703965c3293dfc311aa9c977e",
+        "url": "https://racing.hkjc.com/zh-hk/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV&RaceNo=2"
+      },
+      {
+        "bytes": 220244,
+        "observed": "2026-10-26T21:50:51.735490+00:00",
+        "sha256": "08d944aa8adf66baf368c061d431c622effb1f84874522d158a0358395eb4b05",
+        "url": "https://racing.hkjc.com/en-us/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV&RaceNo=3"
+      },
+      {
+        "bytes": 217138,
+        "observed": "2026-10-26T21:50:55.042047+00:00",
+        "sha256": "a830a5e1a0426ef6b501702afb3213028714c0bfec82364b71dad618d092bf9b",
+        "url": "https://racing.hkjc.com/zh-hk/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV&RaceNo=3"
+      },
+      {
+        "bytes": 217153,
+        "observed": "2026-10-26T21:50:58.459282+00:00",
+        "sha256": "af301a70ce381a389ba49a07312c430b73f4e30278254b4cbc4782366d9cc49c",
+        "url": "https://racing.hkjc.com/en-us/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV&RaceNo=4"
+      },
+      {
+        "bytes": 213815,
+        "observed": "2026-10-26T21:51:01.863601+00:00",
+        "sha256": "d221b6d062d1574953837baf07038c774c7ec9d83625257e122d072511ec2a39",
+        "url": "https://racing.hkjc.com/zh-hk/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV&RaceNo=4"
+      },
+      {
+        "bytes": 212884,
+        "observed": "2026-10-26T21:51:05.216915+00:00",
+        "sha256": "b72f66dc5b9983589aac48ec966e4e765db335153f423fccb15954bc602e2810",
+        "url": "https://racing.hkjc.com/en-us/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV&RaceNo=5"
+      },
+      {
+        "bytes": 209910,
+        "observed": "2026-10-26T21:51:08.603849+00:00",
+        "sha256": "59ae87d56db73936f0f7ade2d6179fa792749072a388d94a72a1ae3f15843765",
+        "url": "https://racing.hkjc.com/zh-hk/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV&RaceNo=5"
+      },
+      {
+        "bytes": 213149,
+        "observed": "2026-10-26T21:51:12.013490+00:00",
+        "sha256": "f168e2b6b29ce297f29be87b132e02dc8c339f689627b0eaa70b64860d33b65a",
+        "url": "https://racing.hkjc.com/en-us/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV&RaceNo=6"
+      },
+      {
+        "bytes": 210015,
+        "observed": "2026-10-26T21:51:15.457847+00:00",
+        "sha256": "ff5a5ce5e2088b3ceda667f71485785f3321762b9c336f262bb71ba2859d03ea",
+        "url": "https://racing.hkjc.com/zh-hk/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV&RaceNo=6"
+      },
+      {
+        "bytes": 218539,
+        "observed": "2026-10-26T21:51:18.689118+00:00",
+        "sha256": "9d171f7fa7ff30b6784e0dba36860e12aa6bf675009dd2feda7eca56407aeee7",
+        "url": "https://racing.hkjc.com/en-us/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV&RaceNo=7"
+      },
+      {
+        "bytes": 215208,
+        "observed": "2026-10-26T21:51:21.981945+00:00",
+        "sha256": "63d289f273f52e005ed53886dd3d67954b757f2c6ac42ab533a7ab91a372c0da",
+        "url": "https://racing.hkjc.com/zh-hk/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV&RaceNo=7"
+      },
+      {
+        "bytes": 208387,
+        "observed": "2026-10-26T21:51:25.510414+00:00",
+        "sha256": "3ce21b0ad2f76b31a43f01e3c28d327c31c3533c87a5b199313f61e3481b656d",
+        "url": "https://racing.hkjc.com/en-us/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV&RaceNo=8"
+      },
+      {
+        "bytes": 205672,
+        "observed": "2026-10-26T21:51:28.915624+00:00",
+        "sha256": "8cb0c32814269562ed357e9caa0de786344bfdb40c6233bce1e66a9f5447b6f0",
+        "url": "https://racing.hkjc.com/zh-hk/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV&RaceNo=8"
+      },
+      {
+        "bytes": 216172,
+        "observed": "2026-10-26T21:51:32.513951+00:00",
+        "sha256": "4966c399e5d636ccebbb5f3bde25d635313792f1a3563ffe5f9bc5623c5eef25",
+        "url": "https://racing.hkjc.com/en-us/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV&RaceNo=9"
+      },
+      {
+        "bytes": 212977,
+        "observed": "2026-10-26T21:51:35.964309+00:00",
+        "sha256": "57883cf44f65d01e0c60618d316f194c3c1998a86406ee1186dda13a46bdf4ac",
+        "url": "https://racing.hkjc.com/zh-hk/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV&RaceNo=9"
+      }
+    ]
+  },
+  "postTargetState": {
+    "coverage": {
+      "meetings": 15,
+      "races": 147,
+      "resultRows": 1840,
+      "earliest": "2026-07-15",
+      "latest": "2026-10-25"
+    },
+    "hold": null,
+    "queue": [
+      {
+        "state": "accepted",
+        "meetings": 15
+      },
+      {
+        "state": "partial",
+        "meetings": 52
+      },
+      {
+        "state": "pending",
+        "meetings": 35
+      }
+    ],
+    "durableIngestion": {
+      "attempts": 193,
+      "chargedBytes": 37535516,
+      "unresolved": [],
+      "limits": {
+        "attempts": 200,
+        "bytes": 67108864
+      },
+      "resetsAt": "2026-10-27T00:00:00.000Z",
+      "durable": true
+    },
+    "recentMeetings": 14,
+    "historicalMeetings": 1
+  },
+  "acceptedProfilesAfterFairnessSteps": 5,
+  "liveRestMcp": {
+    "observedAt": "2026-10-26T21:55:16.758472+00:00",
+    "scope": "actual archive meeting release verification; no customer adoption claim",
+    "restoredAcceptedSha256": "82b83c48f1e01dbf4542e4261bced3b7f6fbe5f6e91b0ece128b318f50593bfe",
+    "version": "racing-results-v1-7338db3c7faf9638cbb6c736d67c8c2cf6bb660d7914c39297cdb62ed913bede",
+    "meetingExactParity": true,
+    "races": [
+      {
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:01",
+        "resultRows": 12,
+        "allFactsEqualToRestoredCheckpoint": true,
+        "restMcpExactParity": true,
+        "sourceCaptures": [
+          {
+            "bytes": 214753,
+            "observed": "2026-10-26T21:50:40.335572+00:00",
+            "sha256": "2125d860c0d19a93e5ee6db58f3e6776b15a22f51c84170ddf852d5a25e24f6c",
+            "url": "https://racing.hkjc.com/en-us/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV"
+          },
+          {
+            "bytes": 211609,
+            "observed": "2026-10-26T21:50:41.601187+00:00",
+            "sha256": "ccdcf3ccc5dd86bbde2cd473cd1765e13f14e6c64980c7c0e42baad07b803e53",
+            "url": "https://racing.hkjc.com/zh-hk/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV"
+          }
+        ]
+      },
+      {
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:02",
+        "resultRows": 12,
+        "allFactsEqualToRestoredCheckpoint": true,
+        "restMcpExactParity": true,
+        "sourceCaptures": [
+          {
+            "bytes": 213100,
+            "observed": "2026-10-26T21:50:45.046036+00:00",
+            "sha256": "b7eeb5cc14b0bd2d34f61ec96d5016016a24ea0f8538b0bbd927deacbd372f38",
+            "url": "https://racing.hkjc.com/en-us/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV&RaceNo=2"
+          },
+          {
+            "bytes": 210081,
+            "observed": "2026-10-26T21:50:48.482733+00:00",
+            "sha256": "5a356e1165c1bee04bcf7ea8bb1fcfeb8569e27703965c3293dfc311aa9c977e",
+            "url": "https://racing.hkjc.com/zh-hk/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV&RaceNo=2"
+          }
+        ]
+      },
+      {
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:03",
+        "resultRows": 12,
+        "allFactsEqualToRestoredCheckpoint": true,
+        "restMcpExactParity": true,
+        "sourceCaptures": [
+          {
+            "bytes": 220244,
+            "observed": "2026-10-26T21:50:51.735490+00:00",
+            "sha256": "08d944aa8adf66baf368c061d431c622effb1f84874522d158a0358395eb4b05",
+            "url": "https://racing.hkjc.com/en-us/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV&RaceNo=3"
+          },
+          {
+            "bytes": 217138,
+            "observed": "2026-10-26T21:50:55.042047+00:00",
+            "sha256": "a830a5e1a0426ef6b501702afb3213028714c0bfec82364b71dad618d092bf9b",
+            "url": "https://racing.hkjc.com/zh-hk/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV&RaceNo=3"
+          }
+        ]
+      },
+      {
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:04",
+        "resultRows": 12,
+        "allFactsEqualToRestoredCheckpoint": true,
+        "restMcpExactParity": true,
+        "sourceCaptures": [
+          {
+            "bytes": 217153,
+            "observed": "2026-10-26T21:50:58.459282+00:00",
+            "sha256": "af301a70ce381a389ba49a07312c430b73f4e30278254b4cbc4782366d9cc49c",
+            "url": "https://racing.hkjc.com/en-us/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV&RaceNo=4"
+          },
+          {
+            "bytes": 213815,
+            "observed": "2026-10-26T21:51:01.863601+00:00",
+            "sha256": "d221b6d062d1574953837baf07038c774c7ec9d83625257e122d072511ec2a39",
+            "url": "https://racing.hkjc.com/zh-hk/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV&RaceNo=4"
+          }
+        ]
+      },
+      {
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:05",
+        "resultRows": 12,
+        "allFactsEqualToRestoredCheckpoint": true,
+        "restMcpExactParity": true,
+        "sourceCaptures": [
+          {
+            "bytes": 212884,
+            "observed": "2026-10-26T21:51:05.216915+00:00",
+            "sha256": "b72f66dc5b9983589aac48ec966e4e765db335153f423fccb15954bc602e2810",
+            "url": "https://racing.hkjc.com/en-us/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV&RaceNo=5"
+          },
+          {
+            "bytes": 209910,
+            "observed": "2026-10-26T21:51:08.603849+00:00",
+            "sha256": "59ae87d56db73936f0f7ade2d6179fa792749072a388d94a72a1ae3f15843765",
+            "url": "https://racing.hkjc.com/zh-hk/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV&RaceNo=5"
+          }
+        ]
+      },
+      {
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:06",
+        "resultRows": 12,
+        "allFactsEqualToRestoredCheckpoint": true,
+        "restMcpExactParity": true,
+        "sourceCaptures": [
+          {
+            "bytes": 213149,
+            "observed": "2026-10-26T21:51:12.013490+00:00",
+            "sha256": "f168e2b6b29ce297f29be87b132e02dc8c339f689627b0eaa70b64860d33b65a",
+            "url": "https://racing.hkjc.com/en-us/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV&RaceNo=6"
+          },
+          {
+            "bytes": 210015,
+            "observed": "2026-10-26T21:51:15.457847+00:00",
+            "sha256": "ff5a5ce5e2088b3ceda667f71485785f3321762b9c336f262bb71ba2859d03ea",
+            "url": "https://racing.hkjc.com/zh-hk/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV&RaceNo=6"
+          }
+        ]
+      },
+      {
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:07",
+        "resultRows": 12,
+        "allFactsEqualToRestoredCheckpoint": true,
+        "restMcpExactParity": true,
+        "sourceCaptures": [
+          {
+            "bytes": 218539,
+            "observed": "2026-10-26T21:51:18.689118+00:00",
+            "sha256": "9d171f7fa7ff30b6784e0dba36860e12aa6bf675009dd2feda7eca56407aeee7",
+            "url": "https://racing.hkjc.com/en-us/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV&RaceNo=7"
+          },
+          {
+            "bytes": 215208,
+            "observed": "2026-10-26T21:51:21.981945+00:00",
+            "sha256": "63d289f273f52e005ed53886dd3d67954b757f2c6ac42ab533a7ab91a372c0da",
+            "url": "https://racing.hkjc.com/zh-hk/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV&RaceNo=7"
+          }
+        ]
+      },
+      {
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:08",
+        "resultRows": 11,
+        "allFactsEqualToRestoredCheckpoint": true,
+        "restMcpExactParity": true,
+        "sourceCaptures": [
+          {
+            "bytes": 208387,
+            "observed": "2026-10-26T21:51:25.510414+00:00",
+            "sha256": "3ce21b0ad2f76b31a43f01e3c28d327c31c3533c87a5b199313f61e3481b656d",
+            "url": "https://racing.hkjc.com/en-us/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV&RaceNo=8"
+          },
+          {
+            "bytes": 205672,
+            "observed": "2026-10-26T21:51:28.915624+00:00",
+            "sha256": "8cb0c32814269562ed357e9caa0de786344bfdb40c6233bce1e66a9f5447b6f0",
+            "url": "https://racing.hkjc.com/zh-hk/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV&RaceNo=8"
+          }
+        ]
+      },
+      {
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:09",
+        "resultRows": 12,
+        "allFactsEqualToRestoredCheckpoint": true,
+        "restMcpExactParity": true,
+        "sourceCaptures": [
+          {
+            "bytes": 216172,
+            "observed": "2026-10-26T21:51:32.513951+00:00",
+            "sha256": "4966c399e5d636ccebbb5f3bde25d635313792f1a3563ffe5f9bc5623c5eef25",
+            "url": "https://racing.hkjc.com/en-us/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV&RaceNo=9"
+          },
+          {
+            "bytes": 212977,
+            "observed": "2026-10-26T21:51:35.964309+00:00",
+            "sha256": "57883cf44f65d01e0c60618d316f194c3c1998a86406ee1186dda13a46bdf4ac",
+            "url": "https://racing.hkjc.com/zh-hk/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV&RaceNo=9"
+          }
+        ]
+      }
+    ]
+  },
+  "liveBrowser": {
+    "origin": "https://mcp.hk",
+    "scope": "actual archive results release verification; no customer adoption claim",
+    "restoredAcceptedSha256": "82b83c48f1e01dbf4542e4261bced3b7f6fbe5f6e91b0ece128b318f50593bfe",
+    "receipts": [
+      {
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:01",
+        "lang": "en",
+        "width": 320,
+        "version": "racing-results-v1-7338db3c7faf9638cbb6c736d67c8c2cf6bb660d7914c39297cdb62ed913bede",
+        "renderedRows": 12,
+        "overflow": false,
+        "actualZipSha256": "992e11c5d810633db5ffa7a7f343f9c89994de4780b3933cced9150b6603ec18",
+        "memberHashesVerified": true,
+        "allJsonFactsEqualToRestoredCheckpoint": true,
+        "allCsvCellsEqualToJson": true,
+        "schemaFileIncluded": false
+      },
+      {
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:02",
+        "lang": "en",
+        "width": 320,
+        "version": "racing-results-v1-7338db3c7faf9638cbb6c736d67c8c2cf6bb660d7914c39297cdb62ed913bede",
+        "renderedRows": 12,
+        "overflow": false,
+        "actualZipSha256": "aed28c35365b55afde878e5ee3bed05cdf967d7458655f07613c5e4fe7215fd3",
+        "memberHashesVerified": true,
+        "allJsonFactsEqualToRestoredCheckpoint": true,
+        "allCsvCellsEqualToJson": true,
+        "schemaFileIncluded": false
+      },
+      {
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:03",
+        "lang": "en",
+        "width": 320,
+        "version": "racing-results-v1-7338db3c7faf9638cbb6c736d67c8c2cf6bb660d7914c39297cdb62ed913bede",
+        "renderedRows": 12,
+        "overflow": false,
+        "actualZipSha256": "02183366048a5b33e15feb7764eb1eab5334db2f4507c017b487eed057394c15",
+        "memberHashesVerified": true,
+        "allJsonFactsEqualToRestoredCheckpoint": true,
+        "allCsvCellsEqualToJson": true,
+        "schemaFileIncluded": false
+      },
+      {
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:04",
+        "lang": "en",
+        "width": 320,
+        "version": "racing-results-v1-7338db3c7faf9638cbb6c736d67c8c2cf6bb660d7914c39297cdb62ed913bede",
+        "renderedRows": 12,
+        "overflow": false,
+        "actualZipSha256": "8a3f13af878f04191c6a8a6e2eecd9a88371b09988f2ded687a6be5c2f7e9468",
+        "memberHashesVerified": true,
+        "allJsonFactsEqualToRestoredCheckpoint": true,
+        "allCsvCellsEqualToJson": true,
+        "schemaFileIncluded": false
+      },
+      {
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:05",
+        "lang": "en",
+        "width": 320,
+        "version": "racing-results-v1-7338db3c7faf9638cbb6c736d67c8c2cf6bb660d7914c39297cdb62ed913bede",
+        "renderedRows": 12,
+        "overflow": false,
+        "actualZipSha256": "dc1e97cfdf2e12cf35fa24b96b8e3e9f81715d06aaf456987451d81e41f577bf",
+        "memberHashesVerified": true,
+        "allJsonFactsEqualToRestoredCheckpoint": true,
+        "allCsvCellsEqualToJson": true,
+        "schemaFileIncluded": false
+      },
+      {
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:06",
+        "lang": "en",
+        "width": 320,
+        "version": "racing-results-v1-7338db3c7faf9638cbb6c736d67c8c2cf6bb660d7914c39297cdb62ed913bede",
+        "renderedRows": 12,
+        "overflow": false,
+        "actualZipSha256": "3de1df0f23195e73daf98e7df69de0068f7f3d3ad5ffe0bf22ad409999e5e137",
+        "memberHashesVerified": true,
+        "allJsonFactsEqualToRestoredCheckpoint": true,
+        "allCsvCellsEqualToJson": true,
+        "schemaFileIncluded": false
+      },
+      {
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:07",
+        "lang": "en",
+        "width": 320,
+        "version": "racing-results-v1-7338db3c7faf9638cbb6c736d67c8c2cf6bb660d7914c39297cdb62ed913bede",
+        "renderedRows": 12,
+        "overflow": false,
+        "actualZipSha256": "c89d84571e11645823f88c00ef5458f38dd15fc98d3a0a23f49cf74874a0c8ce",
+        "memberHashesVerified": true,
+        "allJsonFactsEqualToRestoredCheckpoint": true,
+        "allCsvCellsEqualToJson": true,
+        "schemaFileIncluded": false
+      },
+      {
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:08",
+        "lang": "en",
+        "width": 320,
+        "version": "racing-results-v1-7338db3c7faf9638cbb6c736d67c8c2cf6bb660d7914c39297cdb62ed913bede",
+        "renderedRows": 11,
+        "overflow": false,
+        "actualZipSha256": "5f1773593f63455cb3f7d80f557f52b909e7b464b134d4023727bcaefc9b97cc",
+        "memberHashesVerified": true,
+        "allJsonFactsEqualToRestoredCheckpoint": true,
+        "allCsvCellsEqualToJson": true,
+        "schemaFileIncluded": false
+      },
+      {
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:09",
+        "lang": "en",
+        "width": 320,
+        "version": "racing-results-v1-7338db3c7faf9638cbb6c736d67c8c2cf6bb660d7914c39297cdb62ed913bede",
+        "renderedRows": 12,
+        "overflow": false,
+        "actualZipSha256": "1eebf8d24a8377910d2c028e92e7fdea260fc378b916db10a2ee663a46e6181d",
+        "memberHashesVerified": true,
+        "allJsonFactsEqualToRestoredCheckpoint": true,
+        "allCsvCellsEqualToJson": true,
+        "schemaFileIncluded": false
+      },
+      {
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:01",
+        "lang": "en",
+        "width": 1280,
+        "version": "racing-results-v1-7338db3c7faf9638cbb6c736d67c8c2cf6bb660d7914c39297cdb62ed913bede",
+        "renderedRows": 12,
+        "overflow": false,
+        "actualZipSha256": "992e11c5d810633db5ffa7a7f343f9c89994de4780b3933cced9150b6603ec18",
+        "memberHashesVerified": true,
+        "allJsonFactsEqualToRestoredCheckpoint": true,
+        "allCsvCellsEqualToJson": true,
+        "schemaFileIncluded": false
+      },
+      {
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:09",
+        "lang": "en",
+        "width": 1280,
+        "version": "racing-results-v1-7338db3c7faf9638cbb6c736d67c8c2cf6bb660d7914c39297cdb62ed913bede",
+        "renderedRows": 12,
+        "overflow": false,
+        "actualZipSha256": "1eebf8d24a8377910d2c028e92e7fdea260fc378b916db10a2ee663a46e6181d",
+        "memberHashesVerified": true,
+        "allJsonFactsEqualToRestoredCheckpoint": true,
+        "allCsvCellsEqualToJson": true,
+        "schemaFileIncluded": false
+      },
+      {
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:01",
+        "lang": "zh-Hant",
+        "width": 320,
+        "version": "racing-results-v1-7338db3c7faf9638cbb6c736d67c8c2cf6bb660d7914c39297cdb62ed913bede",
+        "renderedRows": 12,
+        "overflow": false,
+        "actualZipSha256": "992e11c5d810633db5ffa7a7f343f9c89994de4780b3933cced9150b6603ec18",
+        "memberHashesVerified": true,
+        "allJsonFactsEqualToRestoredCheckpoint": true,
+        "allCsvCellsEqualToJson": true,
+        "schemaFileIncluded": false
+      },
+      {
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:02",
+        "lang": "zh-Hant",
+        "width": 320,
+        "version": "racing-results-v1-7338db3c7faf9638cbb6c736d67c8c2cf6bb660d7914c39297cdb62ed913bede",
+        "renderedRows": 12,
+        "overflow": false,
+        "actualZipSha256": "aed28c35365b55afde878e5ee3bed05cdf967d7458655f07613c5e4fe7215fd3",
+        "memberHashesVerified": true,
+        "allJsonFactsEqualToRestoredCheckpoint": true,
+        "allCsvCellsEqualToJson": true,
+        "schemaFileIncluded": false
+      },
+      {
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:03",
+        "lang": "zh-Hant",
+        "width": 320,
+        "version": "racing-results-v1-7338db3c7faf9638cbb6c736d67c8c2cf6bb660d7914c39297cdb62ed913bede",
+        "renderedRows": 12,
+        "overflow": false,
+        "actualZipSha256": "02183366048a5b33e15feb7764eb1eab5334db2f4507c017b487eed057394c15",
+        "memberHashesVerified": true,
+        "allJsonFactsEqualToRestoredCheckpoint": true,
+        "allCsvCellsEqualToJson": true,
+        "schemaFileIncluded": false
+      },
+      {
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:04",
+        "lang": "zh-Hant",
+        "width": 320,
+        "version": "racing-results-v1-7338db3c7faf9638cbb6c736d67c8c2cf6bb660d7914c39297cdb62ed913bede",
+        "renderedRows": 12,
+        "overflow": false,
+        "actualZipSha256": "8a3f13af878f04191c6a8a6e2eecd9a88371b09988f2ded687a6be5c2f7e9468",
+        "memberHashesVerified": true,
+        "allJsonFactsEqualToRestoredCheckpoint": true,
+        "allCsvCellsEqualToJson": true,
+        "schemaFileIncluded": false
+      },
+      {
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:05",
+        "lang": "zh-Hant",
+        "width": 320,
+        "version": "racing-results-v1-7338db3c7faf9638cbb6c736d67c8c2cf6bb660d7914c39297cdb62ed913bede",
+        "renderedRows": 12,
+        "overflow": false,
+        "actualZipSha256": "dc1e97cfdf2e12cf35fa24b96b8e3e9f81715d06aaf456987451d81e41f577bf",
+        "memberHashesVerified": true,
+        "allJsonFactsEqualToRestoredCheckpoint": true,
+        "allCsvCellsEqualToJson": true,
+        "schemaFileIncluded": false
+      },
+      {
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:06",
+        "lang": "zh-Hant",
+        "width": 320,
+        "version": "racing-results-v1-7338db3c7faf9638cbb6c736d67c8c2cf6bb660d7914c39297cdb62ed913bede",
+        "renderedRows": 12,
+        "overflow": false,
+        "actualZipSha256": "3de1df0f23195e73daf98e7df69de0068f7f3d3ad5ffe0bf22ad409999e5e137",
+        "memberHashesVerified": true,
+        "allJsonFactsEqualToRestoredCheckpoint": true,
+        "allCsvCellsEqualToJson": true,
+        "schemaFileIncluded": false
+      },
+      {
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:07",
+        "lang": "zh-Hant",
+        "width": 320,
+        "version": "racing-results-v1-7338db3c7faf9638cbb6c736d67c8c2cf6bb660d7914c39297cdb62ed913bede",
+        "renderedRows": 12,
+        "overflow": false,
+        "actualZipSha256": "c89d84571e11645823f88c00ef5458f38dd15fc98d3a0a23f49cf74874a0c8ce",
+        "memberHashesVerified": true,
+        "allJsonFactsEqualToRestoredCheckpoint": true,
+        "allCsvCellsEqualToJson": true,
+        "schemaFileIncluded": false
+      },
+      {
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:08",
+        "lang": "zh-Hant",
+        "width": 320,
+        "version": "racing-results-v1-7338db3c7faf9638cbb6c736d67c8c2cf6bb660d7914c39297cdb62ed913bede",
+        "renderedRows": 11,
+        "overflow": false,
+        "actualZipSha256": "5f1773593f63455cb3f7d80f557f52b909e7b464b134d4023727bcaefc9b97cc",
+        "memberHashesVerified": true,
+        "allJsonFactsEqualToRestoredCheckpoint": true,
+        "allCsvCellsEqualToJson": true,
+        "schemaFileIncluded": false
+      },
+      {
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:09",
+        "lang": "zh-Hant",
+        "width": 320,
+        "version": "racing-results-v1-7338db3c7faf9638cbb6c736d67c8c2cf6bb660d7914c39297cdb62ed913bede",
+        "renderedRows": 12,
+        "overflow": false,
+        "actualZipSha256": "1eebf8d24a8377910d2c028e92e7fdea260fc378b916db10a2ee663a46e6181d",
+        "memberHashesVerified": true,
+        "allJsonFactsEqualToRestoredCheckpoint": true,
+        "allCsvCellsEqualToJson": true,
+        "schemaFileIncluded": false
+      },
+      {
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:01",
+        "lang": "zh-Hant",
+        "width": 1280,
+        "version": "racing-results-v1-7338db3c7faf9638cbb6c736d67c8c2cf6bb660d7914c39297cdb62ed913bede",
+        "renderedRows": 12,
+        "overflow": false,
+        "actualZipSha256": "992e11c5d810633db5ffa7a7f343f9c89994de4780b3933cced9150b6603ec18",
+        "memberHashesVerified": true,
+        "allJsonFactsEqualToRestoredCheckpoint": true,
+        "allCsvCellsEqualToJson": true,
+        "schemaFileIncluded": false
+      },
+      {
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:09",
+        "lang": "zh-Hant",
+        "width": 1280,
+        "version": "racing-results-v1-7338db3c7faf9638cbb6c736d67c8c2cf6bb660d7914c39297cdb62ed913bede",
+        "renderedRows": 12,
+        "overflow": false,
+        "actualZipSha256": "1eebf8d24a8377910d2c028e92e7fdea260fc378b916db10a2ee663a46e6181d",
+        "memberHashesVerified": true,
+        "allJsonFactsEqualToRestoredCheckpoint": true,
+        "allCsvCellsEqualToJson": true,
+        "schemaFileIncluded": false
+      }
+    ],
+    "errors": [],
+    "providerRequests": []
+  },
+  "lastGoodDuringCollection": {
+    "observedAt": "2026-10-26T21:40:30.405766+00:00",
+    "pinnedAcceptedVersionReadableDuringCollection": true,
+    "fullEnvelopeMatchesRestoredBaseline": true,
+    "version": "racing-results-v1-06c92779a44dfbe95e9e15eff543b67352063cb02896df9f83d6d25c72d1e124",
+    "singleReadSeconds": 0.42,
+    "budget": {
+      "attempts": 137,
+      "chargedBytes": 28835060,
+      "unresolved": [],
+      "limits": {
+        "attempts": 200,
+        "bytes": 67108864
+      },
+      "resetsAt": "2026-10-27T00:00:00.000Z",
+      "durable": true
+    },
+    "coverage": {
+      "meetings": 14,
+      "races": 138,
+      "resultRows": 1733,
+      "earliest": "2026-09-06",
+      "latest": "2026-10-25"
+    },
+    "hold": null
+  },
+  "schedules": {
+    "crons": [
+      "0 1 * * *",
+      "0 2 * * *",
+      "0 3 * * SUN",
+      "0 4 * * SUN",
+      "2-59/5 * * * *"
+    ],
+    "count": 5
+  },
+  "releaseSlotReleased": true,
+  "schemaFileIncludedInResultsZip": false,
+  "customerAdoptionClaimed": false,
+  "fourFamilyProgrammeComplete": false
+}

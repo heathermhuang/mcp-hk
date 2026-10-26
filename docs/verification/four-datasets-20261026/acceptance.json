@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-26T18:34:12.758059+00:00",
+  "updatedAt": "2026-10-26T22:00:46.551438+00:00",
   "overallState": "incomplete",
   "sourcePlan": "../../../../../../docs/designs/mcp-hk-four-datasets-completion-20261026.md",
   "originalInventories": {
@@ -732,13 +732,29 @@
     {
       "id": "W05.racing-2025-26-results",
       "workPackage": "W05",
-      "state": "pending",
+      "state": "partial",
       "dependency": [],
-      "actualCoverage": null,
+      "actualCoverage": {
+        "meetings": 15,
+        "races": 147,
+        "resultRows": 1840,
+        "earliest": "2026-07-15",
+        "latest": "2026-10-25",
+        "originalHeldTarget": "2026-07-15 HV",
+        "targetRaces": 9,
+        "targetRows": 107,
+        "archiveRoutingHoldResolved": true,
+        "broaderSeasonComplete": false,
+        "recentMeetings": 14,
+        "historicalMeetings": 1
+      },
       "version": null,
-      "evidence": [],
+      "evidence": [
+        "racing-archive-live-release-20261027.json",
+        "RACING-ARCHIVE-LIVE-RELEASE.md"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Resume only missing historical coverage under the existing source budget and schedule; separately qualify declarations, remaining families and ordinary trigger provenance."
     },
     {
       "id": "W05.racing-recent-results",
@@ -746,18 +762,26 @@
       "state": "partial",
       "dependency": [],
       "actualCoverage": {
-        "meetings": 14,
-        "races": 138,
-        "resultRows": 1733,
-        "earliest": "2026-09-06",
-        "latest": "2026-10-25"
+        "meetings": 15,
+        "races": 147,
+        "resultRows": 1840,
+        "earliest": "2026-07-15",
+        "latest": "2026-10-25",
+        "originalHeldTarget": "2026-07-15 HV",
+        "targetRaces": 9,
+        "targetRows": 107,
+        "archiveRoutingHoldResolved": true,
+        "broaderSeasonComplete": false,
+        "recentMeetings": 14,
+        "historicalMeetings": 1
       },
       "version": "racing-results-v1-06c92779a44dfbe95e9e15eff543b67352063cb02896df9f83d6d25c72d1e124",
       "evidence": [
-        "progress-20261027.json"
+        "racing-archive-live-release-20261027.json",
+        "RACING-ARCHIVE-LIVE-RELEASE.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Preserve and investigate HTTP302 source hold before further historical reads; do not clear or bypass it"
+      "nextAction": "Resume only missing historical coverage under the existing source budget and schedule; separately qualify declarations, remaining families and ordinary trigger provenance."
     },
     {
       "id": "W05.racing-declarations-reconciliation",
@@ -776,15 +800,9 @@
       "state": "partial",
       "dependency": [],
       "actualCoverage": {
-        "acceptedRealObservations": 3,
-        "sourceParticipantCohort": 950,
-        "kinds": [
-          "horse",
-          "jockey",
-          "trainer"
-        ],
-        "wholeCareerHistory": false,
-        "originalCaptureTimesPreserved": true
+        "acceptedDatedProfiles": 5,
+        "wholeCohortComplete": false,
+        "completeCareerHistory": false
       },
       "version": "9828dc0c2a59392dad0f58c5cfb5d8529495b8d7",
       "evidence": [
@@ -855,19 +873,26 @@
       "state": "partial",
       "dependency": [],
       "actualCoverage": {
-        "realProfileCohort": 3,
-        "restMcpExactParity": true,
-        "realBilingualBrowserJourneys": 12,
-        "actualZips": 12,
-        "allCsvJsonFactsAndMemberHashesVerified": true
+        "meetings": 15,
+        "races": 147,
+        "resultRows": 1840,
+        "earliest": "2026-07-15",
+        "latest": "2026-10-25",
+        "originalHeldTarget": "2026-07-15 HV",
+        "targetRaces": 9,
+        "targetRows": 107,
+        "archiveRoutingHoldResolved": true,
+        "broaderSeasonComplete": false,
+        "recentMeetings": 14,
+        "historicalMeetings": 1
       },
       "version": "9828dc0c2a59392dad0f58c5cfb5d8529495b8d7",
       "evidence": [
-        "production-release-20261027.json",
-        "RELEASE-20261027.md"
+        "racing-archive-live-release-20261027.json",
+        "RACING-ARCHIVE-LIVE-RELEASE.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Complete remaining Racing families and their declared-cohort acceptance"
+      "nextAction": "Resume only missing historical coverage under the existing source budget and schedule; separately qualify declarations, remaining families and ordinary trigger provenance."
     },
     {
       "id": "W05.racing-ordinary-ingestion-fresh-recovery",
@@ -875,19 +900,26 @@
       "state": "partial",
       "dependency": [],
       "actualCoverage": {
-        "freshAcceptedSha256": "24b716069cbf26e6469f109427d5355bf2c497b247a8efd415fc1b3026441a54",
-        "comparedRacingTables": 14,
-        "priorRacingTablesUnchanged": 10,
-        "profileProviderReads": 0,
-        "originalProviderHoldRetained": true
+        "meetings": 15,
+        "races": 147,
+        "resultRows": 1840,
+        "earliest": "2026-07-15",
+        "latest": "2026-10-25",
+        "originalHeldTarget": "2026-07-15 HV",
+        "targetRaces": 9,
+        "targetRows": 107,
+        "archiveRoutingHoldResolved": true,
+        "broaderSeasonComplete": false,
+        "recentMeetings": 14,
+        "historicalMeetings": 1
       },
       "version": "9828dc0c2a59392dad0f58c5cfb5d8529495b8d7",
       "evidence": [
-        "production-release-20261027.json",
-        "RELEASE-20261027.md"
+        "racing-archive-live-release-20261027.json",
+        "RACING-ARCHIVE-LIVE-RELEASE.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Resolve exact historical HTTP302 hold; ordinary profile collection not yet qualified"
+      "nextAction": "Resume only missing historical coverage under the existing source budget and schedule; separately qualify declarations, remaining families and ordinary trigger provenance."
     },
     {
       "id": "W06.hkex-webb-archive-preserved",
