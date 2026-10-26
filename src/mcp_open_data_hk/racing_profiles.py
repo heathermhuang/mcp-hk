@@ -49,6 +49,14 @@ def transform_hash():
     ).hexdigest()
 
 
+def required_scratch_bytes():
+    # This store runs on the existing 8 GB gateway, separately from PostgreSQL.
+    # Reserve a maximum SQLite backup copy, packed transfer and isolated restore.
+    from .operations import MAX_DATABASE, MAX_BACKUP, MAX_RESTORE
+
+    return MAX_DATABASE + MAX_BACKUP + MAX_RESTORE
+
+
 class Profiles:
     def __init__(self, store):
         self.store = store
@@ -243,7 +251,8 @@ class Profiles:
             ).fetchone()
             if not exists and (
                 used + len(canonical(payload)) > 32 * 1024 * 1024
-                or shutil.disk_usage(self.store.path.parent).free < 20 * 1024**3
+                or shutil.disk_usage(self.store.path.parent).free
+                < required_scratch_bytes()
             ):
                 raise RacingRejected("PROFILE_GROWTH_CAPACITY_HOLD")
             if queued["pending_version"] and queued["pending_version"] != version:
@@ -478,6 +487,14 @@ class Profiles:
                 ).fetchone()[0],
                 "historyBeforeFirstObservationInferred": False,
             }
+        free = shutil.disk_usage(self.store.path.parent).free
+        required = required_scratch_bytes()
+        state["scratchCapacity"] = {
+            "freeBytes": free,
+            "requiredBytes": required,
+            "sufficient": free >= required,
+            "basis": "gateway_backup_copy_packed_transfer_and_isolated_restore",
+        }
         state["modes"] = {}
         for mode in ("rest", "mcp", "browser", "export", "schedule"):
             try:

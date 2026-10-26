@@ -49,8 +49,15 @@ The policy's minimum request interval also applies. A completed unavailable resp
 defers the target by one day; parser drift is held for review. Unknown requests and
 provider holds retain their charges and stop new source work.
 
-New profile payloads have a separate 32 MiB aggregate cap and require 20 GiB free
-space. The existing 500 MB database and 150 MB compressed backup bounds remain.
+New profile payloads have a separate 32 MiB aggregate cap. The gateway scratch
+reserve is 1,400,000,000 bytes: the existing maximum 500 MB SQLite backup copy,
+150 MB packed transfer and 750 MB isolated restore. The PostgreSQL host's separate
+20 GiB reserve remains unchanged. The initial profile release wrongly applied that
+host threshold to the gateway; a real import stopped before publication because
+the existing `standard-1` container has an
+[8 GB disk](https://developers.cloudflare.com/containers/platform/limits/).
+The corrected guard and reported scratch-capacity state use the gateway's actual
+backup/restore bounds, without increasing infrastructure or data limits.
 Stored versions are immutable, limited to 2 MiB each and checked on read. New facts
 remain private until an independent R2 checkpoint download/restore matches every
 Racing fact/control table. Publication then compares the old accepted pointer and
