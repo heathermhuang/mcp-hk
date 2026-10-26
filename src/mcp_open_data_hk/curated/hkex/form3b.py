@@ -325,6 +325,8 @@ def parse_form3b(raw, *, serial, source_search_ref, stock_code, issuer_id, issue
     for suffix in ("", "2"):
         if text("lblDEvtNatConsider" + suffix):
             raise ValueError("FORM3B_NONCASH_CONSIDERATION_UNQUALIFIED")
+        if text("lblDEvtAConsider" + suffix):
+            raise ValueError("FORM3B_CONSIDERATION_UNIT_UNQUALIFIED")
         reason = text("lblDEvtReason" + suffix)
         quantity = text("lblDEvtShare" + suffix)
         before = text("lblDEvtCapBefore" + suffix)
@@ -334,7 +336,6 @@ def parse_form3b(raw, *, serial, source_search_ref, stock_code, issuer_id, issue
             for kind, key in (
                 ("highest", "lblDEvtHPrice"),
                 ("average", "lblDEvtAPrice"),
-                ("average_consideration", "lblDEvtAConsider"),
             )
         ]
         if not any(

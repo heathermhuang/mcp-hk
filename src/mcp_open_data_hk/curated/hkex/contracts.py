@@ -121,7 +121,7 @@ class Interest(Strict):
 
 
 class Price(Strict):
-    kind: Literal["highest", "average", "average_consideration"]
+    kind: Literal["highest", "average"]
     value: str
     currency: str | None = Field(None, pattern=r"^[A-Z]{3}$")
     unit: Literal["per_share"] = "per_share"
