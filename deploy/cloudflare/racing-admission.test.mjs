@@ -33,3 +33,24 @@ test('profile imports verify two already charged completed reads without reseedi
  admission.reserve(id(3),now);admission.settle(id(3),'held',409600,'DEVELOPMENT_HTTP_302');admission.verifyProfileImport(captures,ids);assert.equal(admission.reserve(id(4),now).code,'RACING_SOURCE_HELD');
  assert.throws(()=>admission.verifyProfileImport(captures,[id(1),id(3)]),/NOT_SETTLED/);
 });
+test('one charged diagnostic of a known 302 retains the old hold and cannot repeat',()=>{
+ const {admission,sql}=store();admission.reserve(id(1),now);admission.settle(id(1),'held',409600,'DEVELOPMENT_HTTP_302');
+ assert.equal(admission.reserveRedirectInspection(id(1),id(2),now).allowed,true);assert.equal(admission.report(now).attempts,2);
+ assert.equal([...sql.exec('SELECT state FROM racing_admissions WHERE id=?',id(1))][0].state,'held');
+ admission.settle(id(2),'success',90,'REDIRECT_INSPECTION_COMPLETE');
+ assert.equal(admission.reserveRedirectInspection(id(1),id(3),now).code,'RACING_INSPECTION_ALREADY_ADMITTED');
+ assert.equal(admission.reserve(id(4),now).code,'RACING_SOURCE_HELD');
+});
+test('the original collector first-settled HTTP_302 code remains eligible without being relabelled',()=>{
+ const {admission,sql}=store();admission.reserve(id(1),now);admission.settle(id(1),'held',409600,'HTTP_302');admission.settle(id(1),'held',409600,'DEVELOPMENT_HTTP_302');
+ assert.equal([...sql.exec('SELECT code FROM racing_admissions WHERE id=?',id(1))][0].code,'HTTP_302');
+ assert.equal(admission.reserveRedirectInspection(id(1),id(2),now).allowed,true);
+ assert.equal([...sql.exec('SELECT state,code FROM racing_admissions WHERE id=?',id(1))][0].code,'HTTP_302');
+});
+test('diagnostics refuse denials, unknowns, other outstanding requests and quota exhaustion',()=>{
+ for(const code of ['DEVELOPMENT_HTTP_403','SOURCE_HTTP_429','DEVELOPMENT_REQUEST_UNCERTAIN']){
+  const {admission}=store();admission.reserve(id(1),now);admission.settle(id(1),'held',409600,code);assert.equal(admission.reserveRedirectInspection(id(1),id(2),now).code,'RACING_INSPECTION_NOT_ELIGIBLE');assert.equal(admission.report(now).attempts,1);
+ }
+ const {admission,sql}=store();admission.reserve(id(1),now);admission.settle(id(1),'held',409600,'DEVELOPMENT_HTTP_302');sql.exec("INSERT INTO racing_admissions VALUES(?,?,?,?,'pending',NULL)",id(2),Math.floor(now/86400000),now,409600);assert.equal(admission.reserveRedirectInspection(id(1),id(3),now).code,'RACING_SOURCE_HELD');
+ const full=store().admission;for(let n=1;n<200;n++){full.reserve(id(n),now);full.settle(id(n),'success',1,null);}full.reserve(id(200),now);full.settle(id(200),'held',409600,'DEVELOPMENT_HTTP_302');assert.equal(full.reserveRedirectInspection(id(200),id(201),now).code,'RACING_DAILY_BUDGET');
+});

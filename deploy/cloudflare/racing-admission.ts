@@ -5,7 +5,20 @@ type Sql = {exec(query:string,...args:unknown[]):Iterable<Record<string,unknown>
 const MAX_BODY=409600,MAX_BYTES=64*1024*1024;
 export class RacingAdmission {
   private sql:Sql;
-  constructor(sql:Sql){this.sql=sql;sql.exec('CREATE TABLE IF NOT EXISTS racing_admissions(id TEXT PRIMARY KEY,day INTEGER,at INTEGER,bytes INTEGER,state TEXT,code TEXT)');sql.exec('CREATE INDEX IF NOT EXISTS racing_admissions_day ON racing_admissions(day)');sql.exec("CREATE INDEX IF NOT EXISTS racing_admissions_unresolved ON racing_admissions(state) WHERE state IN ('pending','held')");}
+  constructor(sql:Sql){this.sql=sql;sql.exec('CREATE TABLE IF NOT EXISTS racing_admissions(id TEXT PRIMARY KEY,day INTEGER,at INTEGER,bytes INTEGER,state TEXT,code TEXT)');sql.exec('CREATE INDEX IF NOT EXISTS racing_admissions_day ON racing_admissions(day)');sql.exec("CREATE INDEX IF NOT EXISTS racing_admissions_unresolved ON racing_admissions(state) WHERE state IN ('pending','held')");sql.exec('CREATE TABLE IF NOT EXISTS racing_redirect_inspections(reference_id TEXT PRIMARY KEY,inspection_id TEXT UNIQUE NOT NULL)');}
+  reserveRedirectInspection(reference:string,id:string,now=Date.now()){
+    if(!/^[a-f0-9]{32}$/.test(reference)||!/^[a-f0-9]{32}$/.test(id)||reference===id)throw new Error('RACING_INSPECTION_ID');
+    const held=[...this.sql.exec('SELECT state,code FROM racing_admissions WHERE id=?',reference)][0];
+    if(!held||held.state!=='held'||!['HTTP_302','DEVELOPMENT_HTTP_302'].includes(String(held.code)))return {allowed:false,code:'RACING_INSPECTION_NOT_ELIGIBLE'};
+    if([...this.sql.exec('SELECT reference_id FROM racing_redirect_inspections WHERE reference_id=?',reference)].length)return {allowed:false,code:'RACING_INSPECTION_ALREADY_ADMITTED'};
+    if([...this.sql.exec('SELECT id FROM racing_admissions WHERE id=?',id)].length)return {allowed:false,code:'RACING_RESERVATION_EXISTS'};
+    if([...this.sql.exec("SELECT id FROM racing_admissions WHERE state IN ('pending','held') AND id<>? LIMIT 1",reference)].length)return {allowed:false,code:'RACING_SOURCE_HELD'};
+    const day=Math.floor(now/86400000),usage=[...this.sql.exec('SELECT count(*) n,coalesce(sum(bytes),0) bytes FROM racing_admissions WHERE day=?',day)][0];
+    if(Number(usage.n)>=200||Number(usage.bytes)+MAX_BODY>MAX_BYTES)return {allowed:false,code:'RACING_DAILY_BUDGET'};
+    this.sql.exec("INSERT INTO racing_admissions VALUES(?,?,?,?,'pending','REDIRECT_INSPECTION')",id,day,now,MAX_BODY);
+    this.sql.exec('INSERT INTO racing_redirect_inspections VALUES(?,?)',reference,id);
+    return {allowed:true,id,originalHoldRetained:true};
+  }
   cleanup(now=Date.now()){this.sql.exec("DELETE FROM racing_admissions WHERE day<? AND state='settled'",Math.floor(now/86400000)-90);}
   reserve(id:string,now=Date.now()){
     if(!/^[a-f0-9]{32}$/.test(id))throw new Error('RACING_ADMISSION_ID');

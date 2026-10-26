@@ -65,9 +65,10 @@ export class AgentAuth extends DurableObject<Env> {
 }
 
 export class McpContainer extends Container<Env> {
-  racingAdmission(input:{action:string;id?:string;state?:string;bytes?:number;code?:string|null}){
+  racingAdmission(input:{action:string;id?:string;referenceId?:string;state?:string;bytes?:number;code?:string|null}){
     const admission=new RacingAdmission(this.ctx.storage.sql);
     if(input.action==='reserve')return admission.reserve(String(input.id));
+    if(input.action==='inspect_redirect')return admission.reserveRedirectInspection(String(input.referenceId),String(input.id));
     if(input.action==='settle')return admission.settle(String(input.id),String(input.state),Number(input.bytes),input.code??null);
     if(input.action==='status')return admission.report();
     throw new Error('RACING_ADMISSION_ACTION');
@@ -124,8 +125,15 @@ export class McpContainer extends Container<Env> {
       }
       const response=await this.containerFetch(`${this.env.PUBLIC_ORIGIN}/__ops/racing`,{method:'POST',headers:{'Authorization':`Bearer ${this.env.OPS_TOKEN}`,'x-mcp-edge-token':this.env.OPS_TOKEN,'Content-Type':'application/json'},body});
       if(!response.ok){await response.body?.cancel();throw new Error('RACING_OPERATION_REJECTED');}
+      const inspection=response.headers.get('X-Racing-Inspection');
+      if(inspection&&inspection.length>4096){await response.body?.cancel();throw new Error('RACING_INSPECTION_RECEIPT_BOUND');}
+      let inspectionReceipt;
+      try {
+        inspectionReceipt=inspection===null?undefined:JSON.parse(inspection);
+        if(inspection!==null&&(!inspectionReceipt||typeof inspectionReceipt!=='object'||Array.isArray(inspectionReceipt)||input.action!=='inspect_redirect'||inspectionReceipt.originalAttempt!==input.attempt||inspectionReceipt.originalHoldRetained!==true))throw new Error('invalid');
+      } catch {await response.body?.cancel();throw new Error('RACING_INSPECTION_RECEIPT_INVALID');}
       const receipt=await saveBackup(this.env,response,'racing-operator');
-      return await this.acceptRacingCandidate(response,receipt);
+      return {...await this.acceptRacingCandidate(response,receipt),...(inspectionReceipt?{inspection:inspectionReceipt}:{})};
     } finally {await this.releaseSeedLease(owner);}
   }
 

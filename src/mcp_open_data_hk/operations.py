@@ -233,6 +233,7 @@ def register_operations(app, service):
         try:
             body = json.loads(raw)
             async with refresh_lock:
+                inspection = None
                 if body.get("action") == "import":
                     await asyncio.to_thread(
                         service.racing.store.import_bundle, body["bundle"]
@@ -250,6 +251,12 @@ def register_operations(app, service):
                         service.racing.store.profiles.install_policy,
                         body["record"],
                         body["sha256"],
+                    )
+                elif body.get("action") == "inspect_redirect":
+                    from .racing_inspection import inspect_redirect
+
+                    inspection = await asyncio.to_thread(
+                        inspect_redirect, service.racing.store, body["attempt"]
                     )
                 elif body.get("action") == "enqueue":
                     await asyncio.to_thread(
@@ -273,7 +280,12 @@ def register_operations(app, service):
                     raise DomainError(
                         "INVALID_QUERY", "Unknown racing operator action", 400
                     )
-                return await send_checkpoint(compresslevel=1)
+                response = await send_checkpoint(compresslevel=1)
+                if inspection is not None:
+                    response.headers["X-Racing-Inspection"] = json.dumps(
+                        inspection, ensure_ascii=True, separators=(",", ":")
+                    )
+                return response
         except (ValueError, KeyError, TypeError, RacingRejected) as exc:
             raise DomainError(
                 "RACING_INGEST_REJECTED",

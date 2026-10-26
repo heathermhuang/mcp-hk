@@ -151,7 +151,7 @@ def test_stage_hidden_exact_restore_publish_and_hash_corruption(prepared, tmp_pa
     with pytest.raises(RacingRejected, match="RESTORE_MISMATCH"):
         p.accept(p, candidate["version"], "a" * 64)
     proof = accept_profile(prepared, tmp_path, candidate)
-    assert len(proof["sourceTables"]) == 14
+    assert len(proof["sourceTables"]) == 15
     data = p.read("horse", "HK_2026_K001")
     assert data["data"]["attributes"]["rating"]["en"]["value"] == "60"
     assert p.pending() is None
