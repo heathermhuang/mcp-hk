@@ -1,0 +1,27 @@
+{
+  "sourceCommit": "afb79374398f9a26c2ba984bbce50c9fe21065b3",
+  "checkedHead": "31a30bff7d6963c97003fc0fabd1db9aaaeeb508",
+  "workerVersion": "3ac4d2d6-f2ed-4ebb-ac77-3d4ddc8ac8e8",
+  "controllerRelease": "afb79374398f9a26c2ba984bbce50c9fe21065b3",
+  "controllerContract": "source-aware-ux-1",
+  "maintenancePolicy": "source-review-11",
+  "noMaintenanceOrSeedLeaseAtAcceptance": true,
+  "container": {
+    "name": "mcp-hk-mcpcontainer",
+    "state": "active",
+    "image": "registry.cloudflare.com/63a7fe52c985c63bb9e69ce47efdc569/mcp-hk-mcpcontainer@sha256:2fcd358893584694ce76b764e7122c0815b56530bd0ce5d4d0b945e0668fb2d5",
+    "version": 51,
+    "updated_at": "2026-10-26T00:52:21.745999872Z"
+  },
+  "secretNamesPreserved": [
+    "CURATED_BACKEND_TOKEN",
+    "OFFICIAL_BACKUP_TOKEN",
+    "OPS_TOKEN"
+  ],
+  "sourceDataActivation": false,
+  "runningInstance": {
+    "name": "production",
+    "state": "running",
+    "version": 51
+  }
+}

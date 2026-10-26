@@ -1,5 +1,7 @@
 # Build-first SFC implementation — 25 October 2026
 
+Released and live-verified on 26 October: [production acceptance and recovery](RELEASED.md).
+
 The user's latest instruction is to build first rather than wait for a licence
 or provider enquiry. The earlier permission-enquiry workflow is deferred. No
 message, subscription, paid licence or new contract is needed for this build.
