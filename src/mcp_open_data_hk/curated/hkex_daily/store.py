@@ -34,6 +34,10 @@ def migrate(dsn):
         .read_text()
     )
     with connect(dsn) as c:
+        if c.execute(
+            "SELECT 1 FROM pg_namespace WHERE nspname='hkex_daily'"
+        ).fetchone():
+            body = body.replace("CREATE SCHEMA IF NOT EXISTS hkex_daily;", "")
         c.execute(body)
 
 

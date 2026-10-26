@@ -86,6 +86,7 @@ def source_state(image, version=None):
 
 
 def source_backup(image, token, stage, version):
+    prune_own_files()
     stamp = (
         datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
         + "-"
