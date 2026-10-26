@@ -260,3 +260,30 @@ printf '%s\\n' '{{"status":"success"}}'""",
     )
     assert followup.returncode == 0, followup.stderr
     assert calls.read_text().splitlines() == ["write"]
+
+
+def test_hkex_timer_uses_typed_trigger_and_canonical_occurrence():
+    import importlib.util
+    from datetime import datetime, timezone
+
+    spec = importlib.util.spec_from_file_location(
+        "hkex_host_job", ROOT / "deploy/curated/hkex-daily-job.py"
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    current = datetime(2026, 10, 26, 5, 20, 0, 411112, tzinfo=timezone.utc)
+    assert module.scheduled_occurrence("t 99999000", 100000000, current) == (
+        "timer",
+        "2026-10-26T05:20:00Z",
+    )
+    assert module.scheduled_occurrence("t 1", 100000000, current)[0] == "manual"
+    assert (
+        module.scheduled_occurrence("1d 5h 42min 31.861600s", 100000000, current)[0]
+        == "manual"
+    )
+    assert module.scheduled_occurrence("t 100000001", 100000000, current)[0] == "manual"
+    catchup = datetime(2026, 10, 26, 0, 30, tzinfo=timezone.utc)
+    assert module.scheduled_occurrence("t 99999000", 100000000, catchup) == (
+        "timer",
+        "2026-10-25T14:20:00Z",
+    )
