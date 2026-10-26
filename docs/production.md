@@ -495,3 +495,20 @@ SQLite tables in the existing full R2 checkpoint, with Durable Object admission
 before each provider request. A candidate is restored from R2 and compared before
 its accepted pointer advances. Racing reads never collect. The existing five
 schedules are preserved; resource maintenance performs one bounded racing step.
+
+### Company offsite dump transport
+
+Once a custom-format dump exceeds 64 MiB, the scoped company uploader uses at
+most four immutable 64 MiB parts. The existing 256 MiB dump ceiling, 16 PUT/day,
+1 GiB upload/day and 2 GiB read/day budgets remain unchanged. Every part is
+uploaded and independently retrieved; the local reconstructed dump must match its
+complete checksum before the manifest can be published. The gateway independently
+streams and hashes the ordered parts, charging the full verification read to the
+existing budget, and rejects missing, reordered, mixed or inconsistent parts.
+
+The manifest retains the `official.dump` complete checksum/size contract and lists
+its ordered parts. Existing scoped `HEAD`/`GET official.dump` clients receive the
+verified complete logical object through that manifest. Prior single-object backups
+remain readable. No manifest, accepted pointer or growth qualification advances on
+partial transfer. Failed/unknown artifacts and the prior recovery copy remain.
+This avoids the current zone's 100 MB request-body ceiling without a plan upgrade.
