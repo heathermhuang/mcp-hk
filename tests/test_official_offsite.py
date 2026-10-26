@@ -116,3 +116,88 @@ def test_retention_requires_restore_checksum_remote_copy_and_keeps_latest_two(tm
         and files[3].exists()
     )
     assert unknown.exists() and result["offsiteObjectsDeleted"] == 0
+
+
+def test_large_dump_parts_reassemble_before_manifest_and_preserve_whole_checksum(
+    tmp_path, monkeypatch
+):
+    from mcp_open_data_hk.curated import official_offsite as offsite
+
+    monkeypatch.setattr(offsite, "PART_BYTES", 8)
+    config = tmp_path / "uploader.json"
+    config.write_text(json.dumps({"origin": ORIGIN, "token": "u" * 48}))
+    config.chmod(0o600)
+    dump = tmp_path / "official.dump"
+    raw = b"0123456789abcdefghijklmnop"
+    dump.write_bytes(raw)
+    source = tmp_path / "source.json"
+    source.write_text('{"fixture":true}')
+    objects = {}
+
+    def serve(request):
+        name = request.url.path.rsplit("/", 1)[-1]
+        if request.method == "PUT":
+            assert (
+                hashlib.sha256(request.content).hexdigest()
+                == request.headers["x-object-sha256"]
+            )
+            if name.startswith("official.part-"):
+                assert len(request.content) <= 8
+            if name == "manifest.json":
+                manifest = json.loads(request.content)
+                assert (
+                    b"".join(
+                        objects[p["name"]]
+                        for p in manifest["artifacts"]["official.dump"]["parts"]
+                    )
+                    == raw
+                )
+            objects[name] = request.content
+            return httpx.Response(200)
+        return httpx.Response(200, content=objects[name])
+
+    target = tmp_path / "retrieved.dump"
+    with httpx.Client(transport=httpx.MockTransport(serve)) as client:
+        receipt = upload(config, dump, source, client, retrieved_dump=target)
+    assert target.read_bytes() == raw
+    assert "official.dump" not in objects
+    artifact = receipt["artifacts"]["official.dump"]
+    assert artifact["sha256"] == hashlib.sha256(raw).hexdigest()
+    assert sum(p["bytes"] for p in artifact["parts"]) == len(raw)
+    assert set(receipt["artifacts"]) == {
+        "official.dump",
+        "source.json",
+        "manifest.json",
+    }
+
+
+def test_part_failure_retains_partial_local_evidence_and_never_publishes_manifest(
+    tmp_path, monkeypatch
+):
+    from mcp_open_data_hk.curated import official_offsite as offsite
+
+    monkeypatch.setattr(offsite, "PART_BYTES", 8)
+    config = tmp_path / "uploader.json"
+    config.write_text(json.dumps({"origin": ORIGIN, "token": "u" * 48}))
+    config.chmod(0o600)
+    dump = tmp_path / "official.dump"
+    dump.write_bytes(b"0123456789abcdef")
+    source = tmp_path / "source.json"
+    source.write_text("{}")
+    objects = {}
+
+    def serve(request):
+        name = request.url.path.rsplit("/", 1)[-1]
+        if request.method == "PUT":
+            if name == "official.part-001":
+                return httpx.Response(413)
+            objects[name] = request.content
+            return httpx.Response(200)
+        return httpx.Response(200, content=objects[name])
+
+    target = tmp_path / "retrieved.dump"
+    with httpx.Client(transport=httpx.MockTransport(serve)) as client:
+        with pytest.raises(RuntimeError, match="OFFSITE_UPLOAD_HTTP_413"):
+            upload(config, dump, source, client, retrieved_dump=target)
+    assert target.read_bytes() == b"01234567"
+    assert "manifest.json" not in objects

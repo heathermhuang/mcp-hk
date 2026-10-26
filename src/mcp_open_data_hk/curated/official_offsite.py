@@ -19,6 +19,7 @@ from .official import encoded
 
 ORIGIN = "https://mcp.hk/__company-backup/"
 MAX_DUMP = 256 * 1024 * 1024
+PART_BYTES = 64 * 1024 * 1024
 
 
 def checksum(path):
@@ -63,22 +64,65 @@ def upload(
     headers = {"Authorization": "Bearer " + config["token"]}
     artifacts = {}
 
-    def put_and_verify(name, path):
-        sha, size = checksum(path), path.stat().st_size
+    def put_and_verify(name, path, offset=0, size=None, destination=None):
+        size = path.stat().st_size if size is None else size
+        h = hashlib.sha256()
         with path.open("rb") as source:
+            source.seek(offset)
+            remaining = size
+            while remaining:
+                block = source.read(min(65536, remaining))
+                if not block:
+                    raise RuntimeError("OFFSITE_SOURCE_TRUNCATED")
+                h.update(block)
+                remaining -= len(block)
+        sha = h.hexdigest()
+        with path.open("rb") as source:
+            source.seek(offset)
+
+            def chunks():
+                remaining = size
+                while remaining:
+                    block = source.read(min(65536, remaining))
+                    if not block:
+                        raise RuntimeError("OFFSITE_SOURCE_TRUNCATED")
+                    remaining -= len(block)
+                    yield block
+
             response = client.put(
                 ORIGIN + stamp + "/" + name,
                 headers=dict(
                     headers, **{"content-length": str(size), "x-object-sha256": sha}
                 ),
-                content=source,
+                content=chunks(),
             )
         if response.status_code != 200:
-            raise RuntimeError("OFFSITE_UPLOAD_FAILED")
+            raise RuntimeError("OFFSITE_UPLOAD_HTTP_" + str(response.status_code))
         h, total = hashlib.sha256(), 0
+        with client.stream(
+            "GET", ORIGIN + stamp + "/" + name, headers=headers
+        ) as response:
+            if response.status_code != 200:
+                raise RuntimeError(
+                    "OFFSITE_RETRIEVAL_HTTP_" + str(response.status_code)
+                )
+            for chunk in response.iter_bytes():
+                total += len(chunk)
+                if total > size:
+                    raise RuntimeError("OFFSITE_SIZE_MISMATCH")
+                h.update(chunk)
+                if destination:
+                    destination.write(chunk)
+        if total != size or h.hexdigest() != sha:
+            raise RuntimeError("OFFSITE_CHECKSUM_MISMATCH")
+        return {"sha256": sha, "bytes": size}
+
+    try:
+        # Keep every HTTP request below the existing zone's 100 MB limit.
+        # The independent downloaded file is reconstructed and checked in full.
         with ExitStack() as stack:
             destination = None
-            if name == "official.dump" and retrieved_dump:
+            if retrieved_dump:
                 destination = stack.enter_context(
                     os.fdopen(
                         os.open(
@@ -87,25 +131,34 @@ def upload(
                         "wb",
                     )
                 )
-            with client.stream(
-                "GET", ORIGIN + stamp + "/" + name, headers=headers
-            ) as response:
-                if response.status_code != 200:
-                    raise RuntimeError("OFFSITE_RETRIEVAL_FAILED")
-                for chunk in response.iter_bytes():
-                    total += len(chunk)
-                    if total > size:
-                        raise RuntimeError("OFFSITE_SIZE_MISMATCH")
-                    h.update(chunk)
-                    if destination:
-                        destination.write(chunk)
-        if total != size or h.hexdigest() != sha:
-            raise RuntimeError("OFFSITE_CHECKSUM_MISMATCH")
-        artifacts[name] = {"sha256": sha, "bytes": size}
-
-    try:
-        put_and_verify("official.dump", dump_path)
-        put_and_verify("source.json", source_path)
+            size = dump_path.stat().st_size
+            if size <= PART_BYTES:
+                artifacts["official.dump"] = put_and_verify(
+                    "official.dump", dump_path, destination=destination
+                )
+            else:
+                parts = []
+                for index, offset in enumerate(range(0, size, PART_BYTES)):
+                    name = f"official.part-{index:03d}"
+                    part = put_and_verify(
+                        name,
+                        dump_path,
+                        offset,
+                        min(PART_BYTES, size - offset),
+                        destination,
+                    )
+                    parts.append(dict(name=name, **part))
+                artifacts["official.dump"] = {
+                    "sha256": checksum(dump_path),
+                    "bytes": size,
+                    "parts": parts,
+                }
+        if (
+            retrieved_dump
+            and checksum(Path(retrieved_dump)) != artifacts["official.dump"]["sha256"]
+        ):
+            raise RuntimeError("OFFSITE_REASSEMBLED_CHECKSUM_MISMATCH")
+        artifacts["source.json"] = put_and_verify("source.json", source_path)
         # A manifest is the immutable recovery pointer. It is written only after
         # the two dependencies round-trip. No arbitrary prefix/list/delete exists.
         import tempfile
@@ -121,7 +174,7 @@ def upload(
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / "manifest.json"
             path.write_bytes(encoded(manifest))
-            put_and_verify("manifest.json", path)
+            artifacts["manifest.json"] = put_and_verify("manifest.json", path)
         return dict(manifest, artifacts=artifacts)
     finally:
         if owned:
@@ -147,13 +200,17 @@ def main():
             retrieved_dump=args.retrieved_dump,
         )
         print(json.dumps(receipt))
-    except Exception:
+    except Exception as exc:
+        # Only our fixed status codes survive; HTTP/OS details remain private.
+        code = str(exc) if isinstance(exc, RuntimeError) else ""
+        if not re.fullmatch(r"OFFSITE_[A-Z0-9_]{1,70}", code):
+            code = "OFFSITE_UPLOAD_OR_VERIFICATION_FAILURE"
         # HTTP/OS errors can contain credentials or file/connection details.
         print(
             json.dumps(
                 {
                     "status": "offsite_failed",
-                    "errorCode": "OFFSITE_UPLOAD_OR_VERIFICATION_FAILURE",
+                    "errorCode": code,
                 }
             )
         )

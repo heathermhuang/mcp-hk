@@ -1,0 +1,65 @@
+{
+  "pr": 92,
+  "merge": "d984dcdf4cc27acab677d916e9b6a5ca46697c1f",
+  "backendImage": "sha256:a19ff938fb22bc2314cdf2c43c0b9752049f3dbd2ead7dc722d4876dc7431734",
+  "sourceTimersRestored": true,
+  "gatewayChanged": false,
+  "gatewayControllerRelease": "ed59dfa1355df088e55dba515515b19e936a774f",
+  "gatewayCronCount": 5,
+  "gatewayRestore": {
+    "restored": true,
+    "sources": [
+      {
+        "sourceId": "addresses",
+        "recordCount": null
+      },
+      {
+        "sourceId": "restaurants",
+        "recordCount": 17271
+      },
+      {
+        "sourceId": "population",
+        "recordCount": 18
+      },
+      {
+        "sourceId": "catalogue",
+        "recordCount": null
+      },
+      {
+        "sourceId": "seehouse",
+        "recordCount": null
+      },
+      {
+        "sourceId": "platehk",
+        "recordCount": null
+      },
+      {
+        "sourceId": "racing",
+        "recordCount": 1284
+      }
+    ]
+  },
+  "gatewayBackup": {
+    "key": "backups/2026-10-26T03-22-25.467Z-2f1164b9-112f-4aee-807f-04645fa8abb1.snapshot.tar.gz",
+    "sha256": "1e74b228a01e6f2c412741e3bf19721101d24a43f2f0ab1a0af3d2d7c3a89e2a",
+    "createdAt": "2026-10-26T03:22:25.467Z",
+    "bytes": 76737902,
+    "reason": "backup"
+  },
+  "sourceOffsiteJob": "8fd052d2dabde60bedcc8397f2769f75",
+  "sourceOffsiteOutcome": "offsite_failed",
+  "localDumpBytes": 139108317,
+  "sourceFingerprintStable": true,
+  "growthGate": "closed",
+  "sourceRecoveryAccepted": false,
+  "sourceReadExamples": "pending_available_address_quota",
+  "uploadDiagnosis": {
+    "zonePlan": "Free Website",
+    "documentedRequestBodyLimitMB": 100,
+    "dumpExceedsLimit": true,
+    "headersOnlyProbe": "no_early_response_no_dump_bytes_sent",
+    "source": "https://developers.cloudflare.com/workers/platform/limits/"
+  },
+  "priorAcceptedDataRetained": true,
+  "ordinaryCadenceQualified": false
+}
