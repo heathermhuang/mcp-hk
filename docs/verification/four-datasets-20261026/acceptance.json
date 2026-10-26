@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-26T16:18:16.914527+00:00",
+  "updatedAt": "2026-10-26T18:34:12.758059+00:00",
   "overallState": "incomplete",
   "sourcePlan": "../../../../../../docs/designs/mcp-hk-four-datasets-completion-20261026.md",
   "originalInventories": {
@@ -24,44 +24,47 @@
     {
       "id": "W00.baseline-main-runtime",
       "workPackage": "W00",
-      "state": "partial",
+      "state": "passed",
       "dependency": [],
       "actualCoverage": {
-        "landedReleasedPRs": [
-          92,
-          93,
-          95
-        ],
-        "companyOwnerLandedPRs": [
-          96,
-          98
-        ],
-        "openPRs": [
-          94,
-          97
-        ],
-        "racingCandidateStillLocal": true
+        "commit": "9828dc0c2a59392dad0f58c5cfb5d8529495b8d7",
+        "checkedHead": "e8fa594a5ccf1f184d1ceed004b8e2697bd42b6b",
+        "tree": "2136d9b2f309403f7c56db86d899aa9d3cb9b2fe",
+        "version": "c53abef7-2b51-4b2e-83cd-bad2ef40c14a",
+        "image": "sha256:b6f6213e0903d50e6862f2412fff14362b7f742cdb8113e563bdce11a4f9df91",
+        "privateBackendCommit": "3aeaaafbd7f51636c314e707de82911c48567632"
       },
-      "version": "c388597a6a99cc868013cbf38f71e0f389c301d1",
+      "version": "9828dc0c2a59392dad0f58c5cfb5d8529495b8d7",
       "evidence": [
-        "pr92-release.json",
-        "OFFSITE-REVIEW.md",
-        "QUERY-REVIEW.md",
-        "progress-20261027.json"
+        "production-release-20261027.json",
+        "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Finish independent releases and runtime/recovery checks; all four remain incomplete"
+      "nextAction": "Continue source-specific completion from current observed state"
     },
     {
       "id": "W00.source-jobs-locks-capacity",
       "workPackage": "W00",
-      "state": "pending",
+      "state": "partial",
       "dependency": [],
-      "actualCoverage": null,
+      "actualCoverage": {
+        "gatewayCrons": 5,
+        "sourceTimers": 7,
+        "gatewayScratch": {
+          "freeBytes": 6941298688,
+          "requiredBytes": 1400000000,
+          "sufficient": true,
+          "basis": "gateway_backup_copy_packed_transfer_and_isolated_restore"
+        },
+        "releaseSlotReleased": true
+      },
       "version": null,
-      "evidence": [],
+      "evidence": [
+        "production-release-20261027.json",
+        "RELEASE-20261027.md"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Retain per-source growth and recovery gates; source backlog work remains"
     },
     {
       "id": "W00.source-policy-refresh",
@@ -189,18 +192,20 @@
       "state": "partial",
       "dependency": [],
       "actualCoverage": {
-        "previousRealExamples": [
-          "00562995",
-          "77596226"
+        "queuedTargets": [
+          "cr:foreign:00562995",
+          "cr:foreign:77596226"
         ],
-        "postReleaseQuotaResetRecheck": false
+        "providerDispatchNow": 0,
+        "nextExistingSchedule": "2026-10-27T01:00:00Z"
       },
-      "version": "d984dcdf4cc27acab677d916e9b6a5ca46697c1f",
+      "version": null,
       "evidence": [
-        "REVIEW.md"
+        "production-release-20261027.json",
+        "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Recheck exact failed/control targets after shared quota reset without duplicate collection"
+      "nextAction": "Verify retained new outcomes after quota reset, then restore recorded prior priority flags"
     },
     {
       "id": "W02.original-94-pairs-reconciled",
@@ -208,16 +213,54 @@
       "state": "partial",
       "dependency": [],
       "actualCoverage": {
-        "publishedOriginalPairs": 72,
-        "originalPairs": 94,
-        "ownerActualBilingualZips": 6
+        "version": "official-731745eb39cd14f3f986ac01521f0525",
+        "acceptedWeeks": 72,
+        "inventoryWeeks": 94,
+        "acceptedCsvFiles": 144,
+        "inventoryCsvFiles": 188,
+        "counts": {
+          "money_lender": {
+            "rows": 6776,
+            "entities": 6770
+          },
+          "company_event": {
+            "rows": 312706,
+            "entities": 305101
+          },
+          "address_observation": {
+            "rows": 726,
+            "entities": 726
+          }
+        },
+        "offsiteRpoQualified": false,
+        "addressCapacity": {
+          "eligible": 305101,
+          "dailyAttemptLimit": 250,
+          "sharedCrDailyRequestLimit": 500,
+          "fullPassMinimumDaysAtCurrentCap": 1221,
+          "wholeSubset90DayCycleFeasible": false,
+          "successfulReadsPerDayNeededFor90Days": 3391,
+          "guaranteedWholeSubsetCycleDays": null,
+          "refreshTargetDays": 90,
+          "priorityCohortCapacityAt90Days": 4500,
+          "targetScope": "observed_and_explicit_priority_cohorts; capacity-dependent, not a whole-subset guarantee",
+          "saturatedShares": {
+            "priority": 0.2,
+            "refresh": 0.4,
+            "initial": 0.3,
+            "retry": 0.1
+          },
+          "idleShareBorrowing": true,
+          "basis": "optimistic lower bound; failures, holds and other CR reads reduce throughput"
+        }
       },
-      "version": null,
+      "version": "official-731745eb39cd14f3f986ac01521f0525",
       "evidence": [
-        "progress-20261027.json"
+        "production-release-20261027.json",
+        "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Reuse company owner quota-reset retry, then qualify all original cases at one full accepted version"
+      "nextAction": "Reuse existing owner retry; qualify all original 188 source cases once full version publishes"
     },
     {
       "id": "W02.staged-bytes-reused",
@@ -274,16 +317,54 @@
       "state": "partial",
       "dependency": [],
       "actualCoverage": {
-        "publishedOriginalPairs": 72,
-        "originalPairs": 94,
-        "ownerActualBilingualZips": 6
+        "version": "official-731745eb39cd14f3f986ac01521f0525",
+        "acceptedWeeks": 72,
+        "inventoryWeeks": 94,
+        "acceptedCsvFiles": 144,
+        "inventoryCsvFiles": 188,
+        "counts": {
+          "money_lender": {
+            "rows": 6776,
+            "entities": 6770
+          },
+          "company_event": {
+            "rows": 312706,
+            "entities": 305101
+          },
+          "address_observation": {
+            "rows": 726,
+            "entities": 726
+          }
+        },
+        "offsiteRpoQualified": false,
+        "addressCapacity": {
+          "eligible": 305101,
+          "dailyAttemptLimit": 250,
+          "sharedCrDailyRequestLimit": 500,
+          "fullPassMinimumDaysAtCurrentCap": 1221,
+          "wholeSubset90DayCycleFeasible": false,
+          "successfulReadsPerDayNeededFor90Days": 3391,
+          "guaranteedWholeSubsetCycleDays": null,
+          "refreshTargetDays": 90,
+          "priorityCohortCapacityAt90Days": 4500,
+          "targetScope": "observed_and_explicit_priority_cohorts; capacity-dependent, not a whole-subset guarantee",
+          "saturatedShares": {
+            "priority": 0.2,
+            "refresh": 0.4,
+            "initial": 0.3,
+            "retry": 0.1
+          },
+          "idleShareBorrowing": true,
+          "basis": "optimistic lower bound; failures, holds and other CR reads reduce throughput"
+        }
       },
-      "version": null,
+      "version": "official-731745eb39cd14f3f986ac01521f0525",
       "evidence": [
-        "progress-20261027.json"
+        "production-release-20261027.json",
+        "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Reuse company owner quota-reset retry, then qualify all original cases at one full accepted version"
+      "nextAction": "Reuse existing owner retry; qualify all original 188 source cases once full version publishes"
     },
     {
       "id": "W02.same-version-bilingual-explorer-pairs",
@@ -291,16 +372,54 @@
       "state": "partial",
       "dependency": [],
       "actualCoverage": {
-        "publishedOriginalPairs": 72,
-        "originalPairs": 94,
-        "ownerActualBilingualZips": 6
+        "version": "official-731745eb39cd14f3f986ac01521f0525",
+        "acceptedWeeks": 72,
+        "inventoryWeeks": 94,
+        "acceptedCsvFiles": 144,
+        "inventoryCsvFiles": 188,
+        "counts": {
+          "money_lender": {
+            "rows": 6776,
+            "entities": 6770
+          },
+          "company_event": {
+            "rows": 312706,
+            "entities": 305101
+          },
+          "address_observation": {
+            "rows": 726,
+            "entities": 726
+          }
+        },
+        "offsiteRpoQualified": false,
+        "addressCapacity": {
+          "eligible": 305101,
+          "dailyAttemptLimit": 250,
+          "sharedCrDailyRequestLimit": 500,
+          "fullPassMinimumDaysAtCurrentCap": 1221,
+          "wholeSubset90DayCycleFeasible": false,
+          "successfulReadsPerDayNeededFor90Days": 3391,
+          "guaranteedWholeSubsetCycleDays": null,
+          "refreshTargetDays": 90,
+          "priorityCohortCapacityAt90Days": 4500,
+          "targetScope": "observed_and_explicit_priority_cohorts; capacity-dependent, not a whole-subset guarantee",
+          "saturatedShares": {
+            "priority": 0.2,
+            "refresh": 0.4,
+            "initial": 0.3,
+            "retry": 0.1
+          },
+          "idleShareBorrowing": true,
+          "basis": "optimistic lower bound; failures, holds and other CR reads reduce throughput"
+        }
       },
-      "version": null,
+      "version": "official-731745eb39cd14f3f986ac01521f0525",
       "evidence": [
-        "progress-20261027.json"
+        "production-release-20261027.json",
+        "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Reuse company owner quota-reset retry, then qualify all original cases at one full accepted version"
+      "nextAction": "Reuse existing owner retry; qualify all original 188 source cases once full version publishes"
     },
     {
       "id": "W02.actual-browser-zips",
@@ -308,16 +427,54 @@
       "state": "partial",
       "dependency": [],
       "actualCoverage": {
-        "publishedOriginalPairs": 72,
-        "originalPairs": 94,
-        "ownerActualBilingualZips": 6
+        "version": "official-731745eb39cd14f3f986ac01521f0525",
+        "acceptedWeeks": 72,
+        "inventoryWeeks": 94,
+        "acceptedCsvFiles": 144,
+        "inventoryCsvFiles": 188,
+        "counts": {
+          "money_lender": {
+            "rows": 6776,
+            "entities": 6770
+          },
+          "company_event": {
+            "rows": 312706,
+            "entities": 305101
+          },
+          "address_observation": {
+            "rows": 726,
+            "entities": 726
+          }
+        },
+        "offsiteRpoQualified": false,
+        "addressCapacity": {
+          "eligible": 305101,
+          "dailyAttemptLimit": 250,
+          "sharedCrDailyRequestLimit": 500,
+          "fullPassMinimumDaysAtCurrentCap": 1221,
+          "wholeSubset90DayCycleFeasible": false,
+          "successfulReadsPerDayNeededFor90Days": 3391,
+          "guaranteedWholeSubsetCycleDays": null,
+          "refreshTargetDays": 90,
+          "priorityCohortCapacityAt90Days": 4500,
+          "targetScope": "observed_and_explicit_priority_cohorts; capacity-dependent, not a whole-subset guarantee",
+          "saturatedShares": {
+            "priority": 0.2,
+            "refresh": 0.4,
+            "initial": 0.3,
+            "retry": 0.1
+          },
+          "idleShareBorrowing": true,
+          "basis": "optimistic lower bound; failures, holds and other CR reads reduce throughput"
+        }
       },
-      "version": null,
+      "version": "official-731745eb39cd14f3f986ac01521f0525",
       "evidence": [
-        "progress-20261027.json"
+        "production-release-20261027.json",
+        "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Reuse company owner quota-reset retry, then qualify all original cases at one full accepted version"
+      "nextAction": "Reuse existing owner retry; qualify all original 188 source cases once full version publishes"
     },
     {
       "id": "W02.ordinary-daily-source",
@@ -422,19 +579,21 @@
     {
       "id": "W04.sfc-production-schema-config",
       "workPackage": "W04",
-      "state": "in_progress",
+      "state": "partial",
       "dependency": [],
       "actualCoverage": {
-        "checkedOpenPR": 94,
-        "deployed": false,
-        "publicState": "unqualified"
+        "schemaInstalled": true,
+        "reader": "SELECT_only",
+        "policyActive": false,
+        "cohort": 0
       },
-      "version": "17379e021d2ae1c3b1ae0234d446f5cac3a9a69d",
+      "version": null,
       "evidence": [
-        "progress-20261027.json"
+        "production-release-20261027.json",
+        "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Integrate checked wiring and production configuration, then qualify actual cohort/modes"
+      "nextAction": "Configure source-scoped collector/recovery for the actual authorized CE cohort"
     },
     {
       "id": "W04.sfc-bounded-scheduled-collector",
@@ -450,36 +609,40 @@
     {
       "id": "W04.sfc-persisted-status",
       "workPackage": "W04",
-      "state": "in_progress",
+      "state": "passed",
       "dependency": [],
       "actualCoverage": {
-        "checkedOpenPR": 94,
-        "deployed": false,
-        "publicState": "unqualified"
+        "schemaInstalled": true,
+        "actualPublicState": "not_activated",
+        "acceptedVersion": null,
+        "enabledModes": []
       },
-      "version": "17379e021d2ae1c3b1ae0234d446f5cac3a9a69d",
+      "version": "3aeaaafbd7f51636c314e707de82911c48567632",
       "evidence": [
-        "progress-20261027.json"
+        "production-release-20261027.json",
+        "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Integrate checked wiring and production configuration, then qualify actual cohort/modes"
+      "nextAction": "Do not infer public qualification from installed status; qualify source modes and actual cohort separately"
     },
     {
       "id": "W04.sfc-real-reader-wiring",
       "workPackage": "W04",
-      "state": "in_progress",
+      "state": "passed",
       "dependency": [],
       "actualCoverage": {
-        "checkedOpenPR": 94,
-        "deployed": false,
-        "publicState": "unqualified"
+        "schemaInstalled": true,
+        "actualPublicState": "not_activated",
+        "acceptedVersion": null,
+        "enabledModes": []
       },
-      "version": "17379e021d2ae1c3b1ae0234d446f5cac3a9a69d",
+      "version": "3aeaaafbd7f51636c314e707de82911c48567632",
       "evidence": [
-        "progress-20261027.json"
+        "production-release-20261027.json",
+        "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Integrate checked wiring and production configuration, then qualify actual cohort/modes"
+      "nextAction": "Do not infer public qualification from installed status; qualify source modes and actual cohort separately"
     },
     {
       "id": "W04.sfc-independent-restored-candidate",
@@ -529,19 +692,20 @@
     {
       "id": "W04.sfc-rest-mcp-browser-export",
       "workPackage": "W04",
-      "state": "in_progress",
+      "state": "partial",
       "dependency": [],
       "actualCoverage": {
-        "checkedOpenPR": 94,
-        "deployed": false,
-        "publicState": "unqualified"
+        "statusAndGatedReaderWiring": "deployed",
+        "freshFactsPublished": 0,
+        "historyAndExports": "not implemented by this wiring"
       },
-      "version": "17379e021d2ae1c3b1ae0234d446f5cac3a9a69d",
+      "version": null,
       "evidence": [
-        "progress-20261027.json"
+        "production-release-20261027.json",
+        "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Integrate checked wiring and production configuration, then qualify actual cohort/modes"
+      "nextAction": "Complete qualified actual-cohort outputs, export/history and source-specific recovery"
     },
     {
       "id": "W04.sfc-ordinary-jobs-failure-retention",
@@ -609,22 +773,26 @@
     {
       "id": "W05.racing-full-participant-profiles",
       "workPackage": "W05",
-      "state": "in_progress",
+      "state": "partial",
       "dependency": [],
       "actualCoverage": {
-        "state": "local_verified_not_released",
-        "realTechnicalBilingualCaptures": 3,
-        "completeCareerHistory": false,
-        "browserFixtureJourneys": 8,
-        "actualFixtureZipDownloads": 8,
-        "providerRequestsDuringBrowserVerification": 0
+        "acceptedRealObservations": 3,
+        "sourceParticipantCohort": 950,
+        "kinds": [
+          "horse",
+          "jockey",
+          "trainer"
+        ],
+        "wholeCareerHistory": false,
+        "originalCaptureTimesPreserved": true
       },
-      "version": null,
+      "version": "9828dc0c2a59392dad0f58c5cfb5d8529495b8d7",
       "evidence": [
-        "progress-20261027.json"
+        "production-release-20261027.json",
+        "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Release checked profile path, qualify previously captured real cohort without new reads, and verify public parity"
+      "nextAction": "Resolve the preserved source redirect, then continue the bounded cohort and remaining profile families"
     },
     {
       "id": "W05.racing-sectionals-dividends",
@@ -684,13 +852,22 @@
     {
       "id": "W05.racing-rest-mcp-browser-zips",
       "workPackage": "W05",
-      "state": "pending",
+      "state": "partial",
       "dependency": [],
-      "actualCoverage": null,
-      "version": null,
-      "evidence": [],
+      "actualCoverage": {
+        "realProfileCohort": 3,
+        "restMcpExactParity": true,
+        "realBilingualBrowserJourneys": 12,
+        "actualZips": 12,
+        "allCsvJsonFactsAndMemberHashesVerified": true
+      },
+      "version": "9828dc0c2a59392dad0f58c5cfb5d8529495b8d7",
+      "evidence": [
+        "production-release-20261027.json",
+        "RELEASE-20261027.md"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Complete remaining Racing families and their declared-cohort acceptance"
     },
     {
       "id": "W05.racing-ordinary-ingestion-fresh-recovery",
@@ -698,18 +875,19 @@
       "state": "partial",
       "dependency": [],
       "actualCoverage": {
-        "meetings": 14,
-        "races": 138,
-        "resultRows": 1733,
-        "earliest": "2026-09-06",
-        "latest": "2026-10-25"
+        "freshAcceptedSha256": "24b716069cbf26e6469f109427d5355bf2c497b247a8efd415fc1b3026441a54",
+        "comparedRacingTables": 14,
+        "priorRacingTablesUnchanged": 10,
+        "profileProviderReads": 0,
+        "originalProviderHoldRetained": true
       },
-      "version": "racing-results-v1-06c92779a44dfbe95e9e15eff543b67352063cb02896df9f83d6d25c72d1e124",
+      "version": "9828dc0c2a59392dad0f58c5cfb5d8529495b8d7",
       "evidence": [
-        "progress-20261027.json"
+        "production-release-20261027.json",
+        "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Preserve and investigate HTTP302 source hold before further historical reads; do not clear or bypass it"
+      "nextAction": "Resolve exact historical HTTP302 hold; ordinary profile collection not yet qualified"
     },
     {
       "id": "W06.hkex-webb-archive-preserved",
@@ -741,14 +919,15 @@
       "actualCoverage": {
         "latestSummaryDate": "2026-10-26",
         "rows": 1288,
-        "timerProvenanceFixOpenPR": 97
+        "timerProvenanceFix": "deployed"
       },
-      "version": "hkex-daily-5d1c79ec1f14f0ed61e36d438a6dce3e",
+      "version": "060fec150c7dcfcf8b97159165a3d5bb6808d7e0",
       "evidence": [
-        "progress-20261027.json"
+        "production-release-20261027.json",
+        "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Deploy provenance fix and verify actual canonical ordinary occurrence"
+      "nextAction": "Verify the next actual canonical timer occurrence at 2026-10-27T01:20:00Z"
     },
     {
       "id": "W06.hkex-daily-report-gap-handling",
@@ -775,13 +954,21 @@
     {
       "id": "W06.hkex-real-listing-document-transport-parser",
       "workPackage": "W06",
-      "state": "pending",
+      "state": "in_progress",
       "dependency": [],
-      "actualCoverage": null,
+      "actualCoverage": {
+        "realForm3BTechnicalReads": 3,
+        "rawHtmlRetained": false,
+        "filingDateLabelObserved": true,
+        "publishedFullFilingWindow": false
+      },
       "version": null,
-      "evidence": [],
+      "evidence": [
+        "production-release-20261027.json",
+        "RELEASE-20261027.md"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Implement real provider inventory/parser with source identity, missing fields and revision closure; do not substitute daily summaries"
     },
     {
       "id": "W06.hkex-filing-window-revision-closure",
@@ -852,13 +1039,28 @@
     {
       "id": "W07.bilingual-mobile-keyboard-states",
       "workPackage": "W07",
-      "state": "pending",
+      "state": "partial",
       "dependency": [],
-      "actualCoverage": null,
+      "actualCoverage": {
+        "localProfileWidths": [
+          320,
+          390,
+          768,
+          1280
+        ],
+        "realProfileWidths": [
+          320,
+          1280
+        ],
+        "realBilingualProfileJourneys": 12
+      },
       "version": null,
-      "evidence": [],
+      "evidence": [
+        "production-release-20261027.json",
+        "RELEASE-20261027.md"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Complete remaining-family and full original-company cohort UX acceptance"
     },
     {
       "id": "W08.source-scoped-pr-review",
@@ -866,30 +1068,40 @@
       "state": "partial",
       "dependency": [],
       "actualCoverage": {
-        "landedReleasedPRs": [
+        "releasedPrs": [
           92,
           93,
-          95
-        ],
-        "companyOwnerLandedPRs": [
-          96,
-          98
-        ],
-        "openPRs": [
           94,
-          97
+          95,
+          97,
+          99,
+          100
         ],
-        "racingCandidateStillLocal": true
+        "checks": {
+          "pythonPassed": 647,
+          "optionalLiveSkipped": 7,
+          "workerPassed": 138,
+          "requiredCiPassed": true
+        },
+        "gateway": {
+          "commit": "9828dc0c2a59392dad0f58c5cfb5d8529495b8d7",
+          "checkedHead": "e8fa594a5ccf1f184d1ceed004b8e2697bd42b6b",
+          "tree": "2136d9b2f309403f7c56db86d899aa9d3cb9b2fe",
+          "version": "c53abef7-2b51-4b2e-83cd-bad2ef40c14a",
+          "image": "sha256:b6f6213e0903d50e6862f2412fff14362b7f742cdb8113e563bdce11a4f9df91",
+          "privateBackendCommit": "3aeaaafbd7f51636c314e707de82911c48567632"
+        },
+        "gatewayCrons": 5,
+        "sourceTimers": 7,
+        "profileCohortVerified": 3
       },
-      "version": "c388597a6a99cc868013cbf38f71e0f389c301d1",
+      "version": "9828dc0c2a59392dad0f58c5cfb5d8529495b8d7",
       "evidence": [
-        "pr92-release.json",
-        "OFFSITE-REVIEW.md",
-        "QUERY-REVIEW.md",
-        "progress-20261027.json"
+        "production-release-20261027.json",
+        "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Finish independent releases and runtime/recovery checks; all four remain incomplete"
+      "nextAction": "Keep broader four-family acceptance incomplete; preserve each source/version proof separately"
     },
     {
       "id": "W08.exact-head-checks-real-postgres-ci",
@@ -897,30 +1109,40 @@
       "state": "partial",
       "dependency": [],
       "actualCoverage": {
-        "landedReleasedPRs": [
+        "releasedPrs": [
           92,
           93,
-          95
-        ],
-        "companyOwnerLandedPRs": [
-          96,
-          98
-        ],
-        "openPRs": [
           94,
-          97
+          95,
+          97,
+          99,
+          100
         ],
-        "racingCandidateStillLocal": true
+        "checks": {
+          "pythonPassed": 647,
+          "optionalLiveSkipped": 7,
+          "workerPassed": 138,
+          "requiredCiPassed": true
+        },
+        "gateway": {
+          "commit": "9828dc0c2a59392dad0f58c5cfb5d8529495b8d7",
+          "checkedHead": "e8fa594a5ccf1f184d1ceed004b8e2697bd42b6b",
+          "tree": "2136d9b2f309403f7c56db86d899aa9d3cb9b2fe",
+          "version": "c53abef7-2b51-4b2e-83cd-bad2ef40c14a",
+          "image": "sha256:b6f6213e0903d50e6862f2412fff14362b7f742cdb8113e563bdce11a4f9df91",
+          "privateBackendCommit": "3aeaaafbd7f51636c314e707de82911c48567632"
+        },
+        "gatewayCrons": 5,
+        "sourceTimers": 7,
+        "profileCohortVerified": 3
       },
-      "version": "c388597a6a99cc868013cbf38f71e0f389c301d1",
+      "version": "9828dc0c2a59392dad0f58c5cfb5d8529495b8d7",
       "evidence": [
-        "pr92-release.json",
-        "OFFSITE-REVIEW.md",
-        "QUERY-REVIEW.md",
-        "progress-20261027.json"
+        "production-release-20261027.json",
+        "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Finish independent releases and runtime/recovery checks; all four remain incomplete"
+      "nextAction": "Keep broader four-family acceptance incomplete; preserve each source/version proof separately"
     },
     {
       "id": "W08.serialized-release-runtime-adoption",
@@ -928,30 +1150,40 @@
       "state": "partial",
       "dependency": [],
       "actualCoverage": {
-        "landedReleasedPRs": [
+        "releasedPrs": [
           92,
           93,
-          95
-        ],
-        "companyOwnerLandedPRs": [
-          96,
-          98
-        ],
-        "openPRs": [
           94,
-          97
+          95,
+          97,
+          99,
+          100
         ],
-        "racingCandidateStillLocal": true
+        "checks": {
+          "pythonPassed": 647,
+          "optionalLiveSkipped": 7,
+          "workerPassed": 138,
+          "requiredCiPassed": true
+        },
+        "gateway": {
+          "commit": "9828dc0c2a59392dad0f58c5cfb5d8529495b8d7",
+          "checkedHead": "e8fa594a5ccf1f184d1ceed004b8e2697bd42b6b",
+          "tree": "2136d9b2f309403f7c56db86d899aa9d3cb9b2fe",
+          "version": "c53abef7-2b51-4b2e-83cd-bad2ef40c14a",
+          "image": "sha256:b6f6213e0903d50e6862f2412fff14362b7f742cdb8113e563bdce11a4f9df91",
+          "privateBackendCommit": "3aeaaafbd7f51636c314e707de82911c48567632"
+        },
+        "gatewayCrons": 5,
+        "sourceTimers": 7,
+        "profileCohortVerified": 3
       },
-      "version": "c388597a6a99cc868013cbf38f71e0f389c301d1",
+      "version": "9828dc0c2a59392dad0f58c5cfb5d8529495b8d7",
       "evidence": [
-        "pr92-release.json",
-        "OFFSITE-REVIEW.md",
-        "QUERY-REVIEW.md",
-        "progress-20261027.json"
+        "production-release-20261027.json",
+        "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Finish independent releases and runtime/recovery checks; all four remain incomplete"
+      "nextAction": "Keep broader four-family acceptance incomplete; preserve each source/version proof separately"
     },
     {
       "id": "W08.all-five-crons-source-timers-restored",
@@ -959,30 +1191,40 @@
       "state": "partial",
       "dependency": [],
       "actualCoverage": {
-        "landedReleasedPRs": [
+        "releasedPrs": [
           92,
           93,
-          95
-        ],
-        "companyOwnerLandedPRs": [
-          96,
-          98
-        ],
-        "openPRs": [
           94,
-          97
+          95,
+          97,
+          99,
+          100
         ],
-        "racingCandidateStillLocal": true
+        "checks": {
+          "pythonPassed": 647,
+          "optionalLiveSkipped": 7,
+          "workerPassed": 138,
+          "requiredCiPassed": true
+        },
+        "gateway": {
+          "commit": "9828dc0c2a59392dad0f58c5cfb5d8529495b8d7",
+          "checkedHead": "e8fa594a5ccf1f184d1ceed004b8e2697bd42b6b",
+          "tree": "2136d9b2f309403f7c56db86d899aa9d3cb9b2fe",
+          "version": "c53abef7-2b51-4b2e-83cd-bad2ef40c14a",
+          "image": "sha256:b6f6213e0903d50e6862f2412fff14362b7f742cdb8113e563bdce11a4f9df91",
+          "privateBackendCommit": "3aeaaafbd7f51636c314e707de82911c48567632"
+        },
+        "gatewayCrons": 5,
+        "sourceTimers": 7,
+        "profileCohortVerified": 3
       },
-      "version": "c388597a6a99cc868013cbf38f71e0f389c301d1",
+      "version": "9828dc0c2a59392dad0f58c5cfb5d8529495b8d7",
       "evidence": [
-        "pr92-release.json",
-        "OFFSITE-REVIEW.md",
-        "QUERY-REVIEW.md",
-        "progress-20261027.json"
+        "production-release-20261027.json",
+        "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Finish independent releases and runtime/recovery checks; all four remain incomplete"
+      "nextAction": "Keep broader four-family acceptance incomplete; preserve each source/version proof separately"
     },
     {
       "id": "W08.live-parity-rollback-fresh-restores",
@@ -990,41 +1232,59 @@
       "state": "partial",
       "dependency": [],
       "actualCoverage": {
-        "landedReleasedPRs": [
+        "releasedPrs": [
           92,
           93,
-          95
-        ],
-        "companyOwnerLandedPRs": [
-          96,
-          98
-        ],
-        "openPRs": [
           94,
-          97
+          95,
+          97,
+          99,
+          100
         ],
-        "racingCandidateStillLocal": true
+        "checks": {
+          "pythonPassed": 647,
+          "optionalLiveSkipped": 7,
+          "workerPassed": 138,
+          "requiredCiPassed": true
+        },
+        "gateway": {
+          "commit": "9828dc0c2a59392dad0f58c5cfb5d8529495b8d7",
+          "checkedHead": "e8fa594a5ccf1f184d1ceed004b8e2697bd42b6b",
+          "tree": "2136d9b2f309403f7c56db86d899aa9d3cb9b2fe",
+          "version": "c53abef7-2b51-4b2e-83cd-bad2ef40c14a",
+          "image": "sha256:b6f6213e0903d50e6862f2412fff14362b7f742cdb8113e563bdce11a4f9df91",
+          "privateBackendCommit": "3aeaaafbd7f51636c314e707de82911c48567632"
+        },
+        "gatewayCrons": 5,
+        "sourceTimers": 7,
+        "profileCohortVerified": 3
       },
-      "version": "c388597a6a99cc868013cbf38f71e0f389c301d1",
+      "version": "9828dc0c2a59392dad0f58c5cfb5d8529495b8d7",
       "evidence": [
-        "pr92-release.json",
-        "OFFSITE-REVIEW.md",
-        "QUERY-REVIEW.md",
-        "progress-20261027.json"
+        "production-release-20261027.json",
+        "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Finish independent releases and runtime/recovery checks; all four remain incomplete"
+      "nextAction": "Keep broader four-family acceptance incomplete; preserve each source/version proof separately"
     },
     {
       "id": "W08.final-four-family-matrix",
       "workPackage": "W08",
-      "state": "pending",
+      "state": "partial",
       "dependency": [],
-      "actualCoverage": null,
+      "actualCoverage": {
+        "company": "144/188 CSVs, daily RPO unqualified",
+        "sfc": "archive available; official cohort not activated",
+        "racing": "14 meetings and 3 dated profiles; history/families incomplete",
+        "hkex": "archive and 1288 summary rows; full filing window not accepted"
+      },
       "version": null,
-      "evidence": [],
+      "evidence": [
+        "production-release-20261027.json",
+        "RELEASE-20261027.md"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Complete remaining source-specific dependencies and unblocked engineering"
     }
   ]
 }

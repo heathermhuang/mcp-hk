@@ -1,0 +1,592 @@
+{
+  "observedAt": "2026-10-26T18:34:12.758059+00:00",
+  "scope": "bounded production profile cohort and SFC schema/status; full four-family programme remains incomplete",
+  "gateway": {
+    "commit": "9828dc0c2a59392dad0f58c5cfb5d8529495b8d7",
+    "checkedHead": "e8fa594a5ccf1f184d1ceed004b8e2697bd42b6b",
+    "tree": "2136d9b2f309403f7c56db86d899aa9d3cb9b2fe",
+    "version": "c53abef7-2b51-4b2e-83cd-bad2ef40c14a",
+    "image": "sha256:b6f6213e0903d50e6862f2412fff14362b7f742cdb8113e563bdce11a4f9df91",
+    "privateBackendCommit": "3aeaaafbd7f51636c314e707de82911c48567632"
+  },
+  "checks": {
+    "pythonPassed": 647,
+    "optionalLiveSkipped": 7,
+    "workerPassed": 138,
+    "requiredCiPassed": true
+  },
+  "profiles": {
+    "observedAt": "2026-10-26T17:58:47.513710+00:00",
+    "scope": "three real retained profile observations; no full-cohort/career completion claim",
+    "receipts": [
+      {
+        "kind": "horse",
+        "sourceId": "HK_2024_K307",
+        "version": "racing-profile-v1-a15d58967afdce9e6c615c9d8feab967828d631437b6f78938c636e26ec9be51",
+        "name": "ACE",
+        "observations": {
+          "en": "2026-10-26T06:55:59.343285+00:00",
+          "zhHant": "2026-10-26T06:56:00.075781+00:00"
+        },
+        "statisticsCutoff": {
+          "basis": "source_statistics_cutoff",
+          "precision": "unknown",
+          "raw": null,
+          "value": null
+        },
+        "restMcpExactParity": true,
+        "historyParityBothLanguages": true,
+        "historyRows": 16,
+        "currentValuesAppliedToPastRaces": false
+      },
+      {
+        "kind": "jockey",
+        "sourceId": "PZ",
+        "version": "racing-profile-v1-12c2dd34ffd49fd550752cef6601d1f258d1aa2c6b392b66a5620b17c532040f",
+        "name": "Zac Purton",
+        "observations": {
+          "en": "2026-10-26T06:56:00.631476+00:00",
+          "zhHant": "2026-10-26T06:56:02.090254+00:00"
+        },
+        "statisticsCutoff": {
+          "basis": "source_statistics_cutoff",
+          "precision": "day",
+          "raw": "26/27 Season Up to Race Meeting of 25/10/2026",
+          "value": "2026-10-25"
+        },
+        "restMcpExactParity": true,
+        "historyParityBothLanguages": true,
+        "historyRows": 0,
+        "currentValuesAppliedToPastRaces": false
+      },
+      {
+        "kind": "trainer",
+        "sourceId": "NM",
+        "version": "racing-profile-v1-125e4fa5284704cbb202f11bb5d3989eb32f0de4a71a83053cb74f00e6947ef8",
+        "name": "Mark Newnham",
+        "observations": {
+          "en": "2026-10-26T06:56:03.579867+00:00",
+          "zhHant": "2026-10-26T06:56:06.116002+00:00"
+        },
+        "statisticsCutoff": {
+          "basis": "source_statistics_cutoff",
+          "precision": "day",
+          "raw": "26/27 Season Up to Race Meeting of 25/10/2026",
+          "value": "2026-10-25"
+        },
+        "restMcpExactParity": true,
+        "historyParityBothLanguages": true,
+        "historyRows": 0,
+        "currentValuesAppliedToPastRaces": false
+      }
+    ],
+    "toolDiscoveryIncludesNewProfileTools": true
+  },
+  "recovery": {
+    "observedAt": "2026-10-26T17:58:16.548142+00:00",
+    "downloadedAcceptedSha256": "24b716069cbf26e6469f109427d5355bf2c497b247a8efd415fc1b3026441a54",
+    "bytes": 89497617,
+    "isolatedRestore": true,
+    "fingerprints": {
+      "racing_pages": {
+        "rows": 289,
+        "sha256": "57b32e64f5587af5bacd67d21937316c4fa44862247b7cb5d1c8272e316c7f0e"
+      },
+      "racing_attempts": {
+        "rows": 298,
+        "sha256": "57ca235cd79a60b5f3b1b803dfa8fd623828f57f9fb18b1a09c1256553467783"
+      },
+      "racing_snapshots": {
+        "rows": 14,
+        "sha256": "135da1547d05e8af7a7921390bde1db36a9ef5104b8277971e62725e4dfce6d9"
+      },
+      "racing_current": {
+        "rows": 14,
+        "sha256": "9c8b1c2ea008f9c2e416afa2f84bcd0c695b7fe43e6202ef614a0f02c6f9df19"
+      },
+      "racing_publications": {
+        "rows": 14,
+        "sha256": "f56591e7420bc15fdd74bc36705d1edee812dd753723717198f4a388ba437691"
+      },
+      "racing_accepted": {
+        "rows": 14,
+        "sha256": "82859fb871d7b31925ca00bf26700f9bf7010af387cb9c88d0344a3d3cffbf88"
+      },
+      "racing_queue": {
+        "rows": 102,
+        "sha256": "6bd25b5aa5dd106ba083f15928fda8a43441a4c99c8e9862aac3f9994a2a1175"
+      },
+      "racing_control": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "racing_calendar": {
+        "rows": 13,
+        "sha256": "9ca177d31f731c38124f234bda341c6561cf1a771365aabe80ff5db63a395659"
+      },
+      "racing_remote_requests": {
+        "rows": 229,
+        "sha256": "d017373fca0b3b8d48b89e7cc491b465a3bc3a3aeab198803d653daf8cf1ac8b"
+      },
+      "racing_profile_versions": {
+        "rows": 3,
+        "sha256": "f72627cfeab6ad8bc22da3f0a89ab61f3480b50122934ac8b5e4e610d0dcb04d"
+      },
+      "racing_profile_current": {
+        "rows": 3,
+        "sha256": "d099a9ac1cf16853ab8d86fd5e5df9f0f3fb2102e79505ea55e1b8253c112d2b"
+      },
+      "racing_profile_queue": {
+        "rows": 950,
+        "sha256": "44117f5f48f54b32f8eeb103fc1daebd26ba4b472f48a1467e4d91464763938d"
+      },
+      "racing_profile_meta": {
+        "rows": 4,
+        "sha256": "d9b0b9cbe67ffc96b82eec05a42fe572dd19ec159644d99c7753fa50706bf188"
+      }
+    },
+    "allTenPriorRacingTablesUnchanged": {
+      "racing_pages": true,
+      "racing_attempts": true,
+      "racing_snapshots": true,
+      "racing_current": true,
+      "racing_publications": true,
+      "racing_accepted": true,
+      "racing_queue": true,
+      "racing_control": true,
+      "racing_calendar": true,
+      "racing_remote_requests": true
+    },
+    "profiles": [
+      {
+        "kind": "horse",
+        "sourceId": "HK_2024_K307",
+        "version": "racing-profile-v1-a15d58967afdce9e6c615c9d8feab967828d631437b6f78938c636e26ec9be51",
+        "allProfileAndBothHistoryFactsEqual": true,
+        "candidateOffsiteSha256": "b6a23fd1eb29026b390ca2f42f71a82d544366d128387882975c10fa867f59f1",
+        "candidateRestoreComparedTables": 14
+      },
+      {
+        "kind": "jockey",
+        "sourceId": "PZ",
+        "version": "racing-profile-v1-12c2dd34ffd49fd550752cef6601d1f258d1aa2c6b392b66a5620b17c532040f",
+        "allProfileAndBothHistoryFactsEqual": true,
+        "candidateOffsiteSha256": "719f4f0f29f132f2ea363274137204faf173267e4d940a1305b9f8ed90b7c06e",
+        "candidateRestoreComparedTables": 14
+      },
+      {
+        "kind": "trainer",
+        "sourceId": "NM",
+        "version": "racing-profile-v1-125e4fa5284704cbb202f11bb5d3989eb32f0de4a71a83053cb74f00e6947ef8",
+        "allProfileAndBothHistoryFactsEqual": true,
+        "candidateOffsiteSha256": "b0077d25c4fbd705d31bd59db8d323166a57c39c2d0bc78f080734b39a9f458a",
+        "candidateRestoreComparedTables": 14
+      }
+    ],
+    "providerReadsDuringPublication": 0,
+    "scope": "fresh accepted checkpoint after all three live restore-qualified observations; not complete Racing coverage"
+  },
+  "browser": {
+    "origin": "https://mcp.hk",
+    "scope": "real accepted profile observations; release verification, not customer adoption",
+    "receipts": [
+      {
+        "kind": "horse",
+        "sourceId": "HK_2024_K307",
+        "lang": "en",
+        "width": 320,
+        "version": "racing-profile-v1-a15d58967afdce9e6c615c9d8feab967828d631437b6f78938c636e26ec9be51",
+        "overflow": false,
+        "actualZipSha256": "406ad9b965b4b2693566d7b628040c7b37fc91653706d6ec6108a38b3064f393",
+        "historyRows": 16,
+        "memberHashesVerified": true,
+        "jsonCsvFactsEqual": true,
+        "observations": {
+          "en": "2026-10-26T06:55:59.343285+00:00",
+          "zhHant": "2026-10-26T06:56:00.075781+00:00"
+        }
+      },
+      {
+        "kind": "jockey",
+        "sourceId": "PZ",
+        "lang": "en",
+        "width": 320,
+        "version": "racing-profile-v1-12c2dd34ffd49fd550752cef6601d1f258d1aa2c6b392b66a5620b17c532040f",
+        "overflow": false,
+        "actualZipSha256": "180dc467a5aca63e317686c7402838aa63b6785dfcf11d3255bc1842ff60dbe3",
+        "historyRows": 0,
+        "memberHashesVerified": true,
+        "jsonCsvFactsEqual": true,
+        "observations": {
+          "en": "2026-10-26T06:56:00.631476+00:00",
+          "zhHant": "2026-10-26T06:56:02.090254+00:00"
+        }
+      },
+      {
+        "kind": "trainer",
+        "sourceId": "NM",
+        "lang": "en",
+        "width": 320,
+        "version": "racing-profile-v1-125e4fa5284704cbb202f11bb5d3989eb32f0de4a71a83053cb74f00e6947ef8",
+        "overflow": false,
+        "actualZipSha256": "765cd7fe4a7009e0d3fdbed466cc1daf9996341212fd6c0277370ecdb743101d",
+        "historyRows": 0,
+        "memberHashesVerified": true,
+        "jsonCsvFactsEqual": true,
+        "observations": {
+          "en": "2026-10-26T06:56:03.579867+00:00",
+          "zhHant": "2026-10-26T06:56:06.116002+00:00"
+        }
+      },
+      {
+        "kind": "horse",
+        "sourceId": "HK_2024_K307",
+        "lang": "en",
+        "width": 1280,
+        "version": "racing-profile-v1-a15d58967afdce9e6c615c9d8feab967828d631437b6f78938c636e26ec9be51",
+        "overflow": false,
+        "actualZipSha256": "406ad9b965b4b2693566d7b628040c7b37fc91653706d6ec6108a38b3064f393",
+        "historyRows": 16,
+        "memberHashesVerified": true,
+        "jsonCsvFactsEqual": true,
+        "observations": {
+          "en": "2026-10-26T06:55:59.343285+00:00",
+          "zhHant": "2026-10-26T06:56:00.075781+00:00"
+        }
+      },
+      {
+        "kind": "jockey",
+        "sourceId": "PZ",
+        "lang": "en",
+        "width": 1280,
+        "version": "racing-profile-v1-12c2dd34ffd49fd550752cef6601d1f258d1aa2c6b392b66a5620b17c532040f",
+        "overflow": false,
+        "actualZipSha256": "180dc467a5aca63e317686c7402838aa63b6785dfcf11d3255bc1842ff60dbe3",
+        "historyRows": 0,
+        "memberHashesVerified": true,
+        "jsonCsvFactsEqual": true,
+        "observations": {
+          "en": "2026-10-26T06:56:00.631476+00:00",
+          "zhHant": "2026-10-26T06:56:02.090254+00:00"
+        }
+      },
+      {
+        "kind": "trainer",
+        "sourceId": "NM",
+        "lang": "en",
+        "width": 1280,
+        "version": "racing-profile-v1-125e4fa5284704cbb202f11bb5d3989eb32f0de4a71a83053cb74f00e6947ef8",
+        "overflow": false,
+        "actualZipSha256": "765cd7fe4a7009e0d3fdbed466cc1daf9996341212fd6c0277370ecdb743101d",
+        "historyRows": 0,
+        "memberHashesVerified": true,
+        "jsonCsvFactsEqual": true,
+        "observations": {
+          "en": "2026-10-26T06:56:03.579867+00:00",
+          "zhHant": "2026-10-26T06:56:06.116002+00:00"
+        }
+      },
+      {
+        "kind": "horse",
+        "sourceId": "HK_2024_K307",
+        "lang": "zh-Hant",
+        "width": 320,
+        "version": "racing-profile-v1-a15d58967afdce9e6c615c9d8feab967828d631437b6f78938c636e26ec9be51",
+        "overflow": false,
+        "actualZipSha256": "f258a62e36c9617de2e46e247da20a22fe979ec271efa09dcedb37dbf1a7afc0",
+        "historyRows": 16,
+        "memberHashesVerified": true,
+        "jsonCsvFactsEqual": true,
+        "observations": {
+          "en": "2026-10-26T06:55:59.343285+00:00",
+          "zhHant": "2026-10-26T06:56:00.075781+00:00"
+        }
+      },
+      {
+        "kind": "jockey",
+        "sourceId": "PZ",
+        "lang": "zh-Hant",
+        "width": 320,
+        "version": "racing-profile-v1-12c2dd34ffd49fd550752cef6601d1f258d1aa2c6b392b66a5620b17c532040f",
+        "overflow": false,
+        "actualZipSha256": "4d9e6609088df25248708b2590e097b7ecff07c6b7eae73c44fe079bd697bc87",
+        "historyRows": 0,
+        "memberHashesVerified": true,
+        "jsonCsvFactsEqual": true,
+        "observations": {
+          "en": "2026-10-26T06:56:00.631476+00:00",
+          "zhHant": "2026-10-26T06:56:02.090254+00:00"
+        }
+      },
+      {
+        "kind": "trainer",
+        "sourceId": "NM",
+        "lang": "zh-Hant",
+        "width": 320,
+        "version": "racing-profile-v1-125e4fa5284704cbb202f11bb5d3989eb32f0de4a71a83053cb74f00e6947ef8",
+        "overflow": false,
+        "actualZipSha256": "c53ab558bcbaee5aee3d687cedd4ae54c48d65561bd4a12f0f639d11e66c5660",
+        "historyRows": 0,
+        "memberHashesVerified": true,
+        "jsonCsvFactsEqual": true,
+        "observations": {
+          "en": "2026-10-26T06:56:03.579867+00:00",
+          "zhHant": "2026-10-26T06:56:06.116002+00:00"
+        }
+      },
+      {
+        "kind": "horse",
+        "sourceId": "HK_2024_K307",
+        "lang": "zh-Hant",
+        "width": 1280,
+        "version": "racing-profile-v1-a15d58967afdce9e6c615c9d8feab967828d631437b6f78938c636e26ec9be51",
+        "overflow": false,
+        "actualZipSha256": "f258a62e36c9617de2e46e247da20a22fe979ec271efa09dcedb37dbf1a7afc0",
+        "historyRows": 16,
+        "memberHashesVerified": true,
+        "jsonCsvFactsEqual": true,
+        "observations": {
+          "en": "2026-10-26T06:55:59.343285+00:00",
+          "zhHant": "2026-10-26T06:56:00.075781+00:00"
+        }
+      },
+      {
+        "kind": "jockey",
+        "sourceId": "PZ",
+        "lang": "zh-Hant",
+        "width": 1280,
+        "version": "racing-profile-v1-12c2dd34ffd49fd550752cef6601d1f258d1aa2c6b392b66a5620b17c532040f",
+        "overflow": false,
+        "actualZipSha256": "4d9e6609088df25248708b2590e097b7ecff07c6b7eae73c44fe079bd697bc87",
+        "historyRows": 0,
+        "memberHashesVerified": true,
+        "jsonCsvFactsEqual": true,
+        "observations": {
+          "en": "2026-10-26T06:56:00.631476+00:00",
+          "zhHant": "2026-10-26T06:56:02.090254+00:00"
+        }
+      },
+      {
+        "kind": "trainer",
+        "sourceId": "NM",
+        "lang": "zh-Hant",
+        "width": 1280,
+        "version": "racing-profile-v1-125e4fa5284704cbb202f11bb5d3989eb32f0de4a71a83053cb74f00e6947ef8",
+        "overflow": false,
+        "actualZipSha256": "c53ab558bcbaee5aee3d687cedd4ae54c48d65561bd4a12f0f639d11e66c5660",
+        "historyRows": 0,
+        "memberHashesVerified": true,
+        "jsonCsvFactsEqual": true,
+        "observations": {
+          "en": "2026-10-26T06:56:03.579867+00:00",
+          "zhHant": "2026-10-26T06:56:06.116002+00:00"
+        }
+      }
+    ],
+    "errors": [],
+    "providerRequests": []
+  },
+  "pagination": {
+    "observedAt": "2026-10-26T18:11:21.827946+00:00",
+    "version": "racing-profile-v1-a15d58967afdce9e6c615c9d8feab967828d631437b6f78938c636e26ec9be51",
+    "pages": 4,
+    "rows": 16,
+    "duplicateRows": 0,
+    "wrongLanguageCursorRejected": true
+  },
+  "schedulesAndProviderBudget": {
+    "observedAt": "2026-10-26T18:06:14.503616+00:00",
+    "gatewayCrons": [
+      "0 1 * * *",
+      "0 2 * * *",
+      "0 3 * * SUN",
+      "0 4 * * SUN",
+      "2-59/5 * * * *"
+    ],
+    "gatewayCronCount": 5,
+    "racingProviderBudget": {
+      "attempts": 112,
+      "chargedBytes": 23816783,
+      "unresolved": [
+        {
+          "state": "held",
+          "records": 1
+        }
+      ],
+      "limits": {
+        "attempts": 200,
+        "bytes": 67108864
+      },
+      "resetsAt": "2026-10-27T00:00:00.000Z",
+      "durable": true
+    },
+    "newProviderRequestsForThreePublications": 0,
+    "originalSourceHoldRetained": true
+  },
+  "actualScratchCapacity": {
+    "freeBytes": 6941298688,
+    "requiredBytes": 1400000000,
+    "sufficient": true,
+    "basis": "gateway_backup_copy_packed_transfer_and_isolated_restore"
+  },
+  "retainedFailedImport": {
+    "kind": "horse",
+    "startedAt": "2026-10-26T17:24:04.341447+00:00",
+    "newProviderRequests": 0,
+    "status": 409,
+    "body": {
+      "error": {
+        "code": "RACING_OPERATION_NOT_CONFIRMED",
+        "message": "Inspect the preserved source/candidate receipt and owning lease before retrying."
+      }
+    },
+    "finishedAt": "2026-10-26T17:24:05.131789+00:00"
+  },
+  "sfcStatus": {
+    "sourceId": "sfc_register",
+    "state": "not_activated",
+    "acceptedVersion": null,
+    "qualifiedLiveTransport": false,
+    "modes": {
+      "automation": "unknown",
+      "cache": "unknown",
+      "retention": "unknown",
+      "backup": "unknown",
+      "rest": "unknown",
+      "mcp": "unknown",
+      "browser": "unknown",
+      "search": "unknown",
+      "history": "unknown",
+      "export": "unknown",
+      "raw": "unknown"
+    },
+    "enabledModes": [],
+    "cohort": {
+      "accepted": 0,
+      "maximum": 25,
+      "scope": "tracked_corporate_subset"
+    },
+    "lastAttemptAt": null,
+    "lastSuccessAt": null,
+    "sourceCutoff": null,
+    "freshnessBasis": "no_qualified_observation",
+    "completeRegulatoryHistory": false,
+    "reasonCode": "SFC_POLICY_NOT_ACTIVATED",
+    "policySha256": "3b4d1a8c9747b0a8d5133758d0f46e52789ee703ae31965dae5b92c335525ae2",
+    "lastRun": null
+  },
+  "company": {
+    "version": "official-731745eb39cd14f3f986ac01521f0525",
+    "acceptedWeeks": 72,
+    "inventoryWeeks": 94,
+    "acceptedCsvFiles": 144,
+    "inventoryCsvFiles": 188,
+    "counts": {
+      "money_lender": {
+        "rows": 6776,
+        "entities": 6770
+      },
+      "company_event": {
+        "rows": 312706,
+        "entities": 305101
+      },
+      "address_observation": {
+        "rows": 726,
+        "entities": 726
+      }
+    },
+    "offsiteRpoQualified": false,
+    "addressCapacity": {
+      "eligible": 305101,
+      "dailyAttemptLimit": 250,
+      "sharedCrDailyRequestLimit": 500,
+      "fullPassMinimumDaysAtCurrentCap": 1221,
+      "wholeSubset90DayCycleFeasible": false,
+      "successfulReadsPerDayNeededFor90Days": 3391,
+      "guaranteedWholeSubsetCycleDays": null,
+      "refreshTargetDays": 90,
+      "priorityCohortCapacityAt90Days": 4500,
+      "targetScope": "observed_and_explicit_priority_cohorts; capacity-dependent, not a whole-subset guarantee",
+      "saturatedShares": {
+        "priority": 0.2,
+        "refresh": 0.4,
+        "initial": 0.3,
+        "retry": 0.1
+      },
+      "idleShareBorrowing": true,
+      "basis": "optimistic lower bound; failures, holds and other CR reads reduce throughput"
+    }
+  },
+  "addressRecheckRequest": {
+    "status": "queued",
+    "requestedAt": "2026-10-26T18:29:34.270969+00:00",
+    "notBefore": "2026-10-27T00:00:00+00:00",
+    "reason": "Post-PR92 exact source-no-match and success-control verification after quota reset",
+    "providerRequestsNow": 0,
+    "addressDailyCap": 250,
+    "sharedCrDailyCap": 500,
+    "before": [
+      {
+        "entity_id": "cr:foreign:00562995",
+        "priority": false,
+        "next_due": "2026-11-02 01:00:38.830071+00",
+        "last_attempt": "2026-10-26 01:00:36.356643+00",
+        "last_success": null,
+        "outcome": "SOURCE_HTTP_400",
+        "latest_capture": null
+      },
+      {
+        "entity_id": "cr:foreign:77596226",
+        "priority": false,
+        "next_due": "2027-01-24 02:07:10.3631+00",
+        "last_attempt": "2026-10-26 02:07:05.725553+00",
+        "last_success": "2026-10-26 02:07:10.3631+00",
+        "outcome": "success",
+        "latest_capture": "e9f8050a1edb3b7a47c865c015701dba50a8bee47fe04a2a3ba5a41cbc1c01e2"
+      }
+    ],
+    "after": [
+      {
+        "entity_id": "cr:foreign:00562995",
+        "priority": true,
+        "next_due": "2026-10-27 00:00:00+00",
+        "last_attempt": "2026-10-26 01:00:36.356643+00",
+        "last_success": null,
+        "outcome": "SOURCE_HTTP_400",
+        "latest_capture": null
+      },
+      {
+        "entity_id": "cr:foreign:77596226",
+        "priority": true,
+        "next_due": "2026-10-27 00:00:00+00",
+        "last_attempt": "2026-10-26 02:07:05.725553+00",
+        "last_success": "2026-10-26 02:07:10.3631+00",
+        "outcome": "success",
+        "latest_capture": "e9f8050a1edb3b7a47c865c015701dba50a8bee47fe04a2a3ba5a41cbc1c01e2"
+      }
+    ],
+    "acceptedVersionUnchanged": "official-731745eb39cd14f3f986ac01521f0525",
+    "nextExistingAddressSchedule": "2026-10-27T01:00:00Z",
+    "followup": "Inspect retained check receipts then restore recorded prior priority flags"
+  },
+  "hkexDaily": {
+    "version": "hkex-daily-5d1c79ec1f14f0ed61e36d438a6dce3e",
+    "latestSummaryDate": "2026-10-26",
+    "rows": 1288,
+    "dateBasis": "published summary date; not filing/event timestamp",
+    "fullFilingWindowAccepted": false
+  },
+  "racingCoverage": {
+    "meetings": 14,
+    "races": 138,
+    "resultRows": 1733,
+    "earliest": "2026-09-06",
+    "latest": "2026-10-25"
+  },
+  "racingHold": {
+    "state": "held",
+    "error": "DEVELOPMENT_HTTP_302"
+  },
+  "sourceTimersPreserved": 7,
+  "customerAdoptionClaimed": false
+}
