@@ -283,6 +283,14 @@ def register_operations(app, service):
                         body["attempt"],
                         body["transformSha256"],
                     )
+                elif body.get("action") == "reconcile_archive_redirect":
+                    from .racing_redirect import reconcile_archive_redirect
+
+                    await asyncio.to_thread(
+                        reconcile_archive_redirect,
+                        service.racing.store,
+                        body["attempt"],
+                    )
                 else:
                     raise DomainError(
                         "INVALID_QUERY", "Unknown racing operator action", 400

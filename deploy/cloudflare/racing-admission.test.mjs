@@ -62,3 +62,26 @@ test('one routing-shape read requires the completed first diagnostic and retains
  admission.settle(id(3),'success',200,'REDIRECT_INSPECTION_COMPLETE');assert.equal(admission.reserveRedirectInspection(id(1),id(4),now,true).code,'RACING_INSPECTION_ALREADY_ADMITTED');
  assert.equal(admission.report(now).attempts,3);assert.deepEqual(admission.report(now).unresolved.map(r=>({...r})),[{state:'held',records:1}]);assert.equal(admission.reserve(id(5),now).code,'RACING_SOURCE_HELD');
 });
+function archiveProof(){
+ const s=store(),a=s.admission;a.reserve(id(1),now);a.settle(id(1),'held',409600,'HTTP_302');
+ a.reserveRedirectInspection(id(1),id(2),now);a.settle(id(2),'success',200,'REDIRECT_INSPECTION_COMPLETE');
+ a.reserveRedirectInspection(id(1),id(3),now,true);a.settle(id(3),'success',200,'REDIRECT_INSPECTION_COMPLETE');return s;
+}
+test('archive review keeps original error and full charge with immutable idempotent evidence',()=>{
+ const {admission,sql}=archiveProof(),before=admission.report(now);
+ assert.deepEqual(admission.reviewArchiveRedirect(id(1),id(3),'a'.repeat(64)),{reviewed:true});
+ assert.deepEqual(admission.reviewArchiveRedirect(id(1),id(3),'a'.repeat(64)),{reviewed:true});
+ const after=admission.report(now);assert.equal(after.attempts,before.attempts);assert.equal(after.chargedBytes,before.chargedBytes);assert.deepEqual(after.unresolved,[]);
+ assert.equal([...sql.exec('SELECT code FROM racing_admissions WHERE id=?',id(1))][0].code,'HTTP_302');
+ assert.equal([...sql.exec('SELECT original_bytes FROM racing_redirect_reviews WHERE reference_id=?',id(1))][0].original_bytes,409600);
+ assert.throws(()=>admission.reviewArchiveRedirect(id(1),id(3),'b'.repeat(64)),/CONFLICT/);
+ assert.equal(admission.reserve(id(4),now).allowed,true);
+});
+test('archive review refuses missing or unknown inspection settlement and other unresolved dispatches',()=>{
+ const missing=store().admission;missing.reserve(id(1),now);missing.settle(id(1),'held',409600,'HTTP_302');assert.throws(()=>missing.reviewArchiveRedirect(id(1),id(3),'a'.repeat(64)),/SETTLEMENT_REQUIRED/);
+ const {admission,sql}=archiveProof();sql.exec("UPDATE racing_admissions SET state='pending' WHERE id=?",id(3));assert.throws(()=>admission.reviewArchiveRedirect(id(1),id(3),'a'.repeat(64)),/SETTLEMENT_REQUIRED/);
+ sql.exec("UPDATE racing_admissions SET state='settled' WHERE id=?",id(3));sql.exec("INSERT INTO racing_admissions VALUES(?,?,?,?,'pending',NULL)",id(4),Math.floor(now/86400000),now,409600);assert.throws(()=>admission.reviewArchiveRedirect(id(1),id(3),'a'.repeat(64)),/OTHER_UNRESOLVED/);
+});
+test('archive review cannot reconcile an actual denial even with old diagnostic rows',()=>{
+ const {admission,sql}=archiveProof();sql.exec("UPDATE racing_admissions SET code='HTTP_403' WHERE id=?",id(1));assert.throws(()=>admission.reviewArchiveRedirect(id(1),id(3),'a'.repeat(64)),/NOT_REVIEWABLE/);assert.equal(admission.report(now).unresolved[0].records,1);
+});

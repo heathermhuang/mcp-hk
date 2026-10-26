@@ -12,7 +12,7 @@ from pathlib import Path
 import httpx
 
 from .policy import RacingRejected, canonical, checksum, utc
-from .public_results import parse_results, result_url
+from .public_results import parse_results, result_url, archive_redirect
 
 MAX_PAGE = 400 * 1024
 
@@ -232,13 +232,19 @@ class PilotCollector:
         self.attempts = self.bytes = 0
         self.started = time.monotonic()
 
-    def fetch(self, url, client):
+    def fetch(self, url, client, archive_hop=False):
         self.validate_url(url)
         cached = self.store.page(url)
         if cached and (
             not self.refresh_after or utc(cached["observed"]) >= utc(self.refresh_after)
         ):
-            return json.loads(cached["payload"]), {
+            parsed = json.loads(cached["payload"])
+            if parsed.get("kind") == "qualified_archive_redirect":
+                if archive_hop:
+                    raise RacingRejected("RACING_ARCHIVE_REDIRECT_REJECTED")
+                target = archive_redirect(url, parsed["target"])
+                return self.fetch(target, client, archive_hop=True)
+            return parsed, {
                 k: cached[k] for k in ("url", "observed", "sha256", "bytes")
             }
         if (
@@ -250,22 +256,44 @@ class PilotCollector:
         attempt = self.store.reserve(url)
         self.attempts += 1
         raw = bytearray()
+        redirect = None
         try:
-            with client.stream("GET", url) as response:
-                if response.status_code != 200:
+            with client.stream("GET", url, follow_redirects=False) as response:
+                if response.status_code == 302 and not archive_hop:
+                    try:
+                        redirect = archive_redirect(
+                            url, response.headers.get("location")
+                        )
+                    except RacingRejected:
+                        pass
+                if response.status_code != 200 and redirect is None:
                     self.store.settled(
                         attempt, "held", MAX_PAGE, "HTTP_" + str(response.status_code)
                     )
                     raise RacingRejected(
                         "DEVELOPMENT_HTTP_" + str(response.status_code)
                     )
-                if "text/html" not in response.headers.get("content-type", "").lower():
+                if (
+                    redirect is None
+                    and "text/html"
+                    not in response.headers.get("content-type", "").lower()
+                ):
                     raise RacingRejected("DEVELOPMENT_CONTENT_TYPE")
                 for chunk in response.iter_bytes(chunk_size=16384):
                     raw.extend(chunk)
                     if len(raw) > MAX_PAGE:
                         raise RacingRejected("RESULT_BODY_LIMIT")
-            parsed = self.parse_page(raw.decode("utf-8"), url)
+            parsed = (
+                {
+                    "kind": "qualified_archive_redirect",
+                    "target": redirect,
+                    "locationSha256": hashlib.sha256(
+                        response.headers["location"].encode()
+                    ).hexdigest(),
+                }
+                if redirect
+                else self.parse_page(raw.decode("utf-8"), url)
+            )
         except RacingRejected as exc:
             self.store.settled(attempt, "held", MAX_PAGE, str(exc))
             raise
@@ -278,11 +306,14 @@ class PilotCollector:
             attempt,
             "success",
             len(raw),
+            error="QUALIFIED_ARCHIVE_REDIRECT" if redirect else None,
             page=(url, observed, digest, len(raw), canonical(parsed).decode()),
         )
         self.bytes += len(raw)
         # Only factual parsed fields and source checksum persist, never page commentary/media.
         time.sleep(1)
+        if redirect:
+            return self.fetch(redirect, client, archive_hop=True)
         return parsed, {
             "url": url,
             "observed": observed,

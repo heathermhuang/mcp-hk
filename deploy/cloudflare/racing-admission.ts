@@ -24,6 +24,24 @@ export class RacingAdmission {
     this.sql.exec('INSERT INTO '+table+' VALUES(?,?)',reference,id);
     return {allowed:true,id,originalHoldRetained:true};
   }
+  reviewArchiveRedirect(id:string,inspectionId:string,evidence:string){
+    if(!/^[a-f0-9]{32}$/.test(id)||!/^[a-f0-9]{32}$/.test(inspectionId)||!/^[a-f0-9]{64}$/.test(evidence))throw new Error('RACING_REDIRECT_REVIEW_INPUT');
+    this.sql.exec('CREATE TABLE IF NOT EXISTS racing_redirect_reviews(reference_id TEXT PRIMARY KEY,inspection_id TEXT NOT NULL,evidence_sha256 TEXT NOT NULL,original_code TEXT NOT NULL,original_bytes INTEGER NOT NULL)');
+    const saved=[...this.sql.exec('SELECT inspection_id,evidence_sha256 FROM racing_redirect_reviews WHERE reference_id=?',id)][0];
+    if(saved){if(saved.inspection_id!==inspectionId||saved.evidence_sha256!==evidence)throw new Error('RACING_REDIRECT_REVIEW_CONFLICT');return {reviewed:true};}
+    const old=[...this.sql.exec('SELECT state,code,bytes FROM racing_admissions WHERE id=?',id)][0];
+    if(!old||old.state!=='held'||!['HTTP_302','DEVELOPMENT_HTTP_302'].includes(String(old.code)))throw new Error('RACING_REDIRECT_NOT_REVIEWABLE');
+    for(const table of ['racing_redirect_inspections','racing_redirect_shape_inspections']){
+      const proof=[...this.sql.exec('SELECT r.inspection_id,a.state,a.code FROM '+table+' r JOIN racing_admissions a ON a.id=r.inspection_id WHERE r.reference_id=?',id)][0];
+      if(!proof||proof.state!=='settled'||proof.code!=='REDIRECT_INSPECTION_COMPLETE'||table==='racing_redirect_shape_inspections'&&proof.inspection_id!==inspectionId)throw new Error('RACING_REDIRECT_SETTLEMENT_REQUIRED');
+    }
+    if([...this.sql.exec("SELECT id FROM racing_admissions WHERE state IN ('pending','held') AND id<>? LIMIT 1",id)].length)throw new Error('RACING_REDIRECT_OTHER_UNRESOLVED');
+    this.sql.exec('INSERT INTO racing_redirect_reviews VALUES(?,?,?,?,?)',id,inspectionId,evidence,old.code,old.bytes);
+    // Keep the original code and conservative full charge. This classifies an
+    // observed redirect, not a results fetch and not a parser correction.
+    this.sql.exec("UPDATE racing_admissions SET state='settled' WHERE id=?",id);
+    return {reviewed:true};
+  }
   cleanup(now=Date.now()){this.sql.exec("DELETE FROM racing_admissions WHERE day<? AND state='settled'",Math.floor(now/86400000)-90);}
   reserve(id:string,now=Date.now()){
     if(!/^[a-f0-9]{32}$/.test(id))throw new Error('RACING_ADMISSION_ID');
