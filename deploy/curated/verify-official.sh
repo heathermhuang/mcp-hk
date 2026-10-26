@@ -3,11 +3,13 @@ set -eu
 cd "$(dirname "$0")/../.."
 export CURATED_HOSTNAME=curated.mcp.hk
 stamp=$(date -u +%Y-%m-%dT05:00:00Z)
-# Health persists a receipt, so it must not race a dump's full-state fingerprints.
+# The second check is useful only if the owning unit was still running at 05:20.
+# Health stores a checkpoint too. Do not mutate its source-state row while an
+# owning collector/recovery job is qualifying a stable logical snapshot.
 exec 9>"${MCP_HK_MAINTENANCE_LOCK:-/run/lock/mcp-hk-official-maintenance.lock}"
-if ! flock -s -n 9; then
+if ! flock -n 9; then
  printf '%s' "$stamp" > /srv/mcp-hk-curated/official-health-running
- printf '{"status":"maintenance_running","verificationDeferred":true,"scheduledFor":"%s"}\n' "$stamp"
+ echo 'Health comparison deferred: owning maintenance job; 06:00 follow-up retained'
  exit 0
 fi
 image=$(docker compose -p curated -f deploy/curated/production.compose.yaml images -q backend)

@@ -523,7 +523,7 @@ the unchanged dataset, latest dump, current schema/query code and real restore/
 performance checks. It creates a new qualification receipt and preserves the
 original failure and upload time; it does not count as ordinary daily operation.
 
-The official health runner takes a shared, nonblocking host maintenance lock before
+The official health runner takes a nonblocking host maintenance lock before
 reading or persisting health. When a collector/offsite owner holds the exclusive
 lock, health records a host-only deferral and lets the existing follow-up run;
 it never changes the database during the dump consistency interval. The 06:00

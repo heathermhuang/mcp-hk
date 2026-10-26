@@ -13,7 +13,9 @@ to that table while the backup held the shared maintenance lock. The verifier di
 not previously join that coordination protocol. The failed daily job
 `c65eb6439d0b1fce35b5feacc011587b` and its artifacts remain retained.
 
-Health now takes a nonblocking shared maintenance lock. An owning backup/collector
+The existing maintenance owner independently landed the lock repair in PR 96.
+This change preserves that implementation and its real-lock regression. Health
+takes the nonblocking maintenance lock. An owning backup/collector
 causes a host-only deferral receipt and the existing follow-up marker, with no
 database access or write. A bounded comparison also lets the existing 06:00 check
 notice recovery evidence changed after an earlier failure. The cache remains
