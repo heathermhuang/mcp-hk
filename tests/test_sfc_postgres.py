@@ -224,6 +224,13 @@ def test_physical_restore_every_fact_capture_control_and_pointer(
     version, sha, run = stage(state, policy, ("ZZZ001", "ZZZ002"))
     with pytest.raises(Rejected, match="RESTORE_REQUIRED"):
         state.publish(version, None)
+        observed_status = reader.status()
+        assert observed_status["acceptedVersion"] == version
+        assert observed_status["cohort"]["accepted"] == 2
+        assert observed_status["lastSuccessAt"] is not None
+        # An offline fabricated intake cannot claim qualified live transport.
+        assert observed_status["qualifiedLiveTransport"] is False
+        assert observed_status["enabledModes"] == []
     config = conninfo_to_dict(state.dsn)
     restored_name = "sfc_restore_" + uuid.uuid4().hex[:10]
     target = State(make_conninfo(**dict(config, dbname=restored_name)))
@@ -266,6 +273,23 @@ def test_physical_restore_every_fact_capture_control_and_pointer(
             and found["data"]["statusCode"] == "SOURCE_ACTIVE"
         )
         assert found["data"]["activities"][0]["end"]["value"] is None
+        with state.connection() as c:
+            original_manifest = c.execute(
+                "SELECT manifest FROM curated_sfc.versions WHERE version=%s", (version,)
+            ).fetchone()["manifest"]
+            c.execute(
+                'UPDATE curated_sfc.versions SET manifest=manifest||\'{"scope":"corrupted"}\'::jsonb WHERE version=%s',
+                (version,),
+            )
+        with pytest.raises(ReadError, match="manifest"):
+            reader.verify("ZZZ001")
+        with pytest.raises(ReadError, match="manifest"):
+            reader.status()
+        with state.connection() as c:
+            c.execute(
+                "UPDATE curated_sfc.versions SET manifest=%s::jsonb WHERE version=%s",
+                (json.dumps(original_manifest), version),
+            )
         with pytest.raises(Rejected, match="POINTER_CHANGED"):
             state.publish(version, None)
         with pytest.raises(ReadError, match="outside"):
@@ -328,7 +352,13 @@ def test_physical_restore_every_fact_capture_control_and_pointer(
         state.settle(a, "missing")
         state.finish(failed)
         assert reader.verify("ZZZ001")["version"] == version
+        assert reader.status()["acceptedVersion"] == version
+        assert reader.status()["state"] == "source_incomplete_data_retained"
         state.revoke(policy.sha256)
+        revoked_status = reader.status()
+        assert revoked_status["acceptedVersion"] == version
+        assert revoked_status["state"] == "policy_unavailable"
+        assert revoked_status["enabledModes"] == []
         with pytest.raises(ReadError):
             reader.verify("ZZZ001")
         with pytest.raises(Rejected):
@@ -349,6 +379,23 @@ def test_staging_cannot_exceed_reserved_bytes(model):
         state.stage(run, {"ZZZ001": (json.dumps(fake_fact()).encode(), a)})
     with state.connection() as c:
         assert not c.execute("SELECT * FROM curated_sfc.versions").fetchone()
+
+
+def test_status_uses_persisted_policy_run_and_adoption_state(model):
+    state, policy, reader, _ = model
+    before = reader.status()
+    assert before["state"] == "not_published"
+    assert before["cohort"]["tracked"] == 3
+    assert before["lastAttemptAt"] is None
+    run, _ = state.start(datetime.now(timezone.utc), ["ZZZ001"], policy.sha256)
+    running = reader.status()
+    assert running["lastAttemptAt"] is not None
+    assert running["lastRun"]["state"] == "running"
+    assert running["enabledModes"] == []
+    unadopted = SfcReader(reader.reader).status()
+    assert unadopted["reasonCode"] == "SFC_POLICY_NOT_ADOPTED"
+    state.finish(run)
+    assert reader.status()["lastRun"]["state"] == "partial"
 
 
 def test_unqualified_tracked_identity_cannot_consume_source_budget(model):

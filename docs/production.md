@@ -488,6 +488,15 @@ pointer, source-scoped offsite restore and ordinary occurrence. Do not apply
 `003_sfc.sql`, enable collection, or add SFC to CR offsite inventory during an
 unrelated gateway release. Build proof: [SFC verification](verification/sfc-build-first-20261025/README.md).
 
+Persisted SFC serving now uses the installed source schema and source-scoped reader
+when available; the fallback without a backend remains an honest unavailable mode.
+See [the wiring and operator procedure](verification/four-datasets-20261026/SFC-WIRING.md).
+An active checksum-pinned policy must be adopted by both private backend and gateway,
+and actual register captures must pass independent restore/publication before data
+surfaces are usable. No public request installs a schema, activates a policy or
+collects. Source scheduling and source-specific offsite qualification must be
+completed separately before claiming ordinary live operation.
+
 ## Racing factual results
 
 The [racing pipeline](verification/racing-20261025/PRODUCTION.md) uses source-specific

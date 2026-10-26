@@ -263,9 +263,66 @@ def test_private_backend_authentication_and_gate_without_database():
     )
     auth = {"Authorization": "Bearer test-sfc-backend-token-32-characters"}
     assert client.get("/v1/sfc/status").status_code == 401
-    assert client.get("/v1/sfc/status", headers=auth).json()["enabledModes"] == []
+    assert client.get("/v1/sfc/status", headers=auth).status_code == 503
     assert client.get("/v1/sfc/corporations/ZZZ001", headers=auth).status_code == 503
     assert client.get("/v1/sfc/corporations/ＡＢＣ123", headers=auth).status_code == 400
+
+
+@pytest.mark.asyncio
+async def test_public_sfc_reads_use_private_reader_and_pin_identity(tmp_path):
+    import httpx
+    from mcp_open_data_hk.companies import Companies
+    from mcp_open_data_hk.sfc import Sfc
+
+    policy = fake_policy()
+    version = "sfc-" + "a" * 32
+    fact = fake_fact()
+    calls = []
+
+    def backend(request):
+        calls.append(request)
+        if request.url.path == "/v1/sfc/status":
+            return httpx.Response(
+                200,
+                json={
+                    "sourceId": "sfc_register",
+                    "state": "available",
+                    "acceptedVersion": version,
+                    "enabledModes": ["rest", "mcp"],
+                    "freshnessBasis": "dated_observation_not_realtime",
+                },
+            )
+        return httpx.Response(
+            200,
+            json={
+                "version": version,
+                "data": fact,
+                "provenance": {
+                    "sourceId": "sfc_register",
+                    "policySha256": policy.sha256,
+                    "view": "sfc_observation",
+                    "captureFormat": "sfc-public-register-v1",
+                },
+            },
+        )
+
+    companies = Companies(transport=httpx.MockTransport(backend))
+    companies.config = ("https://curated.example", "test-credential-never-a-real-token")
+    adapter = Sfc(companies, policy)
+    result = await adapter.query("status")
+    assert result["meta"]["version"] == version
+    rest = await adapter.query("verify", ce="zzz001", version=version)
+    mcp = await adapter.query("verify", ce="ZZZ001", version=version, mode="mcp")
+    assert rest == mcp
+    assert rest["data"]["activities"][0]["end"]["value"] is None
+    assert rest["meta"]["currentVerification"] is False
+    assert [r.url.params.get("mode") for r in calls[1:]] == ["rest", "mcp"]
+    from mcp_open_data_hk.contracts import DomainError
+
+    with pytest.raises(DomainError, match="identity"):
+        await adapter.query("verify", ce="ZZZ002", version=version)
+    with pytest.raises(DomainError):
+        await adapter.query("verify", ce="ZZZ001", version="sfc-" + "b" * 32)
 
 
 def test_policy_binds_fields_and_exact_tracked_cohort():
@@ -293,3 +350,22 @@ def test_private_development_is_not_blocked_by_a_feed_licence_or_public_grant():
             fake_policy(
                 purpose="connector_development", modes={**modes, mode: "allowed"}
             )
+
+
+def test_runtime_policy_requires_matching_checksum_not_an_enable_flag(monkeypatch):
+    from mcp_open_data_hk.curated.sfc.policy import configured_policy
+
+    monkeypatch.setenv("MCP_HK_SFC_ENABLED", "true")
+    for name in [
+        "MCP_HK_SFC_POLICY_FILE",
+        "MCP_HK_SFC_POLICY_JSON",
+        "MCP_HK_SFC_POLICY_SHA256",
+    ]:
+        monkeypatch.delenv(name, raising=False)
+    assert configured_policy() == POLICY
+    policy = fake_policy()
+    monkeypatch.setenv("MCP_HK_SFC_POLICY_JSON", policy.model_dump_json())
+    monkeypatch.setenv("MCP_HK_SFC_POLICY_SHA256", "0" * 64)
+    assert configured_policy() == POLICY
+    monkeypatch.setenv("MCP_HK_SFC_POLICY_SHA256", policy.sha256)
+    assert configured_policy() == policy
