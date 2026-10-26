@@ -6,7 +6,7 @@ from ..build import connect
 from ..read import ReadError
 from ..security import safe_reader_role
 from .contracts import Corporation, Rejected, ce_reference, digest, encoded
-from .policy import POLICY, Policy
+from .policy import POLICY, Policy, configured_policy
 
 
 def capability_status():
@@ -29,12 +29,158 @@ def capability_status():
 
 
 class SfcReader:
-    def __init__(self, reader, policy=POLICY):
-        self.reader, self.policy = reader, policy
+    def __init__(self, reader, policy=None):
+        self.reader, self.policy = reader, policy or configured_policy()
 
     def status(self):
-        # Current production contract is intentionally closed even without PG.
-        return capability_status()
+        from psycopg.rows import dict_row
+
+        if not self.reader.slots.acquire(timeout=0.25):
+            raise ReadError("QUERY_BUSY", "Shared read limit reached")
+        try:
+            with connect(
+                self.reader.dsn,
+                row_factory=dict_row,
+                options="-c search_path=pg_catalog -c default_transaction_read_only=on -c statement_timeout=2000 -c lock_timeout=250",
+            ) as conn:
+                if not safe_reader_role(conn):
+                    raise ReadError(
+                        "UNSAFE_READER", "Use a dedicated SELECT-only reader"
+                    )
+                result = capability_status()
+                if not conn.execute(
+                    "SELECT to_regclass('curated_sfc.pointer') AS name"
+                ).fetchone()["name"]:
+                    return dict(
+                        result,
+                        state="not_installed",
+                        reasonCode="SFC_SCHEMA_NOT_INSTALLED",
+                    )
+                result.update(
+                    state="not_activated", reasonCode="SFC_POLICY_NOT_ACTIVATED"
+                )
+                active = conn.execute(
+                    "SELECT sha256,record FROM curated_sfc.policies WHERE active AND revoked_at IS NULL"
+                ).fetchone()
+                last = conn.execute(
+                    "SELECT scheduled_for,started_at,state,requests FROM curated_sfc.runs ORDER BY started_at DESC,run_id DESC LIMIT 1"
+                ).fetchone()
+                successful = conn.execute(
+                    "SELECT max(settled_at) AS stamp FROM curated_sfc.attempts WHERE state='ok'"
+                ).fetchone()["stamp"]
+                result.update(
+                    lastAttemptAt=last["started_at"] if last else None,
+                    lastSuccessAt=successful,
+                    lastRun=last,
+                )
+                row = conn.execute(
+                    "SELECT v.* FROM curated_sfc.versions v JOIN curated_sfc.pointer p USING(version)"
+                ).fetchone()
+                if row:
+                    result.update(
+                        acceptedVersion=row["version"],
+                        publishedAt=row["published_at"],
+                        expiresAt=row["expires_at"],
+                    )
+                    result["cohort"]["accepted"] = len(row["manifest"]["cohort"])
+                    result["freshnessBasis"] = "dated_observation_not_realtime"
+                if not active:
+                    if row:
+                        result.update(
+                            state="policy_unavailable", reasonCode="SFC_POLICY_REVOKED"
+                        )
+                    return result
+                policy = Policy.model_validate(active["record"])
+                if policy.sha256 != active["sha256"]:
+                    raise ReadError("SFC_POLICY_CHANGED", "Policy identity changed")
+                result.update(
+                    policySha256=policy.sha256,
+                    modes=policy.modes,
+                    policyRecheckAt=policy.recheckAt,
+                    cohort={
+                        "accepted": 0,
+                        "maximum": 25,
+                        "tracked": len(policy.trackedCorporateReferences),
+                        "scope": "tracked_corporate_subset",
+                    },
+                )
+                adopted = policy.sha256 == self.policy.sha256
+                try:
+                    policy.require("automation", "retention", "backup")
+                    valid = True
+                except Rejected:
+                    valid = False
+                result.update(
+                    state="not_published", reasonCode="SFC_NO_ACCEPTED_OBSERVATION"
+                )
+                if row:
+                    if not row["published_at"] or not row["restore_proof"]:
+                        raise ReadError(
+                            "SFC_POINTER_UNQUALIFIED",
+                            "Accepted pointer lacks qualification",
+                        )
+                    result.update(
+                        acceptedVersion=row["version"],
+                        publishedAt=row["published_at"],
+                        expiresAt=row["expires_at"],
+                        restoreQualified=True,
+                    )
+                    result["cohort"]["accepted"] = len(row["manifest"]["cohort"])
+                    result["freshnessBasis"] = "dated_observation_not_realtime"
+                    real_transport = (
+                        row["manifest"].get("format") == "sfc-public-register-v1"
+                    )
+                    current = row["expires_at"] > datetime.now(timezone.utc)
+                    result["qualifiedLiveTransport"] = (
+                        real_transport and valid and adopted
+                    )
+                    same_policy = row["policy_sha256"] == policy.sha256
+                    modes = (
+                        [
+                            m
+                            for m in ("rest", "mcp", "browser")
+                            if policy.modes[m] == "allowed"
+                        ]
+                        if valid
+                        and adopted
+                        and same_policy
+                        and current
+                        and real_transport
+                        else []
+                    )
+                    result.update(
+                        enabledModes=modes,
+                        state="available" if modes else "observation_not_public",
+                        reasonCode=None if modes else "SFC_OUTPUT_NOT_QUALIFIED",
+                    )
+                    if not current:
+                        result.update(
+                            state="expired",
+                            reasonCode="SFC_RETENTION_EXPIRED",
+                            enabledModes=[],
+                        )
+                    elif last and last["state"] in {"failed", "partial", "running"}:
+                        result.update(
+                            state="source_incomplete_data_retained",
+                            reasonCode="SFC_LATEST_RUN_" + last["state"].upper(),
+                        )
+                if not valid or not adopted:
+                    result.update(
+                        state="policy_unavailable",
+                        reasonCode=(
+                            "SFC_POLICY_NOT_ADOPTED"
+                            if not adopted
+                            else "SFC_POLICY_UNQUALIFIED"
+                        ),
+                        enabledModes=[],
+                    )
+                hold = conn.execute(
+                    "SELECT until_at,reason FROM curated_sfc.holds WHERE until_at>now()"
+                ).fetchone()
+                result["hold"] = hold
+                return result
+        finally:
+            self.reader.slots.release()
 
     def verify(self, ce, version=None, mode="rest"):
         try:

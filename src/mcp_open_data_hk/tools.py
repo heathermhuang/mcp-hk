@@ -24,7 +24,7 @@ def register_data_tools(server, service=None):
 
     from .sfc import register_mcp as register_sfc_mcp
 
-    register_sfc_mcp(server)
+    register_sfc_mcp(server, current)
 
     from .hkex_api import register_mcp as register_hkex_mcp
 

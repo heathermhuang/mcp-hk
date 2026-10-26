@@ -377,7 +377,7 @@ def create_app(service=None):
 
     from .sfc import register_http as register_sfc_http
 
-    register_sfc_http(app)
+    register_sfc_http(app, service)
 
     from .resource_api import register_http
 

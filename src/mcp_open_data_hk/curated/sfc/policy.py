@@ -1,6 +1,8 @@
 """Pinned operator policy; request parameters and environment flags grant nothing."""
 
 from datetime import datetime, timezone
+import os
+from pathlib import Path
 from typing import Literal
 from urllib.parse import urlsplit
 
@@ -117,3 +119,18 @@ POLICY = Policy(
     recheckAt="2026-11-25T00:00:00Z",
     modes={mode: "unknown" for mode in MODES},
 )
+
+
+def configured_policy():
+    """Existing operator file plus an independent checksum; flags grant no modes."""
+    path = os.environ.get("MCP_HK_SFC_POLICY_FILE")
+    checksum = os.environ.get("MCP_HK_SFC_POLICY_SHA256")
+    if not path or not checksum:
+        return POLICY
+    try:
+        policy = Policy.model_validate_json(Path(path).read_bytes())
+        if policy.sha256 != checksum:
+            return POLICY
+        return policy
+    except (ValueError, OSError):
+        return POLICY

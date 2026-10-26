@@ -59,6 +59,9 @@ class Service:
         self.store = store
         self.address_slots = asyncio.Semaphore(3)
         self.companies = Companies()
+        from .sfc import Sfc
+
+        self.sfc = Sfc(self.companies)
         from .hkex import Hkex
 
         self.hkex = Hkex(self.companies)
