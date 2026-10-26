@@ -12,9 +12,10 @@ const resource={id:'a'.repeat(32),datasetId:'weather',url:'https://example.gov.h
 const schema={recordPath:'features',fields:[{name:'geometry',types:['object']},{name:'properties',types:['object']}],queryFields:[{name:'properties.location',types:['string']},{name:'properties.rainfall',types:['number']},{name:'geometry.coordinates',types:['array']}]};
 const provenance=[{sourceUrl:'https://example.gov.hk/weather',termsUrl:'https://example.gov.hk/terms',attribution:'Fixture provider',lastValidatedAt:1792895641,publicationDate:'2022-08-08',referencePeriod:null}];
 const building={data:{id:'b1',name:'Fixture building',listingState:{message:null},stats:{lastUpdated:'2026-10-25'},listings:[{id:'1',title:'Sale advert',mode:'buy',priceHkd:1000000,source:'Provider',sourceUrl:null,freshness:{status:'stale',observedAt:'2026-10-01'},quality:{matchLevel:'building'}},{id:'2',title:'Rent advert',mode:'rent',priceHkd:20000,source:'Provider',sourceUrl:'https://example.com/advert',freshness:{status:'fresh',observedAt:'2026-10-25'},quality:{matchLevel:'estate'}}],listingQuality:{selection:'current',currentQualifiedCount:1,providerReturnedCount:2}}};
-async function setup(){const context=await browser.newContext();const page=await context.newPage(),calls=[];page.on('pageerror',e=>errors.push(e.message));await context.route('https://hk.app/**',r=>r.abort());
+async function setup(){const context=await browser.newContext();const page=await context.newPage(),calls=[],sourceRequests=[];page.on('pageerror',e=>errors.push(e.message));await context.route('https://hk.app/**',r=>r.abort());await context.route(/https:\/\/apps\.sfc\.hk\//,r=>{sourceRequests.push(r.request().url());return r.abort();});
  await context.route('**/api/v1/**',async route=>{const req=route.request(),u=new URL(req.url()),path=u.pathname;calls.push({path,query:u.search,body:req.postDataJSON()});let body={},status=200;
- if(path==='/api/v1/coverage')body=coverage;
+ if(path==='/api/v1/sfc/status')body={data:{sourceId:'sfc_register',state:'unqualified',enabledModes:[],acceptedVersion:null}};
+ else if(path==='/api/v1/coverage')body=coverage;
  else if(path==='/api/v1/status')body={sources:[{sourceId:'enigma',providerType:'independent',sourceUrl:'https://example.com/archive',lastSuccess:null,stale:false}]};
  else if(path==='/api/v1/catalogue/datasets'){const term=u.searchParams.get('q');if(term==='slow')await new Promise(resolve=>setTimeout(resolve,150));body={items:[{...dataset,title:term==='slow'?'Obsolete dataset':term==='fast'?'Latest dataset':dataset.title}],total:11,nextOffset:u.searchParams.get('offset')==='10'?null:10};}
  else if(path.startsWith('/api/v1/catalogue/datasets/'))body=dataset;
@@ -34,7 +35,7 @@ async function setup(){const context=await browser.newContext();const page=await
  else {status=503;body={error:{code:'PACK_UNAVAILABLE',message:'Fixture unavailable'}};}
  await route.fulfill({status,contentType:'application/json',body:JSON.stringify(body)});
  });
- await context.route('**/downloads/companies/**',r=>r.fulfill({status:503,contentType:'application/json',body:JSON.stringify({error:{code:'PACK_UNAVAILABLE',message:'No fixture export'}})}));return {context,page,calls};}
+ await context.route('**/downloads/companies/**',r=>r.fulfill({status:503,contentType:'application/json',body:JSON.stringify({error:{code:'PACK_UNAVAILABLE',message:'No fixture export'}})}));return {context,page,calls,sourceRequests};}
 async function run(name,fn){const b=await setup();try{await fn(b);receipts.push({name,passed:true});}catch(e){console.error({name,errors,calls:b.calls});await b.page.screenshot({path:new URL('failure.png',output).pathname,fullPage:true});throw e;}finally{await b.context.close();}}
 try{
 await run('scope, pagination, history, focused detail and preview budget',async({page,calls})=>{
@@ -81,11 +82,11 @@ await run('responsive widths, zoom reflow and keyboard navigation',async({page})
  for(const width of [390,768,1280])for(const path of ['/sfc','/coverage','/companies','/properties','/connect']){await page.setViewportSize({width,height:900});await page.goto(origin+path+'?lang=zh-Hant');assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,path+' width '+width);}
  await page.goto(origin+'/coverage?access=sources&lang=en');await page.keyboard.press('Tab');assert.equal(await page.locator('.mhk-skip-link').evaluate(e=>e===document.activeElement),true);await page.keyboard.press('Enter');assert.equal(await page.locator('#main-content').evaluate(e=>e===document.activeElement),true);await page.setViewportSize({width:320,height:900});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
 });
-await run('SFC gates, both languages, keyboard and no source reads',async({page,calls})=>{
+await run('SFC gates, both languages, keyboard and no source reads',async({page,calls,sourceRequests})=>{
  for(const lang of ['en','zh-Hant'])for(const width of [320,390,768,1280]){
   const before=calls.length;await page.setViewportSize({width,height:900});await page.goto(origin+'/sfc?lang='+lang);await page.waitForLoadState('networkidle');
   assert.equal(await page.locator('#sfc-ce').isDisabled(),true);assert.equal(await page.locator('#sfc button[disabled]').count(),1);
-  assert.equal(await page.locator('a[download]').count(),0);assert.equal(calls.length,before);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+  assert.equal(await page.locator('a[download]').count(),0);assert.ok(calls.slice(before).every(c=>c.path==='/api/v1/sfc/status'&&c.query===''&&c.body===null));assert.equal(sourceRequests.length,0);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
  }
  await page.goto(origin+'/sfc?lang=en');await page.keyboard.press('Tab');await page.keyboard.press('Enter');assert.equal(await page.locator('#main-content').evaluate(e=>e===document.activeElement),true);
  await page.locator('.mhk-language').click();await page.waitForURL(u=>u.pathname==='/sfc'&&u.searchParams.get('lang')==='zh-Hant');assert.match(await page.locator('h1').innerText(),/證監會/);
