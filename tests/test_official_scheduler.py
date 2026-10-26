@@ -200,3 +200,63 @@ exit 0""",
         < log.index("official_restore_check")
     )
     assert log.index("official_restore_check") < log.index("dropdb")
+
+
+def test_health_defers_checkpoint_writes_until_snapshot_owner_releases_lock(tmp_path):
+    import fcntl
+    import sys
+
+    release = tmp_path / "release" / "deploy" / "curated"
+    release.mkdir(parents=True)
+    state = tmp_path / "state"
+    state.mkdir()
+    runner = release / "verify-official.sh"
+    runner.write_text(
+        (ROOT / "deploy/curated/verify-official.sh")
+        .read_text()
+        .replace("/srv/mcp-hk-curated", str(state))
+    )
+    binaries = tmp_path / "bin"
+    binaries.mkdir()
+    hour = tmp_path / "hour"
+    hour.write_text("05")
+    executable(
+        binaries / "date",
+        f'case "$*" in *+%H) cat "{hour}";; *) printf "2026-10-26T05:00:00Z";; esac',
+    )
+    locker = binaries / "flock"
+    locker.write_text(
+        f"#!{sys.executable}\n"
+        "import fcntl,sys\n"
+        "try: fcntl.flock(9,fcntl.LOCK_EX|fcntl.LOCK_NB)\n"
+        "except BlockingIOError: sys.exit(1)\n"
+    )
+    locker.chmod(0o755)
+    calls = tmp_path / "checkpoint-writes"
+    executable(
+        binaries / "docker",
+        f"""[ "$1" = compose ] && {{ printf 'fixture-image\\n'; exit 0; }}
+printf 'write\\n' >> '{calls}'
+printf '%s\\n' '{{"status":"success"}}'""",
+    )
+    lock = tmp_path / "maintenance.lock"
+    environment = dict(
+        os.environ,
+        PATH=str(binaries) + ":" + os.environ["PATH"],
+        MCP_HK_MAINTENANCE_LOCK=str(lock),
+    )
+    with lock.open("w") as owner:
+        fcntl.flock(owner, fcntl.LOCK_EX)
+        blocked = subprocess.run(
+            ["sh", str(runner)], env=environment, capture_output=True, text=True
+        )
+        assert blocked.returncode == 0, blocked.stderr
+        assert "Health comparison deferred" in blocked.stdout
+        assert not calls.exists(), "Health must not mutate a locked backup checkpoint"
+        assert (state / "official-health-running").read_text() == "2026-10-26T05:00:00Z"
+    hour.write_text("06")
+    followup = subprocess.run(
+        ["sh", str(runner)], env=environment, capture_output=True, text=True
+    )
+    assert followup.returncode == 0, followup.stderr
+    assert calls.read_text().splitlines() == ["write"]
