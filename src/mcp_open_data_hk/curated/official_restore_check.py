@@ -1,18 +1,22 @@
 """Check a retrieved logical restore, then measure the effective staged read model."""
 
 import argparse
+import hashlib
 import json
 import os
 import time
+import sys
+from pathlib import Path
 
 from psycopg.conninfo import conninfo_to_dict, make_conninfo
 from psycopg.rows import dict_row
 
 from .build import connect
-from .official_recovery import snapshot
+from .official_recovery import snapshot, membership_hash
 from .official_read import OfficialReader
 from .read import Reader, prefix_end
 from .normalize import search_key
+from .official_queries import EFFECTIVE_MEMBERS, prefix_rows
 
 
 def verify(dsn, expected, upload):
@@ -25,6 +29,7 @@ def verify(dsn, expected, upload):
         for key in ["tables", "rawCapturesVerified", "officialVersion"]:
             if actual[key] != expected[key]:
                 raise ValueError("Restored checkpoint mismatch")
+        member_hash = membership_hash(conn)
         migrations = {
             r["version"]: r["sha256"]
             for r in conn.execute(
@@ -42,7 +47,7 @@ def verify(dsn, expected, upload):
         reader.address_history(entity["entity_id"])
     samples = []
     # Fixed internal qualification queries, not a public arbitrary-SQL surface.
-    membership = "WITH members AS (SELECT source_key,capture_id FROM curated.official_staged UNION ALL SELECT m.source_key,m.capture_id FROM curated.official_members m JOIN curated.official_pointer p USING(version) WHERE NOT EXISTS(SELECT 1 FROM curated.official_staged s WHERE s.source_key=m.source_key)) "
+    membership = "WITH members AS (" + EFFECTIVE_MEMBERS + ") "
     with connect(
         dsn,
         row_factory=dict_row,
@@ -52,9 +57,19 @@ def verify(dsn, expected, upload):
             key = search_key(["10", "香港", "CHINA", "香港", "10"][i % 5])
             start = time.monotonic()
             rows = conn.execute(
-                membership
-                + "SELECT DISTINCT ON(r.entity_id) r.entity_id,r.record FROM curated.official_records r JOIN members m USING(capture_id) WHERE ((r.name_key>=%s AND r.name_key<%s) OR (r.name2_key>=%s AND r.name2_key<%s)) AND r.entity_id>%s ORDER BY r.entity_id,r.record->>'coverageEnd' DESC NULLS LAST,r.fact_id LIMIT 21",
-                (key, prefix_end(key), key, prefix_end(key), ""),
+                prefix_rows(EFFECTIVE_MEMBERS),
+                (
+                    key,
+                    prefix_end(key),
+                    key,
+                    prefix_end(key),
+                    "",
+                    21,
+                    key,
+                    prefix_end(key),
+                    key,
+                    prefix_end(key),
+                ),
             ).fetchall()
             samples.append((time.monotonic() - start) * 1000)
             if i % 5 == 0:
@@ -75,9 +90,19 @@ def verify(dsn, expected, upload):
                 samples.append((time.monotonic() - start) * 1000)
                 start = time.monotonic()
                 conn.execute(
-                    membership
-                    + "SELECT DISTINCT ON(r.entity_id) r.entity_id FROM curated.official_records r JOIN members m USING(capture_id) WHERE r.name_key>=%s AND r.name_key<%s AND r.entity_id>%s ORDER BY r.entity_id LIMIT 21",
-                    (key, prefix_end(key), rows[-1]["entity_id"]),
+                    prefix_rows(EFFECTIVE_MEMBERS),
+                    (
+                        key,
+                        prefix_end(key),
+                        key,
+                        prefix_end(key),
+                        rows[-1]["entity_id"],
+                        21,
+                        key,
+                        prefix_end(key),
+                        key,
+                        prefix_end(key),
+                    ),
                 ).fetchall()
             samples.append((time.monotonic() - start) * 1000)
         pairs = conn.execute(
@@ -98,6 +123,10 @@ def verify(dsn, expected, upload):
         "stagedReadMaxMs": max(samples),
         "qualifiedWeekPairs": pairs,
         "performancePassed": True,
+        "effectiveMembershipSha256": member_hash,
+        "readQuerySha256": hashlib.sha256(
+            Path(sys.modules[prefix_rows.__module__].__file__).read_bytes()
+        ).hexdigest(),
         "migrations": migrations,
     }
 
