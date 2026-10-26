@@ -1,0 +1,53 @@
+{
+  "observedAt": "2026-10-26T02:23:58.160532+00:00",
+  "origins": [
+    {
+      "origin": "https://mcp.hk",
+      "version": "hkex-daily-b27b6e1b67b48fe3696bab69f2ce7090",
+      "rows": 1004,
+      "latestSummaryDate": "2026-10-23",
+      "lastSourceCheck": "2026-10-26T02:16:54.176649+00:00",
+      "sourceHold": null,
+      "pendingVersion": null,
+      "stock00595Rows": 7,
+      "pagination": true,
+      "restMcpParity": true,
+      "detailRequiresPinnedVersion": true,
+      "companyVersions": {
+        "archive": "enigma251227-hk-v1",
+        "latest_observed": "official-74c0460422870d185125947b48319d84"
+      },
+      "sfcArchiveReturned": true,
+      "racingState": null,
+      "webbArchive": {
+        "state": "available",
+        "version": "webb-sdi-enigma251227-v1",
+        "rows": 341047
+      }
+    },
+    {
+      "origin": "https://mcp-hk.measurable.workers.dev",
+      "version": "hkex-daily-b27b6e1b67b48fe3696bab69f2ce7090",
+      "rows": 1004,
+      "latestSummaryDate": "2026-10-23",
+      "lastSourceCheck": "2026-10-26T02:16:54.176649+00:00",
+      "sourceHold": null,
+      "pendingVersion": null,
+      "stock00595Rows": 7,
+      "pagination": true,
+      "restMcpParity": true,
+      "detailRequiresPinnedVersion": true,
+      "companyVersions": {
+        "archive": "enigma251227-hk-v1",
+        "latest_observed": "official-74c0460422870d185125947b48319d84"
+      },
+      "sfcArchiveReturned": true,
+      "racingState": null,
+      "webbArchive": {
+        "state": "available",
+        "version": "webb-sdi-enigma251227-v1",
+        "rows": 341047
+      }
+    }
+  ]
+}

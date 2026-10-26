@@ -1,0 +1,48 @@
+{
+  "source": "hkex_daily_summary",
+  "stamp": "20261026T022043Z-2eee8ca2",
+  "stage": "accepted",
+  "version": "hkex-daily-b27b6e1b67b48fe3696bab69f2ce7090",
+  "dump": {
+    "bytes": 256091,
+    "sha256": "b14d20b8afec2909efe7de2df795eb22774de6f7b37cd27d3c62dd91df04bf52"
+  },
+  "restoreVerified": true,
+  "allTables": {
+    "control": {
+      "rows": 1,
+      "sha256": "a5475bbecc1585d7f507194232f2b8eb98139148e01b8014cefbae772a57891f"
+    },
+    "versions": {
+      "rows": 2,
+      "sha256": "fcf2339ea6dd5fbafb5799169ddabc13d5239fd10fea45acb7f3b3fb7b59a2fa"
+    },
+    "reports": {
+      "rows": 36,
+      "sha256": "b9bb5341386436f4c69887640721ac62d3b173205cca819a6827cb95267fad48"
+    },
+    "records": {
+      "rows": 2253,
+      "sha256": "dd60ee58f238970b9f1010a14861a68ed497015c1fe7f97fd4967ca7ec8f45e0"
+    },
+    "version_reports": {
+      "rows": 32,
+      "sha256": "f4b7041c578850173dbbe1d2a4bcc0bedb082ae4fdad74da806d5e515d2f8b05"
+    },
+    "runs": {
+      "rows": 3,
+      "sha256": "37c9949559f5fc749ca1da90d0a111b9bd2cfd49b9993ee86fb9f42cd4635850"
+    },
+    "requests": {
+      "rows": 52,
+      "sha256": "02ac0a3b5e9bcd1614b95624689b1c423f065373572845c0b37eb6690559ad66",
+      "sequence": {
+        "lastValue": 52,
+        "isCalled": true
+      }
+    }
+  },
+  "publicationRevision": 2,
+  "verifiedAt": "2026-10-26T02:20:57.426852+00:00",
+  "manifestSha256": "07d21532f9bf0722bc784933b587b5372ba6f34634a7b3cbca4bfea91ae32401"
+}
