@@ -12,7 +12,7 @@ attempt to remain held with `DEVELOPMENT_HTTP_302` and to have its corresponding
 durable admission identity. Its recorded URL must pass the existing fixed results
 route validator. Callers supply no URL, origin, query or credential.
 
-The Durable Object admits at most one diagnostic per original held admission,
+The Durable Object admits at most one basic diagnostic per original held admission,
 before provider dispatch, within the unchanged 200 reads / 64 MiB per UTC day and
 400 KiB body reservation. Other pending/held requests, provider-denial records,
 unknowns and exhausted budgets refuse this special admission. It never changes
@@ -31,6 +31,16 @@ body, with separate bounded inspection metadata; JSON cannot replace the R2
 snapshot. The controller validates that metadata before saving the checkpoint.
 The private response reports the saved backup and diagnostic, without publishing
 a race, following the target or clearing any control.
+
+The first production diagnostic completed with HTTP302 and an unqualified Location
+hash, which did not retain enough routing information. `inspect_redirect_shape`
+therefore permits one separately recorded instrumented read only after the first
+completed, settled HTTP302 has that opaque target. It requires the same original
+held request and unchanged aggregate source quotas. Unknowns, denials and other
+outstanding controls refuse it. Its record captures HTTP/HTTPS scheme, same-provider
+host, recognized static path words and query-key names. Opaque path parts,
+credentials, unknown parameter values and session material stay redacted. The
+original hold stays active, and neither operation can repeat after admission.
 
 Tests cover exact selection, no credential forwarding/following, replay rejection,
 provider/unknown/other-pending refusal, day quota, unchanged original hold, new

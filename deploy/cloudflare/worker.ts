@@ -69,6 +69,7 @@ export class McpContainer extends Container<Env> {
     const admission=new RacingAdmission(this.ctx.storage.sql);
     if(input.action==='reserve')return admission.reserve(String(input.id));
     if(input.action==='inspect_redirect')return admission.reserveRedirectInspection(String(input.referenceId),String(input.id));
+    if(input.action==='inspect_redirect_shape')return admission.reserveRedirectInspection(String(input.referenceId),String(input.id),Date.now(),true);
     if(input.action==='settle')return admission.settle(String(input.id),String(input.state),Number(input.bytes),input.code??null);
     if(input.action==='status')return admission.report();
     throw new Error('RACING_ADMISSION_ACTION');
@@ -130,7 +131,7 @@ export class McpContainer extends Container<Env> {
       let inspectionReceipt;
       try {
         inspectionReceipt=inspection===null?undefined:JSON.parse(inspection);
-        if(inspection!==null&&(!inspectionReceipt||typeof inspectionReceipt!=='object'||Array.isArray(inspectionReceipt)||input.action!=='inspect_redirect'||inspectionReceipt.originalAttempt!==input.attempt||inspectionReceipt.originalHoldRetained!==true))throw new Error('invalid');
+        if(inspection!==null&&(!inspectionReceipt||typeof inspectionReceipt!=='object'||Array.isArray(inspectionReceipt)||!['inspect_redirect','inspect_redirect_shape'].includes(input.action)||inspectionReceipt.originalAttempt!==input.attempt||inspectionReceipt.originalHoldRetained!==true))throw new Error('invalid');
       } catch {await response.body?.cancel();throw new Error('RACING_INSPECTION_RECEIPT_INVALID');}
       const receipt=await saveBackup(this.env,response,'racing-operator');
       return {...await this.acceptRacingCandidate(response,receipt),...(inspectionReceipt?{inspection:inspectionReceipt}:{})};
