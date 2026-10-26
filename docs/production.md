@@ -419,6 +419,37 @@ policy yields 100/100/50 at 250, and later deliveries become no-ops. Freshness a
 uses the same remaining address policy and 500/day CR provider budget. Publication
 seeds new exact identities into the queue without changing existing due/hold state.
 
+### Address outcomes and sustainable cohorts
+
+Migration `007_official_address_queue.sql` adds per-check outcome receipts and an
+explicit priority flag; it leaves all accepted addresses and migration 001 intact.
+Only the exact Registry address search's HTTP 400 JSON response with integer
+`status=400` and `message="No result found."` is `SOURCE_NO_MATCH`. Other 400s,
+malformed JSON, extra fields, HTML and access denials remain failures. Error-body
+evidence is bounded to 4 KiB; truncated/interrupted reads retain their full byte
+reservation. A no-match neither deletes an address nor establishes dissolution.
+
+The persisted queue turn allocates saturated capacity to priority (20%), due
+successful-address refresh (40%), never-attempted backlog (30%) and due unsuccessful
+retries (10%). Empty cohorts lend their slots. The turn persists before each read,
+including across one-read batches. Admission still uses the measured address stage
+and the shared 500/day CR cap. Pre-dispatch address checks remain `unknown` after a
+crash and count against the address allowance. Success is due after 90 days,
+qualified no-match after 30 days, transient/budget failures after one day, and
+schema/unresolved failures after seven days, subject to the shared source hold.
+
+With the 26 October baseline of 133,108 companies and 250 attempts/day, one complete
+first pass needs **at least 533 days**. A whole-subset 90-day cycle needs at least
+1,479 successful reads/day and cannot be promised within current quotas. Public
+status separates unattempted/unobserved, due refresh, cohort ages, recent achieved
+attempts, no-matches, interruptions and the optimistic capacity bound. The 90-day
+refresh target is capacity-dependent and applies to observed/tracked cohorts.
+
+An operator may track only an existing exact queue identity with
+`python -m mcp_open_data_hk.curated.official_address_queue cr:local:NNNNNNNN` using
+the existing owner environment; `--untrack` reverses that priority. This uses the
+ordinary writer lock and performs no source read. It does not raise quotas.
+
 A retained January 2025 workbook exposed an Excel XF `f123Prefix` difference:
 one CSV company-name value starts with an apostrophe while the XLS logical text
 omits it and explicitly flags the prefix. Transform `official-v3` reads formatting

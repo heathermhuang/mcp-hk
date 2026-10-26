@@ -69,10 +69,7 @@ def set_stage(conn, target):
             before["dailyLimit"] < 100
             or before["attempts"] < 100
             or before["failures"] / before["attempts"] > 0.05
-            or any(
-                code not in {"SOURCE_HTTP_400", "ADDRESS_NO_MATCH_OR_PARTIAL"}
-                for code in before["failureCodes"]
-            )
+            or any(code != "SOURCE_NO_MATCH" for code in before["failureCodes"])
         ):
             raise SourceRejected("ADDRESS_100_PILOT_NOT_QUALIFIED")
         jobs = conn.execute(

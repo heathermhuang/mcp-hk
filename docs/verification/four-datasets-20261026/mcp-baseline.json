@@ -1,0 +1,2116 @@
+{
+  "observedAt": "2026-10-26 03:05:35 UTC",
+  "tools": {
+    "hk_company_updates_status": {
+      "data": {
+        "coverage": {
+          "view": "latest_observed",
+          "schedule": {
+            "utc": "05:00 daily",
+            "kind": "systemd",
+            "byteLimit": 67108864,
+            "addressLimit": 250,
+            "requestLimit": 48,
+            "dailyCrRequestLimit": 500
+          },
+          "limitations": [
+            "Observed official subset; not a complete current company-status register",
+            "Dissolution events are not covered; absence never establishes dissolution",
+            "Local weekly dates combine incorporation and re-domiciliation unless the address source distinguishes them",
+            "No inferred CRN/BRN crosswalk, name-based join, current officers or SFC/HKEX update coverage",
+            "Money-lender MLR identities are separate from company BRNs; source cutoff can precede collection"
+          ],
+          "missingWeeks": [
+            "20250825",
+            "20250901",
+            "20250908",
+            "20250915",
+            "20250922",
+            "20250929",
+            "20251006",
+            "20251013",
+            "20251020",
+            "20251027",
+            "20251103",
+            "20251110",
+            "20251117",
+            "20251124",
+            "20251201",
+            "20251208",
+            "20251215",
+            "20251222",
+            "20251229",
+            "20260105",
+            "20260112",
+            "20260119",
+            "20260126",
+            "20260202",
+            "20260209",
+            "20260216",
+            "20260223",
+            "20260302",
+            "20260309",
+            "20260316",
+            "20260323",
+            "20260330",
+            "20260406",
+            "20260413",
+            "20260420",
+            "20260427",
+            "20260504",
+            "20260511",
+            "20260518",
+            "20260525",
+            "20260601",
+            "20260608",
+            "20260615",
+            "20260622",
+            "20260629",
+            "20260706",
+            "20260713",
+            "20260720",
+            "20260727",
+            "20260803",
+            "20260810",
+            "20260817",
+            "20260824",
+            "20260831",
+            "20260907",
+            "20260914",
+            "20260921",
+            "20260928"
+          ],
+          "recordCounts": {
+            "money_lender": {
+              "rows": 6776,
+              "entities": 6770
+            },
+            "company_event": {
+              "rows": 135469,
+              "entities": 133108
+            },
+            "address_observation": {
+              "rows": 491,
+              "entities": 491
+            }
+          },
+          "acceptedWeeks": [
+            "20241230",
+            "20250106",
+            "20250113",
+            "20250120",
+            "20250127",
+            "20250203",
+            "20250210",
+            "20250217",
+            "20250224",
+            "20250303",
+            "20250310",
+            "20250317",
+            "20250324",
+            "20250331",
+            "20250407",
+            "20250414",
+            "20250421",
+            "20250428",
+            "20250505",
+            "20250512",
+            "20250519",
+            "20250526",
+            "20250602",
+            "20250609",
+            "20250616",
+            "20250623",
+            "20250630",
+            "20250707",
+            "20250714",
+            "20250721",
+            "20250728",
+            "20250804",
+            "20250811",
+            "20250818",
+            "20261005",
+            "20261012"
+          ],
+          "addressEntities": 491,
+          "moneyLenderCutoff": "2026-09-30",
+          "acceptedWeeklyFiles": 72,
+          "discoveredCoverageEnd": "2026-10-18",
+          "discoveredWeeklyFiles": 188,
+          "discoveredCoverageStart": "2024-12-30",
+          "latestAcceptedCoverageEnd": "2026-10-18",
+          "addressEligibleObservedEntities": 133108
+        },
+        "recentRuns": [
+          {
+            "run_id": "3f24e65e81baad8298330e162d5bbc8f",
+            "started_at": "2026-10-26T03:00:32.898071+00:00",
+            "finished_at": "2026-10-26T03:04:31.996018+00:00",
+            "status": "partial"
+          },
+          {
+            "run_id": "9fbee5c8c0358f9c4ccf33ff9e032691",
+            "started_at": "2026-10-26T02:20:11.344926+00:00",
+            "finished_at": "2026-10-26T02:21:10.403586+00:00",
+            "status": "success"
+          }
+        ],
+        "maintenance": {
+          "offsite": {
+            "lastUploadAt": "2026-10-25T14:24:46.797335+00:00",
+            "lastAttemptOutcome": "offsite_verified",
+            "lastUploadScheduleKind": "qualification",
+            "restoreVerifiedAt": "2026-10-25T14:26:47.566267+00:00",
+            "coverageCurrent": true,
+            "dailyCadenceObserved": false,
+            "targetRpoHours": 24
+          },
+          "backfillRecoveryGateOpen": true,
+          "addressPolicy": {
+            "dailyLimit": 250,
+            "attempts": 250,
+            "remaining": 0,
+            "failures": 15,
+            "failureCodes": [
+              "SOURCE_HTTP_400",
+              "SOURCE_HTTP_400",
+              "SOURCE_HTTP_400",
+              "SOURCE_HTTP_400",
+              "SOURCE_HTTP_400",
+              "SOURCE_HTTP_400",
+              "SOURCE_HTTP_400",
+              "SOURCE_HTTP_400",
+              "SOURCE_HTTP_400",
+              "SOURCE_HTTP_400",
+              "SOURCE_HTTP_400",
+              "SOURCE_HTTP_400",
+              "SOURCE_HTTP_400",
+              "SOURCE_HTTP_400",
+              "SOURCE_HTTP_400"
+            ],
+            "latestCheckAt": "2026-10-26T03:04:31.986479+00:00"
+          },
+          "nextConfiguredDueAt": "2026-10-26T05:00:00+00:00",
+          "sourceChecks": [
+            {
+              "family": "address_policy",
+              "checked_at": "2026-10-24T14:49:42.740838+00:00",
+              "hold_until": null,
+              "status": null
+            },
+            {
+              "family": "addresses",
+              "checked_at": "2026-10-26T03:04:31.993076+00:00",
+              "hold_until": null,
+              "status": "partial"
+            },
+            {
+              "family": "inventory",
+              "checked_at": "2026-10-25T05:00:28.036283+00:00",
+              "hold_until": null,
+              "status": null
+            },
+            {
+              "family": "legacy_budget_seed",
+              "checked_at": "2026-10-24T13:06:58.364845+00:00",
+              "hold_until": null,
+              "status": "seeded"
+            },
+            {
+              "family": "lenders",
+              "checked_at": "2026-10-25T05:01:14.583736+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "offsite",
+              "checked_at": "2026-10-25T14:24:46.777922+00:00",
+              "hold_until": null,
+              "status": null
+            },
+            {
+              "family": "offsite_restore",
+              "checked_at": "2026-10-25T14:26:47.512589+00:00",
+              "hold_until": null,
+              "status": null
+            },
+            {
+              "family": "performance",
+              "checked_at": "2026-10-25T14:26:47.512589+00:00",
+              "hold_until": null,
+              "status": "passed"
+            },
+            {
+              "family": "week:20250106",
+              "checked_at": "2026-10-24T13:12:25.282311+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250113",
+              "checked_at": "2026-10-24T14:35:48.104619+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250120",
+              "checked_at": "2026-10-24T15:05:07.562453+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250127",
+              "checked_at": "2026-10-24T14:35:53.827879+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250203",
+              "checked_at": "2026-10-24T14:35:59.244314+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250210",
+              "checked_at": "2026-10-24T16:21:33.735560+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250217",
+              "checked_at": "2026-10-24T16:21:50.752414+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250224",
+              "checked_at": "2026-10-24T16:22:10.178110+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250303",
+              "checked_at": "2026-10-24T16:22:28.025757+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250310",
+              "checked_at": "2026-10-24T18:20:54.475473+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250317",
+              "checked_at": "2026-10-24T18:21:09.385453+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250324",
+              "checked_at": "2026-10-24T18:21:22.522345+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250331",
+              "checked_at": "2026-10-24T18:21:34.620317+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250407",
+              "checked_at": "2026-10-24T20:20:40.298930+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250414",
+              "checked_at": "2026-10-24T20:20:51.721412+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250421",
+              "checked_at": "2026-10-24T20:21:04.147692+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250428",
+              "checked_at": "2026-10-24T20:21:15.898623+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250505",
+              "checked_at": "2026-10-24T22:20:44.396337+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250512",
+              "checked_at": "2026-10-24T22:20:57.630733+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250519",
+              "checked_at": "2026-10-24T22:21:09.129857+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250526",
+              "checked_at": "2026-10-24T22:21:21.264427+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250602",
+              "checked_at": "2026-10-25T00:20:50.294505+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250609",
+              "checked_at": "2026-10-25T00:21:06.628652+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250616",
+              "checked_at": "2026-10-25T00:21:21.429631+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250623",
+              "checked_at": "2026-10-25T00:21:37.119894+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250630",
+              "checked_at": "2026-10-25T02:20:53.362345+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250707",
+              "checked_at": "2026-10-25T02:21:06.632288+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250714",
+              "checked_at": "2026-10-25T02:21:17.510163+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250721",
+              "checked_at": "2026-10-25T02:21:28.347572+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250728",
+              "checked_at": "2026-10-25T04:20:56.921906+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250804",
+              "checked_at": "2026-10-25T04:21:09.848741+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250811",
+              "checked_at": "2026-10-25T04:21:26.478041+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250818",
+              "checked_at": "2026-10-25T04:21:39.653425+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250825",
+              "checked_at": "2026-10-25T06:20:59.844933+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250901",
+              "checked_at": "2026-10-25T06:21:17.447279+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250908",
+              "checked_at": "2026-10-25T06:21:31.083717+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250915",
+              "checked_at": "2026-10-25T06:21:46.529396+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250922",
+              "checked_at": "2026-10-25T12:20:45.289830+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20250929",
+              "checked_at": "2026-10-25T12:20:56.714721+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20251006",
+              "checked_at": "2026-10-25T12:21:10.605899+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20251013",
+              "checked_at": "2026-10-25T12:21:22.563140+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20251020",
+              "checked_at": "2026-10-25T14:20:38.560006+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20251027",
+              "checked_at": "2026-10-25T14:20:49.747289+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20251103",
+              "checked_at": "2026-10-25T14:21:02.607501+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20251110",
+              "checked_at": "2026-10-25T14:21:19.215989+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20251117",
+              "checked_at": "2026-10-25T16:20:50.042230+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20251124",
+              "checked_at": "2026-10-25T16:21:09.484469+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20251201",
+              "checked_at": "2026-10-25T16:21:28.802840+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20251208",
+              "checked_at": "2026-10-25T16:21:43.533958+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20251215",
+              "checked_at": "2026-10-25T18:20:41.335034+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20251222",
+              "checked_at": "2026-10-25T18:20:55.372706+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20251229",
+              "checked_at": "2026-10-25T18:21:11.369262+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20260105",
+              "checked_at": "2026-10-25T18:21:29.521563+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20260112",
+              "checked_at": "2026-10-25T20:20:39.921124+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20260119",
+              "checked_at": "2026-10-25T20:20:57.783724+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20260126",
+              "checked_at": "2026-10-25T20:21:15.496489+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20260202",
+              "checked_at": "2026-10-25T20:21:30.031136+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20260209",
+              "checked_at": "2026-10-25T22:20:37.302427+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20260216",
+              "checked_at": "2026-10-25T22:20:44.487056+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20260223",
+              "checked_at": "2026-10-25T22:20:57.817144+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20260302",
+              "checked_at": "2026-10-25T22:21:13.485156+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20260309",
+              "checked_at": "2026-10-26T00:20:41.534433+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20260316",
+              "checked_at": "2026-10-26T00:20:56.963038+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20260323",
+              "checked_at": "2026-10-26T00:21:15.552619+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20260330",
+              "checked_at": "2026-10-26T00:21:33.920601+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20260406",
+              "checked_at": "2026-10-26T02:20:25.443873+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20260413",
+              "checked_at": "2026-10-26T02:20:40.052660+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20260420",
+              "checked_at": "2026-10-26T02:20:54.777663+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20260427",
+              "checked_at": "2026-10-26T02:21:10.374389+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20261005",
+              "checked_at": "2026-10-25T05:00:59.453276+00:00",
+              "hold_until": null,
+              "status": "verified"
+            },
+            {
+              "family": "week:20261012",
+              "checked_at": "2026-10-25T05:00:45.970306+00:00",
+              "hold_until": null,
+              "status": "verified"
+            }
+          ],
+          "inventory": {
+            "weeks": [
+              {
+                "week": "20241230",
+                "files": 2,
+                "staged": 0,
+                "published": 2
+              },
+              {
+                "week": "20250106",
+                "files": 2,
+                "staged": 2,
+                "published": 2
+              },
+              {
+                "week": "20250113",
+                "files": 2,
+                "staged": 2,
+                "published": 2
+              },
+              {
+                "week": "20250120",
+                "files": 2,
+                "staged": 2,
+                "published": 2
+              },
+              {
+                "week": "20250127",
+                "files": 2,
+                "staged": 2,
+                "published": 2
+              },
+              {
+                "week": "20250203",
+                "files": 2,
+                "staged": 2,
+                "published": 2
+              },
+              {
+                "week": "20250210",
+                "files": 2,
+                "staged": 2,
+                "published": 2
+              },
+              {
+                "week": "20250217",
+                "files": 2,
+                "staged": 2,
+                "published": 2
+              },
+              {
+                "week": "20250224",
+                "files": 2,
+                "staged": 2,
+                "published": 2
+              },
+              {
+                "week": "20250303",
+                "files": 2,
+                "staged": 2,
+                "published": 2
+              },
+              {
+                "week": "20250310",
+                "files": 2,
+                "staged": 2,
+                "published": 2
+              },
+              {
+                "week": "20250317",
+                "files": 2,
+                "staged": 2,
+                "published": 2
+              },
+              {
+                "week": "20250324",
+                "files": 2,
+                "staged": 2,
+                "published": 2
+              },
+              {
+                "week": "20250331",
+                "files": 2,
+                "staged": 2,
+                "published": 2
+              },
+              {
+                "week": "20250407",
+                "files": 2,
+                "staged": 2,
+                "published": 2
+              },
+              {
+                "week": "20250414",
+                "files": 2,
+                "staged": 2,
+                "published": 2
+              },
+              {
+                "week": "20250421",
+                "files": 2,
+                "staged": 2,
+                "published": 2
+              },
+              {
+                "week": "20250428",
+                "files": 2,
+                "staged": 2,
+                "published": 2
+              },
+              {
+                "week": "20250505",
+                "files": 2,
+                "staged": 2,
+                "published": 2
+              },
+              {
+                "week": "20250512",
+                "files": 2,
+                "staged": 2,
+                "published": 2
+              },
+              {
+                "week": "20250519",
+                "files": 2,
+                "staged": 2,
+                "published": 2
+              },
+              {
+                "week": "20250526",
+                "files": 2,
+                "staged": 2,
+                "published": 2
+              },
+              {
+                "week": "20250602",
+                "files": 2,
+                "staged": 2,
+                "published": 2
+              },
+              {
+                "week": "20250609",
+                "files": 2,
+                "staged": 2,
+                "published": 2
+              },
+              {
+                "week": "20250616",
+                "files": 2,
+                "staged": 2,
+                "published": 2
+              },
+              {
+                "week": "20250623",
+                "files": 2,
+                "staged": 2,
+                "published": 2
+              },
+              {
+                "week": "20250630",
+                "files": 2,
+                "staged": 2,
+                "published": 2
+              },
+              {
+                "week": "20250707",
+                "files": 2,
+                "staged": 2,
+                "published": 2
+              },
+              {
+                "week": "20250714",
+                "files": 2,
+                "staged": 2,
+                "published": 2
+              },
+              {
+                "week": "20250721",
+                "files": 2,
+                "staged": 2,
+                "published": 2
+              },
+              {
+                "week": "20250728",
+                "files": 2,
+                "staged": 2,
+                "published": 2
+              },
+              {
+                "week": "20250804",
+                "files": 2,
+                "staged": 2,
+                "published": 2
+              },
+              {
+                "week": "20250811",
+                "files": 2,
+                "staged": 2,
+                "published": 2
+              },
+              {
+                "week": "20250818",
+                "files": 2,
+                "staged": 2,
+                "published": 2
+              },
+              {
+                "week": "20250825",
+                "files": 2,
+                "staged": 2,
+                "published": 0
+              },
+              {
+                "week": "20250901",
+                "files": 2,
+                "staged": 2,
+                "published": 0
+              },
+              {
+                "week": "20250908",
+                "files": 2,
+                "staged": 2,
+                "published": 0
+              },
+              {
+                "week": "20250915",
+                "files": 2,
+                "staged": 2,
+                "published": 0
+              },
+              {
+                "week": "20250922",
+                "files": 2,
+                "staged": 2,
+                "published": 0
+              },
+              {
+                "week": "20250929",
+                "files": 2,
+                "staged": 2,
+                "published": 0
+              },
+              {
+                "week": "20251006",
+                "files": 2,
+                "staged": 2,
+                "published": 0
+              },
+              {
+                "week": "20251013",
+                "files": 2,
+                "staged": 2,
+                "published": 0
+              },
+              {
+                "week": "20251020",
+                "files": 2,
+                "staged": 2,
+                "published": 0
+              },
+              {
+                "week": "20251027",
+                "files": 2,
+                "staged": 2,
+                "published": 0
+              },
+              {
+                "week": "20251103",
+                "files": 2,
+                "staged": 2,
+                "published": 0
+              },
+              {
+                "week": "20251110",
+                "files": 2,
+                "staged": 2,
+                "published": 0
+              },
+              {
+                "week": "20251117",
+                "files": 2,
+                "staged": 2,
+                "published": 0
+              },
+              {
+                "week": "20251124",
+                "files": 2,
+                "staged": 2,
+                "published": 0
+              },
+              {
+                "week": "20251201",
+                "files": 2,
+                "staged": 2,
+                "published": 0
+              },
+              {
+                "week": "20251208",
+                "files": 2,
+                "staged": 2,
+                "published": 0
+              },
+              {
+                "week": "20251215",
+                "files": 2,
+                "staged": 2,
+                "published": 0
+              },
+              {
+                "week": "20251222",
+                "files": 2,
+                "staged": 2,
+                "published": 0
+              },
+              {
+                "week": "20251229",
+                "files": 2,
+                "staged": 2,
+                "published": 0
+              },
+              {
+                "week": "20260105",
+                "files": 2,
+                "staged": 2,
+                "published": 0
+              },
+              {
+                "week": "20260112",
+                "files": 2,
+                "staged": 2,
+                "published": 0
+              },
+              {
+                "week": "20260119",
+                "files": 2,
+                "staged": 2,
+                "published": 0
+              },
+              {
+                "week": "20260126",
+                "files": 2,
+                "staged": 2,
+                "published": 0
+              },
+              {
+                "week": "20260202",
+                "files": 2,
+                "staged": 2,
+                "published": 0
+              },
+              {
+                "week": "20260209",
+                "files": 2,
+                "staged": 2,
+                "published": 0
+              },
+              {
+                "week": "20260216",
+                "files": 2,
+                "staged": 2,
+                "published": 0
+              },
+              {
+                "week": "20260223",
+                "files": 2,
+                "staged": 2,
+                "published": 0
+              },
+              {
+                "week": "20260302",
+                "files": 2,
+                "staged": 2,
+                "published": 0
+              },
+              {
+                "week": "20260309",
+                "files": 2,
+                "staged": 2,
+                "published": 0
+              },
+              {
+                "week": "20260316",
+                "files": 2,
+                "staged": 2,
+                "published": 0
+              },
+              {
+                "week": "20260323",
+                "files": 2,
+                "staged": 2,
+                "published": 0
+              },
+              {
+                "week": "20260330",
+                "files": 2,
+                "staged": 2,
+                "published": 0
+              },
+              {
+                "week": "20260406",
+                "files": 2,
+                "staged": 2,
+                "published": 0
+              },
+              {
+                "week": "20260413",
+                "files": 2,
+                "staged": 2,
+                "published": 0
+              },
+              {
+                "week": "20260420",
+                "files": 2,
+                "staged": 2,
+                "published": 0
+              },
+              {
+                "week": "20260427",
+                "files": 2,
+                "staged": 2,
+                "published": 0
+              },
+              {
+                "week": "20260504",
+                "files": 2,
+                "staged": 0,
+                "published": 0
+              },
+              {
+                "week": "20260511",
+                "files": 2,
+                "staged": 0,
+                "published": 0
+              },
+              {
+                "week": "20260518",
+                "files": 2,
+                "staged": 0,
+                "published": 0
+              },
+              {
+                "week": "20260525",
+                "files": 2,
+                "staged": 0,
+                "published": 0
+              },
+              {
+                "week": "20260601",
+                "files": 2,
+                "staged": 0,
+                "published": 0
+              },
+              {
+                "week": "20260608",
+                "files": 2,
+                "staged": 0,
+                "published": 0
+              },
+              {
+                "week": "20260615",
+                "files": 2,
+                "staged": 0,
+                "published": 0
+              },
+              {
+                "week": "20260622",
+                "files": 2,
+                "staged": 0,
+                "published": 0
+              },
+              {
+                "week": "20260629",
+                "files": 2,
+                "staged": 0,
+                "published": 0
+              },
+              {
+                "week": "20260706",
+                "files": 2,
+                "staged": 0,
+                "published": 0
+              },
+              {
+                "week": "20260713",
+                "files": 2,
+                "staged": 0,
+                "published": 0
+              },
+              {
+                "week": "20260720",
+                "files": 2,
+                "staged": 0,
+                "published": 0
+              },
+              {
+                "week": "20260727",
+                "files": 2,
+                "staged": 0,
+                "published": 0
+              },
+              {
+                "week": "20260803",
+                "files": 2,
+                "staged": 0,
+                "published": 0
+              },
+              {
+                "week": "20260810",
+                "files": 2,
+                "staged": 0,
+                "published": 0
+              },
+              {
+                "week": "20260817",
+                "files": 2,
+                "staged": 0,
+                "published": 0
+              },
+              {
+                "week": "20260824",
+                "files": 2,
+                "staged": 0,
+                "published": 0
+              },
+              {
+                "week": "20260831",
+                "files": 2,
+                "staged": 0,
+                "published": 0
+              },
+              {
+                "week": "20260907",
+                "files": 2,
+                "staged": 0,
+                "published": 0
+              },
+              {
+                "week": "20260914",
+                "files": 2,
+                "staged": 0,
+                "published": 0
+              },
+              {
+                "week": "20260921",
+                "files": 2,
+                "staged": 0,
+                "published": 0
+              },
+              {
+                "week": "20260928",
+                "files": 2,
+                "staged": 0,
+                "published": 0
+              },
+              {
+                "week": "20261005",
+                "files": 2,
+                "staged": 2,
+                "published": 2
+              },
+              {
+                "week": "20261012",
+                "files": 2,
+                "staged": 2,
+                "published": 2
+              }
+            ],
+            "missingPairs": 58,
+            "pendingPairs": 22,
+            "discoveredFiles": 188,
+            "downloadedFiles": 144,
+            "rejectedFiles": 0,
+            "sourceHoldUntil": null,
+            "stagedFiles": 142,
+            "publishedFiles": 72,
+            "missingInventoryFiles": 0
+          },
+          "jobs": [
+            {
+              "jobId": "3f24e65e81baad8298330e162d5bbc8f",
+              "operation": "addresses",
+              "scheduledFor": "2026-10-26T03:00:30+00:00",
+              "startedAt": "2026-10-26T03:00:32.761260+00:00",
+              "finishedAt": "2026-10-26T03:04:31.996018+00:00",
+              "publishedAt": null,
+              "status": "partial",
+              "collectionStatus": "partial",
+              "publicationStatus": "staged_only",
+              "backupStatus": "not_observed"
+            },
+            {
+              "jobId": "9fbee5c8c0358f9c4ccf33ff9e032691",
+              "operation": "backfill",
+              "scheduledFor": "2026-10-26T02:20:09+00:00",
+              "startedAt": "2026-10-26T02:20:11.220204+00:00",
+              "finishedAt": "2026-10-26T02:21:10.403586+00:00",
+              "publishedAt": null,
+              "status": "success",
+              "collectionStatus": "success",
+              "publicationStatus": "staged_only",
+              "backupStatus": "local_verified"
+            },
+            {
+              "jobId": "356be0b9f0c071d3d85dfc3ace7e7f6a",
+              "operation": "addresses",
+              "scheduledFor": "2026-10-26T02:00:30+00:00",
+              "startedAt": "2026-10-26T02:00:32.413838+00:00",
+              "finishedAt": "2026-10-26T02:07:10.371135+00:00",
+              "publishedAt": null,
+              "status": "partial",
+              "collectionStatus": "partial",
+              "publicationStatus": "staged_only",
+              "backupStatus": "local_verified"
+            },
+            {
+              "jobId": "025d11a8566f0aa0a710a674939c29cf",
+              "operation": "addresses",
+              "scheduledFor": "2026-10-26T01:00:10+00:00",
+              "startedAt": "2026-10-26T01:00:12.493220+00:00",
+              "finishedAt": "2026-10-26T01:06:58.747040+00:00",
+              "publishedAt": null,
+              "status": "partial",
+              "collectionStatus": "partial",
+              "publicationStatus": "staged_only",
+              "backupStatus": "local_verified"
+            },
+            {
+              "jobId": "a4fe41e57be76e2130a9d993c910dfc8",
+              "operation": "backfill",
+              "scheduledFor": "2026-10-26T00:20:22+00:00",
+              "startedAt": "2026-10-26T00:20:24.662716+00:00",
+              "finishedAt": "2026-10-26T00:21:33.943914+00:00",
+              "publishedAt": null,
+              "status": "success",
+              "collectionStatus": "success",
+              "publicationStatus": "staged_only",
+              "backupStatus": "local_verified"
+            },
+            {
+              "jobId": "17ac90dfb761b6eef5c394759a81e5c4",
+              "operation": "backfill",
+              "scheduledFor": "2026-10-25T22:20:22+00:00",
+              "startedAt": "2026-10-25T22:20:24.558671+00:00",
+              "finishedAt": "2026-10-25T22:21:13.503622+00:00",
+              "publishedAt": null,
+              "status": "success",
+              "collectionStatus": "success",
+              "publicationStatus": "staged_only",
+              "backupStatus": "local_verified"
+            }
+          ],
+          "addressQueue": {
+            "eligible": 133108,
+            "observed": 726,
+            "held": 23,
+            "due": 132359,
+            "olderthan90days": 0,
+            "checkedwithin7days": 726,
+            "checked8to30daysago": 0,
+            "checked31to90daysago": 0,
+            "oldestobservation": "2026-10-24T05:44:29.622716+00:00",
+            "newestobservation": "2026-10-26T03:04:31.986479+00:00",
+            "olderThan90Days": 0,
+            "checkedWithin7Days": 726,
+            "checked8To30DaysAgo": 0,
+            "checked31To90DaysAgo": 0,
+            "oldestObservation": "2026-10-24T05:44:29.622716+00:00",
+            "newestObservation": "2026-10-26T03:04:31.986479+00:00"
+          },
+          "dailyBudgets": [
+            {
+              "provider": "cr",
+              "day": "2026-10-26",
+              "requests": 282,
+              "bytes": 186585917
+            }
+          ],
+          "offsiteRpoQualified": false
+        }
+      },
+      "meta": {
+        "version": "official-74c0460422870d185125947b48319d84",
+        "view": "latest_observed",
+        "snapshotIds": [
+          "official-74c0460422870d185125947b48319d84"
+        ],
+        "nextCursor": null,
+        "returnedCount": 1,
+        "countScope": "this_page",
+        "currentVerification": false
+      },
+      "provenance": [
+        {
+          "view": "latest_observed",
+          "attribution": "Government of the HKSAR / Companies Registry / DATA.GOV.HK",
+          "termsUrl": "https://data.gov.hk/en/terms-and-conditions",
+          "sourceUrl": "https://data.gov.hk/en-data/dataset/hk-cr-crdata-list-newly-registered-companies-2526",
+          "currentVerification": false,
+          "coverage": {
+            "view": "latest_observed",
+            "schedule": {
+              "utc": "05:00 daily",
+              "kind": "systemd",
+              "byteLimit": 67108864,
+              "addressLimit": 250,
+              "requestLimit": 48,
+              "dailyCrRequestLimit": 500
+            },
+            "limitations": [
+              "Observed official subset; not a complete current company-status register",
+              "Dissolution events are not covered; absence never establishes dissolution",
+              "Local weekly dates combine incorporation and re-domiciliation unless the address source distinguishes them",
+              "No inferred CRN/BRN crosswalk, name-based join, current officers or SFC/HKEX update coverage",
+              "Money-lender MLR identities are separate from company BRNs; source cutoff can precede collection"
+            ],
+            "missingWeeks": [
+              "20250825",
+              "20250901",
+              "20250908",
+              "20250915",
+              "20250922",
+              "20250929",
+              "20251006",
+              "20251013",
+              "20251020",
+              "20251027",
+              "20251103",
+              "20251110",
+              "20251117",
+              "20251124",
+              "20251201",
+              "20251208",
+              "20251215",
+              "20251222",
+              "20251229",
+              "20260105",
+              "20260112",
+              "20260119",
+              "20260126",
+              "20260202",
+              "20260209",
+              "20260216",
+              "20260223",
+              "20260302",
+              "20260309",
+              "20260316",
+              "20260323",
+              "20260330",
+              "20260406",
+              "20260413",
+              "20260420",
+              "20260427",
+              "20260504",
+              "20260511",
+              "20260518",
+              "20260525",
+              "20260601",
+              "20260608",
+              "20260615",
+              "20260622",
+              "20260629",
+              "20260706",
+              "20260713",
+              "20260720",
+              "20260727",
+              "20260803",
+              "20260810",
+              "20260817",
+              "20260824",
+              "20260831",
+              "20260907",
+              "20260914",
+              "20260921",
+              "20260928"
+            ],
+            "recordCounts": {
+              "money_lender": {
+                "rows": 6776,
+                "entities": 6770
+              },
+              "company_event": {
+                "rows": 135469,
+                "entities": 133108
+              },
+              "address_observation": {
+                "rows": 491,
+                "entities": 491
+              }
+            },
+            "acceptedWeeks": [
+              "20241230",
+              "20250106",
+              "20250113",
+              "20250120",
+              "20250127",
+              "20250203",
+              "20250210",
+              "20250217",
+              "20250224",
+              "20250303",
+              "20250310",
+              "20250317",
+              "20250324",
+              "20250331",
+              "20250407",
+              "20250414",
+              "20250421",
+              "20250428",
+              "20250505",
+              "20250512",
+              "20250519",
+              "20250526",
+              "20250602",
+              "20250609",
+              "20250616",
+              "20250623",
+              "20250630",
+              "20250707",
+              "20250714",
+              "20250721",
+              "20250728",
+              "20250804",
+              "20250811",
+              "20250818",
+              "20261005",
+              "20261012"
+            ],
+            "addressEntities": 491,
+            "moneyLenderCutoff": "2026-09-30",
+            "acceptedWeeklyFiles": 72,
+            "discoveredCoverageEnd": "2026-10-18",
+            "discoveredWeeklyFiles": 188,
+            "discoveredCoverageStart": "2024-12-30",
+            "latestAcceptedCoverageEnd": "2026-10-18",
+            "addressEligibleObservedEntities": 133108
+          },
+          "limitations": [
+            "Observed official subset; not a complete current company-status register",
+            "Dissolution events are not covered; absence never establishes dissolution",
+            "Local weekly dates combine incorporation and re-domiciliation unless the address source distinguishes them",
+            "No inferred CRN/BRN crosswalk, name-based join, current officers or SFC/HKEX update coverage",
+            "Money-lender MLR identities are separate from company BRNs; source cutoff can precede collection"
+          ]
+        }
+      ],
+      "warnings": [
+        {
+          "code": "OFFICIAL_OBSERVED_SUBSET",
+          "message": "Observed official subset; not a complete current company-status register",
+          "affectedSourceId": "companies_registry"
+        },
+        {
+          "code": "OFFICIAL_OBSERVED_SUBSET",
+          "message": "Dissolution events are not covered; absence never establishes dissolution",
+          "affectedSourceId": "companies_registry"
+        },
+        {
+          "code": "OFFICIAL_OBSERVED_SUBSET",
+          "message": "Local weekly dates combine incorporation and re-domiciliation unless the address source distinguishes them",
+          "affectedSourceId": "companies_registry"
+        },
+        {
+          "code": "OFFICIAL_OBSERVED_SUBSET",
+          "message": "No inferred CRN/BRN crosswalk, name-based join, current officers or SFC/HKEX update coverage",
+          "affectedSourceId": "companies_registry"
+        },
+        {
+          "code": "OFFICIAL_OBSERVED_SUBSET",
+          "message": "Money-lender MLR identities are separate from company BRNs; source cutoff can precede collection",
+          "affectedSourceId": "companies_registry"
+        }
+      ]
+    },
+    "hk_sfc_status": {
+      "data": {
+        "sourceId": "sfc_register",
+        "state": "unqualified",
+        "acceptedVersion": null,
+        "qualifiedLiveTransport": false,
+        "modes": {
+          "automation": "unknown",
+          "cache": "unknown",
+          "retention": "unknown",
+          "backup": "unknown",
+          "rest": "unknown",
+          "mcp": "unknown",
+          "browser": "unknown",
+          "search": "unknown",
+          "history": "unknown",
+          "export": "unknown",
+          "raw": "unknown"
+        },
+        "enabledModes": [],
+        "cohort": {
+          "accepted": 0,
+          "maximum": 25,
+          "scope": "tracked_corporate_subset"
+        },
+        "lastAttemptAt": null,
+        "lastSuccessAt": null,
+        "sourceCutoff": null,
+        "freshnessBasis": "no_qualified_observation",
+        "completeRegulatoryHistory": false,
+        "reasonCode": "SFC_SOURCE_UNQUALIFIED",
+        "policySha256": "3b4d1a8c9747b0a8d5133758d0f46e52789ee703ae31965dae5b92c335525ae2"
+      },
+      "meta": {
+        "apiVersion": "v1",
+        "snapshotIds": [],
+        "version": null,
+        "view": "sfc_capability_status"
+      },
+      "provenance": [
+        {
+          "sourceId": "sfc_register",
+          "sourceUrl": "https://www.sfc.hk/en/Regulatory-functions/Intermediaries/Licensing/Register-of-licensed-persons-and-registered-institutions",
+          "termsUrl": "https://www.sfc.hk/en/Regulatory-functions/Intermediaries/Licensing/Register-of-licensed-persons-and-registered-institutions/Public-register-of-licensed-persons-and-registered-institutions",
+          "freshnessBasis": "no_qualified_observation",
+          "currentVerification": false
+        }
+      ],
+      "warnings": [
+        {
+          "code": "SFC_SOURCE_UNQUALIFIED",
+          "message": "Fresh corporate verification requires qualified source access and output rights. Historical Webb licence records are separate."
+        }
+      ]
+    },
+    "hk_racing_status": {
+      "data": {
+        "source": "hkjc",
+        "state": "available",
+        "liveQualified": true,
+        "acceptedVersion": "racing-results-v1-06c92779a44dfbe95e9e15eff543b67352063cb02896df9f83d6d25c72d1e124",
+        "sourceBasis": "public_factual_results",
+        "coverage": {
+          "meetings": 9,
+          "races": 93,
+          "resultRows": 1175,
+          "earliest": "2026-09-27",
+          "latest": "2026-10-25"
+        },
+        "meetings": [
+          {
+            "meeting": {
+              "id": "hkjc:meeting:v1:2026-10-25:ST",
+              "date": "2026-10-25",
+              "venue": "ST"
+            },
+            "version": "racing-results-v1-06c92779a44dfbe95e9e15eff543b67352063cb02896df9f83d6d25c72d1e124",
+            "coverage": {
+              "declaredRunnerReconciliation": "not_yet_verified",
+              "expectedRaces": 11,
+              "intradayOddsHistory": false,
+              "observedRaces": 11,
+              "profileCoverage": "identity_from_results_only",
+              "resultRaceInventoryComplete": true,
+              "resultRows": 142,
+              "seasonComplete": false,
+              "unreportedStatusRows": 2
+            },
+            "observedAt": "2026-10-25T13:24:58.654692+00:00"
+          },
+          {
+            "meeting": {
+              "id": "hkjc:meeting:v1:2026-10-21:HV",
+              "date": "2026-10-21",
+              "venue": "HV"
+            },
+            "version": "racing-results-v1-d04237fadac3ae80985f65132c8f1108381cecf48ff2b9dc1e9c173332915f1c",
+            "coverage": {
+              "declaredRunnerReconciliation": "not_yet_verified",
+              "expectedRaces": 9,
+              "intradayOddsHistory": false,
+              "observedRaces": 9,
+              "profileCoverage": "identity_from_results_only",
+              "resultRaceInventoryComplete": true,
+              "resultRows": 104,
+              "seasonComplete": false,
+              "unreportedStatusRows": 0
+            },
+            "observedAt": "2026-10-25T08:26:24.795469+00:00"
+          },
+          {
+            "meeting": {
+              "id": "hkjc:meeting:v1:2026-10-19:ST",
+              "date": "2026-10-19",
+              "venue": "ST"
+            },
+            "version": "racing-results-v1-aa986f2cee036a89690ebe0dc68f2ea3822a268066b29db9c8f0e55927e3371d",
+            "coverage": {
+              "declaredRunnerReconciliation": "not_yet_verified",
+              "expectedRaces": 11,
+              "intradayOddsHistory": false,
+              "observedRaces": 11,
+              "profileCoverage": "identity_from_results_only",
+              "resultRaceInventoryComplete": true,
+              "resultRows": 146,
+              "seasonComplete": false,
+              "unreportedStatusRows": 0
+            },
+            "observedAt": "2026-10-25T12:20:55.492210+00:00"
+          },
+          {
+            "meeting": {
+              "id": "hkjc:meeting:v1:2026-10-14:HV",
+              "date": "2026-10-14",
+              "venue": "HV"
+            },
+            "version": "racing-results-v1-4efc9051650fa5fad2d48ac00a118f9f85dc2c3a8530f18f1c4c47a549d9f5f8",
+            "coverage": {
+              "declaredRunnerReconciliation": "not_yet_verified",
+              "expectedRaces": 9,
+              "intradayOddsHistory": false,
+              "observedRaces": 9,
+              "profileCoverage": "identity_from_results_only",
+              "resultRaceInventoryComplete": true,
+              "resultRows": 101,
+              "seasonComplete": false,
+              "unreportedStatusRows": 0
+            },
+            "observedAt": "2026-10-25T14:14:52.875708+00:00"
+          },
+          {
+            "meeting": {
+              "id": "hkjc:meeting:v1:2026-10-11:ST",
+              "date": "2026-10-11",
+              "venue": "ST"
+            },
+            "version": "racing-results-v1-23c9e4267ea07cfe33001d2343476f8a443418541407a3316ea69dfc064710db",
+            "coverage": {
+              "declaredRunnerReconciliation": "not_yet_verified",
+              "expectedRaces": 11,
+              "intradayOddsHistory": false,
+              "observedRaces": 11,
+              "profileCoverage": "identity_from_results_only",
+              "resultRaceInventoryComplete": true,
+              "resultRows": 140,
+              "seasonComplete": false,
+              "unreportedStatusRows": 0
+            },
+            "observedAt": "2026-10-25T14:36:45.443145+00:00"
+          },
+          {
+            "meeting": {
+              "id": "hkjc:meeting:v1:2026-10-07:HV",
+              "date": "2026-10-07",
+              "venue": "HV"
+            },
+            "version": "racing-results-v1-db2a70983c9abb2402a55e599aec55df9259a98b9dd9e3e23a9b93bae9bd87b9",
+            "coverage": {
+              "declaredRunnerReconciliation": "not_yet_verified",
+              "expectedRaces": 9,
+              "intradayOddsHistory": false,
+              "observedRaces": 9,
+              "profileCoverage": "identity_from_results_only",
+              "resultRaceInventoryComplete": true,
+              "resultRows": 108,
+              "seasonComplete": false,
+              "unreportedStatusRows": 0
+            },
+            "observedAt": "2026-10-25T16:27:52.949187+00:00"
+          },
+          {
+            "meeting": {
+              "id": "hkjc:meeting:v1:2026-10-04:ST",
+              "date": "2026-10-04",
+              "venue": "ST"
+            },
+            "version": "racing-results-v1-3e06c3eaaffd7d7adedbc6b556a4ef94d1dd6fbeaac653185bcfef20439f7681",
+            "coverage": {
+              "declaredRunnerReconciliation": "not_yet_verified",
+              "expectedRaces": 11,
+              "intradayOddsHistory": false,
+              "observedRaces": 11,
+              "profileCoverage": "identity_from_results_only",
+              "resultRaceInventoryComplete": true,
+              "resultRows": 145,
+              "seasonComplete": false,
+              "unreportedStatusRows": 0
+            },
+            "observedAt": "2026-10-25T18:27:55.992254+00:00"
+          },
+          {
+            "meeting": {
+              "id": "hkjc:meeting:v1:2026-10-01:ST",
+              "date": "2026-10-01",
+              "venue": "ST"
+            },
+            "version": "racing-results-v1-772b86a71a8fe08fe169fe4edbb9d916ff94a5c276dc5f227f50da518dec3c88",
+            "coverage": {
+              "declaredRunnerReconciliation": "not_yet_verified",
+              "expectedRaces": 11,
+              "intradayOddsHistory": false,
+              "observedRaces": 11,
+              "profileCoverage": "identity_from_results_only",
+              "resultRaceInventoryComplete": true,
+              "resultRows": 147,
+              "seasonComplete": false,
+              "unreportedStatusRows": 0
+            },
+            "observedAt": "2026-10-25T20:27:52.701465+00:00"
+          },
+          {
+            "meeting": {
+              "id": "hkjc:meeting:v1:2026-09-27:ST",
+              "date": "2026-09-27",
+              "venue": "ST"
+            },
+            "version": "racing-results-v1-109546f26665a191dd2ef4000d1b89d7386c5b1c38e9207c34b31e08e038e936",
+            "coverage": {
+              "declaredRunnerReconciliation": "not_yet_verified",
+              "expectedRaces": 11,
+              "intradayOddsHistory": false,
+              "observedRaces": 11,
+              "profileCoverage": "identity_from_results_only",
+              "resultRaceInventoryComplete": true,
+              "resultRows": 142,
+              "seasonComplete": false,
+              "unreportedStatusRows": 0
+            },
+            "observedAt": "2026-10-26T00:42:54.863146+00:00"
+          }
+        ],
+        "queue": [
+          {
+            "state": "accepted",
+            "meetings": 9
+          },
+          {
+            "state": "partial",
+            "meetings": 1
+          },
+          {
+            "state": "pending",
+            "meetings": 92
+          }
+        ],
+        "hold": null,
+        "durableIngestion": {
+          "attempts": 24,
+          "chargedBytes": 5180850,
+          "unresolved": [],
+          "limits": {
+            "attempts": 200,
+            "bytes": 67108864
+          },
+          "resetsAt": "2026-10-27T00:00:00.000Z",
+          "durable": true
+        },
+        "collectionOnRead": false,
+        "scheduled": true,
+        "families": [
+          {
+            "id": "results",
+            "enabled": true
+          },
+          {
+            "id": "participant_identities",
+            "enabled": true
+          },
+          {
+            "id": "full_profiles",
+            "enabled": false
+          },
+          {
+            "id": "intraday_observations",
+            "enabled": false
+          }
+        ],
+        "cadence": "one bounded source step per existing five-minute maintenance tick; manual bounded backfill batches share the same durable budget"
+      },
+      "meta": {
+        "pack": "hkjc_racing"
+      },
+      "provenance": [
+        {
+          "sourceUrl": "https://racing.hkjc.com/en-us/local/information/localresults",
+          "attribution": "The Hong Kong Jockey Club public racing facts"
+        }
+      ]
+    },
+    "hk_hkex_archive_status": {
+      "source": "webb_sdi_archive",
+      "state": "available",
+      "version": "webb-sdi-enigma251227-v1",
+      "coverage": {
+        "view": "webb_sdi_archive",
+        "forms": {
+          "3": 341047
+        },
+        "scope": "All SDI records present in this original Webb release; not complete/current HKEX coverage",
+        "source": "webb_sdi_archive",
+        "tables": {
+          "sdi": {
+            "rows": 341047,
+            "sha256": "4563eedbd549600f6dbbe75c1df42036826aabed55d4adbd5d9a5f9edad02d44"
+          },
+          "issue": {
+            "rows": 35853,
+            "sha256": "4a60cde7c3a62bd864c1ea8858cbab7c76aa520a4e5f7a6eec61b327b198a50f"
+          },
+          "sdicap": {
+            "rows": 426219,
+            "sha256": "26421cdd7706e4c28fd9bbc8b9fe244f596ff9c8fd7e53a7f81735f9fc52924e"
+          },
+          "capacity": {
+            "rows": 33,
+            "sha256": "32525a6821dc1408e00aea5dde486ce25a0b35c394d1385fa0413e9a5bc5b3cf"
+          },
+          "sdievent": {
+            "rows": 345355,
+            "sha256": "5ff3782d805164751a3413e5b1a77903841b67d2ca5ac064c60d22ae54f887e8"
+          },
+          "sdireason": {
+            "rows": 84,
+            "sha256": "2210eb1b1014d65ac8cd7b24fd3922b49da1f65bda49907548059e223fe9aa39"
+          },
+          "currencies": {
+            "rows": 19,
+            "sha256": "b74c608f8186f6bdfe0225f7d8345f03391ce279767bf530c217f843590a81a5"
+          }
+        },
+        "version": "webb-sdi-enigma251227-v1",
+        "dateRanges": {
+          "awDate": [
+            "2001-04-05",
+            "2025-12-24"
+          ],
+          "relDate": [
+            "1994-09-19",
+            "2025-12-24"
+          ],
+          "modified": [
+            "2024-09-28",
+            "2025-12-24"
+          ],
+          "signDate": [
+            "2003-03-31",
+            "2025-12-24"
+          ]
+        },
+        "nullCounts": {
+          "awDate": 292589,
+          "legacyFilingKeyPresent": 206950
+        },
+        "attribution": "David Webb / Webb-site, original openly released Enigma archive",
+        "issuerCount": 3064,
+        "sourceBytes": 12416843125,
+        "noticeSha256": "a81aeeee21c0f3c1eae7185822a64dbf65513a1c1b212c591d9431e0f1ab02fe",
+        "sourceNotice": "webb-site-NOTICE.txt",
+        "archiveSha256": "9c2c42ae5e762d34b60954f43b37199b92b546033e229a292ed08b76323f6de2",
+        "uniqueSerials": 134097,
+        "databaseCounts": {
+          "events": 345355,
+          "issues": 35853,
+          "filings": 341047,
+          "capacities": 426219,
+          "dictionaries": 136
+        },
+        "elapsedSeconds": 43.338,
+        "filingDateKnown": false,
+        "projectionBytes": 270361844,
+        "sourceDataSha256": "39ca9e09601d2c99ef60a52a6f86f222d7304d885e13f25b9898d208dec578af",
+        "dateQualification": "relDate=relevant event; awDate=awareness; signDate=signature; modified=archive record edit. None is silently a filing/publication timestamp.",
+        "currentVerification": false,
+        "databaseBytesAtStage": 577748992,
+        "numericQualification": "Original FLOAT/DOUBLE storage; source dump numeric lexemes retained as strings, not reconstructed exact original decimal input",
+        "orphanEventParentIds": 0,
+        "publicationDateKnown": false,
+        "collectorQualification": "Released SDI.vb implements Form 3A. Original source director matching is heuristic and is not newly verified.",
+        "stockCodeQualification": "Numeric source stock codes are left-zero-padded to five digits for query/display; original source_stock_code is retained. Codes are not permanent issuer identities.",
+        "orphanCapacityParentIds": 0,
+        "unresolvedRevisionSerials": 145,
+        "numericOriginalPrecisionRecovered": false
+      },
+      "notice": "Historical Webb Form 3A archive, not complete/current HKEX coverage, current holdings or an executed-trade feed. Source FLOAT/DOUBLE numeric representations are preserved; original exact decimal input is not recoverable. Filing/publication dates are not recorded."
+    },
+    "hk_hkex_latest_status": {
+      "source": "hkex_daily_summary",
+      "state": "available",
+      "version": "hkex-daily-b27b6e1b67b48fe3696bab69f2ce7090",
+      "coverage": {
+        "view": "published_daily_summaries",
+        "scope": "Observed records in the four public daily-summary categories; full filing documents, Form 4 and s.309 notices are outside this feed",
+        "source": "hkex_daily_summary",
+        "reports": [
+          {
+            "day": "2026-10-20",
+            "category": 1,
+            "reportVersion": "f41d66b64ef0573b5fddc4ff891a54377ad38f1b84c304fb4b028323ecac90c9"
+          },
+          {
+            "day": "2026-10-20",
+            "category": 2,
+            "reportVersion": "9745e1f0b9d4d7e050c1f8107893302aab57c360e7a353c9092b5f4993b3aae7"
+          },
+          {
+            "day": "2026-10-20",
+            "category": 3,
+            "reportVersion": "3e635bcb4646d1cb7aaa24aa6f41066c75ce6c09f1284a0e943ca63ebc5536f9"
+          },
+          {
+            "day": "2026-10-20",
+            "category": 4,
+            "reportVersion": "32f9f1dbd87ef5422220c94997c2df62146733aa8588aaa0b07d7436936239ea"
+          },
+          {
+            "day": "2026-10-21",
+            "category": 1,
+            "reportVersion": "bf7d5507ce795995bf620a8bd3c5999ee91ffb04c75b7c58f819198a00f701f7"
+          },
+          {
+            "day": "2026-10-21",
+            "category": 2,
+            "reportVersion": "c3dcb99bd91d2a76da3debd4815e287f2b41613859433bf3bc381e18a5e426df"
+          },
+          {
+            "day": "2026-10-21",
+            "category": 3,
+            "reportVersion": "e2007b48ce4a662e6fce1adc5f33dbf4eac4291f068e30286848b905b6ac18c3"
+          },
+          {
+            "day": "2026-10-21",
+            "category": 4,
+            "reportVersion": "b531c4990cb89e89a08cbe5289a3c0f3bc0e48e1e40933be18e81c0868877a0a"
+          },
+          {
+            "day": "2026-10-22",
+            "category": 1,
+            "reportVersion": "91fdbb2fb8fe8912ca76e43dba2b2fbf3048c7d7071dda5926e4bfebcd29cf85"
+          },
+          {
+            "day": "2026-10-22",
+            "category": 2,
+            "reportVersion": "f56896a485eed3a7670dee7d2f3f5cccd75f9f505caa31feefa757846903451d"
+          },
+          {
+            "day": "2026-10-22",
+            "category": 3,
+            "reportVersion": "44cdbb9602f0294ebabef69e044b7e56f827e4fc73968c807a4be5c35f64e8c9"
+          },
+          {
+            "day": "2026-10-22",
+            "category": 4,
+            "reportVersion": "b2fdec5705cd9a9cb90d658e92ead5a763c74365518f8c6c1650baee1ae21d96"
+          },
+          {
+            "day": "2026-10-23",
+            "category": 1,
+            "reportVersion": "53a27407a084fd45d58bfd0a9f417fffc707df23b30a8593fd5e7d16c0458073"
+          },
+          {
+            "day": "2026-10-23",
+            "category": 2,
+            "reportVersion": "28a1d2dc819bbe659d8a09df637f6abb8b1a42183b5a51ddb95b34baa7fabecc"
+          },
+          {
+            "day": "2026-10-23",
+            "category": 3,
+            "reportVersion": "386977e3dd2f0c77161ac0e5d7c3388590c8a36b784308b5ff6f6698f3b6d469"
+          },
+          {
+            "day": "2026-10-23",
+            "category": 4,
+            "reportVersion": "90ee440d3338332dff45e9949b0ad31cda83d06cda16507c7170a43d9d790d11"
+          }
+        ],
+        "dateBasis": "HKEX daily summary date, not event date or exact filing/publication timestamp",
+        "currentHoldings": false,
+        "transformSha256": "c84b4bf5fb6a85110c0bdc130668b5d16819f27b36aef8de23ec9f90299dfeb1",
+        "latestSummaryDate": "2026-10-23",
+        "providerLicenceClaimed": false,
+        "unavailableRecheckDates": [
+          "/di/summary/DSM20261017C1.htm",
+          "/di/summary/DSM20261017C2.htm",
+          "/di/summary/DSM20261017C3.htm",
+          "/di/summary/DSM20261017C4.htm",
+          "/di/summary/DSM20261018C1.htm",
+          "/di/summary/DSM20261018C2.htm",
+          "/di/summary/DSM20261018C3.htm",
+          "/di/summary/DSM20261018C4.htm",
+          "/di/summary/DSM20261019C1.htm",
+          "/di/summary/DSM20261019C2.htm",
+          "/di/summary/DSM20261019C3.htm",
+          "/di/summary/DSM20261019C4.htm"
+        ],
+        "rows": 1004,
+        "filings": 1004,
+        "first_summary": "2026-10-20",
+        "latest_summary": "2026-10-23"
+      },
+      "updater": {
+        "lastChecked": "2026-10-26T02:16:54.176649+00:00",
+        "lastSuccessfulRead": "2026-10-26T02:16:54.176649+00:00",
+        "lastChanged": "2026-10-26T02:20:42.846264+00:00",
+        "holdCode": null,
+        "holdUntil": null,
+        "lastRun": {
+          "id": "53ed5d3e928f4e328d2d0a5f745517ff",
+          "started_at": "2026-10-26T02:16:40.597235+00:00",
+          "finished_at": "2026-10-26T02:16:54.176649+00:00",
+          "scheduled_for": "2026-10-26T02:16:39.016645+00:00",
+          "provenance": "manual",
+          "state": "staged",
+          "code": null,
+          "version": "hkex-daily-b27b6e1b67b48fe3696bab69f2ce7090",
+          "request_count": 5,
+          "received_bytes": 531740,
+          "latest_source_date": "2026-10-23"
+        },
+        "pendingVersion": null,
+        "schedule": "09:20, 13:20, 17:20, 18:20 and 22:20 Asia/Hong_Kong",
+        "reconciliation": "Recent seven calendar summary dates rechecked once per UTC day; current published summary rechecked every occurrence",
+        "limits": {
+          "requestsRun": 40,
+          "requestsDay": 100,
+          "concurrent": 1,
+          "minimumSecondsBetweenRequests": 3
+        }
+      },
+      "notice": "HKEX published daily-summary facts, not full filing documents, executed trades or current holdings. Summary date, relevant-event date and exact filing/publication time are different. Missing source dates remain unknown."
+    },
+    "hk_hkex_status": {
+      "source": "hkex_di",
+      "state": "source_unqualified",
+      "acceptedVersion": null,
+      "modes": {
+        "collect": "unknown",
+        "normalize": "unknown",
+        "retain": "unknown",
+        "raw": "unknown",
+        "history": "unknown",
+        "backup": "unknown",
+        "rest": "unknown",
+        "mcp": "unknown",
+        "browser": "unknown",
+        "links": "unknown",
+        "export": "unknown",
+        "schedule": "unknown"
+      },
+      "coverage": null,
+      "notice": "Disclosure notices are dated source statements, not executed trades or a current aggregate beneficial-ownership register. Deemed interests may overlap.",
+      "code": "HKEX_SOURCE_UNQUALIFIED"
+    }
+  }
+}

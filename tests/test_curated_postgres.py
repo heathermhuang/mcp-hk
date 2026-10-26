@@ -1047,6 +1047,42 @@ def test_official_address_a_b_b_history_queue_growth_and_health(model, monkeypat
         queue = conn.execute(
             "SELECT * FROM curated.official_address_queue WHERE entity_id=%s", (entity,)
         ).fetchone()
+        # A true no-match and an interrupted request preserve every prior fact.
+        from mcp_open_data_hk.curated.official import SourceRejected
+        from mcp_open_data_hk.curated.official_address_stage import usage
+
+        class NoMatch(Fake):
+            def get(self, url, params):
+                raise SourceRejected("SOURCE_NO_MATCH")
+
+        class Interrupted(Fake):
+            def get(self, url, params):
+                raise RuntimeError("simulated process interruption")
+
+        for day, source in [(30, NoMatch(address_a)), (31, Interrupted(address_a))]:
+            conn.execute(
+                "UPDATE curated.official_address_queue SET next_due='-infinity' WHERE entity_id=%s",
+                (entity,),
+            )
+            job = state.begin_job(conn, "addresses", f"2026-10-{day}T01:00:00Z")
+            before = usage(conn)["attempts"]
+            if day == 30:
+                assert (
+                    ingest.collect_addresses(conn, source, job, 1)[0]["code"]
+                    == "SOURCE_NO_MATCH"
+                )
+            else:
+                with pytest.raises(RuntimeError, match="interruption"):
+                    ingest.collect_addresses(conn, source, job, 1)
+            retained = conn.execute(
+                "SELECT * FROM curated.official_address_queue WHERE entity_id=%s",
+                (entity,),
+            ).fetchone()
+            assert retained["last_success"] == queue["last_success"]
+            assert retained["latest_capture"] == queue["latest_capture"]
+            assert retained["latest_observation"] == queue["latest_observation"]
+            assert usage(conn)["attempts"] == before + 1
+        queue = retained
         state.seed_queue(conn)
         assert (
             conn.execute(
@@ -1143,6 +1179,50 @@ def test_official_publication_and_job_receipt_are_one_transaction(model, monkeyp
             ).fetchone()["publication_status"]
             == "published"
         )
+
+
+def test_address_cohort_clock_and_persisted_turns_prevent_backlog_starvation(model):
+    from datetime import datetime, timedelta, timezone
+    from psycopg.rows import dict_row
+    from psycopg.types.json import Jsonb
+    from mcp_open_data_hk.curated import official_state as state
+    from mcp_open_data_hk.curated.official_address_queue import targets
+
+    _, _, _, _, owner = model
+    clock = datetime(2026, 10, 26, tzinfo=timezone.utc)
+    with connect(owner, autocommit=True, row_factory=dict_row) as conn:
+        state.migrate(conn)
+        for i in range(20):
+            conn.execute(
+                "INSERT INTO curated.official_address_queue(entity_id) VALUES(%s)",
+                (f"initial:{i:03}",),
+            )
+        conn.execute(
+            "INSERT INTO curated.official_address_queue(entity_id,last_success,next_due) VALUES('refresh',%s,%s)",
+            (clock - timedelta(days=90), clock),
+        )
+        conn.execute(
+            "INSERT INTO curated.official_address_queue(entity_id,priority,next_due) VALUES('priority',true,%s)",
+            (clock + timedelta(days=1),),
+        )
+        chosen = []
+        for _ in range(5):
+            target = targets(conn, 1, at=clock)[0]
+            chosen.append(target)
+            conn.execute(
+                "UPDATE curated.official_address_queue SET next_due=%s,last_attempt=%s WHERE entity_id=%s",
+                (clock + timedelta(days=1), clock, target["entity_id"]),
+            )
+            conn.execute(
+                "INSERT INTO curated.official_source_state(family,state) VALUES('address_scheduler',%s) ON CONFLICT(family) DO UPDATE SET state=EXCLUDED.state",
+                (Jsonb({"offset": target["next_offset"]}),),
+            )
+        assert any(t["entity_id"] == "refresh" for t in chosen)
+        assert all(t["entity_id"] != "priority" for t in chosen)
+        assert "priority" in {
+            target["entity_id"]
+            for target in targets(conn, 10, at=clock + timedelta(days=1))
+        }
 
 
 def test_official_offsite_job_failure_retains_last_copy_and_holds_growth(model):
@@ -1258,7 +1338,7 @@ def test_official_address_stages_count_legacy_and_require_enlarged_restore(
                 Jsonb(
                     {
                         "sourceChecks": [{"sourceUrl": url} for _ in range(20)],
-                        "addressFailures": [{"code": "SOURCE_HTTP_400"}],
+                        "addressFailures": [{"code": "SOURCE_NO_MATCH"}],
                     }
                 ),
             ),
@@ -1267,7 +1347,7 @@ def test_official_address_stages_count_legacy_and_require_enlarged_restore(
         for i in range(20):
             conn.execute(
                 "INSERT INTO curated.official_address_checks(job_id,entity_id,outcome) VALUES(%s,%s,%s)",
-                (job, "cr:local:" + str(i), "SOURCE_HTTP_400" if i == 0 else "success"),
+                (job, "cr:local:" + str(i), "SOURCE_NO_MATCH" if i == 0 else "success"),
             )
         assert (
             policy.usage(conn)["attempts"] == 40
