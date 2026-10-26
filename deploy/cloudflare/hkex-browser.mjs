@@ -8,7 +8,7 @@ const browser=await chromium.launch({headless:true,...(process.env.MCP_HK_CHROME
 const version='hkex-'+'a'.repeat(32),w={issuer_id:'TEST_ISSUER',start:'2026-10-12',end:'2026-10-19',basis:'filed',channel:'dion',timezone:'Asia/Hong_Kong'};
 const day=value=>({value,precision:value?'day':'unknown',timezone:'Asia/Hong_Kong'});
 const securities=[{id:'TEST_SEC',source_id:'TEST_SEC',stock_code:'00001',share_class:'ordinary A',name:'Synthetic A'}];
-const row=serial=>({serial,subject:'Synthetic example',state:serial==='A'?'superseded':'withdrawn',event_date:day('2020-01-01'),filed_date:day('2026-10-14'),published_date:day(null),withdrawn_date:day(serial==='B'?'2026-10-15':null),securities,interests:[{security_id:'TEST_SEC',instrument:'issuer_shares',position:'long',nature:'deemed',phase:'after',capacity_code:'TEST_CAP',shares:'9007199254740993.000000000000000001',percentage:null,unit:'shares'}],revision_links:[{older:'A',newer:'B',resolved:true}],capture:{observed_at:'2026-10-20T00:00:00Z'}});
+const row=serial=>({serial,subject:'Synthetic example',subject_name_zh_hant:'測試人士',state:serial==='A'?'superseded':'withdrawn',event_date:day('2020-01-01'),aware_date:day(null),filed_date:day('2026-10-14'),published_date:day(null),withdrawn_date:day(serial==='B'?'2026-10-15':null),securities,interests:[{security_id:'TEST_SEC',instrument:'issuer_shares',position:'long',nature:'deemed',phase:'after',capacity_code:null,shares:'9007199254740993.000000000000000001',percentage:null,unit:'shares',party_ref:'company'}],particulars:[{reason_code:'TEST_REASON',position:'long',security_id:'TEST_SEC',shares:'1',capacity_before:null,capacity_after:'TEST_CAP',prices:[{kind:'highest',value:'0.6550',currency:'HKD',unit:'per_share'},{kind:'average',value:'0.6391',currency:'HKD',unit:'per_share'}]}],parties:[{ref:'company',disclosed_name:'Synthetic controlled company'},{ref:'controller',disclosed_name:'Synthetic controller'}],controls:[{controlled_party_ref:'company',controlling_party_ref:'controller',percentage_control:'100.00',direct_interest:'no'}],revision_links:[{older:'A',newer:'B',resolved:true}],capture:{observed_at:'2026-10-20T00:00:00Z'}});
 const coverage={window:w,complete:true,pages:1,comprehensiveIncremental:false};const receipts=[],errors=[];
 try{
  for(const lang of ['en','zh-Hant'])for(const width of [320,390,768,1280]){
@@ -26,6 +26,11 @@ try{
   await page.locator('#hkex-detail').waitFor({state:'visible'});assert.equal(await page.locator('#hkex-detail-heading').evaluate(e=>e===document.activeElement),true);
   assert.match(await page.locator('#hkex-interests').innerText(),/9007199254740993\.000000000000000001/);
   assert.match(await page.locator('#hkex-dates').innerText(),lang==='en'?/Unknown/:/未知/);
+  assert.match(await page.locator('#hkex-particulars').innerText(),/0\.6550/);assert.match(await page.locator('#hkex-particulars').innerText(),/0\.6391/);
+  assert.match(await page.locator('#hkex-particulars').innerText(),lang==='en'?/Highest price/:/最高價格/);
+  assert.match(await page.locator('#hkex-controls').innerText(),/100\.00/);assert.match(await page.locator('#hkex-controls').innerText(),/Synthetic controlled company/);
+  assert.match(await page.locator('#hkex-controls').innerText(),lang==='en'?/Direct holding/:/直接持有/);
+  if(lang==='zh-Hant')assert.match(await page.locator('#hkex-detail-heading').innerText(),/測試人士/);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
   assert.equal(await page.locator('a[download]').count(),0);assert.equal(await page.locator('a[href*="di.hkex.com.hk"]').count(),0);
   await page.locator('#hkex-revisions button').click();await page.waitForFunction(()=>document.querySelector('#hkex-detail-heading').textContent.startsWith('B'));
@@ -33,6 +38,7 @@ try{
   await page.screenshot({path:new URL(`${lang}-${width}-synthetic.png`,out).pathname,fullPage:true});
   gated=true;await page.locator('#hkex-retry').click();await page.locator('#hkex-workspace').waitFor({state:'hidden'});
   assert.equal(await page.locator('#hkex-list button').count(),0);assert.equal(await page.locator('#hkex-detail').isVisible(),false);
+  assert.equal(await page.locator('#hkex-particulars-table').innerText(),'');assert.equal(await page.locator('#hkex-controls-table').innerText(),'');
   receipts.push({lang,width,synthetic:true,passed:true});await context.close();
  }
  assert.deepEqual(errors,[]);await writeFile(new URL('receipts.json',out),JSON.stringify({receipts,errors},null,2)+'\n');console.log(`HKEX: ${receipts.length} rendered synthetic journeys passed`);

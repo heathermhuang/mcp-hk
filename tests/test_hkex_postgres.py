@@ -194,7 +194,7 @@ def qualify(model, version, tmp_path):
     info = backup(model["owner"], archive)
     restore(model["restored"], archive, info["sha256"])
     proof = accept_restore(model["owner"], model["restored"], version, info["sha256"])
-    assert len(proof["tables"]) == 15
+    assert len(proof["tables"]) == 16
     model["store"].publish(version, None)
     return info
 
