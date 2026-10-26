@@ -41,6 +41,12 @@ test('one charged diagnostic of a known 302 retains the old hold and cannot repe
  assert.equal(admission.reserveRedirectInspection(id(1),id(3),now).code,'RACING_INSPECTION_ALREADY_ADMITTED');
  assert.equal(admission.reserve(id(4),now).code,'RACING_SOURCE_HELD');
 });
+test('the original collector first-settled HTTP_302 code remains eligible without being relabelled',()=>{
+ const {admission,sql}=store();admission.reserve(id(1),now);admission.settle(id(1),'held',409600,'HTTP_302');admission.settle(id(1),'held',409600,'DEVELOPMENT_HTTP_302');
+ assert.equal([...sql.exec('SELECT code FROM racing_admissions WHERE id=?',id(1))][0].code,'HTTP_302');
+ assert.equal(admission.reserveRedirectInspection(id(1),id(2),now).allowed,true);
+ assert.equal([...sql.exec('SELECT state,code FROM racing_admissions WHERE id=?',id(1))][0].code,'HTTP_302');
+});
 test('diagnostics refuse denials, unknowns, other outstanding requests and quota exhaustion',()=>{
  for(const code of ['DEVELOPMENT_HTTP_403','SOURCE_HTTP_429','DEVELOPMENT_REQUEST_UNCERTAIN']){
   const {admission}=store();admission.reserve(id(1),now);admission.settle(id(1),'held',409600,code);assert.equal(admission.reserveRedirectInspection(id(1),id(2),now).code,'RACING_INSPECTION_NOT_ELIGIBLE');assert.equal(admission.report(now).attempts,1);

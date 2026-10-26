@@ -9,7 +9,7 @@ export class RacingAdmission {
   reserveRedirectInspection(reference:string,id:string,now=Date.now()){
     if(!/^[a-f0-9]{32}$/.test(reference)||!/^[a-f0-9]{32}$/.test(id)||reference===id)throw new Error('RACING_INSPECTION_ID');
     const held=[...this.sql.exec('SELECT state,code FROM racing_admissions WHERE id=?',reference)][0];
-    if(!held||held.state!=='held'||held.code!=='DEVELOPMENT_HTTP_302')return {allowed:false,code:'RACING_INSPECTION_NOT_ELIGIBLE'};
+    if(!held||held.state!=='held'||!['HTTP_302','DEVELOPMENT_HTTP_302'].includes(String(held.code)))return {allowed:false,code:'RACING_INSPECTION_NOT_ELIGIBLE'};
     if([...this.sql.exec('SELECT reference_id FROM racing_redirect_inspections WHERE reference_id=?',reference)].length)return {allowed:false,code:'RACING_INSPECTION_ALREADY_ADMITTED'};
     if([...this.sql.exec('SELECT id FROM racing_admissions WHERE id=?',id)].length)return {allowed:false,code:'RACING_RESERVATION_EXISTS'};
     if([...this.sql.exec("SELECT id FROM racing_admissions WHERE state IN ('pending','held') AND id<>? LIMIT 1",reference)].length)return {allowed:false,code:'RACING_SOURCE_HELD'};
