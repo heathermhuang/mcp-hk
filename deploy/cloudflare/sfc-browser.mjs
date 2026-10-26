@@ -17,7 +17,7 @@ try{
    return r.fulfill({status:fail?503:200,contentType:'application/json',body:JSON.stringify(fail?{error:{code:'SFC_POLICY_CHANGED'}}:{data:fact,meta:{version,view:'sfc_observation'}})});
   });
   await page.goto(origin+'/sfc?lang='+lang);await page.locator('#sfc-ce').waitFor({state:'visible'});await page.waitForFunction(()=>!document.querySelector('#sfc-ce').disabled);
-  assert.equal(reads,0,'capability checks never collect or fetch a corporation');assert.equal(await page.locator('#sfc-archive-ce').isEnabled(),true);
+  assert.equal(reads,0,'capability checks never collect or fetch a corporation');assert.match(await page.locator('#sfc-live-verify').innerText(),lang==='en'?/Read official/:/讀取官方/);assert.equal(await page.locator('#sfc-archive-ce').isEnabled(),true);
   await page.locator('#sfc-ce').fill('ZZZ001');await page.locator('#sfc-live-verify').click();await page.locator('#sfc-live-record').waitFor({state:'visible'});
   assert.equal(await page.locator('#sfc-live-record').evaluate(e=>e===document.activeElement),true);
   assert.match(await page.locator('#sfc-live-record').innerText(),new RegExp(version));assert.match(await page.locator('#sfc-live-record').innerText(),lang==='en'?/Unknown/:/未知/);

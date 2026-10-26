@@ -55,13 +55,13 @@ const liveStatus=document.querySelector('#sfc-live-status');
 const liveRecord=document.querySelector('#sfc-live-record');
 let liveGeneration=0,liveController,liveCapability;
 async function capability(){
- const run=++liveGeneration;liveController?.abort();liveController=new AbortController();
+ const run=++liveGeneration;liveController?.abort();liveController=new AbortController();liveInput.disabled=true;liveButton.disabled=true;
  try{
   const response=await fetchPublicJson('/api/v1/sfc/status',null,{signal:liveController.signal});
   if(run!==liveGeneration)return;
   liveCapability=response.data;
   const ready=Array.isArray(liveCapability?.enabledModes)&&['rest','browser'].every(m=>liveCapability.enabledModes.includes(m))&&/^sfc-[a-f0-9]{32}$/.test(liveCapability.acceptedVersion||'');
-  liveInput.disabled=!ready;liveButton.disabled=!ready;
+  liveInput.disabled=!ready;liveButton.disabled=!ready;liveButton.textContent=t(ready?'sfcLiveVerify':'sfcVerify');
   liveStatus.textContent=t(ready?'sfcLiveReady':'sfcLiveUnavailable');
   if(ready){document.querySelector('#sfc-ce-heading').textContent=t('sfcLiveReady');document.querySelector('#sfc-hint').textContent=t('sfcLiveScope');document.querySelector('label[for="sfc-ce"]').textContent=t('sfcArchiveCe');document.querySelector('[data-i18n="sfcModes"]').textContent=t('sfcLiveScope');const q=new URLSearchParams(location.search);if(q.get('view')==='sfc_observation'&&/^[A-Z]{3}[0-9]{3}$/.test(q.get('ce')||'')){liveInput.value=q.get('ce');liveForm.requestSubmit();}}
  }catch(error){if(error.name!=='AbortError'&&run===liveGeneration){liveInput.disabled=true;liveButton.disabled=true;liveStatus.textContent=t('sfcLiveUnavailable');}}
@@ -82,7 +82,7 @@ liveForm?.addEventListener('submit',async event=>{
   const scroll=element('div');scroll.className='company-table-wrap';scroll.tabIndex=0;scroll.setAttribute('role','region');scroll.setAttribute('aria-label',t('sfcArchiveIntervals'));
   const table=element('table'),thead=element('thead'),head=element('tr');
   for(const key of ['sfcArchiveActivity','sfcArchiveStart','sfcArchiveEnd']){const th=element('th',t(key));th.scope='col';head.append(th);}thead.append(head);table.append(thead);
-  const tbody=element('tbody');for(const row of fact.activities){const tr=element('tr');tr.append(element('td',row.label+' · '+row.statusLabel),element('td',date(row.start?.raw,row.start?.precision)),element('td',date(row.end?.raw,row.end?.precision)));tbody.append(tr);}table.append(tbody);scroll.append(table);section.append(scroll);liveRecord.replaceChildren(section);liveRecord.hidden=false;liveRecord.focus();liveStatus.textContent=t('sfcArchiveLoaded');
+  const tbody=element('tbody');for(const row of fact.activities){const tr=element('tr');tr.append(element('td',row.label+' · '+row.statusLabel),element('td',date(row.start?.raw,row.start?.precision)),element('td',date(row.end?.raw,row.end?.precision)));tbody.append(tr);}table.append(tbody);scroll.append(table);section.append(scroll);liveRecord.replaceChildren(section);liveRecord.hidden=false;liveRecord.focus();liveStatus.textContent=t('sfcLiveLoaded');
  }catch(error){if(error.name!=='AbortError'&&run===liveGeneration)liveStatus.textContent=t('sfcLiveFailed');}
 });
 liveInput?.addEventListener('input',()=>liveInput.setCustomValidity(''));
