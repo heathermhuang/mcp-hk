@@ -73,8 +73,8 @@ class SourceDate(Strict):
 
 class Security(Strict):
     source_id: str = Field(min_length=1, max_length=80)
-    stock_code: str = Field(pattern=r"^[0-9]{5}$")
-    share_class: str = Field(min_length=1, max_length=200)
+    stock_code: str | None = Field(None, pattern=r"^[0-9]{5}$")
+    share_class: str | None = Field(None, min_length=1, max_length=200)
     name: str = Field(min_length=1, max_length=300)
     name_date: SourceDate = SourceDate()
 

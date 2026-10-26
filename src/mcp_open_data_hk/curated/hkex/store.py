@@ -46,6 +46,11 @@ def migrate(dsn):
         if c.execute("SELECT 1 FROM pg_namespace WHERE nspname='hkex'").fetchone():
             ddl = ddl.replace("CREATE SCHEMA IF NOT EXISTS hkex;", "")
         c.execute(ddl)
+        c.execute(
+            files("mcp_open_data_hk.curated")
+            .joinpath("migrations/008_hkex_unknown_security_fields.sql")
+            .read_text()
+        )
 
 
 def grant_reader(dsn, role):
