@@ -9,14 +9,13 @@ EFFECTIVE_MEMBERS = "SELECT source_key,capture_id FROM curated.official_staged U
 
 def prefix_rows(members=PUBLISHED_MEMBERS):
     # Both callers supply fixed internal membership SQL. No public SQL is accepted.
-    # Materialize only small keys before DISTINCT/LIMIT, never all matching JSON.
-    # Membership and the literal prefix apply before limiting company identities.
+    # Select page identities before fetching JSON, without materializing every
+    # prefix hit. Membership and the literal prefix still apply before LIMIT.
     return (
         "WITH members AS MATERIALIZED (" + members + "), "
-        "matches AS MATERIALIZED (SELECT r.entity_id,r.capture_id FROM curated.official_records r WHERE "
+        "selected AS (SELECT DISTINCT r.entity_id FROM curated.official_records r JOIN members m USING(capture_id) WHERE "
         + PREFIX
-        + " AND r.entity_id>%s), "
-        "selected AS (SELECT DISTINCT hit.entity_id FROM matches hit JOIN members m USING(capture_id) ORDER BY hit.entity_id LIMIT %s) "
+        + " AND r.entity_id>%s ORDER BY r.entity_id LIMIT %s) "
         "SELECT s.entity_id,chosen.record FROM selected s CROSS JOIN LATERAL ("
         "SELECT r.record FROM curated.official_records r JOIN members m USING(capture_id) WHERE r.entity_id=s.entity_id AND "
         + PREFIX
