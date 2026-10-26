@@ -358,3 +358,101 @@ def test_unqualified_tracked_identity_cannot_consume_source_budget(model):
     with state.connection() as c:
         assert not c.execute("SELECT * FROM curated_sfc.runs").fetchone()
         assert not c.execute("SELECT * FROM curated_sfc.budgets").fetchone()
+
+
+def test_public_register_collector_counts_reads_and_stages_real_protocol_shape(model):
+    import httpx
+    from mcp_open_data_hk.curated.sfc.public_register import Collector, ROUTE
+    from sfc_support import source_page
+
+    state, _, _, _ = model
+    policy = fake_policy(route=ROUTE)
+    state.activate(policy, policy.sha256)
+    calls = []
+
+    def source(request):
+        calls.append(request)
+        assert (
+            request.url.host == "apps.sfc.hk"
+            and request.url.path == "/publicregWeb/corp/ZZZ001/licences"
+        )
+        return httpx.Response(
+            200,
+            content=source_page(),
+            headers={"Content-Type": "text/html; charset=UTF-8"},
+        )
+
+    collector = Collector(state, policy, transport=httpx.MockTransport(source))
+    when = datetime.now(timezone.utc)
+    result = collector.collect(when, ["ZZZ001"])
+    assert (
+        result["state"] == "validated"
+        and result["cohortCount"] == 1
+        and len(calls) == 1
+    )
+    assert collector.collect(when, ["ZZZ001"])["networkReads"] == 0 and len(calls) == 1
+    fact = state.facts(result["version"])[0]
+    assert fact["activities"][0]["start"]["raw"] == "Apr 1, 2003 12:00:00 AM"
+    with state.connection() as c:
+        manifest = c.execute(
+            "SELECT manifest FROM curated_sfc.versions WHERE version=%s",
+            (result["version"],),
+        ).fetchone()["manifest"]
+        assert manifest["format"] == "sfc-public-register-v1"
+        assert manifest["sourceCaptures"]["ZZZ001"]["rawRetained"] is False
+        assert manifest["sourceCaptures"]["ZZZ001"]["rawSha256"]
+        assert (
+            c.execute("SELECT requests FROM curated_sfc.budgets").fetchone()["requests"]
+            == 1
+        )
+        assert not c.execute("SELECT * FROM curated_sfc.pointer").fetchone()
+
+
+@pytest.mark.parametrize(
+    "status,body,headers",
+    [
+        (403, b"Forbidden", {}),
+        (429, b"Rate limited", {"Retry-After": "3600"}),
+        (304, b"", {}),
+        (302, b"", {"Location": "https://elsewhere.example"}),
+        (200, b"<html>Login</html>", {}),
+        (200, b"x" * 262145, {}),
+    ],
+)
+def test_collector_failure_never_publishes_or_follows_redirect(
+    model, status, body, headers
+):
+    import httpx
+    from mcp_open_data_hk.curated.sfc.public_register import Collector, ROUTE
+
+    state, _, _, _ = model
+    policy = fake_policy(route=ROUTE)
+    state.activate(policy, policy.sha256)
+    calls = []
+
+    def source(request):
+        calls.append(request)
+        return httpx.Response(
+            status, content=body, headers={"Content-Type": "text/html", **headers}
+        )
+
+    with pytest.raises(Rejected):
+        Collector(state, policy, transport=httpx.MockTransport(source)).collect(
+            datetime.now(timezone.utc), ["ZZZ001"]
+        )
+    assert len(calls) == 1
+    with state.connection() as c:
+        assert (
+            c.execute("SELECT requests FROM curated_sfc.budgets").fetchone()["requests"]
+            == 1
+        )
+        assert (
+            c.execute("SELECT state FROM curated_sfc.runs").fetchone()["state"]
+            == "partial"
+        )
+        assert not c.execute("SELECT * FROM curated_sfc.pointer").fetchone()
+        assert not c.execute("SELECT * FROM curated_sfc.versions").fetchone()
+        if status in {403, 429}:
+            assert c.execute("SELECT * FROM curated_sfc.holds").fetchone()[
+                "reason"
+            ] == ("forbidden" if status == 403 else "rate_limited")
