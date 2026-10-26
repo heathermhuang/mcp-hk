@@ -1,0 +1,49 @@
+{
+  "verifiedAt": "2026-10-26T00:58:39.193545+00:00",
+  "freshAcceptedBackup": {
+    "key": "backups/2026-10-26T00-57-55.738Z-3d68596d-d7ff-43e0-b292-9aa11e671144.snapshot.tar.gz",
+    "sha256": "69d6361fa8e6ac2e4fbf1d4cb7ce2f98dff9be5c472abacd78b570a4246068ae",
+    "createdAt": "2026-10-26T00:57:55.738Z",
+    "bytes": 76767921,
+    "reason": "backup"
+  },
+  "sha256": "69d6361fa8e6ac2e4fbf1d4cb7ce2f98dff9be5c472abacd78b570a4246068ae",
+  "bytes": 76767921,
+  "restored": true,
+  "sqliteIntegrity": "ok",
+  "captureChecksumsVerified": true,
+  "ready": true,
+  "acceptedRacingMeetings": 9,
+  "allPriorRacingVersionsPreserved": true,
+  "sources": [
+    {
+      "sourceId": "addresses",
+      "recordCount": null
+    },
+    {
+      "sourceId": "restaurants",
+      "recordCount": 17276
+    },
+    {
+      "sourceId": "population",
+      "recordCount": 18
+    },
+    {
+      "sourceId": "catalogue",
+      "recordCount": null
+    },
+    {
+      "sourceId": "seehouse",
+      "recordCount": null
+    },
+    {
+      "sourceId": "platehk",
+      "recordCount": null
+    },
+    {
+      "sourceId": "racing",
+      "recordCount": 1175
+    }
+  ],
+  "scope": "Existing gateway SQLite and retained captures; no fresh SFC PostgreSQL source activation or unattended RPO claim"
+}
