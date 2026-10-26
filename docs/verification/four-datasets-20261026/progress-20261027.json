@@ -1,0 +1,165 @@
+{
+  "observedAt": "2026-10-26T16:14:26.459852+00:00",
+  "remoteMain": "5412418",
+  "gatewayRelease": "c388597a6a99cc868013cbf38f71e0f389c301d1",
+  "racing": {
+    "state": "available",
+    "acceptedVersion": "racing-results-v1-06c92779a44dfbe95e9e15eff543b67352063cb02896df9f83d6d25c72d1e124",
+    "coverage": {
+      "meetings": 14,
+      "races": 138,
+      "resultRows": 1733,
+      "earliest": "2026-09-06",
+      "latest": "2026-10-25"
+    },
+    "hold": {
+      "state": "held",
+      "error": "DEVELOPMENT_HTTP_302"
+    }
+  },
+  "sfc": {
+    "data": {
+      "sourceId": "sfc_register",
+      "state": "unqualified",
+      "acceptedVersion": null,
+      "qualifiedLiveTransport": false,
+      "modes": {
+        "automation": "unknown",
+        "cache": "unknown",
+        "retention": "unknown",
+        "backup": "unknown",
+        "rest": "unknown",
+        "mcp": "unknown",
+        "browser": "unknown",
+        "search": "unknown",
+        "history": "unknown",
+        "export": "unknown",
+        "raw": "unknown"
+      },
+      "enabledModes": [],
+      "cohort": {
+        "accepted": 0,
+        "maximum": 25,
+        "scope": "tracked_corporate_subset"
+      },
+      "lastAttemptAt": null,
+      "lastSuccessAt": null,
+      "sourceCutoff": null,
+      "freshnessBasis": "no_qualified_observation",
+      "completeRegulatoryHistory": false,
+      "reasonCode": "SFC_SOURCE_UNQUALIFIED",
+      "policySha256": "3b4d1a8c9747b0a8d5133758d0f46e52789ee703ae31965dae5b92c335525ae2"
+    },
+    "meta": {
+      "apiVersion": "v1",
+      "snapshotIds": [],
+      "version": null,
+      "view": "sfc_capability_status"
+    },
+    "provenance": [
+      {
+        "sourceId": "sfc_register",
+        "sourceUrl": "https://www.sfc.hk/en/Regulatory-functions/Intermediaries/Licensing/Register-of-licensed-persons-and-registered-institutions",
+        "termsUrl": "https://www.sfc.hk/en/Regulatory-functions/Intermediaries/Licensing/Register-of-licensed-persons-and-registered-institutions/Public-register-of-licensed-persons-and-registered-institutions",
+        "freshnessBasis": "no_qualified_observation",
+        "currentVerification": false
+      }
+    ],
+    "warnings": [
+      {
+        "code": "SFC_SOURCE_UNQUALIFIED",
+        "message": "Fresh corporate verification requires qualified source access and output rights. Historical Webb licence records are separate."
+      }
+    ]
+  },
+  "hkexDaily": {
+    "acceptedVersion": "hkex-daily-5d1c79ec1f14f0ed61e36d438a6dce3e",
+    "latestSummaryDate": "2026-10-26",
+    "rows": 1288,
+    "fullFilingsIncluded": false
+  },
+  "racingBudget": {
+    "attempts": 112,
+    "chargedBytes": 23816783,
+    "unresolved": [
+      {
+        "state": "held",
+        "records": 1
+      }
+    ],
+    "limits": {
+      "attempts": 200,
+      "bytes": 67108864
+    },
+    "resetsAt": "2026-10-27T00:00:00.000Z",
+    "durable": true
+  },
+  "racingRestoredCheckpoint": {
+    "sha256": "47605e98ad7fa86e63ae63e1cce64d5a327a36a7754aa4ea6b77a0ab6db6ce1d",
+    "bytes": 88686972,
+    "tables": [
+      "racing_pages",
+      "racing_attempts",
+      "racing_snapshots",
+      "racing_current",
+      "racing_publications",
+      "racing_accepted",
+      "racing_queue",
+      "racing_control",
+      "racing_calendar",
+      "racing_remote_requests"
+    ],
+    "holds": [
+      {
+        "id": 298,
+        "at": 1793007771.681362,
+        "url": "https://racing.hkjc.com/en-us/local/information/localresults?racedate=2026/07/15&Racecourse=HV",
+        "state": "held",
+        "bytes": 409600,
+        "error": "DEVELOPMENT_HTTP_302"
+      }
+    ],
+    "queue": [
+      {
+        "state": "accepted",
+        "meetings": 14
+      },
+      {
+        "state": "held",
+        "meetings": 53
+      },
+      {
+        "state": "pending",
+        "meetings": 35
+      }
+    ],
+    "accepted": 14
+  },
+  "openPRs": {
+    "sfcWiring": 94,
+    "schedulerProvenance": 97
+  },
+  "profiles": {
+    "state": "local_verified_not_released",
+    "realTechnicalBilingualCaptures": 3,
+    "completeCareerHistory": false,
+    "browserFixtureJourneys": 8,
+    "actualFixtureZipDownloads": 8,
+    "providerRequestsDuringBrowserVerification": 0
+  },
+  "companyOwnerReport": {
+    "publishedOriginalPairs": 72,
+    "originalPairDenominator": 94,
+    "retainedRestoreRawCaptures": 900,
+    "retainedRestoreP95Ms": 64,
+    "ordinaryDailyRpoQualified": false,
+    "nextGrowthRetry": "2026-10-27T00:05:00Z",
+    "evidenceKind": "owning chat final report; separate from fresh live source proof"
+  },
+  "fullChecksBeforeFinalReview": {
+    "pythonPassed": 636,
+    "pythonSkipped": 7,
+    "workerPassed": 136,
+    "finalExactHeadHookStillRequired": true
+  }
+}

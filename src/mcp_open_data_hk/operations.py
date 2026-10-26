@@ -237,6 +237,20 @@ def register_operations(app, service):
                     await asyncio.to_thread(
                         service.racing.store.import_bundle, body["bundle"]
                     )
+                elif body.get("action") == "profile_import":
+                    await asyncio.to_thread(
+                        service.racing.store.profiles.stage,
+                        body["observations"],
+                        body["captures"],
+                    )
+                elif body.get("action") == "profile_advance":
+                    await asyncio.to_thread(service.racing.store.profiles.collect, 2)
+                elif body.get("action") == "profile_policy":
+                    await asyncio.to_thread(
+                        service.racing.store.profiles.install_policy,
+                        body["record"],
+                        body["sha256"],
+                    )
                 elif body.get("action") == "enqueue":
                     await asyncio.to_thread(
                         service.racing.store.enqueue,

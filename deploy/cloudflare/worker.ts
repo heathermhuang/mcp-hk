@@ -111,6 +111,7 @@ export class McpContainer extends Container<Env> {
     const owner=await this.claimSeedLease();
     try {
       const input=JSON.parse(new TextDecoder().decode(body));
+      if(input.action==='profile_import')new RacingAdmission(this.ctx.storage.sql).verifyProfileImport(input.captures,input.admissions);
       if(input.action==='import'){
         const attempts=input.bundle?.attempts;if(!Array.isArray(attempts)||attempts.length>200)throw new Error('RACING_IMPORT_ATTEMPTS');
         const events=[];

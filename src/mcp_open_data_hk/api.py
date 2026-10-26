@@ -213,6 +213,7 @@ def create_app(service=None):
             "status": "ok",
             "sourceReviewPolicy": REVISION,
             "racingPipeline": "results-r2-v1",
+            "racingProfilesPipeline": "profile-observations-r2-v1",
         }
 
     @app.get("/readyz")

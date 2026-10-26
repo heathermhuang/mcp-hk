@@ -29,6 +29,8 @@ jobs:
           node deploy/cloudflare/hkex-latest-browser.mjs
 
           MCP_HK_TEST_ORIGIN=http://127.0.0.1:8765 node deploy/cloudflare/racing-browser.mjs
+          PYTHONPATH=src:tests MCP_HK_DATABASE=/tmp/mcp-hk-ux.sqlite3 python tests/prepare_racing_profile_browser.py
+          MCP_HK_TEST_ORIGIN=http://127.0.0.1:8765 node deploy/cloudflare/racing-profile-browser.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:

@@ -131,6 +131,9 @@ class RacingStore(ResultsStore):
               CREATE TABLE IF NOT EXISTS racing_remote_requests(local_id INTEGER PRIMARY KEY,remote_id TEXT UNIQUE NOT NULL);
             """
             )
+        from .racing_profiles import Profiles
+
+        self.profiles = Profiles(self)
 
     def admission(self, body):
         origin = os.environ.get("MCP_HK_BOOTSTRAP_URL", "")
@@ -347,12 +350,14 @@ class RacingStore(ResultsStore):
             row = db.execute(
                 "SELECT s.version FROM racing_snapshots s JOIN racing_current c USING(version) LEFT JOIN racing_publications p USING(version) WHERE s.version LIKE 'racing-results-v1-%' AND (p.state IS NULL OR p.state='staged') ORDER BY s.created LIMIT 1"
             ).fetchone()
-        return row[0] if row else None
+        return row[0] if row else self.profiles.pending()
 
     def raw(self, version):
         return ResultsStore.read(self, version)
 
     def fingerprint(self):
+        from .racing_profiles import TABLES as PROFILE_TABLES
+
         result = {}
         with self.connect() as db:
             for table in (
@@ -366,7 +371,7 @@ class RacingStore(ResultsStore):
                 "racing_control",
                 "racing_calendar",
                 "racing_remote_requests",
-            ):
+            ) + PROFILE_TABLES:
                 digest = hashlib.sha256()
                 count = 0
                 # SQLite rows are sorted by their canonical serialization, not a sample.
@@ -380,6 +385,8 @@ class RacingStore(ResultsStore):
         return result
 
     def accept_restored(self, restored, version, backup_sha256):
+        if version.startswith("racing-profile-v1-"):
+            return self.profiles.accept(restored.profiles, version, backup_sha256)
         if self.path == restored.path or not re.fullmatch(
             "[a-f0-9]{64}", backup_sha256
         ):

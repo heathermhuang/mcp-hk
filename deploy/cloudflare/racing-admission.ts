@@ -40,4 +40,12 @@ export class RacingAdmission {
     const unresolved=[...this.sql.exec("SELECT state,count(*) records FROM racing_admissions WHERE state IN ('pending','held') GROUP BY state")];
     return {...usage,unresolved,limits:{attempts:200,bytes:MAX_BYTES},resetsAt:new Date((day+1)*86400000).toISOString(),durable:true};
   }
+  verifyProfileImport(captures:{bytes:number}[],ids:string[]){
+    if(!Array.isArray(captures)||captures.length!==2||!Array.isArray(ids)||ids.length!==2||new Set(ids).size!==2)throw new Error('PROFILE_ADMISSION_REQUIRED');
+    for(let i=0;i<2;i++){
+      if(!/^[a-f0-9]{32}$/.test(ids[i])||!Number.isInteger(captures[i].bytes)||captures[i].bytes<1||captures[i].bytes>MAX_BODY)throw new Error('PROFILE_ADMISSION_REQUIRED');
+      const row=[...this.sql.exec('SELECT state,bytes FROM racing_admissions WHERE id=?',ids[i])][0];
+      if(!row||row.state!=='settled'||Number(row.bytes)!==captures[i].bytes)throw new Error('PROFILE_ADMISSION_NOT_SETTLED');
+    }
+  }
 }

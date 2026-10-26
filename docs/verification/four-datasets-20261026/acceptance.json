@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-26T03:02:53.756921+00:00",
+  "updatedAt": "2026-10-26T16:18:16.914527+00:00",
   "overallState": "incomplete",
   "sourcePlan": "../../../../../../docs/designs/mcp-hk-four-datasets-completion-20261026.md",
   "originalInventories": {
@@ -27,15 +27,30 @@
       "state": "partial",
       "dependency": [],
       "actualCoverage": {
-        "remoteMainMatchesHandoff": true,
-        "maintenanceRelease": "17c68a9ae2e20262a278b3829f3b47288db38ece"
+        "landedReleasedPRs": [
+          92,
+          93,
+          95
+        ],
+        "companyOwnerLandedPRs": [
+          96,
+          98
+        ],
+        "openPRs": [
+          94,
+          97
+        ],
+        "racingCandidateStillLocal": true
       },
-      "version": "cabdd1a6ddad38a2b4da7d735576b678243f4a05",
+      "version": "c388597a6a99cc868013cbf38f71e0f389c301d1",
       "evidence": [
-        "baseline.json"
+        "pr92-release.json",
+        "OFFSITE-REVIEW.md",
+        "QUERY-REVIEW.md",
+        "progress-20261027.json"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Finish independent releases and runtime/recovery checks; all four remain incomplete"
     },
     {
       "id": "W00.source-jobs-locks-capacity",
@@ -75,90 +90,134 @@
     {
       "id": "W01.exact-registry-no-match",
       "workPackage": "W01",
-      "state": "in_progress",
+      "state": "passed",
       "dependency": [],
-      "actualCoverage": null,
-      "version": null,
-      "evidence": [],
+      "actualCoverage": {
+        "implementationAndRegressions": "PR92 deployed; 250 address/day and shared 500 CR/day unchanged"
+      },
+      "version": "d984dcdf4cc27acab677d916e9b6a5ca46697c1f",
+      "evidence": [
+        "pr92-release.json",
+        "REVIEW.md"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Run real-DB regressions, review, exact-head checks and release"
+      "nextAction": "Keep ordinary scheduled evidence separate from unobserved backlog and refresh ages"
     },
     {
       "id": "W01.prior-address-facts-retained",
       "workPackage": "W01",
-      "state": "in_progress",
+      "state": "passed",
       "dependency": [],
-      "actualCoverage": null,
-      "version": null,
-      "evidence": [],
+      "actualCoverage": {
+        "implementationAndRegressions": "PR92 deployed; 250 address/day and shared 500 CR/day unchanged"
+      },
+      "version": "d984dcdf4cc27acab677d916e9b6a5ca46697c1f",
+      "evidence": [
+        "pr92-release.json",
+        "REVIEW.md"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Run real-DB regressions, review, exact-head checks and release"
+      "nextAction": "Keep ordinary scheduled evidence separate from unobserved backlog and refresh ages"
     },
     {
       "id": "W01.retry-categories-lineage",
       "workPackage": "W01",
-      "state": "in_progress",
+      "state": "passed",
       "dependency": [],
-      "actualCoverage": null,
-      "version": null,
-      "evidence": [],
+      "actualCoverage": {
+        "implementationAndRegressions": "PR92 deployed; 250 address/day and shared 500 CR/day unchanged"
+      },
+      "version": "d984dcdf4cc27acab677d916e9b6a5ca46697c1f",
+      "evidence": [
+        "pr92-release.json",
+        "REVIEW.md"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Run real-DB regressions, review, exact-head checks and release"
+      "nextAction": "Keep ordinary scheduled evidence separate from unobserved backlog and refresh ages"
     },
     {
       "id": "W01.fair-cohort-scheduling",
       "workPackage": "W01",
-      "state": "in_progress",
+      "state": "passed",
       "dependency": [],
-      "actualCoverage": null,
-      "version": null,
-      "evidence": [],
+      "actualCoverage": {
+        "implementationAndRegressions": "PR92 deployed; 250 address/day and shared 500 CR/day unchanged"
+      },
+      "version": "d984dcdf4cc27acab677d916e9b6a5ca46697c1f",
+      "evidence": [
+        "pr92-release.json",
+        "REVIEW.md"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Run real-DB regressions, review, exact-head checks and release"
+      "nextAction": "Keep ordinary scheduled evidence separate from unobserved backlog and refresh ages"
     },
     {
       "id": "W01.capacity-age-backlog-status",
       "workPackage": "W01",
-      "state": "in_progress",
+      "state": "passed",
       "dependency": [],
-      "actualCoverage": null,
-      "version": null,
-      "evidence": [],
+      "actualCoverage": {
+        "implementationAndRegressions": "PR92 deployed; 250 address/day and shared 500 CR/day unchanged"
+      },
+      "version": "d984dcdf4cc27acab677d916e9b6a5ca46697c1f",
+      "evidence": [
+        "pr92-release.json",
+        "REVIEW.md"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Run real-DB regressions, review, exact-head checks and release"
+      "nextAction": "Keep ordinary scheduled evidence separate from unobserved backlog and refresh ages"
     },
     {
       "id": "W01.crash-and-quota-accounting",
       "workPackage": "W01",
-      "state": "in_progress",
+      "state": "passed",
       "dependency": [],
-      "actualCoverage": null,
-      "version": null,
-      "evidence": [],
+      "actualCoverage": {
+        "implementationAndRegressions": "PR92 deployed; 250 address/day and shared 500 CR/day unchanged"
+      },
+      "version": "d984dcdf4cc27acab677d916e9b6a5ca46697c1f",
+      "evidence": [
+        "pr92-release.json",
+        "REVIEW.md"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Run real-DB regressions, review, exact-head checks and release"
+      "nextAction": "Keep ordinary scheduled evidence separate from unobserved backlog and refresh ages"
     },
     {
       "id": "W01.live-failed-control-examples",
       "workPackage": "W01",
-      "state": "in_progress",
+      "state": "partial",
       "dependency": [],
-      "actualCoverage": null,
-      "version": null,
-      "evidence": [],
+      "actualCoverage": {
+        "previousRealExamples": [
+          "00562995",
+          "77596226"
+        ],
+        "postReleaseQuotaResetRecheck": false
+      },
+      "version": "d984dcdf4cc27acab677d916e9b6a5ca46697c1f",
+      "evidence": [
+        "REVIEW.md"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Run real-DB regressions, review, exact-head checks and release"
+      "nextAction": "Recheck exact failed/control targets after shared quota reset without duplicate collection"
     },
     {
       "id": "W02.original-94-pairs-reconciled",
       "workPackage": "W02",
-      "state": "pending",
+      "state": "partial",
       "dependency": [],
-      "actualCoverage": null,
+      "actualCoverage": {
+        "publishedOriginalPairs": 72,
+        "originalPairs": 94,
+        "ownerActualBilingualZips": 6
+      },
       "version": null,
-      "evidence": [],
+      "evidence": [
+        "progress-20261027.json"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Reuse company owner quota-reset retry, then qualify all original cases at one full accepted version"
     },
     {
       "id": "W02.staged-bytes-reused",
@@ -174,79 +233,125 @@
     {
       "id": "W02.full-state-offsite-restore",
       "workPackage": "W02",
-      "state": "pending",
+      "state": "partial",
       "dependency": [],
-      "actualCoverage": null,
+      "actualCoverage": {
+        "retainedRestoreRawCaptures": 900,
+        "retainedRestoreP95Ms": 64,
+        "proofScope": "retained dump reported by owner; not ordinary daily RPO"
+      },
       "version": null,
-      "evidence": [],
+      "evidence": [
+        "QUERY-REVIEW.md",
+        "query-restored-proof.json",
+        "progress-20261027.json"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Obtain current full-inventory proof and observe an ordinary daily cycle separately"
     },
     {
       "id": "W02.full-state-performance",
       "workPackage": "W02",
-      "state": "pending",
+      "state": "partial",
       "dependency": [],
-      "actualCoverage": null,
+      "actualCoverage": {
+        "retainedRestoreRawCaptures": 900,
+        "retainedRestoreP95Ms": 64,
+        "proofScope": "retained dump reported by owner; not ordinary daily RPO"
+      },
       "version": null,
-      "evidence": [],
+      "evidence": [
+        "QUERY-REVIEW.md",
+        "query-restored-proof.json",
+        "progress-20261027.json"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Obtain current full-inventory proof and observe an ordinary daily cycle separately"
     },
     {
       "id": "W02.same-version-188-rest-mcp-pairs",
       "workPackage": "W02",
-      "state": "pending",
+      "state": "partial",
       "dependency": [],
-      "actualCoverage": null,
+      "actualCoverage": {
+        "publishedOriginalPairs": 72,
+        "originalPairs": 94,
+        "ownerActualBilingualZips": 6
+      },
       "version": null,
-      "evidence": [],
+      "evidence": [
+        "progress-20261027.json"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Reuse company owner quota-reset retry, then qualify all original cases at one full accepted version"
     },
     {
       "id": "W02.same-version-bilingual-explorer-pairs",
       "workPackage": "W02",
-      "state": "pending",
+      "state": "partial",
       "dependency": [],
-      "actualCoverage": null,
+      "actualCoverage": {
+        "publishedOriginalPairs": 72,
+        "originalPairs": 94,
+        "ownerActualBilingualZips": 6
+      },
       "version": null,
-      "evidence": [],
+      "evidence": [
+        "progress-20261027.json"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Reuse company owner quota-reset retry, then qualify all original cases at one full accepted version"
     },
     {
       "id": "W02.actual-browser-zips",
       "workPackage": "W02",
-      "state": "pending",
+      "state": "partial",
       "dependency": [],
-      "actualCoverage": null,
+      "actualCoverage": {
+        "publishedOriginalPairs": 72,
+        "originalPairs": 94,
+        "ownerActualBilingualZips": 6
+      },
       "version": null,
-      "evidence": [],
+      "evidence": [
+        "progress-20261027.json"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Reuse company owner quota-reset retry, then qualify all original cases at one full accepted version"
     },
     {
       "id": "W02.ordinary-daily-source",
       "workPackage": "W02",
-      "state": "pending",
+      "state": "passed",
       "dependency": [],
-      "actualCoverage": null,
-      "version": null,
-      "evidence": [],
+      "actualCoverage": {
+        "scheduledFor": "2026-10-26T05:00:00Z",
+        "collection": "success",
+        "publication": "advanced"
+      },
+      "version": "official-731745eb39cd14f3f986ac01521f0525",
+      "evidence": [
+        "progress-20261027.json"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Verify next normal cycle independently of manual qualification"
     },
     {
       "id": "W02.ordinary-daily-offsite-rpo",
       "workPackage": "W02",
-      "state": "pending",
+      "state": "partial",
       "dependency": [],
-      "actualCoverage": null,
+      "actualCoverage": {
+        "dailyOffsite": "failed before upload due source state race",
+        "repair": "PR96 lock deployed",
+        "rpoQualified": false
+      },
       "version": null,
-      "evidence": [],
+      "evidence": [
+        "progress-20261027.json"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Observe next ordinary exact-dump offsite/restore sequence; retained manual proof does not substitute"
     },
     {
       "id": "W03.company-archive-preserved",
@@ -317,13 +422,19 @@
     {
       "id": "W04.sfc-production-schema-config",
       "workPackage": "W04",
-      "state": "pending",
+      "state": "in_progress",
       "dependency": [],
-      "actualCoverage": null,
-      "version": null,
-      "evidence": [],
+      "actualCoverage": {
+        "checkedOpenPR": 94,
+        "deployed": false,
+        "publicState": "unqualified"
+      },
+      "version": "17379e021d2ae1c3b1ae0234d446f5cac3a9a69d",
+      "evidence": [
+        "progress-20261027.json"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Integrate checked wiring and production configuration, then qualify actual cohort/modes"
     },
     {
       "id": "W04.sfc-bounded-scheduled-collector",
@@ -339,24 +450,36 @@
     {
       "id": "W04.sfc-persisted-status",
       "workPackage": "W04",
-      "state": "pending",
+      "state": "in_progress",
       "dependency": [],
-      "actualCoverage": null,
-      "version": null,
-      "evidence": [],
+      "actualCoverage": {
+        "checkedOpenPR": 94,
+        "deployed": false,
+        "publicState": "unqualified"
+      },
+      "version": "17379e021d2ae1c3b1ae0234d446f5cac3a9a69d",
+      "evidence": [
+        "progress-20261027.json"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Integrate checked wiring and production configuration, then qualify actual cohort/modes"
     },
     {
       "id": "W04.sfc-real-reader-wiring",
       "workPackage": "W04",
-      "state": "pending",
+      "state": "in_progress",
       "dependency": [],
-      "actualCoverage": null,
-      "version": null,
-      "evidence": [],
+      "actualCoverage": {
+        "checkedOpenPR": 94,
+        "deployed": false,
+        "publicState": "unqualified"
+      },
+      "version": "17379e021d2ae1c3b1ae0234d446f5cac3a9a69d",
+      "evidence": [
+        "progress-20261027.json"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Integrate checked wiring and production configuration, then qualify actual cohort/modes"
     },
     {
       "id": "W04.sfc-independent-restored-candidate",
@@ -372,35 +495,53 @@
     {
       "id": "W04.sfc-publication-rollback",
       "workPackage": "W04",
-      "state": "pending",
+      "state": "in_progress",
       "dependency": [],
-      "actualCoverage": null,
-      "version": null,
-      "evidence": [],
+      "actualCoverage": {
+        "checkedOpenPR": 94,
+        "deployed": false,
+        "publicState": "unqualified"
+      },
+      "version": "17379e021d2ae1c3b1ae0234d446f5cac3a9a69d",
+      "evidence": [
+        "progress-20261027.json"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Integrate checked wiring and production configuration, then qualify actual cohort/modes"
     },
     {
       "id": "W04.sfc-25-ce-pilot",
       "workPackage": "W04",
       "state": "pending",
       "dependency": [],
-      "actualCoverage": null,
+      "actualCoverage": {
+        "cohortMaximum": 25,
+        "actualDealingCohortProvided": false,
+        "developmentExampleIsNotActualDealingProof": true
+      },
       "version": null,
-      "evidence": [],
+      "evidence": [
+        "progress-20261027.json"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Obtain exact corporate CEs for actual dealings; user question remains unanswered"
     },
     {
       "id": "W04.sfc-rest-mcp-browser-export",
       "workPackage": "W04",
-      "state": "pending",
+      "state": "in_progress",
       "dependency": [],
-      "actualCoverage": null,
-      "version": null,
-      "evidence": [],
+      "actualCoverage": {
+        "checkedOpenPR": 94,
+        "deployed": false,
+        "publicState": "unqualified"
+      },
+      "version": "17379e021d2ae1c3b1ae0234d446f5cac3a9a69d",
+      "evidence": [
+        "progress-20261027.json"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Integrate checked wiring and production configuration, then qualify actual cohort/modes"
     },
     {
       "id": "W04.sfc-ordinary-jobs-failure-retention",
@@ -438,13 +579,21 @@
     {
       "id": "W05.racing-recent-results",
       "workPackage": "W05",
-      "state": "pending",
+      "state": "partial",
       "dependency": [],
-      "actualCoverage": null,
-      "version": null,
-      "evidence": [],
+      "actualCoverage": {
+        "meetings": 14,
+        "races": 138,
+        "resultRows": 1733,
+        "earliest": "2026-09-06",
+        "latest": "2026-10-25"
+      },
+      "version": "racing-results-v1-06c92779a44dfbe95e9e15eff543b67352063cb02896df9f83d6d25c72d1e124",
+      "evidence": [
+        "progress-20261027.json"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Preserve and investigate HTTP302 source hold before further historical reads; do not clear or bypass it"
     },
     {
       "id": "W05.racing-declarations-reconciliation",
@@ -460,13 +609,22 @@
     {
       "id": "W05.racing-full-participant-profiles",
       "workPackage": "W05",
-      "state": "pending",
+      "state": "in_progress",
       "dependency": [],
-      "actualCoverage": null,
+      "actualCoverage": {
+        "state": "local_verified_not_released",
+        "realTechnicalBilingualCaptures": 3,
+        "completeCareerHistory": false,
+        "browserFixtureJourneys": 8,
+        "actualFixtureZipDownloads": 8,
+        "providerRequestsDuringBrowserVerification": 0
+      },
       "version": null,
-      "evidence": [],
+      "evidence": [
+        "progress-20261027.json"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Release checked profile path, qualify previously captured real cohort without new reads, and verify public parity"
     },
     {
       "id": "W05.racing-sectionals-dividends",
@@ -537,13 +695,21 @@
     {
       "id": "W05.racing-ordinary-ingestion-fresh-recovery",
       "workPackage": "W05",
-      "state": "pending",
+      "state": "partial",
       "dependency": [],
-      "actualCoverage": null,
-      "version": null,
-      "evidence": [],
+      "actualCoverage": {
+        "meetings": 14,
+        "races": 138,
+        "resultRows": 1733,
+        "earliest": "2026-09-06",
+        "latest": "2026-10-25"
+      },
+      "version": "racing-results-v1-06c92779a44dfbe95e9e15eff543b67352063cb02896df9f83d6d25c72d1e124",
+      "evidence": [
+        "progress-20261027.json"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Preserve and investigate HTTP302 source hold before further historical reads; do not clear or bypass it"
     },
     {
       "id": "W06.hkex-webb-archive-preserved",
@@ -570,13 +736,19 @@
     {
       "id": "W06.hkex-daily-ordinary-occurrence",
       "workPackage": "W06",
-      "state": "pending",
+      "state": "partial",
       "dependency": [],
-      "actualCoverage": null,
-      "version": null,
-      "evidence": [],
+      "actualCoverage": {
+        "latestSummaryDate": "2026-10-26",
+        "rows": 1288,
+        "timerProvenanceFixOpenPR": 97
+      },
+      "version": "hkex-daily-5d1c79ec1f14f0ed61e36d438a6dce3e",
+      "evidence": [
+        "progress-20261027.json"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Deploy provenance fix and verify actual canonical ordinary occurrence"
     },
     {
       "id": "W06.hkex-daily-report-gap-handling",
@@ -691,57 +863,157 @@
     {
       "id": "W08.source-scoped-pr-review",
       "workPackage": "W08",
-      "state": "pending",
+      "state": "partial",
       "dependency": [],
-      "actualCoverage": null,
-      "version": null,
-      "evidence": [],
+      "actualCoverage": {
+        "landedReleasedPRs": [
+          92,
+          93,
+          95
+        ],
+        "companyOwnerLandedPRs": [
+          96,
+          98
+        ],
+        "openPRs": [
+          94,
+          97
+        ],
+        "racingCandidateStillLocal": true
+      },
+      "version": "c388597a6a99cc868013cbf38f71e0f389c301d1",
+      "evidence": [
+        "pr92-release.json",
+        "OFFSITE-REVIEW.md",
+        "QUERY-REVIEW.md",
+        "progress-20261027.json"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Finish independent releases and runtime/recovery checks; all four remain incomplete"
     },
     {
       "id": "W08.exact-head-checks-real-postgres-ci",
       "workPackage": "W08",
-      "state": "pending",
+      "state": "partial",
       "dependency": [],
-      "actualCoverage": null,
-      "version": null,
-      "evidence": [],
+      "actualCoverage": {
+        "landedReleasedPRs": [
+          92,
+          93,
+          95
+        ],
+        "companyOwnerLandedPRs": [
+          96,
+          98
+        ],
+        "openPRs": [
+          94,
+          97
+        ],
+        "racingCandidateStillLocal": true
+      },
+      "version": "c388597a6a99cc868013cbf38f71e0f389c301d1",
+      "evidence": [
+        "pr92-release.json",
+        "OFFSITE-REVIEW.md",
+        "QUERY-REVIEW.md",
+        "progress-20261027.json"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Finish independent releases and runtime/recovery checks; all four remain incomplete"
     },
     {
       "id": "W08.serialized-release-runtime-adoption",
       "workPackage": "W08",
-      "state": "pending",
+      "state": "partial",
       "dependency": [],
-      "actualCoverage": null,
-      "version": null,
-      "evidence": [],
+      "actualCoverage": {
+        "landedReleasedPRs": [
+          92,
+          93,
+          95
+        ],
+        "companyOwnerLandedPRs": [
+          96,
+          98
+        ],
+        "openPRs": [
+          94,
+          97
+        ],
+        "racingCandidateStillLocal": true
+      },
+      "version": "c388597a6a99cc868013cbf38f71e0f389c301d1",
+      "evidence": [
+        "pr92-release.json",
+        "OFFSITE-REVIEW.md",
+        "QUERY-REVIEW.md",
+        "progress-20261027.json"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Finish independent releases and runtime/recovery checks; all four remain incomplete"
     },
     {
       "id": "W08.all-five-crons-source-timers-restored",
       "workPackage": "W08",
-      "state": "pending",
+      "state": "partial",
       "dependency": [],
-      "actualCoverage": null,
-      "version": null,
-      "evidence": [],
+      "actualCoverage": {
+        "landedReleasedPRs": [
+          92,
+          93,
+          95
+        ],
+        "companyOwnerLandedPRs": [
+          96,
+          98
+        ],
+        "openPRs": [
+          94,
+          97
+        ],
+        "racingCandidateStillLocal": true
+      },
+      "version": "c388597a6a99cc868013cbf38f71e0f389c301d1",
+      "evidence": [
+        "pr92-release.json",
+        "OFFSITE-REVIEW.md",
+        "QUERY-REVIEW.md",
+        "progress-20261027.json"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Finish independent releases and runtime/recovery checks; all four remain incomplete"
     },
     {
       "id": "W08.live-parity-rollback-fresh-restores",
       "workPackage": "W08",
-      "state": "pending",
+      "state": "partial",
       "dependency": [],
-      "actualCoverage": null,
-      "version": null,
-      "evidence": [],
+      "actualCoverage": {
+        "landedReleasedPRs": [
+          92,
+          93,
+          95
+        ],
+        "companyOwnerLandedPRs": [
+          96,
+          98
+        ],
+        "openPRs": [
+          94,
+          97
+        ],
+        "racingCandidateStillLocal": true
+      },
+      "version": "c388597a6a99cc868013cbf38f71e0f389c301d1",
+      "evidence": [
+        "pr92-release.json",
+        "OFFSITE-REVIEW.md",
+        "QUERY-REVIEW.md",
+        "progress-20261027.json"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Finish independent releases and runtime/recovery checks; all four remain incomplete"
     },
     {
       "id": "W08.final-four-family-matrix",

@@ -25,3 +25,11 @@ test('import receipts deduplicate and never erase outstanding reservations',()=>
  const {admission}=store(),events=[{id:'import-'+'a'.repeat(64),at:now,bytes:123}];admission.seed(events,now);admission.seed(events,now);assert.equal(admission.report(now).attempts,1);
  admission.reserve(id(1),now);admission.seed(events,now);assert.equal(admission.reserve(id(2),now).code,'RACING_SOURCE_HELD');
 });
+test('profile imports verify two already charged completed reads without reseeding or clearing holds',()=>{
+ const {admission}=store();admission.reserve(id(1),now);admission.settle(id(1),'success',100,'PROFILE_INSPECTION_COMPLETE');admission.reserve(id(2),now);admission.settle(id(2),'success',200,'PROFILE_INSPECTION_COMPLETE');
+ const captures=[{bytes:100},{bytes:200}],ids=[id(1),id(2)];admission.verifyProfileImport(captures,ids);assert.equal(admission.report(now).attempts,2);
+ assert.throws(()=>admission.verifyProfileImport([{bytes:101},captures[1]],ids),/NOT_SETTLED/);
+ assert.throws(()=>admission.verifyProfileImport(captures,[id(1),id(1)]),/REQUIRED/);
+ admission.reserve(id(3),now);admission.settle(id(3),'held',409600,'DEVELOPMENT_HTTP_302');admission.verifyProfileImport(captures,ids);assert.equal(admission.reserve(id(4),now).code,'RACING_SOURCE_HELD');
+ assert.throws(()=>admission.verifyProfileImport(captures,[id(1),id(3)]),/NOT_SETTLED/);
+});
