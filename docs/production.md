@@ -522,3 +522,13 @@ Numeric, English and Chinese prefixes use the same literal range semantics; `%`,
 the unchanged dataset, latest dump, current schema/query code and real restore/
 performance checks. It creates a new qualification receipt and preserves the
 original failure and upload time; it does not count as ordinary daily operation.
+
+The official health runner takes a nonblocking host maintenance lock before
+reading or persisting health. When a collector/offsite owner holds the exclusive
+lock, health records a host-only deferral and lets the existing follow-up run;
+it never changes the database during the dump consistency interval. The 06:00
+follow-up also compares a bounded recovery checkpoint after an earlier failure.
+Run production health through `verify-official.sh` so this coordination is retained.
+HKEX host jobs read typed systemd monotonic microseconds through `busctl` and bind
+timer work to the canonical scheduled UTC occurrence. Existing operator starts
+remain distinct and no old provenance receipt is overwritten.
