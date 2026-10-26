@@ -7,6 +7,7 @@ import io
 import json
 import os
 import tempfile
+import time
 import urllib.request
 import zipfile
 from contextvars import ContextVar
@@ -89,6 +90,7 @@ class RacingReader(PrototypeReader):
                 "acceptedVersion": meetings[0]["version"] if meetings else None,
                 "sourceBasis": "public_factual_results",
                 "coverage": totals,
+                "profileObservations": self.store.profiles.status(),
                 "meetings": meetings,
                 "queue": queue,
                 "hold": dict(held) if held else None,
@@ -185,6 +187,9 @@ class Racing:
             "profile",
             "archive",
             "meetings",
+            "profile_observation",
+            "profile_history",
+            "profile_archive",
         }:
             raise DomainError("INVALID_QUERY", "Unknown racing operation", 400)
         try:
@@ -194,18 +199,35 @@ class Racing:
                 "QUERY_BUSY", "Racing query slots busy", 429, retry_after=1
             ) from exc
         try:
-            fn = (
-                self.store.meetings
-                if operation == "meetings"
-                else getattr(self.reader, operation)
-            )
+            if operation in {
+                "profile_observation",
+                "profile_history",
+                "profile_archive",
+            }:
+                fn = {
+                    "profile_observation": self.store.profiles.read,
+                    "profile_history": self.store.profiles.history,
+                    "profile_archive": self.store.profiles.archive,
+                }[operation]
+            else:
+                fn = (
+                    self.store.meetings
+                    if operation == "meetings"
+                    else getattr(self.reader, operation)
+                )
             return await run_in_threadpool(fn, **params)
         except RacingRejected as exc:
             code = str(exc)
             status = (
                 404
                 if code.endswith("NOT_FOUND")
-                else 503 if code == "RACING_DATA_NOT_READY" else 400
+                else (
+                    503
+                    if code == "RACING_DATA_NOT_READY"
+                    or code.startswith("SOURCE_")
+                    or code == "PROFILE_CONTENT_MISMATCH"
+                    else 400
+                )
             )
             raise DomainError(
                 code, "Racing data is not available for this exact selection", status
@@ -227,7 +249,32 @@ class Racing:
                 return discovered
         except RacingRejected as exc:
             return {"state": "held", "code": str(exc)}
-        return self.store.advance(max_requests)
+        self.store.profiles.seed()
+        with self.store.connect() as db:
+            profile_due = db.execute(
+                "SELECT 1 FROM racing_profile_queue WHERE state IN ('pending','partial','available') AND next_due<=? LIMIT 1",
+                (time.time(),),
+            ).fetchone()
+            result_due = db.execute(
+                "SELECT 1 FROM racing_queue WHERE state IN ('pending','partial','refresh') LIMIT 1"
+            ).fetchone()
+            turn = db.execute(
+                "SELECT value FROM racing_control WHERE key='source-family-turn'"
+            ).fetchone()
+            choose_profile = (
+                self.store.profiles.scheduled()
+                and profile_due
+                and (not result_due or turn and turn[0] == "profiles")
+            )
+            db.execute(
+                "INSERT OR REPLACE INTO racing_control VALUES('source-family-turn',?)",
+                ("results" if choose_profile else "profiles",),
+            )
+        return (
+            self.store.profiles.collect(max_requests)
+            if choose_profile
+            else self.store.advance(max_requests)
+        )
 
     def qualify_checkpoint(self, version, digest):
         from .operations import MAX_BACKUP, restore

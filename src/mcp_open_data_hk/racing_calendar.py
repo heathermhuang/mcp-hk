@@ -13,6 +13,11 @@ FIXTURE = "https://racing.hkjc.com/en-us/local/information/fixture"
 
 def source_url(url):
     p = urlsplit(url)
+    if p.path.endswith(("/horse", "/jockeyprofile", "/trainerprofile")):
+        from .curated.racing.profiles import profile_selection
+
+        profile_selection(url)
+        return url
     if p.path.endswith("/local/information/fixture"):
         q = parse_qs(p.query)
         if (

@@ -16,3 +16,8 @@ test('successful actual-restore response is checkpointed before success is retur
  const result=await completeRacingPublication(new Response('',{headers:{'X-Racing-Candidate':version}}),{sha256:digest},async(v,d)=>{calls.push(['restore',v,d]);return new Response('accepted checkpoint');},async r=>{calls.push(['save',await r.text()]);return {sha256:'c'.repeat(64)};});
  assert.deepEqual(calls,[['restore',version,digest],['save','accepted checkpoint']]);assert.equal(result.sha256,'c'.repeat(64));assert.equal(result.racing.restoreCheckpointSha256,digest);
 });
+test('profile candidates use the same independent-restore and accepted-checkpoint path',async()=>{
+ const profile='racing-profile-v1-'+'d'.repeat(64),calls=[];
+ const result=await completeRacingPublication(new Response('',{headers:{'X-Racing-Candidate':profile}}),{sha256:digest},async(v,d)=>{calls.push([v,d]);return new Response('restored profile');},async r=>{assert.equal(await r.text(),'restored profile');return {sha256:'e'.repeat(64)};});
+ assert.deepEqual(calls,[[profile,digest]]);assert.equal(result.racing.version,profile);assert.equal(result.racing.restoreCheckpointSha256,digest);
+});
