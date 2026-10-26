@@ -12,6 +12,7 @@ const receipts=[],errors=[],sourceRequests=[];
 try{
  for(const lang of ['en','zh-Hant'])for(const width of [320,390,768,1280]){
   const context=await browser.newContext({viewport:{width,height:900},acceptDownloads:true}),page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
+  page.on('response',async response=>{if(response.url().startsWith(origin+'/api/v1/racing/')&&response.status()>=400){const body=await response.json().catch(()=>null);const failure={status:response.status(),path:new URL(response.url()).pathname,code:body?.error?.code};errors.push(failure);console.error(JSON.stringify(failure));}});
   // Exercise the real shared limiter at a sustainable request pace.
   await context.route(origin+'/api/v1/racing/**',async route=>{await new Promise(resolve=>setTimeout(resolve,1150));await route.continue();});
   await context.route(/https:\/\/[^/]*hkjc\.com\//,r=>{sourceRequests.push(r.request().url());return r.abort();});

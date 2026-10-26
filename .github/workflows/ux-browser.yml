@@ -29,8 +29,13 @@ jobs:
           node deploy/cloudflare/hkex-latest-browser.mjs
 
           MCP_HK_TEST_ORIGIN=http://127.0.0.1:8765 node deploy/cloudflare/racing-browser.mjs
-          PYTHONPATH=src:tests MCP_HK_DATABASE=/tmp/mcp-hk-ux.sqlite3 python tests/prepare_racing_profile_browser.py
-          MCP_HK_TEST_ORIGIN=http://127.0.0.1:8765 node deploy/cloudflare/racing-profile-browser.mjs
+          # This suite reads real fixture APIs; give its independent fixture app
+          # its own request bucket rather than inheriting earlier suites' traffic.
+          PYTHONPATH=src:tests MCP_HK_DATABASE=/tmp/mcp-hk-profile-ux.sqlite3 python tests/prepare_racing_profile_browser.py
+          PYTHONPATH=src MCP_HK_DATABASE=/tmp/mcp-hk-profile-ux.sqlite3 python -m uvicorn mcp_open_data_hk.api:create_app --factory --host 127.0.0.1 --port 8766 --no-access-log > /tmp/mcp-hk-profile-ux-server.log 2>&1 &
+          for attempt in $(seq 1 30); do curl -fsS http://127.0.0.1:8766/healthz && break; sleep 1; done
+          curl -fsS http://127.0.0.1:8766/healthz
+          MCP_HK_TEST_ORIGIN=http://127.0.0.1:8766 node deploy/cloudflare/racing-profile-browser.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
