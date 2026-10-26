@@ -65,6 +65,9 @@ class Service:
         from .webb_sdi import WebbSdi
 
         self.webb_sdi = WebbSdi(self.companies)
+        from .hkex_daily import DailySummaries
+
+        self.hkex_daily = DailySummaries(self.companies)
         self.plates = PlateHK(self)
         self.properties = SeeHouse(self)
         self.resources = Resources(store)

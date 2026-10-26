@@ -1,0 +1,69 @@
+{
+  "receipts": [
+    {
+      "lang": "en",
+      "width": 320,
+      "realData": false,
+      "downloadRows": 1,
+      "zipSha256": "60acaf376c38adb24e88d5bfad1bef87e793b0d62c4890259003c393533a5776",
+      "passed": true
+    },
+    {
+      "lang": "en",
+      "width": 390,
+      "realData": false,
+      "downloadRows": 1,
+      "zipSha256": "60acaf376c38adb24e88d5bfad1bef87e793b0d62c4890259003c393533a5776",
+      "passed": true
+    },
+    {
+      "lang": "en",
+      "width": 768,
+      "realData": false,
+      "downloadRows": 1,
+      "zipSha256": "60acaf376c38adb24e88d5bfad1bef87e793b0d62c4890259003c393533a5776",
+      "passed": true
+    },
+    {
+      "lang": "en",
+      "width": 1280,
+      "realData": false,
+      "downloadRows": 1,
+      "zipSha256": "60acaf376c38adb24e88d5bfad1bef87e793b0d62c4890259003c393533a5776",
+      "passed": true
+    },
+    {
+      "lang": "zh-Hant",
+      "width": 320,
+      "realData": false,
+      "downloadRows": 1,
+      "zipSha256": "60acaf376c38adb24e88d5bfad1bef87e793b0d62c4890259003c393533a5776",
+      "passed": true
+    },
+    {
+      "lang": "zh-Hant",
+      "width": 390,
+      "realData": false,
+      "downloadRows": 1,
+      "zipSha256": "60acaf376c38adb24e88d5bfad1bef87e793b0d62c4890259003c393533a5776",
+      "passed": true
+    },
+    {
+      "lang": "zh-Hant",
+      "width": 768,
+      "realData": false,
+      "downloadRows": 1,
+      "zipSha256": "60acaf376c38adb24e88d5bfad1bef87e793b0d62c4890259003c393533a5776",
+      "passed": true
+    },
+    {
+      "lang": "zh-Hant",
+      "width": 1280,
+      "realData": false,
+      "downloadRows": 1,
+      "zipSha256": "60acaf376c38adb24e88d5bfad1bef87e793b0d62c4890259003c393533a5776",
+      "passed": true
+    }
+  ],
+  "errors": []
+}

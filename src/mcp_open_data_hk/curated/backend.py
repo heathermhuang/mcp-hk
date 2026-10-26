@@ -73,6 +73,49 @@ def create_app(reader, token):
     ):
         return await call(sfc.verify, authorization, ce=ce, version=version)
 
+    from .hkex_daily.read import DailyReader
+
+    daily = DailyReader(reader)
+
+    @app.get("/v1/hkex-daily/status")
+    async def daily_status(authorization: str | None = Header(None)):
+        return await call(daily.status, authorization)
+
+    @app.get("/v1/hkex-daily/disclosures")
+    async def daily_rows(
+        stockCode: str | None = Query(None, max_length=5),
+        start: str | None = Query(None, max_length=10),
+        end: str | None = Query(None, max_length=10),
+        limit: int = Query(20, ge=1, le=100),
+        cursor: str | None = Query(None, max_length=2048),
+        version: str | None = Query(None, max_length=100),
+        authorization: str | None = Header(None),
+    ):
+        return await call(
+            daily.query,
+            authorization,
+            operation="disclosures",
+            params=dict(
+                stockCode=stockCode,
+                start=start,
+                end=end,
+                limit=limit,
+                cursor=cursor,
+                version=version,
+            ),
+        )
+
+    @app.get("/v1/hkex-daily/disclosures/{record_id}")
+    async def daily_detail(
+        record_id: str, version: str, authorization: str | None = Header(None)
+    ):
+        return await call(
+            daily.query,
+            authorization,
+            operation="disclosure",
+            params=dict(recordId=record_id, version=version),
+        )
+
     from .webb_sdi_read import WebbSdiReader
 
     webb = WebbSdiReader(reader)
@@ -276,6 +319,7 @@ def create_app(reader, token):
                     "capabilities": [
                         "company-search-groupBy-organisation-v1",
                         "webb-sdi-archive-v1",
+                        "hkex-published-daily-summaries-v1",
                     ],
                     "status": "ready",
                     "version": release["version"],

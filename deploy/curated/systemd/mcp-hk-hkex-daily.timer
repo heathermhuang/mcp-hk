@@ -1,0 +1,13 @@
+[Unit]
+Description=HKEX public summary checks after normal and half-day publication
+[Timer]
+OnCalendar=*-*-* 01:20:00 UTC
+OnCalendar=*-*-* 05:20:00 UTC
+OnCalendar=*-*-* 09:20:00 UTC
+OnCalendar=*-*-* 10:20:00 UTC
+OnCalendar=*-*-* 14:20:00 UTC
+Persistent=true
+AccuracySec=30s
+Unit=mcp-hk-hkex-daily.service
+[Install]
+WantedBy=timers.target

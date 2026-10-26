@@ -55,3 +55,10 @@ test('grouped exports label organisation rows and retain only displayed name evi
  assert.equal(pack.manifest.rowCount,2);assert.equal(pack.manifest.scope,'this_page');assert.equal(pack.manifest.selection.groupBy,'organisation');
  const bytes=Buffer.from(await pack.blob.arrayBuffer());assert.ok(bytes.includes(Buffer.from('matched_fact_count')));assert.ok(bytes.includes(Buffer.from('Former name')));
 });
+test('HKEX summary page exports retain their own view and never infer a data licence',async()=>{
+ const e={data:{items:[{stock_code:'00005',filed_date:null,shares:'9007199254740993.00000001'}]},meta:{version:'hkex-daily-'+'a'.repeat(32),view:'hkex_daily_summary'},provenance:[{sourceId:'hkex_daily_summary',licenceClaimed:false}],warnings:[]};
+ const p=await pagePackage(e,{family:'daily-disclosures'},'Source: Hong Kong Exchanges and Clearing Limited (HKEX). No licence grant is asserted.');
+ assert.equal(p.manifest.view,'hkex_daily_summary');assert.equal(p.manifest.rowCount,1);
+ await assert.rejects(pagePackage(e,{},'Webb archive reuse notice'));
+ await assert.rejects(pagePackage({...e,meta:{...e.meta,view:'unknown'}},{},'Webb notice'));
+});

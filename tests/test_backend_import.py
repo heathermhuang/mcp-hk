@@ -37,3 +37,26 @@ def test_legacy_mcp_export_remains_available_on_explicit_import(tmp_path):
         timeout=30,
     )
     assert result.returncode == 0, result.stderr
+
+
+def test_public_gateway_does_not_require_optional_postgres_driver(tmp_path):
+    env = dict(os.environ, MCP_HK_DATABASE=str(tmp_path / "gateway.sqlite3"))
+    script = """
+import importlib.abc
+import sys
+class DenyPrivateDatabase(importlib.abc.MetaPathFinder):
+    def find_spec(self, fullname, path=None, target=None):
+        if fullname == 'psycopg' or fullname.startswith('psycopg.'):
+            raise ModuleNotFoundError('Optional private database driver is absent')
+sys.meta_path.insert(0,DenyPrivateDatabase())
+from mcp_open_data_hk.api import create_app
+assert create_app()
+"""
+    result = subprocess.run(
+        [sys.executable, "-c", script],
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+    assert result.returncode == 0, result.stderr

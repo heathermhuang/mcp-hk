@@ -17,3 +17,9 @@ test('the Webb archive consumer requires explicit activation and a configured ba
   assert.equal(curatedContainerEnv({...env,WEBB_SDI_ARCHIVE_ENABLED:'false'},'https://archive.example').MCP_HK_WEBB_SDI_ENABLED,undefined);
   assert.equal(curatedContainerEnv({WEBB_SDI_ARCHIVE_ENABLED:'true'},'https://archive.example').MCP_HK_WEBB_SDI_ENABLED,undefined);
 });
+test('HKEX daily-summary consumer activation is independent of the Webb archive',()=>{
+ const env={CURATED_BACKEND_TOKEN:'x'.repeat(32),HKEX_DAILY_ENABLED:'true'};
+ assert.equal(curatedContainerEnv(env,'https://curated.example').MCP_HK_HKEX_DAILY_ENABLED,'true');
+ assert.equal(curatedContainerEnv(env,'https://curated.example').MCP_HK_WEBB_SDI_ENABLED,undefined);
+ assert.equal(curatedContainerEnv({...env,HKEX_DAILY_ENABLED:'false'},'https://curated.example').MCP_HK_HKEX_DAILY_ENABLED,undefined);
+});

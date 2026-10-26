@@ -21,3 +21,11 @@
 #webb-detail dd { margin:0; overflow-wrap:anywhere; }
 @media(max-width:768px) { .webb-workspace { grid-template-columns:1fr; } }
 @media(max-width:390px) { .webb-controls label,.webb-controls button { width:100%; } #webb-detail dl { grid-template-columns:1fr; } }
+
+#daily-list { display:grid; gap:.65rem; margin-block:1rem; }
+#daily-list button { white-space:normal; text-align:start; overflow-wrap:anywhere; }
+#daily-feed { margin-block:2rem 3rem; }
+#daily-detail dl { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,2fr); gap:.5rem; }
+#daily-detail dd { margin:0; overflow-wrap:anywhere; }
+#daily-export-status { overflow-wrap:anywhere; }
+@media(max-width:390px) { #daily-detail dl { grid-template-columns:1fr; } }

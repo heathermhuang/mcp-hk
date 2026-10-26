@@ -57,7 +57,7 @@ def register_rest(app, service):
 def register_mcp(server, current):
     @server.tool(annotations={"readOnlyHint": True, "destructiveHint": False})
     async def hk_hkex_status() -> dict:
-        """HKEX DI source qualification and accepted window status. Starts no collection. Disclosures are dated statements, not current holdings or executed trades."""
+        """Full-filing-window intake qualification/status. For current published summary facts use hk_hkex_latest_status and hk_hkex_latest_disclosures. Starts no collection. Disclosures are dated statements, not current holdings or executed trades."""
         return await current().hkex.query("status", mode="mcp")
 
     if not current().hkex.enabled("mcp"):
