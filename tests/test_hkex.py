@@ -59,6 +59,23 @@ def test_lossless_typed_interests_dates_and_scoped_parties():
         SourceDate(value="2026-01-01")
 
 
+def test_associated_security_does_not_borrow_the_listed_issuer_stock_code():
+    from mcp_open_data_hk.curated.hkex.contracts import Security
+
+    associated = Security(
+        source_id="filing-scoped-associated-1",
+        name="Invented associated corporation",
+        share_class="Ordinary",
+    )
+    assert associated.stock_code is None
+    primary = Security(
+        source_id="source-stock-02536", stock_code="02536", name="Invented issuer"
+    )
+    assert primary.share_class is None and primary.name_date.value is None
+    with pytest.raises(ValidationError):
+        Security(source_id="invalid-code", stock_code="2536", name="Wrong precision")
+
+
 @pytest.mark.parametrize("form", ["1", "2", "3A", "3B", "3C", "3D"])
 def test_form_contracts_and_unknown_codes_fail_closed(form):
     row = filing(form=form)

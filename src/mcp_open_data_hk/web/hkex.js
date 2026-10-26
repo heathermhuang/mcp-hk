@@ -32,7 +32,7 @@ async function search(event){
   try{
     const result=await fetchJSON('browser/issuers',{stockCode:$('hkex-stock').value,version:status.acceptedVersion});if(turn!==generation)return;
     version=result.version;cache.clear();$('hkex-detail').hidden=true;$('hkex-filings').hidden=true;
-    $('hkex-issuers').replaceChildren(...result.data.map(row=>button(`${row.name} · ${row.securities.map(x=>`${x.stock_code} (${x.share_class})`).join(', ')}`,()=>list(row.id))));
+    $('hkex-issuers').replaceChildren(...result.data.map(row=>button(`${row.name} · ${row.securities.map(x=>`${x.stock_code??t('hkexUnknown')} (${x.share_class??t('hkexUnknown')})`).join(', ')}`,()=>list(row.id))));
     $('hkex-message').textContent=result.data.length?'':t('hkexNoIssuer');
   }catch{if(turn===generation)$('hkex-message').textContent=t('hkexFailed');}
 }

@@ -120,6 +120,72 @@ def collect(model, rows=None, **kwargs):
     return result, adapter
 
 
+def test_nullable_source_fields_survive_stage_and_reader_after_additive_migration(
+    model,
+    tmp_path,
+):
+    from mcp_open_data_hk.curated.hkex.contracts import Security
+
+    original = filing(form="3B")
+    old = original.securities[0]
+    primary = old.model_copy(update={"share_class": None})
+    unknown = Security(
+        source_id="filing-scoped-associated-1",
+        stock_code=None,
+        share_class="Ordinary",
+        name="Invented associated corporation",
+    )
+    row = original.model_copy(
+        update={
+            "securities": (primary, unknown),
+            "interests": tuple(
+                i.model_copy(
+                    update={
+                        "security_id": unknown.source_id,
+                        "instrument": "associated_shares",
+                    }
+                )
+                for i in original.interests
+            ),
+        }
+    )
+
+    def inventory(kind, key, doc):
+        if kind == "inventory":
+            doc = dict(doc, securities=[primary.model_dump(mode="json")])
+        return doc
+
+    result, _ = collect(model, [row], mutate=inventory)
+    assert result["state"] == "validated", result
+    with connect(model["admin"], row_factory=dict_row) as c:
+        stored = c.execute(
+            "SELECT id,stock_code,share_class FROM hkex.securities WHERE version=%s ORDER BY id",
+            (result["version"],),
+        ).fetchall()
+        assert {r["id"]: (r["stock_code"], r["share_class"]) for r in stored} == {
+            old.source_id: ("00001", None),
+            unknown.source_id: (None, "Ordinary"),
+        }
+    migrate(model["owner"])
+    with connect(model["admin"], row_factory=dict_row) as c:
+        assert (
+            c.execute(
+                "SELECT id,stock_code,share_class FROM hkex.securities WHERE version=%s ORDER BY id",
+                (result["version"],),
+            ).fetchall()
+            == stored
+        )
+    qualify(model, result["version"], tmp_path)
+    record = model["reader"].query(
+        "disclosure", {"filingId": row.serial, "version": result["version"]}
+    )["data"]
+    by_id = {s["source_id"]: s for s in record["securities"]}
+    assert (
+        by_id[unknown.source_id]["stock_code"] is None
+        and by_id[old.source_id]["share_class"] is None
+    )
+
+
 def qualify(model, version, tmp_path):
     assert shutil.which("pg_dump") and shutil.which(
         "pg_restore"
