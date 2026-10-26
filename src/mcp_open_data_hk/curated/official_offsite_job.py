@@ -76,56 +76,129 @@ def finish(conn, job_id, receipt, outcome, schedule_kind):
 def qualify_restore(conn, proof):
     with conn.transaction():
         conn.execute("SELECT pg_advisory_xact_lock(68002408)")
-        latest = conn.execute(
-            "SELECT state->'lastSuccess' AS success FROM curated.official_source_state WHERE family='offsite' FOR UPDATE"
-        ).fetchone()
-        if (
-            not latest
-            or not proof.get("freshOffsiteRestoreVerified")
-            or proof.get("backupSha256")
-            != latest["success"]["artifacts"]["official.dump"]["sha256"]
-            or proof.get("prefix") != latest["success"]["prefix"]
-        ):
-            raise ValueError("Restore proof must match latest exact offsite dump")
-        migrations = {
-            r["version"]: r["sha256"]
-            for r in conn.execute(
-                "SELECT version,sha256 FROM curated.official_migrations"
-            )
-        }
-        if proof.get("migrations") != migrations or not proof.get("performancePassed"):
-            raise ValueError("Restored schema or performance qualification differs")
+        success, migrations = validate_restore(conn, proof)
         settled = conn.execute(
             "UPDATE curated.official_jobs SET status='success',backup_status='offsite_verified',finished_at=now(),receipt=receipt||%s WHERE job_id=%s AND status='running' AND backup_status='offsite_verified_restore_pending' RETURNING job_id",
-            (Jsonb({"restore": proof}), latest["success"]["jobId"]),
+            (Jsonb({"restore": proof}), success["jobId"]),
         ).fetchone()
         if not settled:
             raise ValueError("No owning pending restore job")
-        state = {
-            "verified": True,
-            "verifiedAt": datetime.now(timezone.utc).isoformat(),
-            "backupSha256": proof["backupSha256"],
-            "migrations": migrations,
-            "prefix": latest["success"]["prefix"],
-            "qualifiedWeekPairs": proof.get("qualifiedWeekPairs"),
-            "stagedReadP95Ms": proof.get("stagedReadP95Ms"),
+        record_restore(conn, proof, success, migrations)
+
+
+def validate_restore(conn, proof):
+    latest = conn.execute(
+        "SELECT state->'lastSuccess' AS success FROM curated.official_source_state WHERE family='offsite' FOR UPDATE"
+    ).fetchone()
+    if (
+        not latest
+        or not proof.get("freshOffsiteRestoreVerified")
+        or proof.get("backupSha256")
+        != latest["success"]["artifacts"]["official.dump"]["sha256"]
+        or proof.get("prefix") != latest["success"]["prefix"]
+    ):
+        raise ValueError("Restore proof must match latest exact offsite dump")
+    migrations = {
+        r["version"]: r["sha256"]
+        for r in conn.execute("SELECT version,sha256 FROM curated.official_migrations")
+    }
+    if proof.get("migrations") != migrations or not proof.get("performancePassed"):
+        raise ValueError("Restored schema or performance qualification differs")
+    return latest["success"], migrations
+
+
+def record_restore(conn, proof, success, migrations):
+    state = {
+        "verified": True,
+        "verifiedAt": datetime.now(timezone.utc).isoformat(),
+        "backupSha256": proof["backupSha256"],
+        "migrations": migrations,
+        "prefix": success["prefix"],
+        "qualifiedWeekPairs": proof.get("qualifiedWeekPairs"),
+        "stagedReadP95Ms": proof.get("stagedReadP95Ms"),
+    }
+    conn.execute(
+        "INSERT INTO curated.official_source_state(family,checked_at,state) VALUES('offsite_restore',now(),%s) ON CONFLICT(family) DO UPDATE SET checked_at=now(),state=EXCLUDED.state",
+        (Jsonb(state),),
+    )
+    conn.execute(
+        "INSERT INTO curated.official_source_state(family,checked_at,state) VALUES('performance',now(),%s) ON CONFLICT(family) DO UPDATE SET checked_at=now(),state=EXCLUDED.state",
+        (
+            Jsonb(
+                {
+                    "status": "passed",
+                    "qualifiedWeekPairs": proof.get("qualifiedWeekPairs"),
+                    "stagedReadP95Ms": proof.get("stagedReadP95Ms"),
+                }
+            ),
+        ),
+    )
+
+
+def requalify_retained_restore(conn, proof, scheduled_for):
+    import hashlib
+    import math
+    from importlib.resources import files
+    from .official_state import LOCK, pointer
+    from .official_recovery import membership_hash
+
+    with conn.transaction():
+        if not conn.execute(
+            "SELECT pg_try_advisory_xact_lock(%s) AS locked", (LOCK,)
+        ).fetchone()["locked"]:
+            raise ValueError("Source writer busy")
+        conn.execute("SELECT pg_advisory_xact_lock(68002408)")
+        success, migrations = validate_restore(conn, proof)
+        failed = conn.execute(
+            "SELECT status,backup_status FROM curated.official_jobs WHERE job_id=%s AND family='recovery'",
+            (success["jobId"],),
+        ).fetchone()
+        latency = proof.get("stagedReadP95Ms")
+        code_hash = hashlib.sha256(
+            files(__package__).joinpath("official_queries.py").read_bytes()
+        ).hexdigest()
+        if (
+            not failed
+            or failed["status"] != "failed"
+            or failed["backup_status"] != "restore_failed"
+            or proof.get("freshOffsiteRestoreVerified") is not True
+            or proof.get("performancePassed") is not True
+            or proof.get("allTableFingerprintsMatch") is not True
+            or proof.get("readOnlyRestoredQueries") is not True
+            or type(proof.get("rawCaptureChecksumsVerified")) is not int
+            or proof["rawCaptureChecksumsVerified"] < 0
+            or type(proof.get("qualifiedWeekPairs")) is not int
+            or proof["qualifiedWeekPairs"] < 0
+            or type(latency) not in {int, float}
+            or not math.isfinite(latency)
+            or not 0 <= latency < 1000
+            or proof.get("readQuerySha256") != code_hash
+            or proof.get("officialVersion") != pointer(conn)
+            or proof.get("effectiveMembershipSha256") != membership_hash(conn)
+        ):
+            raise ValueError("Retained restore proof or current membership differs")
+        job = begin_job(
+            conn, "retained_restore_check", scheduled_for, family="recovery"
+        )
+        if not job:
+            return {"status": "duplicate", "jobId": None}
+        receipt = {
+            "scheduleKind": "qualification",
+            "reusedOffsiteJobId": success["jobId"],
+            "sourceBytesReuploaded": False,
+            "restore": proof,
         }
         conn.execute(
-            "INSERT INTO curated.official_source_state(family,checked_at,state) VALUES('offsite_restore',now(),%s) ON CONFLICT(family) DO UPDATE SET checked_at=now(),state=EXCLUDED.state",
-            (Jsonb(state),),
+            "UPDATE curated.official_jobs SET status='success',collection_status='not_applicable',publication_status='not_applicable',backup_status='offsite_verified',finished_at=now(),receipt=%s WHERE job_id=%s",
+            (Jsonb(receipt), job),
         )
-        conn.execute(
-            "INSERT INTO curated.official_source_state(family,checked_at,state) VALUES('performance',now(),%s) ON CONFLICT(family) DO UPDATE SET checked_at=now(),state=EXCLUDED.state",
-            (
-                Jsonb(
-                    {
-                        "status": "passed",
-                        "qualifiedWeekPairs": proof.get("qualifiedWeekPairs"),
-                        "stagedReadP95Ms": proof.get("stagedReadP95Ms"),
-                    }
-                ),
-            ),
-        )
+        record_restore(conn, proof, success, migrations)
+        return {
+            "status": "success",
+            "jobId": job,
+            "failedJobRetained": success["jobId"],
+            "sourceBytesReuploaded": False,
+        }
 
 
 def restore_failed(conn, job_id):
@@ -195,7 +268,14 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "operation",
-        choices=["begin", "finish", "gate", "qualify-restore", "restore-failed"],
+        choices=[
+            "begin",
+            "finish",
+            "gate",
+            "qualify-restore",
+            "restore-failed",
+            "requalify-retained-restore",
+        ],
     )
     parser.add_argument("--scheduled-for")
     parser.add_argument("--job-id")
@@ -239,6 +319,15 @@ def main():
         elif args.operation == "qualify-restore":
             qualify_restore(conn, json.loads(Path(args.receipt).read_text()))
             print(json.dumps({"restoreQualified": True, "catchupGateOpen": gate(conn)}))
+        elif args.operation == "requalify-retained-restore":
+            if not args.receipt or not args.scheduled_for:
+                parser.error(
+                    "Retained qualification requires exact proof and occurrence"
+                )
+            result = requalify_retained_restore(
+                conn, json.loads(Path(args.receipt).read_text()), args.scheduled_for
+            )
+            print(json.dumps(dict(result, catchupGateOpen=gate(conn))))
         elif args.operation == "restore-failed":
             if not args.job_id:
                 parser.error("Owning job required")

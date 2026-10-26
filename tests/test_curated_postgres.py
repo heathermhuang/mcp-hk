@@ -1444,3 +1444,156 @@ def test_grouped_search_bounds_aliases_before_pagination_and_binds_cursor(model)
     assert not reader.search(
         namespace="webb:incorporation:1", value="123", groupBy="organisation"
     )["data"]
+
+
+def test_official_prefix_limits_after_membership_and_preserves_literal_aliases(model):
+    from psycopg import sql
+    from psycopg.rows import dict_row
+    from mcp_open_data_hk.curated.official_ingest import save_capture, promote
+    from mcp_open_data_hk.curated.official_read import OfficialReader
+
+    _, _, reader, role, owner = model
+
+    def record(number, name, chinese, cutoff="2026-10-18"):
+        brn = f"{number:08d}"
+        return {
+            "entity_id": "cr:local:" + brn,
+            "kind": "company_event",
+            "name1": name,
+            "chinese_name": chinese,
+            "names": [name, chinese],
+            "identifier": {"namespace": "cr:local:brn", "value": brn},
+            "coverageEnd": cutoff,
+        }
+
+    # Earlier lexical identities exist in storage but are outside this publication.
+    hidden = [record(i, "China Hidden", "香港未發佈") for i in range(1, 31)]
+    visible = [
+        record(50, "China Old", "香港甲", "2026-01-01"),
+        record(50, "Unrelated Current", "香港甲新"),
+        record(51, "China Second", "香港乙"),
+        record(52, "%_ Literal", "香港丙"),
+        record(53, "slash\\_literal", "別的名稱"),
+    ]
+    with connect(owner, autocommit=True, row_factory=dict_row) as conn:
+        for key, records in [("hidden", hidden), ("visible", visible)]:
+            capture, _ = save_capture(
+                conn,
+                key,
+                "https://example.invalid/synthetic.csv",
+                json.dumps(records).encode(),
+                {},
+                parser=lambda body, records=records: records,
+            )
+            if key == "visible":
+                accepted = capture
+        version = promote(conn, {"visible": accepted}, {"view": "latest_observed"})
+        conn.execute(
+            sql.SQL("GRANT SELECT ON ALL TABLES IN SCHEMA curated TO {}").format(
+                sql.Identifier(role)
+            )
+        )
+    official = OfficialReader(reader)
+    first = official.search(name="香港", limit=1, groupBy="organisation")
+    assert first["version"] == version
+    assert first["data"][0]["entity_id"] == "cr:local:00000050"
+    assert first["data"][0]["name1"] == "Unrelated Current"
+    assert first["data"][0]["matched_fact_count"] == 2
+    ids = [first["data"][0]["entity_id"]]
+    while first["nextCursor"]:
+        first = official.search(
+            name="香港", limit=1, groupBy="organisation", cursor=first["nextCursor"]
+        )
+        ids.extend(r["entity_id"] for r in first["data"])
+    assert ids == ["cr:local:00000050", "cr:local:00000051", "cr:local:00000052"]
+    assert official.search(name="ＣＨＩＮＡ ＯＬＤ")["data"][0]["name1"] == "China Old"
+    assert [r["entity_id"] for r in official.search(name="%_")["data"]] == [
+        "cr:local:00000052"
+    ]
+    assert [r["entity_id"] for r in official.search(name="slash\\_")["data"]] == [
+        "cr:local:00000053"
+    ]
+
+
+def test_retained_restore_requalification_preserves_failure_and_requires_exact_data(
+    model,
+):
+    import hashlib
+    from importlib.resources import files
+    from psycopg.rows import dict_row
+    from mcp_open_data_hk.curated import official_state as state
+    from mcp_open_data_hk.curated import official_offsite_job as recovery
+    from mcp_open_data_hk.curated.official_recovery import membership_hash
+
+    _, _, _, _, owner = model
+    with connect(owner, autocommit=True, row_factory=dict_row) as conn:
+        state.migrate(conn)
+        old = state.begin_job(
+            conn, "offsite", "2026-10-26T01:00:00Z", family="recovery"
+        )
+        receipt = {
+            "prefix": "curated/official/daily/20261026T010000Z-1234abcd",
+            "artifacts": {
+                name: {"sha256": "a" * 64, "bytes": 10}
+                for name in ["official.dump", "source.json", "manifest.json"]
+            },
+        }
+        recovery.finish(conn, old, receipt, "offsite_verified", "qualification")
+        recovery.restore_failed(conn, old)
+        before = conn.execute(
+            "SELECT * FROM curated.official_jobs WHERE job_id=%s", (old,)
+        ).fetchone()
+        proof = {
+            "freshOffsiteRestoreVerified": True,
+            "backupSha256": "a" * 64,
+            "prefix": receipt["prefix"],
+            "performancePassed": True,
+            "allTableFingerprintsMatch": True,
+            "readOnlyRestoredQueries": True,
+            "rawCaptureChecksumsVerified": 0,
+            "qualifiedWeekPairs": 0,
+            "stagedReadP95Ms": 50,
+            "readQuerySha256": hashlib.sha256(
+                files("mcp_open_data_hk.curated")
+                .joinpath("official_queries.py")
+                .read_bytes()
+            ).hexdigest(),
+            "officialVersion": None,
+            "effectiveMembershipSha256": membership_hash(conn),
+            "migrations": {
+                r["version"]: r["sha256"]
+                for r in conn.execute("SELECT * FROM curated.official_migrations")
+            },
+        }
+        assert not recovery.gate(conn)
+        for field, bad in [
+            ("backupSha256", "0" * 64),
+            ("readQuerySha256", "0" * 64),
+            ("effectiveMembershipSha256", "0" * 64),
+            ("stagedReadP95Ms", 1000),
+            ("allTableFingerprintsMatch", False),
+        ]:
+            with pytest.raises(ValueError):
+                recovery.requalify_retained_restore(
+                    conn, dict(proof, **{field: bad}), "2026-10-26T02:00:00Z"
+                )
+        result = recovery.requalify_retained_restore(
+            conn, proof, "2026-10-26T02:00:00Z"
+        )
+        assert result["sourceBytesReuploaded"] is False
+        assert result["failedJobRetained"] == old
+        assert recovery.gate(conn)
+        assert (
+            conn.execute(
+                "SELECT * FROM curated.official_jobs WHERE job_id=%s", (old,)
+            ).fetchone()
+            == before
+        )
+        assert (
+            conn.execute(
+                "SELECT receipt->>'scheduleKind' AS kind FROM curated.official_jobs WHERE job_id=%s",
+                (result["jobId"],),
+            ).fetchone()["kind"]
+            == "qualification"
+        )
+        assert state.pointer(conn) is None
