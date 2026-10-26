@@ -320,6 +320,33 @@ def test_low_disk_retains_the_previous_profile_pointer(prepared, tmp_path, monke
     assert p.read("horse", "HK_2026_K001")["meta"]["version"] == old["version"]
 
 
+@pytest.mark.parametrize(
+    "free,allowed",
+    [(1_399_999_999, False), (1_400_000_000, True), (8_000_000_000, True)],
+)
+def test_gateway_scratch_guard_fits_its_eight_gb_disk(
+    prepared, monkeypatch, free, allowed
+):
+    import shutil
+    from mcp_open_data_hk.racing_profiles import required_scratch_bytes
+
+    current = shutil.disk_usage(prepared.racing.store.path.parent)
+    monkeypatch.setattr(
+        "mcp_open_data_hk.racing_profiles.shutil.disk_usage",
+        lambda _: current._replace(free=free),
+    )
+    # 500 MB backup copy + 150 MB packed transfer + 750 MB isolated restore.
+    assert required_scratch_bytes() == 1_400_000_000
+    profiles = prepared.racing.store.profiles
+    if allowed:
+        assert profiles.stage(*observations())["state"] == "staged"
+        assert profiles.status()["accepted"] == 0
+    else:
+        with pytest.raises(RacingRejected, match="GROWTH_CAPACITY_HOLD"):
+            profiles.stage(*observations())
+    assert profiles.status()["scratchCapacity"]["sufficient"] is allowed
+
+
 def test_expired_policy_blocks_acceptance_and_export(prepared, tmp_path):
     p = prepared.racing.store.profiles
     candidate = p.stage(*observations())
