@@ -1,0 +1,43 @@
+[
+  {
+    "backupSha256": "609b026746c1f437c6083468ec6a530629385ed9356196a2562663eefdc962a4",
+    "independentlyRestored": true,
+    "allTables": {
+      "control": {
+        "rows": 1,
+        "sha256": "ed6832f8455c90187da54cf72872e392cc60f258b5112afacae28a3b187dc6e0"
+      },
+      "versions": {
+        "rows": 1,
+        "sha256": "077de3b36a72afe0c80e3aa556e2544ee561528fbdc71b52fb9ee6c93c0cdc85"
+      },
+      "reports": {
+        "rows": 32,
+        "sha256": "7bfa94966be0856c75781c588e9272732268aaf8b90a67ec4ed73d40576f6b18"
+      },
+      "records": {
+        "rows": 2008,
+        "sha256": "29d64382416c737fa1c6e55709290d1b8003decb0d8209c7377da0dc8d9cb18b"
+      },
+      "version_reports": {
+        "rows": 16,
+        "sha256": "f00978347f93ed5c0cac12d7af561ce402ea0e9e5d6862e35f82898108d1a428"
+      },
+      "runs": {
+        "rows": 2,
+        "sha256": "44f821ac1ab4d20a0bc3a533de551134899ee660a1588f3299611117699d3af4"
+      },
+      "requests": {
+        "rows": 47,
+        "sha256": "8514b28d215a4fd143def4baa985edcfac2434fdee302c46e7ae75aad608b671",
+        "sequence": {
+          "lastValue": 47,
+          "isCalled": true
+        }
+      }
+    }
+  },
+  {
+    "published": "hkex-daily-2fe1c5f890338b1d71f0acf1c051fbc4"
+  }
+]
