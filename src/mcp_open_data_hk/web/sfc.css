@@ -3,3 +3,5 @@
 #mhk-preview #sfc th,#mhk-preview #sfc td{padding:12px 10px;border-bottom:1px solid var(--mhk-line);vertical-align:top;overflow-wrap:anywhere}
 #mhk-preview #sfc th{font-weight:500;color:var(--mhk-muted)}
 #mhk-preview #sfc-archive-record{margin-top:24px;padding-top:16px;border-top:1px solid var(--mhk-line);min-width:0}
+
+#mhk-preview #sfc-live-record table{min-width:480px}

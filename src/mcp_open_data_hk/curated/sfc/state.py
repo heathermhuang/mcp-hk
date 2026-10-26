@@ -517,6 +517,18 @@ def grant_reader(dsn, role):
                     sql.Identifier(table), sql.Identifier(role)
                 )
             )
+        for table, columns in [
+            ("runs", ("run_id", "scheduled_for", "started_at", "state", "requests")),
+            ("attempts", ("state", "settled_at")),
+            ("holds", ("until_at", "reason")),
+        ]:
+            conn.execute(
+                sql.SQL("GRANT SELECT ({}) ON curated_sfc.{} TO {}").format(
+                    sql.SQL(",").join(map(sql.Identifier, columns)),
+                    sql.Identifier(table),
+                    sql.Identifier(role),
+                )
+            )
         conn.execute(
             sql.SQL("ALTER ROLE {} SET default_transaction_read_only=on").format(
                 sql.Identifier(role)

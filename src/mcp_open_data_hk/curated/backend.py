@@ -69,9 +69,10 @@ def create_app(reader, token):
     async def sfc_verify(
         ce: str,
         version: str | None = Query(None, max_length=100),
+        mode: Literal["rest", "mcp", "browser"] = "rest",
         authorization: str | None = Header(None),
     ):
-        return await call(sfc.verify, authorization, ce=ce, version=version)
+        return await call(sfc.verify, authorization, ce=ce, version=version, mode=mode)
 
     from .hkex_daily.read import DailyReader
 
