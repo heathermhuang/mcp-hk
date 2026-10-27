@@ -1,6 +1,7 @@
 """SELECT-only exact-CE reader; independent source/mode and retention gates."""
 
 from datetime import datetime, timezone
+import re
 
 from ..build import connect
 from ..read import ReadError
@@ -44,6 +45,7 @@ def capability_status():
         "sourceCutoff": None,
         "freshnessBasis": "no_qualified_observation",
         "completeRegulatoryHistory": False,
+        "historyAvailable": False,
         "reasonCode": "SFC_SOURCE_UNQUALIFIED",
         "policySha256": POLICY.sha256,
     }
@@ -52,6 +54,132 @@ def capability_status():
 class SfcReader:
     def __init__(self, reader, policy=None):
         self.reader, self.policy = reader, policy or configured_policy()
+
+    def history(self, ce, version=None, limit=20, cursor=None, mode="rest"):
+        """Accepted observation versions only; never inferred regulatory history."""
+        try:
+            ce = ce_reference(ce)
+            self.policy.require(mode, "retention", "history")
+        except Rejected as exc:
+            raise ReadError(str(exc), "SFC history is not qualified") from exc
+        if (
+            mode not in {"rest", "mcp", "browser"}
+            or type(limit) is not int
+            or not 1 <= limit <= 100
+        ):
+            raise ReadError("INVALID_QUERY", "Invalid SFC history query")
+        if version is not None and not re.fullmatch(r"sfc-[a-f0-9]{32}", version):
+            raise ReadError("INVALID_QUERY", "Use a returned SFC version")
+        filters = {"ce": ce, "mode": mode, "policy": self.policy.sha256, "limit": limit}
+        page = self.reader.unseal(cursor, "sfc_history", filters) if cursor else None
+        if page:
+            if version and page["version"] != version:
+                raise ReadError("INVALID_CURSOR", "SFC history version differs")
+            version = page["version"]
+        # This independently validates the selected accepted version and exact CE.
+        anchor = self.verify(ce, version, mode)
+        version = anchor["version"]
+        from psycopg.rows import dict_row
+
+        if not self.reader.slots.acquire(timeout=0.25):
+            raise ReadError("QUERY_BUSY", "Shared read limit reached")
+        try:
+            with connect(
+                self.reader.dsn,
+                row_factory=dict_row,
+                options="-c search_path=pg_catalog -c default_transaction_read_only=on -c statement_timeout=2000 -c lock_timeout=250",
+            ) as conn:
+                if not safe_reader_role(conn):
+                    raise ReadError(
+                        "UNSAFE_READER", "Use a dedicated SELECT-only reader"
+                    )
+                source_reader_safe(conn)
+                selected = conn.execute(
+                    "SELECT published_at,expires_at FROM curated_sfc.versions WHERE version=%s",
+                    (version,),
+                ).fetchone()
+                top = selected["published_at"]
+                # Bound both the page inventory and its cursor lifetime to the same
+                # retained, published cohort. New publications cannot enter page 2.
+                bounds = conn.execute(
+                    "SELECT min(v.expires_at) AS expires FROM curated_sfc.versions v JOIN curated_sfc.corporations c USING(version) WHERE c.ce=%s AND v.policy_sha256=%s AND v.published_at IS NOT NULL AND (v.published_at,v.version)<=(%s,%s) AND v.expires_at>now()",
+                    (ce, self.policy.sha256, top, version),
+                ).fetchone()
+                last = page["last"] if page else [top.isoformat(), version]
+                rows = conn.execute(
+                    "SELECT v.* FROM curated_sfc.versions v JOIN curated_sfc.corporations c USING(version) WHERE c.ce=%s AND v.policy_sha256=%s AND v.published_at IS NOT NULL AND v.expires_at>now() AND (v.published_at,v.version)<=(%s,%s) AND ((v.published_at,v.version)<(%s,%s) OR %s) ORDER BY v.published_at DESC,v.version DESC LIMIT %s",
+                    (
+                        ce,
+                        self.policy.sha256,
+                        top,
+                        version,
+                        last[0],
+                        last[1],
+                        not page,
+                        limit + 1,
+                    ),
+                ).fetchall()
+                records = []
+                for row in rows[:limit]:
+                    qualified_manifest(row)
+                    if row["manifest"].get("format") != "sfc-public-register-v1":
+                        raise ReadError(
+                            "SFC_SCHEMA_CHANGED", "History capture format differs"
+                        )
+                    # Metadata comes from the checksum-qualified manifest, not
+                    # an unchecked projection of another version's fact row.
+                    observed = datetime.fromisoformat(
+                        row["manifest"]["sourceCaptures"][ce]["retrievedAt"]
+                    )
+                    records.append(
+                        {
+                            "ce": ce,
+                            "version": row["version"],
+                            "observedAt": observed.isoformat(),
+                            "publishedAt": row["published_at"].isoformat(),
+                            "expiresAt": row["expires_at"].isoformat(),
+                        }
+                    )
+                self.policy.require(mode, "retention", "history")
+                now = datetime.now(timezone.utc)
+                if selected["expires_at"] <= now or any(
+                    row["expires_at"] <= now for row in rows[:limit]
+                ):
+                    raise ReadError(
+                        "VERSION_EXPIRED", "SFC permitted retention expired"
+                    )
+                if not conn.execute(
+                    "SELECT 1 FROM curated_sfc.policies WHERE sha256=%s AND active AND revoked_at IS NULL",
+                    (self.policy.sha256,),
+                ).fetchone():
+                    raise ReadError("SFC_POLICY_CHANGED", "Policy changed during read")
+                next_cursor = None
+                if len(rows) > limit:
+                    expires = min(
+                        bounds["expires"].timestamp(),
+                        self.policy.recheckAt.timestamp(),
+                        datetime.now(timezone.utc).timestamp() + 48 * 3600,
+                    )
+                    last = rows[limit - 1]
+                    next_cursor = self.reader.seal(
+                        {
+                            "op": "sfc_history",
+                            "filters": filters,
+                            "version": version,
+                            "last": [last["published_at"].isoformat(), last["version"]],
+                            "expires": expires,
+                        }
+                    )
+                return {
+                    "version": version,
+                    "data": records,
+                    "nextCursor": next_cursor,
+                    "provenance": anchor["provenance"],
+                }
+        except Rejected as exc:
+            raise ReadError(str(exc), "SFC history policy is unavailable") from exc
+        finally:
+            self.reader.slots.release()
 
     def status(self):
         from psycopg.rows import dict_row
@@ -84,9 +212,25 @@ class SfcReader:
                 active = conn.execute(
                     "SELECT sha256,record FROM curated_sfc.policies WHERE active AND revoked_at IS NULL"
                 ).fetchone()
+                columns = "scheduled_for,started_at,state,requests"
+                extended = conn.execute(
+                    "SELECT EXISTS(SELECT 1 FROM pg_attribute WHERE attrelid='curated_sfc.runs'::regclass AND attname='job_outcomes' AND NOT attisdropped) AS installed"
+                ).fetchone()["installed"]
+                if (
+                    extended
+                    and conn.execute(
+                        "SELECT has_column_privilege('curated_sfc.runs','job_outcomes','SELECT') AS allowed"
+                    ).fetchone()["allowed"]
+                ):
+                    columns += ",provenance,source_release,job_outcomes,job_updated_at"
                 last = conn.execute(
-                    "SELECT scheduled_for,started_at,state,requests FROM curated_sfc.runs ORDER BY started_at DESC,run_id DESC LIMIT 1"
+                    "SELECT "
+                    + columns
+                    + " FROM curated_sfc.runs ORDER BY started_at DESC,run_id DESC LIMIT 1"
                 ).fetchone()
+                unresolved = conn.execute(
+                    "SELECT count(*) AS n FROM curated_sfc.attempts WHERE state='unknown'"
+                ).fetchone()["n"]
                 successful = conn.execute(
                     "SELECT max(settled_at) AS stamp FROM curated_sfc.attempts WHERE state='ok'"
                 ).fetchone()["stamp"]
@@ -94,6 +238,7 @@ class SfcReader:
                     lastAttemptAt=last["started_at"] if last else None,
                     lastSuccessAt=successful,
                     lastRun=last,
+                    unresolvedRequests=unresolved,
                 )
                 row = conn.execute(
                     "SELECT v.* FROM curated_sfc.versions v JOIN curated_sfc.pointer p USING(version)"
@@ -173,6 +318,8 @@ class SfcReader:
                     )
                     result.update(
                         enabledModes=modes,
+                        historyAvailable=bool(modes)
+                        and policy.modes["history"] == "allowed",
                         state="available" if modes else "observation_not_public",
                         reasonCode=None if modes else "SFC_OUTPUT_NOT_QUALIFIED",
                     )
@@ -181,6 +328,7 @@ class SfcReader:
                             state="expired",
                             reasonCode="SFC_RETENTION_EXPIRED",
                             enabledModes=[],
+                            historyAvailable=False,
                         )
                     elif last and last["state"] in {"failed", "partial", "running"}:
                         result.update(
@@ -196,6 +344,7 @@ class SfcReader:
                             else "SFC_POLICY_UNQUALIFIED"
                         ),
                         enabledModes=[],
+                        historyAvailable=False,
                     )
                 hold = conn.execute(
                     "SELECT until_at,reason FROM curated_sfc.holds WHERE until_at>now()"
@@ -302,6 +451,10 @@ class SfcReader:
                     active.require("history")
                 # Policy changes while a long read executes must not bypass a hold.
                 active.require(mode, "retention")
+                if row["expires_at"] <= datetime.now(timezone.utc):
+                    raise ReadError(
+                        "VERSION_EXPIRED", "SFC permitted retention expired"
+                    )
                 if not conn.execute(
                     "SELECT 1 FROM curated_sfc.policies WHERE sha256=%s AND active AND revoked_at IS NULL",
                     (active.sha256,),

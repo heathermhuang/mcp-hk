@@ -5,3 +5,4 @@
 #mhk-preview #sfc-archive-record{margin-top:24px;padding-top:16px;border-top:1px solid var(--mhk-line);min-width:0}
 
 #mhk-preview #sfc-live-record table{min-width:480px}
+#mhk-preview #sfc-live-record ul a{overflow-wrap:anywhere}

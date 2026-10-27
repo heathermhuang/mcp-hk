@@ -1,4 +1,5 @@
 import {hkexDailyBackup,hkexDailyBackupAdmission} from './hkex-daily-backup';
+import {sfcBackup,sfcBackupAdmission} from './sfc-backup';
 import {officialBackup,officialBackupAdmission} from './official-backup';
 import {companyDownloads,publishCompanyDownload} from './company-downloads';
 import { Container } from '@cloudflare/containers';
@@ -91,6 +92,7 @@ export class McpContainer extends Container<Env> {
   entrypoint = ['mcp-hk-container'];
 
   hkexDailyBackupAdmission(bytes:number,write:boolean):boolean {return hkexDailyBackupAdmission(this.ctx.storage.sql,bytes,write);}
+  sfcBackupAdmission(bytes:number,write:boolean):boolean {return sfcBackupAdmission(this.ctx.storage.sql,bytes,write);}
 
   officialBackupAdmission(bytes:number,write:boolean):boolean {return officialBackupAdmission(this.ctx.storage.sql,bytes,write);}
 
@@ -301,6 +303,7 @@ export default {
     if(isAgentAuthPath(url.pathname)&&url.origin!==env.PUBLIC_ORIGIN)return new Response('Use the canonical mcp.hk origin',{status:400,headers:{'Cache-Control':'no-store'}});
     if (url.protocol !== 'https:' && !['localhost', '127.0.0.1'].includes(url.hostname)) return Response.redirect(`https://${url.host}${url.pathname}${url.search}`, 308);
     if (url.hostname === 'www.mcp.hk') return Response.redirect(`https://mcp.hk${url.pathname}${url.search}`, 308);
+    if(url.pathname.startsWith('/__sfc-backup/'))return sfcBackup(request,env,(bytes,write)=>env.APP.get(env.APP.idFromName('production')).sfcBackupAdmission(bytes,write));
     if(url.pathname.startsWith('/__hkex-daily-backup/'))return hkexDailyBackup(request,env,(bytes,write)=>env.APP.get(env.APP.idFromName('production')).hkexDailyBackupAdmission(bytes,write));
     if(url.pathname.startsWith('/__company-backup/'))return officialBackup(request,env,(bytes,write)=>env.APP.get(env.APP.idFromName('production')).officialBackupAdmission(bytes,write));
     if (isAgentAuthPath(url.pathname)) {

@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily bounded SFC verification after source and recovery qualification
+
+[Timer]
+OnCalendar=*-*-* 06:10:00 UTC
+Persistent=true
+Unit=mcp-hk-sfc.service
+
+[Install]
+WantedBy=timers.target

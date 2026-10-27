@@ -74,6 +74,25 @@ def create_app(reader, token):
     ):
         return await call(sfc.verify, authorization, ce=ce, version=version, mode=mode)
 
+    @app.get("/v1/sfc/corporations/{ce}/history")
+    async def sfc_history(
+        ce: str,
+        version: str | None = Query(None, max_length=100),
+        limit: int = Query(20, ge=1, le=100),
+        cursor: str | None = Query(None, max_length=2048),
+        mode: Literal["rest", "mcp", "browser"] = "rest",
+        authorization: str | None = Header(None),
+    ):
+        return await call(
+            sfc.history,
+            authorization,
+            ce=ce,
+            version=version,
+            limit=limit,
+            cursor=cursor,
+            mode=mode,
+        )
+
     from .hkex_daily.read import DailyReader
 
     daily = DailyReader(reader)
