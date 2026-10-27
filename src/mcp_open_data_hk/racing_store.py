@@ -555,7 +555,10 @@ class RacingStore(ResultsStore):
                     "SELECT 1 FROM racing_control WHERE key LIKE 'refresh:%' LIMIT 1"
                 ).fetchone()
                 or db.execute(
-                    "SELECT 1 FROM racing_publications WHERE state='staged' LIMIT 1"
+                    "SELECT 1 FROM racing_publications p JOIN racing_current c USING(version) WHERE p.state='staged' LIMIT 1"
+                ).fetchone()
+                or db.execute(
+                    "SELECT 1 FROM racing_profile_versions WHERE state='staged' LIMIT 1"
                 ).fetchone()
                 or db.execute(
                     "SELECT 1 FROM racing_attempts WHERE state IN ('unknown','reserved','held') LIMIT 1"

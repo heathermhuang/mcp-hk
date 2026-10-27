@@ -76,3 +76,16 @@ def test_completed_explicit_refresh_counts_as_this_parser_and_is_not_requeued(
         db.execute("UPDATE racing_publications SET state='accepted'")
         db.execute("UPDATE racing_queue SET state='accepted'")
     assert store.queue_dividend_recapture()["state"] == "unchanged"
+
+
+def test_retired_orphan_candidate_does_not_block_unrelated_accepted_recapture(
+    service, pilot, tmp_path
+):
+    accept(service, pilot, tmp_path)
+    store = service.racing.store
+    store.enqueue([{"date": "2026-10-21", "venue": "HV"}])
+    with store.connect() as db:
+        db.execute(
+            "INSERT INTO racing_publications VALUES('orphan-retired-version','staged',NULL)"
+        )
+    assert store.queue_dividend_recapture()["state"] == "queued"
