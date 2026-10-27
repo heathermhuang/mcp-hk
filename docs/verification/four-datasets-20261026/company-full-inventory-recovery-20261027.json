@@ -1,0 +1,179 @@
+{
+  "observedAt": "2026-10-27T11:44:03.283935+00:00",
+  "sourceJob": "90f359e65833e7ebf45a045f5d3f4e3e",
+  "recoveryJob": "8aea0be1505c18fa76cf7ef42508a037",
+  "helperCommit": "3f9824f50a21eaced2b71716eb4770832cad4692",
+  "gatewayCommitUnchanged": "de0324a80dc35de550054b6bd42acdde367643af",
+  "backendCommitUnchanged": "3aeaaafbd7f51636c314e707de82911c48567632",
+  "sourceRequests": 8,
+  "sourceBytes": 14356257,
+  "publicPairs": 84,
+  "stagedPairs": 94,
+  "inventoryPairs": 94,
+  "source": {
+    "tables": {
+      "dataset_versions": {
+        "rows": 1,
+        "fingerprint": "1219ac4b46d703eb116c7e891f584979"
+      },
+      "official_address_checks": {
+        "rows": 980,
+        "fingerprint": "0d854f11e3933b669ae193d9af0afe58"
+      },
+      "official_address_observations": {
+        "rows": 962,
+        "fingerprint": "5bff8187b051c8513cf8af28b8be00c5"
+      },
+      "official_address_queue": {
+        "rows": 366861,
+        "fingerprint": "6b3c2d9f87dd3f8234a322c6bc260abe"
+      },
+      "official_captures": {
+        "rows": 1180,
+        "fingerprint": "290c7d831bc6242c033d496467dc41d0"
+      },
+      "official_daily_budgets": {
+        "rows": 4,
+        "fingerprint": "b2da4ff602789aba96ea7426b7a98700"
+      },
+      "official_inventory": {
+        "rows": 188,
+        "fingerprint": "d9180ee5093d41e88a2d1c079b0d656b"
+      },
+      "official_jobs": {
+        "rows": 161,
+        "fingerprint": "9f47840c35eda19596095e5404c0c2ca"
+      },
+      "official_members": {
+        "rows": 2604,
+        "fingerprint": "40d1f81b456681dba4933ce643fe352f"
+      },
+      "official_migrations": {
+        "rows": 2,
+        "fingerprint": "c6aa830257dfa4659189ca37f4b30196"
+      },
+      "official_pointer": {
+        "rows": 1,
+        "fingerprint": "2058e4d4aa08ae3469e26250ef1e7f34"
+      },
+      "official_records": {
+        "rows": 476200,
+        "fingerprint": "94ad598b7e26c464ffab3dfdff8df7d1"
+      },
+      "official_runs": {
+        "rows": 41,
+        "fingerprint": "02e883eb23ca9d2b1c6094288ae9b50b"
+      },
+      "official_source_state": {
+        "rows": 1047,
+        "fingerprint": "a55bf549beabf4b239f95b4ad3247092"
+      },
+      "official_staged": {
+        "rows": 1133,
+        "fingerprint": "d5cd1475778c52da4c1b8acd80eb0d96"
+      },
+      "official_versions": {
+        "rows": 4,
+        "fingerprint": "9ee6c42819230e43a9bad3ea796c7338"
+      },
+      "published_releases": {
+        "rows": 1,
+        "fingerprint": "e6eb0417e8bdc24ec7fb0baa3e54540b"
+      }
+    },
+    "rawCapturesVerified": 1180,
+    "officialVersion": "official-799798307f9db9968bd238c02b1de49f",
+    "currentTransformSha256": "8dc6c8c8a4fabf23aeaedf8c834bb61ba68bdcb6fed501d5df89cae1ca8cc23c",
+    "sourceCommit": "3aeaaafbd7f51636c314e707de82911c48567632"
+  },
+  "receipt": {
+    "prefix": "curated/official/daily/20261027T113901Z-c4838e39",
+    "artifacts": {
+      "official.dump": {
+        "sha256": "f469f8393c77de9d3169808f2144f209e4788462daff768bab269f6882c677c9",
+        "bytes": 187061345,
+        "parts": [
+          {
+            "name": "official.part-000",
+            "sha256": "5a57b6accccbd61ad9bc2a20f589803794247e61506eff595187a3b5bf0e10aa",
+            "bytes": 67108864
+          },
+          {
+            "name": "official.part-001",
+            "sha256": "4ae9cb5601e827667bf25fde3ef67f856f0b120b1c191314d1b818c4ed6c3707",
+            "bytes": 67108864
+          },
+          {
+            "name": "official.part-002",
+            "sha256": "a46f632fe9a76780794c740d724c22aa424ae1079bcd13f8758ca8561e706eb0",
+            "bytes": 52843617
+          }
+        ]
+      },
+      "source.json": {
+        "sha256": "22d30a5acfeee5244687edebecb822194d78fbc65c989d85b50ee904fbd494f8",
+        "bytes": 1758
+      },
+      "manifest.json": {
+        "sha256": "41bd98489066aaee5e3205ce4049f59cec9cf0d9962aed590cdf441578c335b4",
+        "bytes": 831
+      }
+    },
+    "verifiedAt": "2026-10-27T11:39:26.910636+00:00",
+    "jobId": "8aea0be1505c18fa76cf7ef42508a037",
+    "restoreObserved": false
+  },
+  "restore": {
+    "freshOffsiteRestoreVerified": true,
+    "backupSha256": "f469f8393c77de9d3169808f2144f209e4788462daff768bab269f6882c677c9",
+    "prefix": "curated/official/daily/20261027T113901Z-c4838e39",
+    "allTableFingerprintsMatch": true,
+    "rawCaptureChecksumsVerified": 1180,
+    "officialVersion": "official-799798307f9db9968bd238c02b1de49f",
+    "readOnlyRestoredQueries": true,
+    "stagedReadP95Ms": 41.864245002216194,
+    "stagedReadMaxMs": 73.94981200195616,
+    "qualifiedWeekPairs": 94,
+    "performancePassed": true,
+    "effectiveMembershipSha256": "76d109c6b38bf7f480bf6108fc9acd6156bbbe8ae074c99412105ab9174c0aa9",
+    "readQuerySha256": "e8c823f13976f3b2e4595e014a559ce4bee15b58623544398606a705aeac7f72",
+    "migrations": {
+      "001": "99d1a3593cb5bc9bc26b440a061e2b1142a0a78f44670e3a6c86f32b4f147bfb",
+      "007": "64d3bb4974e92f4c2e3b96965cac247b20e8b55cdb00274e7ac9342229cf5ec8"
+    }
+  },
+  "sourceBeforeAfterBackupEqual": true,
+  "downloadedDump": {
+    "bytes": 187061345,
+    "sha256": "f469f8393c77de9d3169808f2144f209e4788462daff768bab269f6882c677c9"
+  },
+  "allTimersPreserved": true,
+  "milestoneUnit": [
+    "Result=success",
+    "ExecMainStatus=0",
+    "ActiveState=inactive"
+  ],
+  "scope": "full staged 94-pair inventory recovery qualification; public 84-pair publication remains separate",
+  "sustainedDailyReliabilityProven": false,
+  "public94PairAcceptanceProven": false,
+  "healthDuringRecovery": {
+    "observedAt": "2026-10-27T11:41:02.355844+00:00",
+    "httpStatus": 200,
+    "gatewayRelease": "de0324a80dc35de550054b6bd42acdde367643af",
+    "health": {
+      "status": "ok",
+      "sourceReviewPolicy": "source-review-11",
+      "racingPipeline": "results-r2-v1",
+      "racingProfilesPipeline": "profile-observations-r2-v1"
+    },
+    "scope": "availability point check during company recovery; not latency benchmark or sustained reliability proof"
+  },
+  "finalCheckpoint": {
+    "pendingPairs": 0,
+    "qualifiedPairs": 94,
+    "inventoryPairs": 94,
+    "performanceQualifiedPairs": 94,
+    "milestoneNeeded": null,
+    "noOp": true
+  }
+}

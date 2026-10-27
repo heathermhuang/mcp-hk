@@ -59,7 +59,7 @@ Production cohort/purpose, per-mode source qualification and separately approved
 scoped credentials remain outstanding. Historical SFC archive observations remain
 separate. No new production writer, uploader token or timer was created here.
 
-## Remaining company backfill invocation failure
+## Repaired company backfill invocation
 
 The 10:20 UTC timer ran, but a source-job invocation received two distinct image
 IDs as a single quoted argument and Docker rejected the reference. The wrapper
@@ -72,5 +72,8 @@ ambiguous or mismatched runtime metadata. All five company host runners share th
 resolver. Docker execution failures from the gate now propagate separately from
 a genuine closed gate. Focused tests cover runtime selection, ambiguity, stale
 metadata, redaction, recovery independence and gate-versus-runtime exit status.
-The resolver was also run read-only on the real host. Host adoption and the final
-bounded catch-up remain pending at this documentation checkpoint.
+The resolver was also run read-only on the real host. PR #111 merged and its host helpers were adopted under the maintenance lock, with configuration, timers and serving container unchanged. The bounded catch-up succeeded: all 94 pairs are staged and its local backup passed. The normal full-inventory milestone completed successfully: all 94 staged pairs restored, all table fingerprints matched, 1,180 raw captures passed checksum verification, and staged reads measured 41.864 ms p95. Public publication remains at 84 pairs until its next scheduled acceptance. This qualification run is separate from sustained daily reliability. See `company-full-inventory-recovery-20261027.json`.
+
+The normal HKEX 10:20 UTC timer accepted 1,585 daily-summary rows through 27 October and independently verified a fresh offsite restore of all seven source tables. Retained original/downloaded dump hashes were checked again. A live 20-record REST/MCP sample and detail matched; signed pagination claims matched except their individual expiry. Public responses explicitly identify eight unobserved report/category pairs in the sampled date window, rather than treating missing reports as zero filings. See `hkex-normal-recovery-20261027.json` and `hkex-fresh-public-proof-20261027.json`.
+
+Five bounded, quota-accounted HKEX navigation reads reconciled the actual parent date filters. A correctly rendered 21 October search returns Form 3B DB20261026E00008, whose explicit source labels distinguish event date 21 October from filing date 26 October. This qualifies relevant-event-date selection for that path; it cannot establish filing-date completeness or amendment closure. The accepted daily feed and production full-filings activation were unchanged. See `hkex-event-filter-qualification-20261027.json`.

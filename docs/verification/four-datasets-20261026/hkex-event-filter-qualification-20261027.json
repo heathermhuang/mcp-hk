@@ -1,0 +1,250 @@
+{
+  "scope": "private corporate date-filter qualification, one corporation and one associated-corporation form path",
+  "sourceReads": [
+    {
+      "run": "7ec8594d8ed64c3a8cce8b49c47c5efc",
+      "ledgerId": 129,
+      "httpStatus": 200,
+      "bytes": 13111,
+      "rawSha256": "84290a512a3ef059fb247862720e91012532a7b1b4b66246728f7480bd9e90ae",
+      "hold": null,
+      "acceptedDailyVersionUnchanged": "hkex-daily-2d654797ea0d194718c996e1e5f979a0",
+      "rawHtmlRetained": false,
+      "navigationLinks": [
+        {
+          "text": "here",
+          "href": "../filing/di/NSSrchCorpList.aspx?sa1=cl&scsd=26/10/2026&sced=26/10/2026&cname=Palasino+Holdings+Ltd.&cn=1&src=Main&lang=EN&g_lang=en"
+        },
+        {
+          "text": "List of all notices",
+          "href": "NSAllFormList.aspx?sa2=an&sid=460980&corpn=Palasino+Holdings+Ltd.&sd=26/10/2026&ed=26/10/2026&cid=0&sa1=cl&scsd=26%2f10%2f2026&sced=26%2f10%2f2026&cn=1&srchCorpName=Palasino+Holdings+Ltd.&src=Main&lang=EN&"
+        },
+        {
+          "text": "< 1>",
+          "href": "/di/NSSrchCorpList.aspx?sa1=cl&scsd=26%2f10%2f2026&sced=26%2f10%2f2026&cn=1&srchCorpName=Palasino+Holdings+Ltd.&src=Main&lang=EN&pg=1"
+        }
+      ],
+      "dateRows": [
+        [
+          "",
+          "Listed corporation being searched: Name of listed corporation: Palasino Holdings Ltd. Date (dd/mm/yyyy): 26/10/2026 - 26/10/2026"
+        ],
+        [
+          "Date (dd/mm/yyyy):",
+          "26/10/2026 - 26/10/2026"
+        ]
+      ],
+      "serialAnchors": [],
+      "noResultsObserved": false,
+      "sourceUrl": "https://di.hkex.com.hk/di/NSSrchCorpList.aspx?sa1=cl&scsd=26%2F10%2F2026&sced=26%2F10%2F2026&cn=1&srchCorpName=Palasino+Holdings+Ltd.&src=Main&lang=EN",
+      "label": "corporation-26",
+      "observedAt": "2026-10-27T11:35:32.290085+00:00"
+    },
+    {
+      "run": "cf7d75adebb54ca49cde6a0300c1d4a3",
+      "ledgerId": 130,
+      "httpStatus": 200,
+      "bytes": 9963,
+      "rawSha256": "cee7957f4073b3ef8e3a6fbf30a97aa4c0f5a38a9a4ac46bcb54209ae24a52c3",
+      "hold": null,
+      "acceptedDailyVersionUnchanged": "hkex-daily-2d654797ea0d194718c996e1e5f979a0",
+      "rawHtmlRetained": false,
+      "navigationLinks": [],
+      "dateRows": [
+        [
+          "Date (dd/mm/yyyy):",
+          "26/10/2026 - 26/10/2026"
+        ],
+        [
+          "Please click the links under the column \"Date of relevant event\" to view the details of the DI notices."
+        ],
+        [
+          "Form Serial Number",
+          "Name of substantial shareholder / director / chief executive",
+          "Reason for disclosure",
+          "No. of shares bought / sold / involved",
+          "Average price per share",
+          "No. of shares interested (See *Notes above)",
+          "% of issued voting shares",
+          "Date of relevant event (dd/mm/yyyy)",
+          "Interests in shares of associated corporation",
+          "Interests in debentures"
+        ]
+      ],
+      "serialAnchors": [],
+      "noResultsObserved": false,
+      "sourceUrl": "https://di.hkex.com.hk/di/NSAllFormList.aspx?sa2=an&sid=460980&corpn=Palasino+Holdings+Ltd.&sd=26/10/2026&ed=26/10/2026&cid=0&sa1=cl&scsd=26%2f10%2f2026&sced=26%2f10%2f2026&cn=1&srchCorpName=Palasino+Holdings+Ltd.&src=Main&lang=EN&",
+      "label": "all-notices-26",
+      "observedAt": "2026-10-27T11:36:04.514237+00:00"
+    },
+    {
+      "run": "910edfb31cd84779bc2f36a7d67ba8d6",
+      "ledgerId": 131,
+      "httpStatus": 200,
+      "bytes": 13111,
+      "rawSha256": "5c335f5daac7a64d2fc31f4926c21d54dae30619e42f355db674618989d0aa9b",
+      "hold": null,
+      "acceptedDailyVersionUnchanged": "hkex-daily-2d654797ea0d194718c996e1e5f979a0",
+      "rawHtmlRetained": false,
+      "navigationLinks": [
+        {
+          "text": "here",
+          "href": "../filing/di/NSSrchCorpList.aspx?sa1=cl&scsd=21/10/2026&sced=21/10/2026&cname=Palasino+Holdings+Ltd.&cn=1&src=Main&lang=EN&g_lang=en"
+        },
+        {
+          "text": "List of all notices",
+          "href": "NSAllFormList.aspx?sa2=an&sid=460980&corpn=Palasino+Holdings+Ltd.&sd=21/10/2026&ed=21/10/2026&cid=0&sa1=cl&scsd=21%2f10%2f2026&sced=21%2f10%2f2026&cn=1&srchCorpName=Palasino+Holdings+Ltd.&src=Main&lang=EN&"
+        },
+        {
+          "text": "< 1>",
+          "href": "/di/NSSrchCorpList.aspx?sa1=cl&scsd=21%2f10%2f2026&sced=21%2f10%2f2026&cn=1&srchCorpName=Palasino+Holdings+Ltd.&src=Main&lang=EN&pg=1"
+        }
+      ],
+      "dateRows": [
+        [
+          "",
+          "Listed corporation being searched: Name of listed corporation: Palasino Holdings Ltd. Date (dd/mm/yyyy): 21/10/2026 - 21/10/2026"
+        ],
+        [
+          "Date (dd/mm/yyyy):",
+          "21/10/2026 - 21/10/2026"
+        ]
+      ],
+      "serialAnchors": [],
+      "serialTextOccurrences": [],
+      "noResultsObserved": false,
+      "sourceUrl": "https://di.hkex.com.hk/di/NSSrchCorpList.aspx?sa1=cl&scsd=21%2F10%2F2026&sced=21%2F10%2F2026&cn=1&srchCorpName=Palasino+Holdings+Ltd.&src=Main&lang=EN",
+      "label": "corporation-21",
+      "observedAt": "2026-10-27T11:37:11.991784+00:00"
+    },
+    {
+      "run": "c9620687edc6440e81baeea1d3d56507",
+      "ledgerId": 132,
+      "httpStatus": 200,
+      "bytes": 11286,
+      "rawSha256": "b10224511ab1b3f8aaad93e25401d5122f5f3393e87da2b1a834b8d05d28d2cf",
+      "hold": null,
+      "acceptedDailyVersionUnchanged": "hkex-daily-2d654797ea0d194718c996e1e5f979a0",
+      "rawHtmlRetained": false,
+      "navigationLinks": [
+        {
+          "text": "Yes",
+          "href": "NSNotice3BList.aspx?sa3=3b&3afn=DB20261026E00008&3aft=DB&sa2=an&sid=460980&corpn=Palasino+Holdings+Ltd.&sd=21%2f10%2f2026&ed=21%2f10%2f2026&cid=0&sa1=cl&scsd=21%2f10%2f2026&sced=21%2f10%2f2026&cn=1&srchCorpName=Palasino+Holdings+Ltd.&src=Main&lang=EN&"
+        },
+        {
+          "text": "< 1>",
+          "href": "/di/NSAllFormList.aspx?sa2=an&sid=460980&corpn=Palasino+Holdings+Ltd.&sd=21%2f10%2f2026&ed=21%2f10%2f2026&cid=0&sa1=cl&scsd=21%2f10%2f2026&sced=21%2f10%2f2026&cn=1&srchCorpName=Palasino+Holdings+Ltd.&src=Main&lang=EN&&pg=1"
+        }
+      ],
+      "dateRows": [
+        [
+          "Date (dd/mm/yyyy):",
+          "21/10/2026 - 21/10/2026"
+        ],
+        [
+          "Please click the links under the column \"Date of relevant event\" to view the details of the DI notices."
+        ],
+        [
+          "Form Serial Number",
+          "Name of substantial shareholder / director / chief executive",
+          "Reason for disclosure",
+          "No. of shares bought / sold / involved",
+          "Average price per share",
+          "No. of shares interested (See *Notes above)",
+          "% of issued voting shares",
+          "Date of relevant event (dd/mm/yyyy)",
+          "Interests in shares of associated corporation",
+          "Interests in debentures"
+        ]
+      ],
+      "serialAnchors": [],
+      "serialTextOccurrences": [],
+      "noResultsObserved": false,
+      "sourceUrl": "https://di.hkex.com.hk/di/NSAllFormList.aspx?sa2=an&sid=460980&corpn=Palasino+Holdings+Ltd.&sd=21/10/2026&ed=21/10/2026&cid=0&sa1=cl&scsd=21%2f10%2f2026&sced=21%2f10%2f2026&cn=1&srchCorpName=Palasino+Holdings+Ltd.&src=Main&lang=EN&",
+      "label": "all-notices-21",
+      "observedAt": "2026-10-27T11:38:05.439716+00:00"
+    },
+    {
+      "run": "b33b13f0087946f284dd4a975ba69584",
+      "ledgerId": 133,
+      "httpStatus": 200,
+      "bytes": 16232,
+      "rawSha256": "15552aae24d79a5c28f77aae1b925c170b7666f608b07a7179d6cd4a32b74188",
+      "hold": null,
+      "acceptedDailyVersionUnchanged": "hkex-daily-2d654797ea0d194718c996e1e5f979a0",
+      "rawHtmlRetained": false,
+      "navigationLinks": [
+        {
+          "text": "< 1>",
+          "href": "/di/NSNotice3BList.aspx?sa3=3b&3afn=DB20261026E00008&3aft=DB&sa2=an&sid=460980&corpn=Palasino+Holdings+Ltd.&sd=21%2f10%2f2026&ed=21%2f10%2f2026&cid=0&sa1=cl&scsd=21%2f10%2f2026&sced=21%2f10%2f2026&cn=1&srchCorpName=Palasino+Holdings+Ltd.&src=Main&lang=EN&&pg=1"
+        }
+      ],
+      "dateRows": [
+        [
+          "Date (dd/mm/yyyy):",
+          "21/10/2026 - 21/10/2026"
+        ],
+        [
+          "Please click the links under the column \"Date of relevant event\" to view the details of the DI notices."
+        ],
+        [
+          "Form Serial Number",
+          "Name of associated corporation",
+          "No. of shares of the associated corporation bought / sold / involved",
+          "Reason for disclosure",
+          "Average price per share",
+          "No. of shares interested (See *Notes above)",
+          "% of issued voting shares",
+          "Date of relevant event (dd/mm/yyyy)"
+        ]
+      ],
+      "serialAnchors": [
+        {
+          "serial": "DB20261026E00008",
+          "href": "NSForm3B.aspx?fn=DB20261026E00008&sa3=3b&3afn=DB20261026E00008&3aft=DB&sa2=an&sid=460980&corpn=Palasino+Holdings+Ltd.&sd=21%2f10%2f2026&ed=21%2f10%2f2026&cid=0&sa1=cl&scsd=21%2f10%2f2026&sced=21%2f10%2f2026&cn=1&srchCorpName=Palasino+Holdings+Ltd.&src=Main&lang=EN&"
+        }
+      ],
+      "serialTextOccurrences": [
+        "DB20261026E00008"
+      ],
+      "noResultsObserved": false,
+      "sourceUrl": "https://di.hkex.com.hk/di/NSNotice3BList.aspx?sa3=3b&3afn=DB20261026E00008&3aft=DB&sa2=an&sid=460980&corpn=Palasino+Holdings+Ltd.&sd=21%2f10%2f2026&ed=21%2f10%2f2026&cid=0&sa1=cl&scsd=21%2f10%2f2026&sced=21%2f10%2f2026&cn=1&srchCorpName=Palasino+Holdings+Ltd.&src=Main&lang=EN&",
+      "label": "form3b-notices-21",
+      "observedAt": "2026-10-27T11:38:52.088645+00:00"
+    }
+  ],
+  "providerRequests": 5,
+  "providerBytes": 63703,
+  "rawHtmlRetained": false,
+  "acceptedDailyVersionUnchanged": "hkex-daily-2d654797ea0d194718c996e1e5f979a0",
+  "qualifiedDocument": {
+    "serial": "DB20261026E00008",
+    "eventDate": {
+      "value": "2026-10-21",
+      "precision": "day",
+      "timezone": "unspecified"
+    },
+    "filedDate": {
+      "value": "2026-10-26",
+      "precision": "day",
+      "timezone": "unspecified"
+    },
+    "datesFromExplicitSourceLabels": true,
+    "dateSourceLedgerId": 118
+  },
+  "observations": {
+    "renderedParentAndChildDateFiltersAgree": true,
+    "search26OctoberHasNoAssociatedCorporationNoticeLink": true,
+    "search21OctoberReturnsKnownNoticeFiled26October": true,
+    "associatedFormListing21OctoberContainsKnownSerial": true
+  },
+  "conclusion": "Observed relevant-event-date selection for this Form3B source navigation; not a filing-date inventory",
+  "notEstablished": [
+    "Other form/filter semantics",
+    "Complete filing-date window",
+    "Amendment/replacement closure",
+    "Permanent issuer identity",
+    "Production full-filings activation"
+  ],
+  "publicPublication": false
+}
