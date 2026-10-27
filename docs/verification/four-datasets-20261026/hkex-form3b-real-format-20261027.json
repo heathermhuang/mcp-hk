@@ -1,0 +1,53 @@
+{
+  "scope": "private one-document format qualification metadata; no public filing-window activation",
+  "candidateHead": "25832fc5f37c354ab3b7599a02b781a2be66b2cc",
+  "parserSha256": "e8cff62e5c309d54a1f5cd5b59bde74010a11a94d4e3a6c5a91f0c35d833f37c",
+  "serial": "DB20261026E00008",
+  "observedAt": "2026-10-27T08:14:47.422450+00:00",
+  "sourceUrl": "https://di.hkex.com.hk/di/NSForm3B.aspx?fn=DB20261026E00008&sid=460980&sc=02536&lang=EN",
+  "sourceRequests": 2,
+  "sourceBytes": 84890,
+  "initialPreflightRequests": 0,
+  "earlierSettledResponse": {
+    "run": "8c6601754fd44935adcc4fe2d1d0fc7b",
+    "ledgerId": 117,
+    "status": 200,
+    "bytes": 42445,
+    "sha256": "7dd11e582deb6fbcff53a6acecd8249c166c50993dd9d8ac2403097f41ed89de",
+    "parsed": false,
+    "reason": "local receipt-writer exception before parsing; raw bytes not retained"
+  },
+  "qualifiedResponse": {
+    "run": "4858caa0b0ae4abf8983b8d41240941b",
+    "id": 118,
+    "state": "received",
+    "status": 200,
+    "reserved_bytes": 2097152,
+    "received_bytes": 42445,
+    "sha256": "36459275a3926c2dc4c9e98703ce9d9c5264c6e3a597ebcb0b6d69f8ec16967c"
+  },
+  "existingDailyAcceptedVersionUnchanged": "hkex-daily-d27f7022b0dabe999a2fd36ab322ecd7",
+  "sections": {
+    "grdSh_BEvt": 1,
+    "grdSh_AEvt": 1,
+    "grdCap_Dir_Sh": 3,
+    "grdFI_Sh": 1,
+    "grdCtrlCorp": 3,
+    "grdDer_Dir": 0,
+    "grdJI_Sh": 0,
+    "grdTrust_Sh": 0
+  },
+  "assertions": {
+    "exactPriceDecimalStringsAndKinds": true,
+    "associatedVersusListedSecurityFieldsKeptSeparate": true,
+    "unknownListedClassAndAssociatedStockCodeRemainNull": true,
+    "actualFilingDateLabelUsed": true,
+    "unknownPublicationDateRemainsNull": true,
+    "scopedControlRelationships": true
+  },
+  "rawHtmlRetained": false,
+  "publicPublication": false,
+  "completeFilingWindow": false,
+  "issuerIdentityQualified": false,
+  "newCredentialsOrTimersCreated": false
+}
