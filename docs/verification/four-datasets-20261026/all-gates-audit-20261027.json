@@ -1,0 +1,807 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-10-27T13:41:00.548967+00:00",
+  "overallState": "incomplete",
+  "sourceMain": "dd7e0a6fe226c6ff855c2029dea1369a2a834f68",
+  "originalRequiredRows": 66,
+  "auditedRows": 66,
+  "allOriginalIdsPreserved": true,
+  "company": {
+    "originalPairs": 94,
+    "originalFiles": 188,
+    "qualifiedFiles": 188,
+    "publishedQualifiedFiles": 168,
+    "acceptedVersion": "official-799798307f9db9968bd238c02b1de49f",
+    "inventoryPublicationPassed": false,
+    "sourceKeysSha256": "48ecc65094f222c99acb3a930f8036a38fd15bad9fa94f51d68369125458a8fe"
+  },
+  "racing": {
+    "coverage": {
+      "meetings": 17,
+      "races": 167,
+      "resultRows": 2100,
+      "earliest": "2026-07-08",
+      "latest": "2026-10-25"
+    },
+    "profileAccepted": 39,
+    "budget": {
+      "attempts": 200,
+      "chargedBytes": 31974830,
+      "unresolved": [],
+      "limits": {
+        "attempts": 200,
+        "bytes": 67108864
+      },
+      "resetsAt": "2026-10-28T00:00:00.000Z",
+      "durable": true
+    },
+    "seasons": [
+      {
+        "season": "2025/26",
+        "originalHistoricalTarget": true,
+        "observedFixtureMonths": [
+          "2025-09",
+          "2025-10",
+          "2025-11",
+          "2025-12",
+          "2026-01",
+          "2026-02",
+          "2026-03",
+          "2026-04",
+          "2026-05",
+          "2026-06",
+          "2026-07"
+        ],
+        "unavailableFixtureMonths": [],
+        "unobservedFixtureMonths": [
+          "2026-08"
+        ],
+        "fixtureEntries": 89,
+        "meetingStates": {
+          "accepted": 3,
+          "partial": 50,
+          "pending": 35,
+          "programme_without_race_count": 1
+        },
+        "exceptions": [
+          {
+            "basis": "official_fixture_programme",
+            "date": "2025-09-24",
+            "plannedRaces": 0,
+            "programmeStatusRaw": "24",
+            "venue": "HV",
+            "state": "programme_without_race_count",
+            "cancellationVerified": false
+          }
+        ],
+        "seasonComplete": false,
+        "scope": "retained fixture inventory; missing months and zero-count programme entries do not establish no racing"
+      },
+      {
+        "season": "2026/27",
+        "originalHistoricalTarget": false,
+        "observedFixtureMonths": [
+          "2026-09",
+          "2026-10"
+        ],
+        "unavailableFixtureMonths": [],
+        "unobservedFixtureMonths": [
+          "2026-11",
+          "2026-12",
+          "2027-01",
+          "2027-02",
+          "2027-03",
+          "2027-04",
+          "2027-05",
+          "2027-06",
+          "2027-07",
+          "2027-08"
+        ],
+        "fixtureEntries": 16,
+        "meetingStates": {
+          "accepted": 14,
+          "not_yet_due": 1,
+          "programme_without_race_count": 1
+        },
+        "exceptions": [
+          {
+            "basis": "official_fixture_programme",
+            "date": "2026-09-20",
+            "plannedRaces": 0,
+            "programmeStatusRaw": "20",
+            "venue": "ST",
+            "state": "programme_without_race_count",
+            "cancellationVerified": false
+          }
+        ],
+        "seasonComplete": false,
+        "scope": "retained fixture inventory; missing months and zero-count programme entries do not establish no racing"
+      }
+    ],
+    "families": [
+      {
+        "id": "results",
+        "enabled": true,
+        "observedRaces": 167
+      },
+      {
+        "id": "participant_identities",
+        "enabled": true,
+        "observedRaces": 167
+      },
+      {
+        "id": "dated_profiles",
+        "enabled": true,
+        "acceptedParticipants": 39,
+        "completeCareerHistory": false
+      },
+      {
+        "id": "final_dividends",
+        "enabled": true,
+        "observedRaces": 9,
+        "acceptedRacesWithoutObservedQuotes": 158,
+        "quotedRows": 144,
+        "stakeNormalized": false
+      },
+      {
+        "id": "final_win_odds",
+        "enabled": true,
+        "observedResultRows": 2066,
+        "acceptedResultRows": 2100,
+        "intradayHistory": false
+      },
+      {
+        "id": "track_conditions",
+        "enabled": true,
+        "trackRaces": 167,
+        "courseRaces": 167,
+        "acceptedRaces": 167,
+        "scope": "source-displayed going and course in accepted results"
+      },
+      {
+        "id": "declarations",
+        "enabled": false,
+        "reasonCode": "independent_declared_runner_inventory_not_reconciled"
+      },
+      {
+        "id": "full_profiles",
+        "enabled": false,
+        "reasonCode": "complete_participant_and_career_history_not_established"
+      },
+      {
+        "id": "sectionals",
+        "enabled": false,
+        "reasonCode": "no_accepted_sectional_source_capture"
+      },
+      {
+        "id": "trials",
+        "enabled": false,
+        "reasonCode": "no_accepted_trial_inventory"
+      },
+      {
+        "id": "jockey_rankings",
+        "enabled": false,
+        "reasonCode": "no_accepted_ranking_inventory"
+      },
+      {
+        "id": "trainer_rankings",
+        "enabled": false,
+        "reasonCode": "no_accepted_ranking_inventory"
+      },
+      {
+        "id": "jackpots",
+        "enabled": false,
+        "reasonCode": "no_accepted_jackpot_observations"
+      },
+      {
+        "id": "odds_combinations",
+        "enabled": false,
+        "reasonCode": "no_accepted_market_combination_inventory"
+      },
+      {
+        "id": "pool_investments",
+        "enabled": false,
+        "reasonCode": "no_accepted_pool_observations"
+      },
+      {
+        "id": "racing_changes",
+        "enabled": false,
+        "reasonCode": "no_accepted_change_series"
+      },
+      {
+        "id": "intraday_observations",
+        "enabled": false,
+        "reasonCode": "prospective_series_not_started_past_ticks_not_inferred"
+      },
+      {
+        "id": "narrative_comments",
+        "enabled": false,
+        "reasonCode": "source_and_output_modes_not_qualified"
+      }
+    ],
+    "retainedPages": 490,
+    "retainedPagesWithDividendCandidate": 25,
+    "missingAcceptedRacesWithBothDividendCandidates": 0
+  },
+  "sfc": {
+    "state": "not_activated",
+    "policies": 0,
+    "versions": 0,
+    "attempts": 0,
+    "sourceRoleExists": false,
+    "activationPacket": "SFC-ACTIVATION-APPROVAL-20261027.md"
+  },
+  "hkex": {
+    "archiveVersion": "webb-sdi-enigma251227-v1",
+    "archiveRows": 341047,
+    "dailyVersion": "hkex-daily-2d654797ea0d194718c996e1e5f979a0",
+    "dailyRows": 1585,
+    "fullFilingsAcceptedVersion": null,
+    "missingArchiveTargets": 145,
+    "legacyTargets": 140,
+    "DionTargets": 5,
+    "todayReadsAtRefresh": 58,
+    "unknownRequests": 0,
+    "hold": null,
+    "sourceParserCandidate": 107
+  },
+  "independentGatewayRestore": {
+    "sha256": "953f54e81195f380105e260ef4aa08c6f35b13a97b5f99d2155eb9a110889903",
+    "bytes": 90480231,
+    "restored": true
+  },
+  "companyFollowup": {
+    "existingId": "verify-company-daily-publication-and-recovery",
+    "active": true,
+    "localOccurrence": "13:40 Asia/Singapore",
+    "changedOrDuplicated": false
+  },
+  "requirements": [
+    {
+      "id": "W00.baseline-main-runtime",
+      "state": "passed",
+      "dependency": [],
+      "nextAction": "Preserve the refreshed source pointers, budgets, holds, legitimate owners and capacity; repeat only changed or release-dependent checks."
+    },
+    {
+      "id": "W00.source-jobs-locks-capacity",
+      "state": "partial",
+      "dependency": [],
+      "nextAction": "Preserve the refreshed source pointers, budgets, holds, legitimate owners and capacity; repeat only changed or release-dependent checks."
+    },
+    {
+      "id": "W00.source-policy-refresh",
+      "state": "passed",
+      "dependency": [],
+      "nextAction": "Preserve the refreshed source pointers, budgets, holds, legitimate owners and capacity; repeat only changed or release-dependent checks."
+    },
+    {
+      "id": "W00.acceptance-ledger",
+      "state": "passed",
+      "dependency": [],
+      "nextAction": "Preserve the refreshed source pointers, budgets, holds, legitimate owners and capacity; repeat only changed or release-dependent checks."
+    },
+    {
+      "id": "W01.exact-registry-no-match",
+      "state": "passed",
+      "dependency": [],
+      "nextAction": "Retain deployed no-match/fairness/capacity behavior and qualified failed/control receipts; continue normal jobs without a whole-registry cycle claim."
+    },
+    {
+      "id": "W01.prior-address-facts-retained",
+      "state": "passed",
+      "dependency": [],
+      "nextAction": "Retain deployed no-match/fairness/capacity behavior and qualified failed/control receipts; continue normal jobs without a whole-registry cycle claim."
+    },
+    {
+      "id": "W01.retry-categories-lineage",
+      "state": "passed",
+      "dependency": [],
+      "nextAction": "Retain deployed no-match/fairness/capacity behavior and qualified failed/control receipts; continue normal jobs without a whole-registry cycle claim."
+    },
+    {
+      "id": "W01.fair-cohort-scheduling",
+      "state": "passed",
+      "dependency": [],
+      "nextAction": "Retain deployed no-match/fairness/capacity behavior and qualified failed/control receipts; continue normal jobs without a whole-registry cycle claim."
+    },
+    {
+      "id": "W01.capacity-age-backlog-status",
+      "state": "passed",
+      "dependency": [],
+      "nextAction": "Retain deployed no-match/fairness/capacity behavior and qualified failed/control receipts; continue normal jobs without a whole-registry cycle claim."
+    },
+    {
+      "id": "W01.crash-and-quota-accounting",
+      "state": "passed",
+      "dependency": [],
+      "nextAction": "Retain deployed no-match/fairness/capacity behavior and qualified failed/control receipts; continue normal jobs without a whole-registry cycle claim."
+    },
+    {
+      "id": "W01.live-failed-control-examples",
+      "state": "passed",
+      "dependency": [],
+      "nextAction": "Retain deployed no-match/fairness/capacity behavior and qualified failed/control receipts; continue normal jobs without a whole-registry cycle claim."
+    },
+    {
+      "id": "W02.original-94-pairs-reconciled",
+      "state": "partial",
+      "dependency": [
+        "normal_94_pair_publication",
+        "same_version_public_acceptance",
+        "fresh_accepted_94_pair_restore"
+      ],
+      "nextAction": "Observe normal 28 October 05:00 UTC publication and 05:17 offsite, then verify every original key and same-version REST/MCP/bilingual actual ZIP case and a fresh accepted-cohort restore. Preserve the existing 13:40 HKT follow-up."
+    },
+    {
+      "id": "W02.staged-bytes-reused",
+      "state": "passed",
+      "dependency": [],
+      "nextAction": "Observe normal 28 October 05:00 UTC publication and 05:17 offsite, then verify every original key and same-version REST/MCP/bilingual actual ZIP case and a fresh accepted-cohort restore. Preserve the existing 13:40 HKT follow-up."
+    },
+    {
+      "id": "W02.full-state-offsite-restore",
+      "state": "passed",
+      "dependency": [],
+      "nextAction": "Observe normal 28 October 05:00 UTC publication and 05:17 offsite, then verify every original key and same-version REST/MCP/bilingual actual ZIP case and a fresh accepted-cohort restore. Preserve the existing 13:40 HKT follow-up."
+    },
+    {
+      "id": "W02.full-state-performance",
+      "state": "passed",
+      "dependency": [],
+      "nextAction": "Observe normal 28 October 05:00 UTC publication and 05:17 offsite, then verify every original key and same-version REST/MCP/bilingual actual ZIP case and a fresh accepted-cohort restore. Preserve the existing 13:40 HKT follow-up."
+    },
+    {
+      "id": "W02.same-version-188-rest-mcp-pairs",
+      "state": "partial",
+      "dependency": [
+        "normal_94_pair_publication",
+        "same_version_public_acceptance",
+        "fresh_accepted_94_pair_restore"
+      ],
+      "nextAction": "Observe normal 28 October 05:00 UTC publication and 05:17 offsite, then verify every original key and same-version REST/MCP/bilingual actual ZIP case and a fresh accepted-cohort restore. Preserve the existing 13:40 HKT follow-up."
+    },
+    {
+      "id": "W02.same-version-bilingual-explorer-pairs",
+      "state": "partial",
+      "dependency": [
+        "normal_94_pair_publication",
+        "same_version_public_acceptance",
+        "fresh_accepted_94_pair_restore"
+      ],
+      "nextAction": "Observe normal 28 October 05:00 UTC publication and 05:17 offsite, then verify every original key and same-version REST/MCP/bilingual actual ZIP case and a fresh accepted-cohort restore. Preserve the existing 13:40 HKT follow-up."
+    },
+    {
+      "id": "W02.actual-browser-zips",
+      "state": "partial",
+      "dependency": [
+        "normal_94_pair_publication",
+        "same_version_public_acceptance",
+        "fresh_accepted_94_pair_restore"
+      ],
+      "nextAction": "Observe normal 28 October 05:00 UTC publication and 05:17 offsite, then verify every original key and same-version REST/MCP/bilingual actual ZIP case and a fresh accepted-cohort restore. Preserve the existing 13:40 HKT follow-up."
+    },
+    {
+      "id": "W02.ordinary-daily-source",
+      "state": "passed",
+      "dependency": [],
+      "nextAction": "Observe normal 28 October 05:00 UTC publication and 05:17 offsite, then verify every original key and same-version REST/MCP/bilingual actual ZIP case and a fresh accepted-cohort restore. Preserve the existing 13:40 HKT follow-up."
+    },
+    {
+      "id": "W02.ordinary-daily-offsite-rpo",
+      "state": "passed",
+      "dependency": [],
+      "nextAction": "Observe normal 28 October 05:00 UTC publication and 05:17 offsite, then verify every original key and same-version REST/MCP/bilingual actual ZIP case and a fresh accepted-cohort restore. Preserve the existing 13:40 HKT follow-up."
+    },
+    {
+      "id": "W03.company-archive-preserved",
+      "state": "pending",
+      "dependency": [],
+      "nextAction": "Retain original archive facts; obtain a qualified dated current-field source and exact identifier mapping before adding current status, appointments or ownership."
+    },
+    {
+      "id": "W03.current-dissolution-restoration",
+      "state": "pending",
+      "dependency": [
+        "qualified_current_source",
+        "exact_identifier_and_date_semantics"
+      ],
+      "nextAction": "Retain original archive facts; obtain a qualified dated current-field source and exact identifier mapping before adding current status, appointments or ownership."
+    },
+    {
+      "id": "W03.current-appointments",
+      "state": "pending",
+      "dependency": [
+        "qualified_current_source",
+        "exact_identifier_and_date_semantics"
+      ],
+      "nextAction": "Retain original archive facts; obtain a qualified dated current-field source and exact identifier mapping before adding current status, appointments or ownership."
+    },
+    {
+      "id": "W03.current-ownership",
+      "state": "pending",
+      "dependency": [
+        "qualified_current_source",
+        "exact_identifier_and_date_semantics"
+      ],
+      "nextAction": "Retain original archive facts; obtain a qualified dated current-field source and exact identifier mapping before adding current status, appointments or ownership."
+    },
+    {
+      "id": "W03.exact-identity-crosswalks",
+      "state": "pending",
+      "dependency": [
+        "qualified_current_source",
+        "exact_identifier_and_date_semantics"
+      ],
+      "nextAction": "Retain original archive facts; obtain a qualified dated current-field source and exact identifier mapping before adding current status, appointments or ownership."
+    },
+    {
+      "id": "W04.sfc-archive-preserved",
+      "state": "pending",
+      "dependency": [
+        "actual_exact_CE_cohort_and_purpose",
+        "independent_mode_policy",
+        "scoped_credentials_approval",
+        "physical_expiry_and_capacity_qualification"
+      ],
+      "nextAction": "Integrate the reviewed producer/history code; await the actual exact CE cohort and purpose/modes, pinned source policy, separate scoped credential decision and physical retention qualification before real activation, public parity and ordinary occurrence."
+    },
+    {
+      "id": "W04.sfc-production-schema-config",
+      "state": "partial",
+      "dependency": [
+        "actual_exact_CE_cohort_and_purpose",
+        "independent_mode_policy",
+        "scoped_credentials_approval",
+        "physical_expiry_and_capacity_qualification"
+      ],
+      "nextAction": "Apply additive SFC migration 010 and read-only status/history grants with existing administrator access during this source-scoped release; do not create a writer/login/uploader/policy/timer."
+    },
+    {
+      "id": "W04.sfc-bounded-scheduled-collector",
+      "state": "partial",
+      "dependency": [
+        "actual_exact_CE_cohort_and_purpose",
+        "independent_mode_policy",
+        "scoped_credentials_approval",
+        "physical_expiry_and_capacity_qualification"
+      ],
+      "nextAction": "Integrate the reviewed producer/history code; await the actual exact CE cohort and purpose/modes, pinned source policy, separate scoped credential decision and physical retention qualification before real activation, public parity and ordinary occurrence."
+    },
+    {
+      "id": "W04.sfc-persisted-status",
+      "state": "passed",
+      "dependency": [],
+      "nextAction": "Integrate the reviewed producer/history code; await the actual exact CE cohort and purpose/modes, pinned source policy, separate scoped credential decision and physical retention qualification before real activation, public parity and ordinary occurrence."
+    },
+    {
+      "id": "W04.sfc-real-reader-wiring",
+      "state": "passed",
+      "dependency": [],
+      "nextAction": "Integrate the reviewed producer/history code; await the actual exact CE cohort and purpose/modes, pinned source policy, separate scoped credential decision and physical retention qualification before real activation, public parity and ordinary occurrence."
+    },
+    {
+      "id": "W04.sfc-independent-restored-candidate",
+      "state": "pending",
+      "dependency": [
+        "actual_exact_CE_cohort_and_purpose",
+        "independent_mode_policy",
+        "scoped_credentials_approval",
+        "physical_expiry_and_capacity_qualification"
+      ],
+      "nextAction": "Integrate the reviewed producer/history code; await the actual exact CE cohort and purpose/modes, pinned source policy, separate scoped credential decision and physical retention qualification before real activation, public parity and ordinary occurrence."
+    },
+    {
+      "id": "W04.sfc-publication-rollback",
+      "state": "partial",
+      "dependency": [
+        "actual_exact_CE_cohort_and_purpose",
+        "independent_mode_policy",
+        "scoped_credentials_approval",
+        "physical_expiry_and_capacity_qualification"
+      ],
+      "nextAction": "Integrate the reviewed producer/history code; await the actual exact CE cohort and purpose/modes, pinned source policy, separate scoped credential decision and physical retention qualification before real activation, public parity and ordinary occurrence."
+    },
+    {
+      "id": "W04.sfc-25-ce-pilot",
+      "state": "pending",
+      "dependency": [
+        "actual_exact_CE_cohort_and_purpose",
+        "independent_mode_policy",
+        "scoped_credentials_approval",
+        "physical_expiry_and_capacity_qualification"
+      ],
+      "nextAction": "Integrate the reviewed producer/history code; await the actual exact CE cohort and purpose/modes, pinned source policy, separate scoped credential decision and physical retention qualification before real activation, public parity and ordinary occurrence."
+    },
+    {
+      "id": "W04.sfc-rest-mcp-browser-export",
+      "state": "partial",
+      "dependency": [
+        "actual_exact_CE_cohort_and_purpose",
+        "independent_mode_policy",
+        "scoped_credentials_approval",
+        "physical_expiry_and_capacity_qualification"
+      ],
+      "nextAction": "Integrate the reviewed producer/history code; await the actual exact CE cohort and purpose/modes, pinned source policy, separate scoped credential decision and physical retention qualification before real activation, public parity and ordinary occurrence."
+    },
+    {
+      "id": "W04.sfc-ordinary-jobs-failure-retention",
+      "state": "pending",
+      "dependency": [
+        "actual_exact_CE_cohort_and_purpose",
+        "independent_mode_policy",
+        "scoped_credentials_approval",
+        "physical_expiry_and_capacity_qualification"
+      ],
+      "nextAction": "Integrate the reviewed producer/history code; await the actual exact CE cohort and purpose/modes, pinned source policy, separate scoped credential decision and physical retention qualification before real activation, public parity and ordinary occurrence."
+    },
+    {
+      "id": "W04.sfc-wider-cohort-disposition",
+      "state": "pending",
+      "dependency": [
+        "actual_exact_CE_cohort_and_purpose",
+        "independent_mode_policy",
+        "scoped_credentials_approval",
+        "physical_expiry_and_capacity_qualification"
+      ],
+      "nextAction": "Integrate the reviewed producer/history code; await the actual exact CE cohort and purpose/modes, pinned source policy, separate scoped credential decision and physical retention qualification before real activation, public parity and ordinary occurrence."
+    },
+    {
+      "id": "W05.racing-2025-26-results",
+      "state": "partial",
+      "dependency": [
+        "existing_daily_source_allowance",
+        "actual_family_and_fixture_evidence"
+      ],
+      "nextAction": "Resume the existing bounded scheduler after the 28 October 00:00 UTC budget reset; preserve original 2025/26 inventory, fixture exceptions and every unqualified family."
+    },
+    {
+      "id": "W05.racing-recent-results",
+      "state": "partial",
+      "dependency": [
+        "existing_daily_source_allowance",
+        "actual_family_and_fixture_evidence"
+      ],
+      "nextAction": "Resume the existing bounded scheduler after the 28 October 00:00 UTC budget reset; preserve original 2025/26 inventory, fixture exceptions and every unqualified family."
+    },
+    {
+      "id": "W05.racing-declarations-reconciliation",
+      "state": "pending",
+      "dependency": [
+        "existing_daily_source_allowance",
+        "actual_family_and_fixture_evidence"
+      ],
+      "nextAction": "Resume the existing bounded scheduler after the 28 October 00:00 UTC budget reset; preserve original 2025/26 inventory, fixture exceptions and every unqualified family."
+    },
+    {
+      "id": "W05.racing-full-participant-profiles",
+      "state": "partial",
+      "dependency": [
+        "existing_daily_source_allowance",
+        "actual_family_and_fixture_evidence"
+      ],
+      "nextAction": "Resume the existing bounded scheduler after the 28 October 00:00 UTC budget reset; preserve original 2025/26 inventory, fixture exceptions and every unqualified family."
+    },
+    {
+      "id": "W05.racing-sectionals-dividends",
+      "state": "partial",
+      "dependency": [
+        "existing_daily_source_allowance",
+        "actual_family_and_fixture_evidence"
+      ],
+      "nextAction": "Resume the existing bounded scheduler after the 28 October 00:00 UTC budget reset; preserve original 2025/26 inventory, fixture exceptions and every unqualified family."
+    },
+    {
+      "id": "W05.racing-trials-rankings",
+      "state": "pending",
+      "dependency": [
+        "existing_daily_source_allowance",
+        "actual_family_and_fixture_evidence"
+      ],
+      "nextAction": "Resume the existing bounded scheduler after the 28 October 00:00 UTC budget reset; preserve original 2025/26 inventory, fixture exceptions and every unqualified family."
+    },
+    {
+      "id": "W05.racing-track-conditions-jackpots",
+      "state": "pending",
+      "dependency": [
+        "existing_daily_source_allowance",
+        "actual_family_and_fixture_evidence"
+      ],
+      "nextAction": "Resume the existing bounded scheduler after the 28 October 00:00 UTC budget reset; preserve original 2025/26 inventory, fixture exceptions and every unqualified family."
+    },
+    {
+      "id": "W05.racing-odds-pool-changes-series",
+      "state": "pending",
+      "dependency": [
+        "existing_daily_source_allowance",
+        "actual_family_and_fixture_evidence"
+      ],
+      "nextAction": "Resume the existing bounded scheduler after the 28 October 00:00 UTC budget reset; preserve original 2025/26 inventory, fixture exceptions and every unqualified family."
+    },
+    {
+      "id": "W05.racing-narrative-output-disposition",
+      "state": "pending",
+      "dependency": [
+        "existing_daily_source_allowance",
+        "actual_family_and_fixture_evidence"
+      ],
+      "nextAction": "Resume the existing bounded scheduler after the 28 October 00:00 UTC budget reset; preserve original 2025/26 inventory, fixture exceptions and every unqualified family."
+    },
+    {
+      "id": "W05.racing-rest-mcp-browser-zips",
+      "state": "partial",
+      "dependency": [
+        "existing_daily_source_allowance",
+        "actual_family_and_fixture_evidence"
+      ],
+      "nextAction": "Resume the existing bounded scheduler after the 28 October 00:00 UTC budget reset; preserve original 2025/26 inventory, fixture exceptions and every unqualified family."
+    },
+    {
+      "id": "W05.racing-ordinary-ingestion-fresh-recovery",
+      "state": "partial",
+      "dependency": [
+        "existing_daily_source_allowance",
+        "actual_family_and_fixture_evidence"
+      ],
+      "nextAction": "Resume the existing bounded scheduler after the 28 October 00:00 UTC budget reset; preserve original 2025/26 inventory, fixture exceptions and every unqualified family."
+    },
+    {
+      "id": "W06.hkex-webb-archive-preserved",
+      "state": "pending",
+      "dependency": [
+        "qualified_filing_date_inventory",
+        "in_scope_real_form_parsers",
+        "issuer_security_identity",
+        "amendment_withdrawal_closure",
+        "accepted_recovery_and_live_modes"
+      ],
+      "nextAction": "Keep archive/daily feeds usable; qualify a complete seven-day filing-date inventory, every in-scope form/channel and revision/withdrawal closure before activating full filings."
+    },
+    {
+      "id": "W06.hkex-145-amendment-reference-audit",
+      "state": "partial",
+      "dependency": [
+        "qualified_filing_date_inventory",
+        "in_scope_real_form_parsers",
+        "issuer_security_identity",
+        "amendment_withdrawal_closure",
+        "accepted_recovery_and_live_modes"
+      ],
+      "nextAction": "Keep archive/daily feeds usable; qualify a complete seven-day filing-date inventory, every in-scope form/channel and revision/withdrawal closure before activating full filings."
+    },
+    {
+      "id": "W06.hkex-daily-ordinary-occurrence",
+      "state": "passed",
+      "dependency": [],
+      "nextAction": "Keep archive/daily feeds usable; qualify a complete seven-day filing-date inventory, every in-scope form/channel and revision/withdrawal closure before activating full filings."
+    },
+    {
+      "id": "W06.hkex-daily-report-gap-handling",
+      "state": "passed",
+      "dependency": [],
+      "nextAction": "Keep archive/daily feeds usable; qualify a complete seven-day filing-date inventory, every in-scope form/channel and revision/withdrawal closure before activating full filings."
+    },
+    {
+      "id": "W06.hkex-daily-fresh-recovery",
+      "state": "passed",
+      "dependency": [],
+      "nextAction": "Keep archive/daily feeds usable; qualify a complete seven-day filing-date inventory, every in-scope form/channel and revision/withdrawal closure before activating full filings."
+    },
+    {
+      "id": "W06.hkex-real-listing-document-transport-parser",
+      "state": "in_progress",
+      "dependency": [
+        "qualified_filing_date_inventory",
+        "in_scope_real_form_parsers",
+        "issuer_security_identity",
+        "amendment_withdrawal_closure",
+        "accepted_recovery_and_live_modes"
+      ],
+      "nextAction": "Keep archive/daily feeds usable; qualify a complete seven-day filing-date inventory, every in-scope form/channel and revision/withdrawal closure before activating full filings."
+    },
+    {
+      "id": "W06.hkex-filing-window-revision-closure",
+      "state": "pending",
+      "dependency": [
+        "qualified_filing_date_inventory",
+        "in_scope_real_form_parsers",
+        "issuer_security_identity",
+        "amendment_withdrawal_closure",
+        "accepted_recovery_and_live_modes"
+      ],
+      "nextAction": "Keep archive/daily feeds usable; qualify a complete seven-day filing-date inventory, every in-scope form/channel and revision/withdrawal closure before activating full filings."
+    },
+    {
+      "id": "W06.hkex-one-issuer-seven-day-pilot",
+      "state": "pending",
+      "dependency": [
+        "qualified_filing_date_inventory",
+        "in_scope_real_form_parsers",
+        "issuer_security_identity",
+        "amendment_withdrawal_closure",
+        "accepted_recovery_and_live_modes"
+      ],
+      "nextAction": "Keep archive/daily feeds usable; qualify a complete seven-day filing-date inventory, every in-scope form/channel and revision/withdrawal closure before activating full filings."
+    },
+    {
+      "id": "W06.hkex-declared-coverage-expansion",
+      "state": "pending",
+      "dependency": [
+        "qualified_filing_date_inventory",
+        "in_scope_real_form_parsers",
+        "issuer_security_identity",
+        "amendment_withdrawal_closure",
+        "accepted_recovery_and_live_modes"
+      ],
+      "nextAction": "Keep archive/daily feeds usable; qualify a complete seven-day filing-date inventory, every in-scope form/channel and revision/withdrawal closure before activating full filings."
+    },
+    {
+      "id": "W06.hkex-rest-mcp-browser-exports",
+      "state": "pending",
+      "dependency": [
+        "qualified_filing_date_inventory",
+        "in_scope_real_form_parsers",
+        "issuer_security_identity",
+        "amendment_withdrawal_closure",
+        "accepted_recovery_and_live_modes"
+      ],
+      "nextAction": "Keep archive/daily feeds usable; qualify a complete seven-day filing-date inventory, every in-scope form/channel and revision/withdrawal closure before activating full filings."
+    },
+    {
+      "id": "W07.four-family-archive-live-discovery",
+      "state": "pending",
+      "dependency": [],
+      "nextAction": "Verify archive/live discovery and bilingual states for each actually available source; unavailable modes remain explicit pending source/data/authority gates."
+    },
+    {
+      "id": "W07.source-bound-deterministic-health",
+      "state": "pending",
+      "dependency": [],
+      "nextAction": "Verify archive/live discovery and bilingual states for each actually available source; unavailable modes remain explicit pending source/data/authority gates."
+    },
+    {
+      "id": "W07.bilingual-mobile-keyboard-states",
+      "state": "partial",
+      "dependency": [],
+      "nextAction": "Verify archive/live discovery and bilingual states for each actually available source; unavailable modes remain explicit pending source/data/authority gates."
+    },
+    {
+      "id": "W08.source-scoped-pr-review",
+      "state": "partial",
+      "dependency": [],
+      "nextAction": "Complete exact-head hooks, required CI, serialized release, actual runtime adoption and fresh accepted restores; final matrix stays incomplete while any source/data/authority gate remains."
+    },
+    {
+      "id": "W08.exact-head-checks-real-postgres-ci",
+      "state": "partial",
+      "dependency": [],
+      "nextAction": "Complete exact-head hooks, required CI, serialized release, actual runtime adoption and fresh accepted restores; final matrix stays incomplete while any source/data/authority gate remains."
+    },
+    {
+      "id": "W08.serialized-release-runtime-adoption",
+      "state": "partial",
+      "dependency": [],
+      "nextAction": "Complete exact-head hooks, required CI, serialized release, actual runtime adoption and fresh accepted restores; final matrix stays incomplete while any source/data/authority gate remains."
+    },
+    {
+      "id": "W08.all-five-crons-source-timers-restored",
+      "state": "partial",
+      "dependency": [],
+      "nextAction": "Complete exact-head hooks, required CI, serialized release, actual runtime adoption and fresh accepted restores; final matrix stays incomplete while any source/data/authority gate remains."
+    },
+    {
+      "id": "W08.live-parity-rollback-fresh-restores",
+      "state": "partial",
+      "dependency": [],
+      "nextAction": "Complete exact-head hooks, required CI, serialized release, actual runtime adoption and fresh accepted restores; final matrix stays incomplete while any source/data/authority gate remains."
+    },
+    {
+      "id": "W08.final-four-family-matrix",
+      "state": "partial",
+      "dependency": [],
+      "nextAction": "Complete exact-head hooks, required CI, serialized release, actual runtime adoption and fresh accepted restores; final matrix stays incomplete while any source/data/authority gate remains."
+    }
+  ],
+  "evidenceRoot": "research/mcp-hk-all-gates-20261027/ in parent hk-app workspace",
+  "releaseState": "candidate prepared; exact-head hook, CI, deployment and adoption recorded separately"
+}

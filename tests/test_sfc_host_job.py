@@ -1,6 +1,6 @@
 """Host boundaries; source-cycle physical restores are tested separately."""
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import importlib.util
 import io
 import json
@@ -117,3 +117,55 @@ def test_wrong_source_receipt_does_not_expose_child_stderr(host, monkeypatch):
     )
     with pytest.raises(host.JobError, match="^SFC_SOURCE_COMMAND_FAILED$"):
         host.Backend({"image": "mcp-hk-curated:" + "a" * 40}).runner("status")
+
+
+def test_recovery_copy_cannot_reset_the_oldest_source_retention_clock(
+    host, monkeypatch
+):
+    now = datetime(2026, 10, 27, 6, 10, tzinfo=timezone.utc)
+
+    class Clock(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return now
+
+    monkeypatch.setattr(host, "datetime", Clock)
+    backend = host.Backend(
+        {"policySha256": "b" * 64, "qualifiedStorageMaximumSeconds": 86400}
+    )
+    monkeypatch.setattr(
+        backend,
+        "request",
+        lambda path: io.StringIO(
+            json.dumps(
+                {
+                    "source": "sfc_register",
+                    "policySha256": "b" * 64,
+                    "configuredRetentionSeconds": 86400,
+                }
+            )
+        ),
+    )
+    for remaining, expected in [(86399.8, 86399), (3600.2, 3600), (172800, 86400)]:
+        monkeypatch.setattr(
+            backend,
+            "state",
+            lambda: {
+                "backupSeconds": 86400,
+                "oldestVersionExpiresAt": (
+                    now + timedelta(seconds=remaining)
+                ).isoformat(),
+            },
+        )
+        assert backend.check_storage() == expected
+        assert backend.storage_deadline <= now + timedelta(seconds=remaining)
+    monkeypatch.setattr(
+        backend,
+        "state",
+        lambda: {
+            "backupSeconds": 86400,
+            "oldestVersionExpiresAt": now.replace(tzinfo=None).isoformat(),
+        },
+    )
+    with pytest.raises(host.JobError, match="RETENTION_UNQUALIFIED"):
+        backend.check_storage()

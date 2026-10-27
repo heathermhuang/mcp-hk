@@ -459,6 +459,22 @@ def parse_form3b(raw, *, serial, source_search_ref, stock_code, issuer_id, issue
         sections[key] = 0
 
     replaces = text("lblDRevisePrevSN") or None
+    # This adapter qualifies incoming amendments only. A populated outgoing or
+    # withdrawal state must not silently become an original filing. Full-window
+    # closure needs a separately qualified listing and revision adapter.
+    related = {
+        match[1]
+        for node in root.all("a")
+        if (
+            match := re.search(r"[?&]fn=([A-Z0-9]+)(?:&|$)", node.attrs.get("href", ""))
+        )
+    }
+    if related - {serial, replaces} or re.search(
+        r"(?:superseded\s+by\s*:?\s*D[A-Z][0-9]{8}[A-Z][0-9]{5}|(?:this\s+)?form\s+(?:has\s+been\s+)?withdrawn)",
+        root.text(),
+        re.I,
+    ):
+        raise ValueError("FORM3B_REVISION_STATE_UNQUALIFIED")
     subject = " ".join(
         filter(
             None,

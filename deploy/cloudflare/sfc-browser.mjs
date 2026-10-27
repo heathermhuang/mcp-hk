@@ -12,7 +12,8 @@ try{
   const context=await browser.newContext({viewport:{width,height:900}}),page=await context.newPage();let available=true,fail=false,reads=0;
   page.on('pageerror',e=>errors.push(e.message));await context.route('https://hk.app/**',r=>r.abort());await context.route(/https:\/\/apps\.sfc\.hk\//,r=>{sourceRequests.push(r.request().url());return r.abort();});
   await context.route('**/api/v1/sfc/**',r=>{const u=new URL(r.request().url());
-   if(u.pathname.endsWith('/status'))return r.fulfill({contentType:'application/json',body:JSON.stringify({data:{sourceId:'sfc_register',acceptedVersion:available?version:null,enabledModes:available?['rest','browser']:[],state:available?'available':'policy_unavailable'}})});
+   if(u.pathname.endsWith('/status'))return r.fulfill({contentType:'application/json',body:JSON.stringify({data:{sourceId:'sfc_register',acceptedVersion:available?version:null,enabledModes:available?['rest','browser']:[],historyAvailable:available,state:available?'available':'policy_unavailable'}})});
+   if(u.pathname.endsWith('/history')){assert.equal(u.searchParams.get('version'),version);return r.fulfill({contentType:'application/json',body:JSON.stringify({data:[{ce:'ZZZ001',version,observedAt:fact.observedAt}],meta:{version,nextCursor:null}})});}
    reads++;assert.equal(u.searchParams.get('version'),version);
    return r.fulfill({status:fail?503:200,contentType:'application/json',body:JSON.stringify(fail?{error:{code:'SFC_POLICY_CHANGED'}}:{data:fact,meta:{version,view:'sfc_observation'}})});
   });
@@ -22,6 +23,7 @@ try{
   assert.equal(await page.locator('#sfc-live-record').evaluate(e=>e===document.activeElement),true);
   assert.match(await page.locator('#sfc-live-record').innerText(),new RegExp(version));assert.match(await page.locator('#sfc-live-record').innerText(),lang==='en'?/Unknown/:/未知/);
   assert.equal(new URL(page.url()).searchParams.get('ce'),'ZZZ001');assert.equal(new URL(page.url()).searchParams.get('version'),version);
+  await page.locator('#sfc-observation-history').click();await page.locator('#sfc-live-record ul a').waitFor({state:'visible'});assert.equal(new URL(await page.locator('#sfc-live-record ul a').getAttribute('href'),origin).searchParams.get('version'),version);assert.match(await page.locator('#sfc-live-status').innerText(),lang==='en'?/not a complete regulatory/:/並非完整監管/);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
   if(width===320)await page.screenshot({path:new URL('active-'+lang+'-320.png',out).pathname,fullPage:true});
   await page.locator('.mhk-language').click();await page.locator('#sfc-live-record').waitFor({state:'visible'});await page.waitForFunction(()=>!document.querySelector('#sfc-live-record').hidden&&document.querySelector('#sfc-live-record').textContent.includes('ZZZ001'));

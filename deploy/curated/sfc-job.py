@@ -6,6 +6,7 @@ import hashlib
 import argparse
 import importlib.util
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -189,17 +190,30 @@ class Backend:
             or not 0 < seconds <= state["backupSeconds"]
         ):
             raise JobError("SFC_STORAGE_RETENTION_UNQUALIFIED")
-        # No automatic deletion is authorized. Stop before copies could outlive
-        # retained source facts; an exact retention reconciliation is separate.
+        # A full-schema dump includes the oldest retained facts. Bound this
+        # copy to their remaining lifetime, rather than restart its retention
+        # clock or reject a valid candidate whose backup/source periods match.
+        # Physical expiry remains a separate, independently qualified gate.
         oldest = state.get("oldestVersionExpiresAt")
-        if oldest and datetime.fromisoformat(oldest) <= datetime.now(
-            timezone.utc
-        ) + timedelta(seconds=seconds):
-            raise JobError("SFC_RETENTION_RECONCILIATION_REQUIRED")
+        now = datetime.now(timezone.utc)
+        deadline = now + timedelta(seconds=seconds)
+        if oldest:
+            source_deadline = datetime.fromisoformat(oldest)
+            if source_deadline.tzinfo is None or source_deadline.utcoffset() is None:
+                raise JobError("SFC_STORAGE_RETENTION_UNQUALIFIED")
+            deadline = min(deadline, source_deadline)
+            seconds = min(
+                seconds,
+                math.floor((deadline - now).total_seconds()),
+            )
+            if seconds < 1:
+                raise JobError("SFC_RETENTION_RECONCILIATION_REQUIRED")
+        self.storage_deadline = deadline
         return seconds
 
     def recover(self, version, stage):
-        seconds = self.check_storage()
+        self.check_storage()
+        expires = int(self.storage_deadline.timestamp() * 1000)
         if (
             sum(
                 p.stat().st_size
@@ -240,9 +254,10 @@ class Backend:
         size, sha = archive.stat().st_size, file_sha(archive)
         if not 0 < size <= MAX_DUMP:
             raise JobError("SFC_DUMP_SIZE_LIMIT")
-        expires = int(
-            (datetime.now(timezone.utc) + timedelta(seconds=seconds)).timestamp() * 1000
-        )
+        # Keep the deadline measured before the dump. Dumping/uploading time
+        # cannot extend the source facts' physical-retention deadline.
+        if expires <= int(datetime.now(timezone.utc).timestamp() * 1000):
+            raise JobError("SFC_RETENTION_RECONCILIATION_REQUIRED")
         with (
             archive.open("rb") as stream,
             self.request(

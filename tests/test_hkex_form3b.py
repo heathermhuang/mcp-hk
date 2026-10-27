@@ -88,6 +88,19 @@ def test_populated_unqualified_sections_and_duplicate_source_fields_fail_closed(
         parse_form3b(document() + b'<span id="lblDStockCode">02536</span>', **CONTEXT)
 
 
+@pytest.mark.parametrize(
+    "extra",
+    [
+        b'<a href="/di/NSForm3B.aspx?fn=DB20261026E99999">Superseded by</a>',
+        b"<p>Superseded by: DB20261026E99999</p>",
+        b"<p>This form has been withdrawn</p>",
+    ],
+)
+def test_unqualified_outgoing_revision_and_withdrawal_never_become_original(extra):
+    with pytest.raises(ValueError, match="REVISION_STATE_UNQUALIFIED"):
+        parse_form3b(document() + extra, **CONTEXT)
+
+
 def test_document_transport_uses_exact_context_no_auth_no_redirect_and_raw_response_bytes():
     seen = []
     raw = document()

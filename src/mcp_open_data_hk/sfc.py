@@ -2,6 +2,7 @@
 
 import asyncio
 import re
+from datetime import datetime
 
 import httpx
 
@@ -72,7 +73,9 @@ class Sfc:
         except Rejected:
             return False
 
-    async def query(self, operation, ce=None, version=None, mode="rest"):
+    async def query(
+        self, operation, ce=None, version=None, mode="rest", limit=20, cursor=None
+    ):
         if ce is not None:
             try:
                 ce = ce_reference(ce)
@@ -80,15 +83,25 @@ class Sfc:
                 raise DomainError(
                     "SFC_INVALID_CE", "Use a canonical six-character CE reference", 400
                 ) from exc
-        if operation not in {"status", "verify"}:
+        if operation not in {"status", "verify", "history"}:
             raise DomainError("INVALID_QUERY", "Unsupported SFC operation", 400)
         if operation == "status" and not self.backend.configured:
             return status()
-        if operation == "verify":
+        if operation in {"verify", "history"}:
             if not ce or not self.enabled(mode):
                 return unavailable(ce)
             if version is not None and not re.fullmatch(r"sfc-[a-f0-9]{32}", version):
                 raise DomainError("INVALID_QUERY", "Use a returned SFC version", 400)
+        if operation == "history":
+            if not self.enabled("history"):
+                return unavailable(ce)
+            if (
+                type(limit) is not int
+                or not 1 <= limit <= 100
+                or cursor is not None
+                and (not isinstance(cursor, str) or len(cursor) > 2048)
+            ):
+                raise DomainError("INVALID_QUERY", "Invalid SFC history page", 400)
         path = (
             "/v1/sfc/status" if operation == "status" else "/v1/sfc/corporations/" + ce
         )
@@ -97,6 +110,9 @@ class Sfc:
             if operation == "status"
             else {"mode": mode, **({"version": version} if version else {})}
         )
+        if operation == "history":
+            path += "/history"
+            params.update(limit=limit, **({"cursor": cursor} if cursor else {}))
         try:
             await asyncio.wait_for(self.backend.slots.acquire(), 0.25)
         except asyncio.TimeoutError as exc:
@@ -134,32 +150,79 @@ class Sfc:
                     state="gateway_policy_unavailable",
                     reasonCode="SFC_GATEWAY_POLICY_NOT_ADOPTED",
                 )
+            payload = dict(
+                payload,
+                historyAvailable=bool(adopted_modes)
+                and payload.get("historyAvailable") is True
+                and self.enabled("history"),
+            )
             return status(payload)
         try:
             actual_version = payload["version"]
-            record = Corporation.model_validate(payload["data"])
+            record = (
+                Corporation.model_validate(payload["data"])
+                if operation == "verify"
+                else None
+            )
             if (
                 not re.fullmatch(r"sfc-[a-f0-9]{32}", actual_version)
                 or (version and actual_version != version)
-                or record.ce != ce
+                or record is not None
+                and record.ce != ce
                 or payload["provenance"]["policySha256"] != self.policy.sha256
                 or payload["provenance"].get("captureFormat")
                 != "sfc-public-register-v1"
             ):
                 raise ValueError("identity")
             self.policy.require(mode, "retention")
+            if operation == "history":
+                self.policy.require("history")
+                if (
+                    not isinstance(payload["data"], list)
+                    or len(payload["data"]) > limit
+                ):
+                    raise ValueError("history page")
+                for item in payload["data"]:
+                    if (
+                        set(item)
+                        != {"ce", "version", "observedAt", "publishedAt", "expiresAt"}
+                        or item["ce"] != ce
+                        or not re.fullmatch(r"sfc-[a-f0-9]{32}", item["version"])
+                    ):
+                        raise ValueError("history identity")
+                    for key in ("observedAt", "publishedAt", "expiresAt"):
+                        stamp = datetime.fromisoformat(item[key])
+                        if stamp.tzinfo is None or stamp.utcoffset() is None:
+                            raise ValueError("history time")
+                if payload.get("nextCursor") is not None and (
+                    not isinstance(payload["nextCursor"], str)
+                    or len(payload["nextCursor"]) > 2048
+                ):
+                    raise ValueError("history cursor")
         except (KeyError, TypeError, ValueError) as exc:
             raise DomainError(
                 "SOURCE_SCHEMA_CHANGED", "SFC accepted identity or policy differs", 503
             ) from exc
         return Envelope(
-            data=record.model_dump(mode="json"),
+            data=(
+                record.model_dump(mode="json")
+                if record is not None
+                else payload["data"]
+            ),
             meta={
                 "apiVersion": "v1",
                 "snapshotIds": [actual_version],
                 "version": actual_version,
                 "view": "sfc_observation",
                 "currentVerification": False,
+                **(
+                    {
+                        "nextCursor": payload.get("nextCursor"),
+                        "completeRegulatoryHistory": False,
+                    }
+                    if operation == "history"
+                    else {}
+                ),
             },
             provenance=[payload["provenance"]],
             warnings=[
@@ -180,9 +243,17 @@ def register_http(app, service):
     def sfc_search():
         return unavailable()
 
-    @app.get("/api/v1/sfc/corporations/{ce}/history", include_in_schema=False)
-    def sfc_history(ce: str):
-        return unavailable(ce)
+    @app.get(
+        "/api/v1/sfc/corporations/{ce}/history",
+        include_in_schema=service.sfc.enabled("rest")
+        and service.sfc.enabled("history"),
+    )
+    async def sfc_history(
+        ce: str, version: str | None = None, limit: int = 20, cursor: str | None = None
+    ):
+        return await service.sfc.query(
+            "history", ce=ce, version=version, limit=limit, cursor=cursor
+        )
 
     @app.get(
         "/api/v1/sfc/corporations/{ce}", include_in_schema=service.sfc.enabled("rest")
@@ -205,3 +276,22 @@ def register_mcp(server, current):
             return await current().sfc.query(
                 "verify", ce=ce, version=version, mode="mcp"
             )
+
+        if current().sfc.enabled("history"):
+
+            @server.tool(annotations={"readOnlyHint": True, "destructiveHint": False})
+            async def hk_sfc_history(
+                ce: str,
+                version: str | None = None,
+                limit: int = 20,
+                cursor: str | None = None,
+            ) -> dict:
+                """List retained accepted corporate observation versions. This is our dated observation history, not complete regulatory history; starts no collection."""
+                return await current().sfc.query(
+                    "history",
+                    ce=ce,
+                    version=version,
+                    limit=limit,
+                    cursor=cursor,
+                    mode="mcp",
+                )

@@ -50,8 +50,8 @@ Activation requires these concrete items, none inferred from configuration flags
 
 - A reviewed exact corporate CE cohort and purpose, plus independently qualified
   access, retention, backup and each requested serving mode. The example CE is fake.
-- Existing host administration access restored. SSH and the agent console currently
-  fail while data readers work; no password reset or reboot was performed.
+- Existing host administration was successfully read back on 27 October. The
+  earlier access failure is historical; no password reset or reboot is needed.
 - Approval for the source-only login credential and separate prefix-only uploader
   capability. `sfc-writer-review.sql` is review-only and defaults to NOLOGIN.
 - Verified source/R2/local-copy retention and capacity. The host stops if copies
@@ -70,3 +70,24 @@ cover closed defaults, namespace/auth isolation, streamed-size limits, immutable
 recovery manifests, predecessor conflicts and durable independent quotas.
 
 Fresh SFC integration and the four-dataset programme remain incomplete.
+
+## Current-main integration, 27 October
+
+The source cycle and optional backup capability are integrated with current main
+without activating them. The host copy deadline is the earlier of its configured
+backup duration and the oldest included source expiry, measured before dumping.
+Equal backup/source retention durations can qualify a candidate without resetting
+its retention clock. Neither an HTTP expiry check nor this deadline proves physical
+deletion; the separately approved storage-expiry procedure remains required.
+
+The qualified reader also provides paginated observation-version history through
+REST, MCP and the bilingual browser. History requires its own policy grant as well
+as the caller's output mode. Cursors bind CE, policy, caller mode, page size and
+accepted inventory anchor, and expire by the earliest retained version or policy
+deadline. New publications cannot enter later pages. Unknown regulatory periods
+are never reconstructed. The production history capability remains false.
+
+Source-job, history and Form 3B PostgreSQL tests now run explicitly in the mandatory
+database CI lane; general Python CI alone could previously skip the new files.
+The exact source/credential/retention decisions are in
+[the activation packet](SFC-ACTIVATION-APPROVAL-20261027.md).

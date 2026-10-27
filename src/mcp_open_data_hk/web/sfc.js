@@ -82,7 +82,19 @@ liveForm?.addEventListener('submit',async event=>{
   const scroll=element('div');scroll.className='company-table-wrap';scroll.tabIndex=0;scroll.setAttribute('role','region');scroll.setAttribute('aria-label',t('sfcArchiveIntervals'));
   const table=element('table'),thead=element('thead'),head=element('tr');
   for(const key of ['sfcArchiveActivity','sfcArchiveStart','sfcArchiveEnd']){const th=element('th',t(key));th.scope='col';head.append(th);}thead.append(head);table.append(thead);
-  const tbody=element('tbody');for(const row of fact.activities){const tr=element('tr');tr.append(element('td',row.label+' · '+row.statusLabel),element('td',date(row.start?.raw,row.start?.precision)),element('td',date(row.end?.raw,row.end?.precision)));tbody.append(tr);}table.append(tbody);scroll.append(table);section.append(scroll);liveRecord.replaceChildren(section);liveRecord.hidden=false;liveRecord.focus();liveStatus.textContent=t('sfcLiveLoaded');
+  const tbody=element('tbody');for(const row of fact.activities){const tr=element('tr');tr.append(element('td',row.label+' · '+row.statusLabel),element('td',date(row.start?.raw,row.start?.precision)),element('td',date(row.end?.raw,row.end?.precision)));tbody.append(tr);}table.append(tbody);scroll.append(table);section.append(scroll);
+  if(liveCapability.historyAvailable===true){
+   const button=element('button',t('sfcObservationHistory')),items=element('ul');button.type='button';button.className='mhk-button mhk-secondary';button.id='sfc-observation-history';let cursor=null;
+   button.addEventListener('click',async()=>{button.disabled=true;try{
+    const query=new URLSearchParams({version,limit:'20'});if(cursor)query.set('cursor',cursor);
+    const page=await fetchPublicJson('/api/v1/sfc/corporations/'+ce+'/history?'+query,null,{signal:liveController.signal});if(run!==liveGeneration)return;
+    if(page.meta?.version!==version||!Array.isArray(page.data)||page.data.length>20||page.data.some(row=>row.ce!==ce||!/^sfc-[a-f0-9]{32}$/.test(row.version)))throw new Error('SOURCE_SCHEMA_CHANGED');
+    for(const row of page.data){const li=element('li'),link=element('a',row.observedAt+' · '+row.version);link.href='/sfc?'+new URLSearchParams({view:'sfc_observation',ce,version:row.version,lang:window.MhkI18n.locale});li.append(link);items.append(li);}
+    cursor=page.meta.nextCursor||null;button.hidden=!cursor;button.textContent=t('sfcHistoryMore');button.disabled=false;liveStatus.textContent=t('sfcHistoryScope');
+   }catch(error){if(error.name!=='AbortError'&&run===liveGeneration){button.disabled=false;liveStatus.textContent=t('sfcLiveFailed');}}});
+   section.append(element('p',t('sfcHistoryScope')),button,items);
+  }
+  liveRecord.replaceChildren(section);liveRecord.hidden=false;liveRecord.focus();liveStatus.textContent=t('sfcLiveLoaded');
  }catch(error){if(error.name!=='AbortError'&&run===liveGeneration)liveStatus.textContent=t('sfcLiveFailed');}
 });
 liveInput?.addEventListener('input',()=>liveInput.setCustomValidity(''));

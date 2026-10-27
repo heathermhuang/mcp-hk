@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-27T12:14:25.961478+00:00",
+  "updatedAt": "2026-10-27T13:41:00.548967+00:00",
   "overallState": "incomplete",
   "sourcePlan": "../../../../../../docs/designs/mcp-hk-four-datasets-completion-20261026.md",
   "originalInventories": {
@@ -27,20 +27,27 @@
       "state": "passed",
       "dependency": [],
       "actualCoverage": {
-        "commit": "9828dc0c2a59392dad0f58c5cfb5d8529495b8d7",
-        "checkedHead": "e8fa594a5ccf1f184d1ceed004b8e2697bd42b6b",
-        "tree": "2136d9b2f309403f7c56db86d899aa9d3cb9b2fe",
-        "version": "c53abef7-2b51-4b2e-83cd-bad2ef40c14a",
-        "image": "sha256:b6f6213e0903d50e6862f2412fff14362b7f742cdb8113e563bdce11a4f9df91",
-        "privateBackendCommit": "3aeaaafbd7f51636c314e707de82911c48567632"
+        "sourceMain": "dd7e0a6fe226c6ff855c2029dea1369a2a834f68",
+        "gateway": "dd7e0a6fe226c6ff855c2029dea1369a2a834f68",
+        "controller": "dd7e0a6fe226c6ff855c2029dea1369a2a834f68",
+        "independentGatewayRestore": {
+          "sha256": "953f54e81195f380105e260ef4aa08c6f35b13a97b5f99d2155eb9a110889903",
+          "bytes": 90480231,
+          "restored": true
+        },
+        "scope": "initial refresh; candidate release and final proof are separate"
       },
-      "version": "9828dc0c2a59392dad0f58c5cfb5d8529495b8d7",
+      "version": "dd7e0a6fe226c6ff855c2029dea1369a2a834f68",
       "evidence": [
         "production-release-20261027.json",
         "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Continue source-specific completion from current observed state"
+      "nextAction": "Preserve the refreshed source pointers, budgets, holds, legitimate owners and capacity; repeat only changed or release-dependent checks.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W00.source-jobs-locks-capacity",
@@ -49,14 +56,12 @@
       "dependency": [],
       "actualCoverage": {
         "gatewayCrons": 5,
-        "sourceTimers": 7,
-        "gatewayScratch": {
-          "freeBytes": 6941298688,
-          "requiredBytes": 1400000000,
-          "sufficient": true,
-          "basis": "gateway_backup_copy_packed_transfer_and_isolated_restore"
-        },
-        "releaseSlotReleased": true
+        "sourceTimers": 6,
+        "hostFreeBytes": 43939008512,
+        "availableMemoryMiB": 3039,
+        "sourceTimersChanged": false,
+        "releaseSlotHeldAtRefresh": false,
+        "scope": "initial baseline; live leases preserved"
       },
       "version": null,
       "evidence": [
@@ -64,18 +69,32 @@
         "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Retain per-source growth and recovery gates; source backlog work remains"
+      "nextAction": "Preserve the refreshed source pointers, budgets, holds, legitimate owners and capacity; repeat only changed or release-dependent checks.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W00.source-policy-refresh",
       "workPackage": "W00",
-      "state": "pending",
+      "state": "passed",
       "dependency": [],
-      "actualCoverage": null,
+      "actualCoverage": {
+        "company": "accepted official observed subset; complete current fields unqualified",
+        "racing": "accepted factual results and dated profiles; missing families explicit",
+        "sfc": "no active policy, versions, attempts or source role",
+        "hkex": "archive/daily accepted; full filings unqualified",
+        "sourcePoliciesOrCredentialsChanged": false
+      },
       "version": null,
       "evidence": [],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Preserve the refreshed source pointers, budgets, holds, legitimate owners and capacity; repeat only changed or release-dependent checks.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W00.acceptance-ledger",
@@ -88,7 +107,11 @@
         "acceptance.json"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Update each item only from observed receipts"
+      "nextAction": "Preserve the refreshed source pointers, budgets, holds, legitimate owners and capacity; repeat only changed or release-dependent checks.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W01.exact-registry-no-match",
@@ -104,7 +127,11 @@
         "REVIEW.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Keep ordinary scheduled evidence separate from unobserved backlog and refresh ages"
+      "nextAction": "Retain deployed no-match/fairness/capacity behavior and qualified failed/control receipts; continue normal jobs without a whole-registry cycle claim.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W01.prior-address-facts-retained",
@@ -120,7 +147,11 @@
         "REVIEW.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Keep ordinary scheduled evidence separate from unobserved backlog and refresh ages"
+      "nextAction": "Retain deployed no-match/fairness/capacity behavior and qualified failed/control receipts; continue normal jobs without a whole-registry cycle claim.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W01.retry-categories-lineage",
@@ -136,7 +167,11 @@
         "REVIEW.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Keep ordinary scheduled evidence separate from unobserved backlog and refresh ages"
+      "nextAction": "Retain deployed no-match/fairness/capacity behavior and qualified failed/control receipts; continue normal jobs without a whole-registry cycle claim.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W01.fair-cohort-scheduling",
@@ -152,7 +187,11 @@
         "REVIEW.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Keep ordinary scheduled evidence separate from unobserved backlog and refresh ages"
+      "nextAction": "Retain deployed no-match/fairness/capacity behavior and qualified failed/control receipts; continue normal jobs without a whole-registry cycle claim.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W01.capacity-age-backlog-status",
@@ -168,7 +207,11 @@
         "REVIEW.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Keep ordinary scheduled evidence separate from unobserved backlog and refresh ages"
+      "nextAction": "Retain deployed no-match/fairness/capacity behavior and qualified failed/control receipts; continue normal jobs without a whole-registry cycle claim.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W01.crash-and-quota-accounting",
@@ -184,44 +227,55 @@
         "REVIEW.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Keep ordinary scheduled evidence separate from unobserved backlog and refresh ages"
+      "nextAction": "Retain deployed no-match/fairness/capacity behavior and qualified failed/control receipts; continue normal jobs without a whole-registry cycle claim.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W01.live-failed-control-examples",
       "workPackage": "W01",
-      "state": "partial",
+      "state": "passed",
       "dependency": [],
       "actualCoverage": {
-        "queuedTargets": [
-          "cr:foreign:00562995",
-          "cr:foreign:77596226"
-        ],
-        "providerDispatchNow": 0,
-        "nextExistingSchedule": "2026-10-27T01:00:00Z"
+        "failed": "cr:foreign:00562995 SOURCE_NO_MATCH HTTP400",
+        "control": "cr:foreign:77596226 success HTTP200",
+        "originalPrioritiesRestored": true,
+        "newProviderReads": 0
       },
       "version": null,
       "evidence": [
-        "production-release-20261027.json",
-        "RELEASE-20261027.md"
+        "address-recheck-verified-20261027.json"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Verify retained new outcomes after quota reset, then restore recorded prior priority flags"
+      "nextAction": "Retain deployed no-match/fairness/capacity behavior and qualified failed/control receipts; continue normal jobs without a whole-registry cycle claim.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W02.original-94-pairs-reconciled",
       "workPackage": "W02",
       "state": "partial",
-      "dependency": [],
+      "dependency": [
+        "normal_94_pair_publication",
+        "same_version_public_acceptance",
+        "fresh_accepted_94_pair_restore"
+      ],
       "actualCoverage": {
         "originalPairs": 94,
-        "originalCsvKeys": 188,
+        "originalFiles": 188,
         "qualifiedFiles": 188,
-        "publishedFiles": 168,
+        "publishedQualifiedFiles": 168,
+        "acceptedVersion": "official-799798307f9db9968bd238c02b1de49f",
+        "inventoryPublicationPassed": false,
         "sourceKeysSha256": "48ecc65094f222c99acb3a930f8036a38fd15bad9fa94f51d68369125458a8fe",
-        "allExactKeysReconciled": true,
-        "public94PairAcceptanceProven": false
+        "completeAcceptedLiveMatrixPassed": false,
+        "freshAccepted94PairRestorePassed": false
       },
-      "version": "official-731745eb39cd14f3f986ac01521f0525",
+      "version": "official-799798307f9db9968bd238c02b1de49f",
       "evidence": [
         "production-release-20261027.json",
         "RELEASE-20261027.md",
@@ -229,18 +283,37 @@
         "company-original-inventory-reconciliation-20261027.json"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Verify the normal 28 October 05:00 UTC accepted publication, then same-version REST/MCP/bilingual actual downloads and fresh accepted restore; preserve daily gate."
+      "nextAction": "Observe normal 28 October 05:00 UTC publication and 05:17 offsite, then verify every original key and same-version REST/MCP/bilingual actual ZIP case and a fresh accepted-cohort restore. Preserve the existing 13:40 HKT follow-up.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W02.staged-bytes-reused",
       "workPackage": "W02",
-      "state": "pending",
+      "state": "passed",
       "dependency": [],
-      "actualCoverage": null,
+      "actualCoverage": {
+        "originalPairs": 94,
+        "originalFiles": 188,
+        "qualifiedFiles": 188,
+        "publishedQualifiedFiles": 168,
+        "acceptedVersion": "official-799798307f9db9968bd238c02b1de49f",
+        "inventoryPublicationPassed": false,
+        "sourceKeysSha256": "48ecc65094f222c99acb3a930f8036a38fd15bad9fa94f51d68369125458a8fe"
+      },
       "version": null,
-      "evidence": [],
+      "evidence": [
+        "company-original-inventory-reconciliation-20261027.json",
+        "company-full-inventory-recovery-20261027.json"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Observe normal 28 October 05:00 UTC publication and 05:17 offsite, then verify every original key and same-version REST/MCP/bilingual actual ZIP case and a fresh accepted-cohort restore. Preserve the existing 13:40 HKT follow-up.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W02.full-state-offsite-restore",
@@ -263,7 +336,11 @@
         "company-full-inventory-recovery-20261027.json"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Keep normal daily recovery enabled and observe public acceptance separately"
+      "nextAction": "Observe normal 28 October 05:00 UTC publication and 05:17 offsite, then verify every original key and same-version REST/MCP/bilingual actual ZIP case and a fresh accepted-cohort restore. Preserve the existing 13:40 HKT follow-up.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W02.full-state-performance",
@@ -286,172 +363,107 @@
         "company-full-inventory-recovery-20261027.json"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Keep normal daily recovery enabled and observe public acceptance separately"
+      "nextAction": "Observe normal 28 October 05:00 UTC publication and 05:17 offsite, then verify every original key and same-version REST/MCP/bilingual actual ZIP case and a fresh accepted-cohort restore. Preserve the existing 13:40 HKT follow-up.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W02.same-version-188-rest-mcp-pairs",
       "workPackage": "W02",
       "state": "partial",
-      "dependency": [],
+      "dependency": [
+        "normal_94_pair_publication",
+        "same_version_public_acceptance",
+        "fresh_accepted_94_pair_restore"
+      ],
       "actualCoverage": {
-        "version": "official-731745eb39cd14f3f986ac01521f0525",
-        "acceptedWeeks": 72,
-        "inventoryWeeks": 94,
-        "acceptedCsvFiles": 144,
-        "inventoryCsvFiles": 188,
-        "counts": {
-          "money_lender": {
-            "rows": 6776,
-            "entities": 6770
-          },
-          "company_event": {
-            "rows": 312706,
-            "entities": 305101
-          },
-          "address_observation": {
-            "rows": 726,
-            "entities": 726
-          }
-        },
-        "offsiteRpoQualified": false,
-        "addressCapacity": {
-          "eligible": 305101,
-          "dailyAttemptLimit": 250,
-          "sharedCrDailyRequestLimit": 500,
-          "fullPassMinimumDaysAtCurrentCap": 1221,
-          "wholeSubset90DayCycleFeasible": false,
-          "successfulReadsPerDayNeededFor90Days": 3391,
-          "guaranteedWholeSubsetCycleDays": null,
-          "refreshTargetDays": 90,
-          "priorityCohortCapacityAt90Days": 4500,
-          "targetScope": "observed_and_explicit_priority_cohorts; capacity-dependent, not a whole-subset guarantee",
-          "saturatedShares": {
-            "priority": 0.2,
-            "refresh": 0.4,
-            "initial": 0.3,
-            "retry": 0.1
-          },
-          "idleShareBorrowing": true,
-          "basis": "optimistic lower bound; failures, holds and other CR reads reduce throughput"
-        }
+        "originalPairs": 94,
+        "originalFiles": 188,
+        "qualifiedFiles": 188,
+        "publishedQualifiedFiles": 168,
+        "acceptedVersion": "official-799798307f9db9968bd238c02b1de49f",
+        "inventoryPublicationPassed": false,
+        "sourceKeysSha256": "48ecc65094f222c99acb3a930f8036a38fd15bad9fa94f51d68369125458a8fe",
+        "completeAcceptedLiveMatrixPassed": false,
+        "freshAccepted94PairRestorePassed": false
       },
-      "version": "official-731745eb39cd14f3f986ac01521f0525",
+      "version": "official-799798307f9db9968bd238c02b1de49f",
       "evidence": [
         "production-release-20261027.json",
         "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Reuse existing owner retry; qualify all original 188 source cases once full version publishes"
+      "nextAction": "Observe normal 28 October 05:00 UTC publication and 05:17 offsite, then verify every original key and same-version REST/MCP/bilingual actual ZIP case and a fresh accepted-cohort restore. Preserve the existing 13:40 HKT follow-up.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W02.same-version-bilingual-explorer-pairs",
       "workPackage": "W02",
       "state": "partial",
-      "dependency": [],
+      "dependency": [
+        "normal_94_pair_publication",
+        "same_version_public_acceptance",
+        "fresh_accepted_94_pair_restore"
+      ],
       "actualCoverage": {
-        "version": "official-731745eb39cd14f3f986ac01521f0525",
-        "acceptedWeeks": 72,
-        "inventoryWeeks": 94,
-        "acceptedCsvFiles": 144,
-        "inventoryCsvFiles": 188,
-        "counts": {
-          "money_lender": {
-            "rows": 6776,
-            "entities": 6770
-          },
-          "company_event": {
-            "rows": 312706,
-            "entities": 305101
-          },
-          "address_observation": {
-            "rows": 726,
-            "entities": 726
-          }
-        },
-        "offsiteRpoQualified": false,
-        "addressCapacity": {
-          "eligible": 305101,
-          "dailyAttemptLimit": 250,
-          "sharedCrDailyRequestLimit": 500,
-          "fullPassMinimumDaysAtCurrentCap": 1221,
-          "wholeSubset90DayCycleFeasible": false,
-          "successfulReadsPerDayNeededFor90Days": 3391,
-          "guaranteedWholeSubsetCycleDays": null,
-          "refreshTargetDays": 90,
-          "priorityCohortCapacityAt90Days": 4500,
-          "targetScope": "observed_and_explicit_priority_cohorts; capacity-dependent, not a whole-subset guarantee",
-          "saturatedShares": {
-            "priority": 0.2,
-            "refresh": 0.4,
-            "initial": 0.3,
-            "retry": 0.1
-          },
-          "idleShareBorrowing": true,
-          "basis": "optimistic lower bound; failures, holds and other CR reads reduce throughput"
-        }
+        "originalPairs": 94,
+        "originalFiles": 188,
+        "qualifiedFiles": 188,
+        "publishedQualifiedFiles": 168,
+        "acceptedVersion": "official-799798307f9db9968bd238c02b1de49f",
+        "inventoryPublicationPassed": false,
+        "sourceKeysSha256": "48ecc65094f222c99acb3a930f8036a38fd15bad9fa94f51d68369125458a8fe",
+        "completeAcceptedLiveMatrixPassed": false,
+        "freshAccepted94PairRestorePassed": false
       },
-      "version": "official-731745eb39cd14f3f986ac01521f0525",
+      "version": "official-799798307f9db9968bd238c02b1de49f",
       "evidence": [
         "production-release-20261027.json",
         "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Reuse existing owner retry; qualify all original 188 source cases once full version publishes"
+      "nextAction": "Observe normal 28 October 05:00 UTC publication and 05:17 offsite, then verify every original key and same-version REST/MCP/bilingual actual ZIP case and a fresh accepted-cohort restore. Preserve the existing 13:40 HKT follow-up.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W02.actual-browser-zips",
       "workPackage": "W02",
       "state": "partial",
-      "dependency": [],
+      "dependency": [
+        "normal_94_pair_publication",
+        "same_version_public_acceptance",
+        "fresh_accepted_94_pair_restore"
+      ],
       "actualCoverage": {
-        "version": "official-731745eb39cd14f3f986ac01521f0525",
-        "acceptedWeeks": 72,
-        "inventoryWeeks": 94,
-        "acceptedCsvFiles": 144,
-        "inventoryCsvFiles": 188,
-        "counts": {
-          "money_lender": {
-            "rows": 6776,
-            "entities": 6770
-          },
-          "company_event": {
-            "rows": 312706,
-            "entities": 305101
-          },
-          "address_observation": {
-            "rows": 726,
-            "entities": 726
-          }
-        },
-        "offsiteRpoQualified": false,
-        "addressCapacity": {
-          "eligible": 305101,
-          "dailyAttemptLimit": 250,
-          "sharedCrDailyRequestLimit": 500,
-          "fullPassMinimumDaysAtCurrentCap": 1221,
-          "wholeSubset90DayCycleFeasible": false,
-          "successfulReadsPerDayNeededFor90Days": 3391,
-          "guaranteedWholeSubsetCycleDays": null,
-          "refreshTargetDays": 90,
-          "priorityCohortCapacityAt90Days": 4500,
-          "targetScope": "observed_and_explicit_priority_cohorts; capacity-dependent, not a whole-subset guarantee",
-          "saturatedShares": {
-            "priority": 0.2,
-            "refresh": 0.4,
-            "initial": 0.3,
-            "retry": 0.1
-          },
-          "idleShareBorrowing": true,
-          "basis": "optimistic lower bound; failures, holds and other CR reads reduce throughput"
-        }
+        "originalPairs": 94,
+        "originalFiles": 188,
+        "qualifiedFiles": 188,
+        "publishedQualifiedFiles": 168,
+        "acceptedVersion": "official-799798307f9db9968bd238c02b1de49f",
+        "inventoryPublicationPassed": false,
+        "sourceKeysSha256": "48ecc65094f222c99acb3a930f8036a38fd15bad9fa94f51d68369125458a8fe",
+        "completeAcceptedLiveMatrixPassed": false,
+        "freshAccepted94PairRestorePassed": false
       },
-      "version": "official-731745eb39cd14f3f986ac01521f0525",
+      "version": "official-799798307f9db9968bd238c02b1de49f",
       "evidence": [
         "production-release-20261027.json",
         "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Reuse existing owner retry; qualify all original 188 source cases once full version publishes"
+      "nextAction": "Observe normal 28 October 05:00 UTC publication and 05:17 offsite, then verify every original key and same-version REST/MCP/bilingual actual ZIP case and a fresh accepted-cohort restore. Preserve the existing 13:40 HKT follow-up.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W02.ordinary-daily-source",
@@ -468,7 +480,11 @@
         "progress-20261027.json"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Verify next normal cycle independently of manual qualification"
+      "nextAction": "Observe normal 28 October 05:00 UTC publication and 05:17 offsite, then verify every original key and same-version REST/MCP/bilingual actual ZIP case and a fresh accepted-cohort restore. Preserve the existing 13:40 HKT follow-up.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W02.ordinary-daily-offsite-rpo",
@@ -486,7 +502,11 @@
         "company-daily-occurrence-20261027.json"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Continue normal daily qualification; full 94-pair public acceptance remains separate"
+      "nextAction": "Observe normal 28 October 05:00 UTC publication and 05:17 offsite, then verify every original key and same-version REST/MCP/bilingual actual ZIP case and a fresh accepted-cohort restore. Preserve the existing 13:40 HKT follow-up.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W03.company-archive-preserved",
@@ -497,68 +517,154 @@
       "version": null,
       "evidence": [],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Retain original archive facts; obtain a qualified dated current-field source and exact identifier mapping before adding current status, appointments or ownership.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W03.current-dissolution-restoration",
       "workPackage": "W03",
       "state": "pending",
-      "dependency": [],
-      "actualCoverage": null,
+      "dependency": [
+        "qualified_current_source",
+        "exact_identifier_and_date_semantics"
+      ],
+      "actualCoverage": {
+        "publicScope": "observed official subset plus separate historical archive",
+        "completeCurrentProfileQualified": false,
+        "limitations": [
+          "Observed official subset; not a complete current company-status register",
+          "Dissolution events are not covered; absence never establishes dissolution",
+          "Local weekly dates combine incorporation and re-domiciliation unless the address source distinguishes them",
+          "No inferred CRN/BRN crosswalk, name-based join, current officers or SFC/HKEX update coverage",
+          "Money-lender MLR identities are separate from company BRNs; source cutoff can precede collection"
+        ]
+      },
       "version": null,
       "evidence": [],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Retain original archive facts; obtain a qualified dated current-field source and exact identifier mapping before adding current status, appointments or ownership.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W03.current-appointments",
       "workPackage": "W03",
       "state": "pending",
-      "dependency": [],
-      "actualCoverage": null,
+      "dependency": [
+        "qualified_current_source",
+        "exact_identifier_and_date_semantics"
+      ],
+      "actualCoverage": {
+        "publicScope": "observed official subset plus separate historical archive",
+        "completeCurrentProfileQualified": false,
+        "limitations": [
+          "Observed official subset; not a complete current company-status register",
+          "Dissolution events are not covered; absence never establishes dissolution",
+          "Local weekly dates combine incorporation and re-domiciliation unless the address source distinguishes them",
+          "No inferred CRN/BRN crosswalk, name-based join, current officers or SFC/HKEX update coverage",
+          "Money-lender MLR identities are separate from company BRNs; source cutoff can precede collection"
+        ]
+      },
       "version": null,
       "evidence": [],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Retain original archive facts; obtain a qualified dated current-field source and exact identifier mapping before adding current status, appointments or ownership.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W03.current-ownership",
       "workPackage": "W03",
       "state": "pending",
-      "dependency": [],
-      "actualCoverage": null,
+      "dependency": [
+        "qualified_current_source",
+        "exact_identifier_and_date_semantics"
+      ],
+      "actualCoverage": {
+        "publicScope": "observed official subset plus separate historical archive",
+        "completeCurrentProfileQualified": false,
+        "limitations": [
+          "Observed official subset; not a complete current company-status register",
+          "Dissolution events are not covered; absence never establishes dissolution",
+          "Local weekly dates combine incorporation and re-domiciliation unless the address source distinguishes them",
+          "No inferred CRN/BRN crosswalk, name-based join, current officers or SFC/HKEX update coverage",
+          "Money-lender MLR identities are separate from company BRNs; source cutoff can precede collection"
+        ]
+      },
       "version": null,
       "evidence": [],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Retain original archive facts; obtain a qualified dated current-field source and exact identifier mapping before adding current status, appointments or ownership.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W03.exact-identity-crosswalks",
       "workPackage": "W03",
       "state": "pending",
-      "dependency": [],
-      "actualCoverage": null,
+      "dependency": [
+        "qualified_current_source",
+        "exact_identifier_and_date_semantics"
+      ],
+      "actualCoverage": {
+        "publicScope": "observed official subset plus separate historical archive",
+        "completeCurrentProfileQualified": false,
+        "limitations": [
+          "Observed official subset; not a complete current company-status register",
+          "Dissolution events are not covered; absence never establishes dissolution",
+          "Local weekly dates combine incorporation and re-domiciliation unless the address source distinguishes them",
+          "No inferred CRN/BRN crosswalk, name-based join, current officers or SFC/HKEX update coverage",
+          "Money-lender MLR identities are separate from company BRNs; source cutoff can precede collection"
+        ]
+      },
       "version": null,
       "evidence": [],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Retain original archive facts; obtain a qualified dated current-field source and exact identifier mapping before adding current status, appointments or ownership.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W04.sfc-archive-preserved",
       "workPackage": "W04",
       "state": "pending",
-      "dependency": [],
+      "dependency": [
+        "actual_exact_CE_cohort_and_purpose",
+        "independent_mode_policy",
+        "scoped_credentials_approval",
+        "physical_expiry_and_capacity_qualification"
+      ],
       "actualCoverage": null,
       "version": null,
       "evidence": [],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Integrate the reviewed producer/history code; await the actual exact CE cohort and purpose/modes, pinned source policy, separate scoped credential decision and physical retention qualification before real activation, public parity and ordinary occurrence.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W04.sfc-production-schema-config",
       "workPackage": "W04",
       "state": "partial",
-      "dependency": [],
+      "dependency": [
+        "actual_exact_CE_cohort_and_purpose",
+        "independent_mode_policy",
+        "scoped_credentials_approval",
+        "physical_expiry_and_capacity_qualification"
+      ],
       "actualCoverage": {
         "schemaInstalled": true,
         "reader": "SELECT_only",
@@ -571,18 +677,36 @@
         "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Configure source-scoped collector/recovery for the actual authorized CE cohort"
+      "nextAction": "Apply additive SFC migration 010 and read-only status/history grants with existing administrator access during this source-scoped release; do not create a writer/login/uploader/policy/timer.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W04.sfc-bounded-scheduled-collector",
       "workPackage": "W04",
-      "state": "pending",
-      "dependency": [],
-      "actualCoverage": null,
+      "state": "partial",
+      "dependency": [
+        "actual_exact_CE_cohort_and_purpose",
+        "independent_mode_policy",
+        "scoped_credentials_approval",
+        "physical_expiry_and_capacity_qualification"
+      ],
+      "actualCoverage": {
+        "sourceCycleEngineering": "current-main integrated candidate from PR108",
+        "candidateAndAcceptedRestoreTests": true,
+        "productionCohort": 0,
+        "timerInstalled": false
+      },
       "version": null,
       "evidence": [],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Integrate the reviewed producer/history code; await the actual exact CE cohort and purpose/modes, pinned source policy, separate scoped credential decision and physical retention qualification before real activation, public parity and ordinary occurrence.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W04.sfc-persisted-status",
@@ -601,7 +725,11 @@
         "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Do not infer public qualification from installed status; qualify source modes and actual cohort separately"
+      "nextAction": "Integrate the reviewed producer/history code; await the actual exact CE cohort and purpose/modes, pinned source policy, separate scoped credential decision and physical retention qualification before real activation, public parity and ordinary occurrence.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W04.sfc-real-reader-wiring",
@@ -620,41 +748,67 @@
         "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Do not infer public qualification from installed status; qualify source modes and actual cohort separately"
+      "nextAction": "Integrate the reviewed producer/history code; await the actual exact CE cohort and purpose/modes, pinned source policy, separate scoped credential decision and physical retention qualification before real activation, public parity and ordinary occurrence.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W04.sfc-independent-restored-candidate",
       "workPackage": "W04",
       "state": "pending",
-      "dependency": [],
+      "dependency": [
+        "actual_exact_CE_cohort_and_purpose",
+        "independent_mode_policy",
+        "scoped_credentials_approval",
+        "physical_expiry_and_capacity_qualification"
+      ],
       "actualCoverage": null,
       "version": null,
       "evidence": [],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Integrate the reviewed producer/history code; await the actual exact CE cohort and purpose/modes, pinned source policy, separate scoped credential decision and physical retention qualification before real activation, public parity and ordinary occurrence.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W04.sfc-publication-rollback",
       "workPackage": "W04",
-      "state": "in_progress",
-      "dependency": [],
+      "state": "partial",
+      "dependency": [
+        "actual_exact_CE_cohort_and_purpose",
+        "independent_mode_policy",
+        "scoped_credentials_approval",
+        "physical_expiry_and_capacity_qualification"
+      ],
       "actualCoverage": {
-        "checkedOpenPR": 94,
-        "deployed": false,
-        "publicState": "unqualified"
+        "producerEngineering": "candidate and accepted restore, failure/resume and expected-old conflict covered",
+        "productionAcceptedVersion": null
       },
       "version": "17379e021d2ae1c3b1ae0234d446f5cac3a9a69d",
       "evidence": [
         "progress-20261027.json"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Integrate checked wiring and production configuration, then qualify actual cohort/modes"
+      "nextAction": "Integrate the reviewed producer/history code; await the actual exact CE cohort and purpose/modes, pinned source policy, separate scoped credential decision and physical retention qualification before real activation, public parity and ordinary occurrence.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W04.sfc-25-ce-pilot",
       "workPackage": "W04",
       "state": "pending",
-      "dependency": [],
+      "dependency": [
+        "actual_exact_CE_cohort_and_purpose",
+        "independent_mode_policy",
+        "scoped_credentials_approval",
+        "physical_expiry_and_capacity_qualification"
+      ],
       "actualCoverage": {
         "cohortMaximum": 25,
         "actualDealingCohortProvided": false,
@@ -665,17 +819,28 @@
         "progress-20261027.json"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Obtain exact corporate CEs for actual dealings; user question remains unanswered"
+      "nextAction": "Integrate the reviewed producer/history code; await the actual exact CE cohort and purpose/modes, pinned source policy, separate scoped credential decision and physical retention qualification before real activation, public parity and ordinary occurrence.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W04.sfc-rest-mcp-browser-export",
       "workPackage": "W04",
       "state": "partial",
-      "dependency": [],
+      "dependency": [
+        "actual_exact_CE_cohort_and_purpose",
+        "independent_mode_policy",
+        "scoped_credentials_approval",
+        "physical_expiry_and_capacity_qualification"
+      ],
       "actualCoverage": {
-        "statusAndGatedReaderWiring": "deployed",
-        "freshFactsPublished": 0,
-        "historyAndExports": "not implemented by this wiring"
+        "verification": "existing gated reader",
+        "observationHistory": "implemented and tested across REST/MCP and both fixture languages",
+        "historyPubliclyActivated": false,
+        "export": "separate prebuilt-artifact delivery gate; not advertised",
+        "realCohortPublished": 0
       },
       "version": null,
       "evidence": [
@@ -683,248 +848,1048 @@
         "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Complete qualified actual-cohort outputs, export/history and source-specific recovery"
+      "nextAction": "Integrate the reviewed producer/history code; await the actual exact CE cohort and purpose/modes, pinned source policy, separate scoped credential decision and physical retention qualification before real activation, public parity and ordinary occurrence.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W04.sfc-ordinary-jobs-failure-retention",
       "workPackage": "W04",
       "state": "pending",
-      "dependency": [],
+      "dependency": [
+        "actual_exact_CE_cohort_and_purpose",
+        "independent_mode_policy",
+        "scoped_credentials_approval",
+        "physical_expiry_and_capacity_qualification"
+      ],
       "actualCoverage": null,
       "version": null,
       "evidence": [],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Integrate the reviewed producer/history code; await the actual exact CE cohort and purpose/modes, pinned source policy, separate scoped credential decision and physical retention qualification before real activation, public parity and ordinary occurrence.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W04.sfc-wider-cohort-disposition",
       "workPackage": "W04",
       "state": "pending",
-      "dependency": [],
+      "dependency": [
+        "actual_exact_CE_cohort_and_purpose",
+        "independent_mode_policy",
+        "scoped_credentials_approval",
+        "physical_expiry_and_capacity_qualification"
+      ],
       "actualCoverage": null,
       "version": null,
       "evidence": [],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Integrate the reviewed producer/history code; await the actual exact CE cohort and purpose/modes, pinned source policy, separate scoped credential decision and physical retention qualification before real activation, public parity and ordinary occurrence.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W05.racing-2025-26-results",
       "workPackage": "W05",
       "state": "partial",
-      "dependency": [],
+      "dependency": [
+        "existing_daily_source_allowance",
+        "actual_family_and_fixture_evidence"
+      ],
       "actualCoverage": {
-        "meetings": 15,
-        "races": 147,
-        "resultRows": 1840,
-        "earliest": "2026-07-15",
-        "latest": "2026-10-25",
-        "originalHeldTarget": "2026-07-15 HV",
-        "targetRaces": 9,
-        "targetRows": 107,
-        "archiveRoutingHoldResolved": true,
-        "broaderSeasonComplete": false,
-        "recentMeetings": 14,
-        "historicalMeetings": 1
+        "acceptedCoverage": {
+          "meetings": 17,
+          "races": 167,
+          "resultRows": 2100,
+          "earliest": "2026-07-08",
+          "latest": "2026-10-25"
+        },
+        "acceptedDatedProfiles": 39,
+        "originalSeason": {
+          "season": "2025/26",
+          "originalHistoricalTarget": true,
+          "observedFixtureMonths": [
+            "2025-09",
+            "2025-10",
+            "2025-11",
+            "2025-12",
+            "2026-01",
+            "2026-02",
+            "2026-03",
+            "2026-04",
+            "2026-05",
+            "2026-06",
+            "2026-07"
+          ],
+          "unavailableFixtureMonths": [],
+          "unobservedFixtureMonths": [
+            "2026-08"
+          ],
+          "fixtureEntries": 89,
+          "meetingStates": {
+            "accepted": 3,
+            "partial": 50,
+            "pending": 35,
+            "programme_without_race_count": 1
+          },
+          "exceptions": [
+            {
+              "basis": "official_fixture_programme",
+              "date": "2025-09-24",
+              "plannedRaces": 0,
+              "programmeStatusRaw": "24",
+              "venue": "HV",
+              "state": "programme_without_race_count",
+              "cancellationVerified": false
+            }
+          ],
+          "seasonComplete": false,
+          "scope": "retained fixture inventory; missing months and zero-count programme entries do not establish no racing"
+        },
+        "dividends": {
+          "observedRaces": 9,
+          "quotedRows": 144,
+          "scope": "quoted final-dividend tables in accepted results",
+          "stakeNormalized": false
+        },
+        "sourceBudget": {
+          "attempts": 200,
+          "chargedBytes": 31974830,
+          "unresolved": [],
+          "limits": {
+            "attempts": 200,
+            "bytes": 67108864
+          },
+          "resetsAt": "2026-10-28T00:00:00.000Z",
+          "durable": true
+        },
+        "familyStateEvidence": "all-gates-audit-20261027.json"
       },
-      "version": null,
+      "version": "racing-results-v1-637469f489a3d2f206f9189c55a582c83fdbd7a841bdbc79f79107619d7f924e",
       "evidence": [
         "racing-archive-live-release-20261027.json",
         "RACING-ARCHIVE-LIVE-RELEASE.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Resume only missing historical coverage under the existing source budget and schedule; separately qualify declarations, remaining families and ordinary trigger provenance."
+      "nextAction": "Resume the existing bounded scheduler after the 28 October 00:00 UTC budget reset; preserve original 2025/26 inventory, fixture exceptions and every unqualified family.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W05.racing-recent-results",
       "workPackage": "W05",
       "state": "partial",
-      "dependency": [],
+      "dependency": [
+        "existing_daily_source_allowance",
+        "actual_family_and_fixture_evidence"
+      ],
       "actualCoverage": {
-        "meetings": 15,
-        "races": 147,
-        "resultRows": 1840,
-        "earliest": "2026-07-15",
-        "latest": "2026-10-25",
-        "originalHeldTarget": "2026-07-15 HV",
-        "targetRaces": 9,
-        "targetRows": 107,
-        "archiveRoutingHoldResolved": true,
-        "broaderSeasonComplete": false,
-        "recentMeetings": 14,
-        "historicalMeetings": 1
+        "acceptedCoverage": {
+          "meetings": 17,
+          "races": 167,
+          "resultRows": 2100,
+          "earliest": "2026-07-08",
+          "latest": "2026-10-25"
+        },
+        "acceptedDatedProfiles": 39,
+        "originalSeason": {
+          "season": "2025/26",
+          "originalHistoricalTarget": true,
+          "observedFixtureMonths": [
+            "2025-09",
+            "2025-10",
+            "2025-11",
+            "2025-12",
+            "2026-01",
+            "2026-02",
+            "2026-03",
+            "2026-04",
+            "2026-05",
+            "2026-06",
+            "2026-07"
+          ],
+          "unavailableFixtureMonths": [],
+          "unobservedFixtureMonths": [
+            "2026-08"
+          ],
+          "fixtureEntries": 89,
+          "meetingStates": {
+            "accepted": 3,
+            "partial": 50,
+            "pending": 35,
+            "programme_without_race_count": 1
+          },
+          "exceptions": [
+            {
+              "basis": "official_fixture_programme",
+              "date": "2025-09-24",
+              "plannedRaces": 0,
+              "programmeStatusRaw": "24",
+              "venue": "HV",
+              "state": "programme_without_race_count",
+              "cancellationVerified": false
+            }
+          ],
+          "seasonComplete": false,
+          "scope": "retained fixture inventory; missing months and zero-count programme entries do not establish no racing"
+        },
+        "dividends": {
+          "observedRaces": 9,
+          "quotedRows": 144,
+          "scope": "quoted final-dividend tables in accepted results",
+          "stakeNormalized": false
+        },
+        "sourceBudget": {
+          "attempts": 200,
+          "chargedBytes": 31974830,
+          "unresolved": [],
+          "limits": {
+            "attempts": 200,
+            "bytes": 67108864
+          },
+          "resetsAt": "2026-10-28T00:00:00.000Z",
+          "durable": true
+        },
+        "familyStateEvidence": "all-gates-audit-20261027.json"
       },
-      "version": "racing-results-v1-06c92779a44dfbe95e9e15eff543b67352063cb02896df9f83d6d25c72d1e124",
+      "version": "racing-results-v1-637469f489a3d2f206f9189c55a582c83fdbd7a841bdbc79f79107619d7f924e",
       "evidence": [
         "racing-archive-live-release-20261027.json",
         "RACING-ARCHIVE-LIVE-RELEASE.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Resume only missing historical coverage under the existing source budget and schedule; separately qualify declarations, remaining families and ordinary trigger provenance."
+      "nextAction": "Resume the existing bounded scheduler after the 28 October 00:00 UTC budget reset; preserve original 2025/26 inventory, fixture exceptions and every unqualified family.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W05.racing-declarations-reconciliation",
       "workPackage": "W05",
       "state": "pending",
-      "dependency": [],
-      "actualCoverage": null,
-      "version": null,
+      "dependency": [
+        "existing_daily_source_allowance",
+        "actual_family_and_fixture_evidence"
+      ],
+      "actualCoverage": {
+        "acceptedCoverage": {
+          "meetings": 17,
+          "races": 167,
+          "resultRows": 2100,
+          "earliest": "2026-07-08",
+          "latest": "2026-10-25"
+        },
+        "acceptedDatedProfiles": 39,
+        "originalSeason": {
+          "season": "2025/26",
+          "originalHistoricalTarget": true,
+          "observedFixtureMonths": [
+            "2025-09",
+            "2025-10",
+            "2025-11",
+            "2025-12",
+            "2026-01",
+            "2026-02",
+            "2026-03",
+            "2026-04",
+            "2026-05",
+            "2026-06",
+            "2026-07"
+          ],
+          "unavailableFixtureMonths": [],
+          "unobservedFixtureMonths": [
+            "2026-08"
+          ],
+          "fixtureEntries": 89,
+          "meetingStates": {
+            "accepted": 3,
+            "partial": 50,
+            "pending": 35,
+            "programme_without_race_count": 1
+          },
+          "exceptions": [
+            {
+              "basis": "official_fixture_programme",
+              "date": "2025-09-24",
+              "plannedRaces": 0,
+              "programmeStatusRaw": "24",
+              "venue": "HV",
+              "state": "programme_without_race_count",
+              "cancellationVerified": false
+            }
+          ],
+          "seasonComplete": false,
+          "scope": "retained fixture inventory; missing months and zero-count programme entries do not establish no racing"
+        },
+        "dividends": {
+          "observedRaces": 9,
+          "quotedRows": 144,
+          "scope": "quoted final-dividend tables in accepted results",
+          "stakeNormalized": false
+        },
+        "sourceBudget": {
+          "attempts": 200,
+          "chargedBytes": 31974830,
+          "unresolved": [],
+          "limits": {
+            "attempts": 200,
+            "bytes": 67108864
+          },
+          "resetsAt": "2026-10-28T00:00:00.000Z",
+          "durable": true
+        },
+        "familyStateEvidence": "all-gates-audit-20261027.json"
+      },
+      "version": "racing-results-v1-637469f489a3d2f206f9189c55a582c83fdbd7a841bdbc79f79107619d7f924e",
       "evidence": [],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Resume the existing bounded scheduler after the 28 October 00:00 UTC budget reset; preserve original 2025/26 inventory, fixture exceptions and every unqualified family.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W05.racing-full-participant-profiles",
       "workPackage": "W05",
       "state": "partial",
-      "dependency": [],
+      "dependency": [
+        "existing_daily_source_allowance",
+        "actual_family_and_fixture_evidence"
+      ],
       "actualCoverage": {
-        "acceptedDatedProfiles": 5,
-        "wholeCohortComplete": false,
-        "completeCareerHistory": false
+        "acceptedCoverage": {
+          "meetings": 17,
+          "races": 167,
+          "resultRows": 2100,
+          "earliest": "2026-07-08",
+          "latest": "2026-10-25"
+        },
+        "acceptedDatedProfiles": 39,
+        "originalSeason": {
+          "season": "2025/26",
+          "originalHistoricalTarget": true,
+          "observedFixtureMonths": [
+            "2025-09",
+            "2025-10",
+            "2025-11",
+            "2025-12",
+            "2026-01",
+            "2026-02",
+            "2026-03",
+            "2026-04",
+            "2026-05",
+            "2026-06",
+            "2026-07"
+          ],
+          "unavailableFixtureMonths": [],
+          "unobservedFixtureMonths": [
+            "2026-08"
+          ],
+          "fixtureEntries": 89,
+          "meetingStates": {
+            "accepted": 3,
+            "partial": 50,
+            "pending": 35,
+            "programme_without_race_count": 1
+          },
+          "exceptions": [
+            {
+              "basis": "official_fixture_programme",
+              "date": "2025-09-24",
+              "plannedRaces": 0,
+              "programmeStatusRaw": "24",
+              "venue": "HV",
+              "state": "programme_without_race_count",
+              "cancellationVerified": false
+            }
+          ],
+          "seasonComplete": false,
+          "scope": "retained fixture inventory; missing months and zero-count programme entries do not establish no racing"
+        },
+        "dividends": {
+          "observedRaces": 9,
+          "quotedRows": 144,
+          "scope": "quoted final-dividend tables in accepted results",
+          "stakeNormalized": false
+        },
+        "sourceBudget": {
+          "attempts": 200,
+          "chargedBytes": 31974830,
+          "unresolved": [],
+          "limits": {
+            "attempts": 200,
+            "bytes": 67108864
+          },
+          "resetsAt": "2026-10-28T00:00:00.000Z",
+          "durable": true
+        },
+        "familyStateEvidence": "all-gates-audit-20261027.json"
       },
-      "version": "9828dc0c2a59392dad0f58c5cfb5d8529495b8d7",
+      "version": "racing-results-v1-637469f489a3d2f206f9189c55a582c83fdbd7a841bdbc79f79107619d7f924e",
       "evidence": [
         "production-release-20261027.json",
         "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Resolve the preserved source redirect, then continue the bounded cohort and remaining profile families"
+      "nextAction": "Resume the existing bounded scheduler after the 28 October 00:00 UTC budget reset; preserve original 2025/26 inventory, fixture exceptions and every unqualified family.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W05.racing-sectionals-dividends",
       "workPackage": "W05",
       "state": "partial",
-      "dependency": [],
+      "dependency": [
+        "existing_daily_source_allowance",
+        "actual_family_and_fixture_evidence"
+      ],
       "actualCoverage": {
-        "selectedMeetingDividendRaces": 9,
-        "selectedMeetingRaces": 9,
-        "quotedRows": 144,
-        "sourceAnyCombinationMarkerPreserved": true,
-        "sectionalsComplete": false,
-        "seasonComplete": false
+        "acceptedCoverage": {
+          "meetings": 17,
+          "races": 167,
+          "resultRows": 2100,
+          "earliest": "2026-07-08",
+          "latest": "2026-10-25"
+        },
+        "acceptedDatedProfiles": 39,
+        "originalSeason": {
+          "season": "2025/26",
+          "originalHistoricalTarget": true,
+          "observedFixtureMonths": [
+            "2025-09",
+            "2025-10",
+            "2025-11",
+            "2025-12",
+            "2026-01",
+            "2026-02",
+            "2026-03",
+            "2026-04",
+            "2026-05",
+            "2026-06",
+            "2026-07"
+          ],
+          "unavailableFixtureMonths": [],
+          "unobservedFixtureMonths": [
+            "2026-08"
+          ],
+          "fixtureEntries": 89,
+          "meetingStates": {
+            "accepted": 3,
+            "partial": 50,
+            "pending": 35,
+            "programme_without_race_count": 1
+          },
+          "exceptions": [
+            {
+              "basis": "official_fixture_programme",
+              "date": "2025-09-24",
+              "plannedRaces": 0,
+              "programmeStatusRaw": "24",
+              "venue": "HV",
+              "state": "programme_without_race_count",
+              "cancellationVerified": false
+            }
+          ],
+          "seasonComplete": false,
+          "scope": "retained fixture inventory; missing months and zero-count programme entries do not establish no racing"
+        },
+        "dividends": {
+          "observedRaces": 9,
+          "quotedRows": 144,
+          "scope": "quoted final-dividend tables in accepted results",
+          "stakeNormalized": false
+        },
+        "sourceBudget": {
+          "attempts": 200,
+          "chargedBytes": 31974830,
+          "unresolved": [],
+          "limits": {
+            "attempts": 200,
+            "bytes": 67108864
+          },
+          "resetsAt": "2026-10-28T00:00:00.000Z",
+          "durable": true
+        },
+        "familyStateEvidence": "all-gates-audit-20261027.json"
       },
-      "version": "de0324a80dc35de550054b6bd42acdde367643af",
+      "version": "racing-results-v1-637469f489a3d2f206f9189c55a582c83fdbd7a841bdbc79f79107619d7f924e",
       "evidence": [
         "dividends-live-release-20261027.json",
         "dividends-complete-meeting-20261027.json"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and qualify sectionals and remaining Racing families; continue bounded historical inventory"
+      "nextAction": "Resume the existing bounded scheduler after the 28 October 00:00 UTC budget reset; preserve original 2025/26 inventory, fixture exceptions and every unqualified family.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W05.racing-trials-rankings",
       "workPackage": "W05",
       "state": "pending",
-      "dependency": [],
-      "actualCoverage": null,
-      "version": null,
+      "dependency": [
+        "existing_daily_source_allowance",
+        "actual_family_and_fixture_evidence"
+      ],
+      "actualCoverage": {
+        "acceptedCoverage": {
+          "meetings": 17,
+          "races": 167,
+          "resultRows": 2100,
+          "earliest": "2026-07-08",
+          "latest": "2026-10-25"
+        },
+        "acceptedDatedProfiles": 39,
+        "originalSeason": {
+          "season": "2025/26",
+          "originalHistoricalTarget": true,
+          "observedFixtureMonths": [
+            "2025-09",
+            "2025-10",
+            "2025-11",
+            "2025-12",
+            "2026-01",
+            "2026-02",
+            "2026-03",
+            "2026-04",
+            "2026-05",
+            "2026-06",
+            "2026-07"
+          ],
+          "unavailableFixtureMonths": [],
+          "unobservedFixtureMonths": [
+            "2026-08"
+          ],
+          "fixtureEntries": 89,
+          "meetingStates": {
+            "accepted": 3,
+            "partial": 50,
+            "pending": 35,
+            "programme_without_race_count": 1
+          },
+          "exceptions": [
+            {
+              "basis": "official_fixture_programme",
+              "date": "2025-09-24",
+              "plannedRaces": 0,
+              "programmeStatusRaw": "24",
+              "venue": "HV",
+              "state": "programme_without_race_count",
+              "cancellationVerified": false
+            }
+          ],
+          "seasonComplete": false,
+          "scope": "retained fixture inventory; missing months and zero-count programme entries do not establish no racing"
+        },
+        "dividends": {
+          "observedRaces": 9,
+          "quotedRows": 144,
+          "scope": "quoted final-dividend tables in accepted results",
+          "stakeNormalized": false
+        },
+        "sourceBudget": {
+          "attempts": 200,
+          "chargedBytes": 31974830,
+          "unresolved": [],
+          "limits": {
+            "attempts": 200,
+            "bytes": 67108864
+          },
+          "resetsAt": "2026-10-28T00:00:00.000Z",
+          "durable": true
+        },
+        "familyStateEvidence": "all-gates-audit-20261027.json"
+      },
+      "version": "racing-results-v1-637469f489a3d2f206f9189c55a582c83fdbd7a841bdbc79f79107619d7f924e",
       "evidence": [],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Resume the existing bounded scheduler after the 28 October 00:00 UTC budget reset; preserve original 2025/26 inventory, fixture exceptions and every unqualified family.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W05.racing-track-conditions-jackpots",
       "workPackage": "W05",
       "state": "pending",
-      "dependency": [],
-      "actualCoverage": null,
-      "version": null,
+      "dependency": [
+        "existing_daily_source_allowance",
+        "actual_family_and_fixture_evidence"
+      ],
+      "actualCoverage": {
+        "acceptedCoverage": {
+          "meetings": 17,
+          "races": 167,
+          "resultRows": 2100,
+          "earliest": "2026-07-08",
+          "latest": "2026-10-25"
+        },
+        "acceptedDatedProfiles": 39,
+        "originalSeason": {
+          "season": "2025/26",
+          "originalHistoricalTarget": true,
+          "observedFixtureMonths": [
+            "2025-09",
+            "2025-10",
+            "2025-11",
+            "2025-12",
+            "2026-01",
+            "2026-02",
+            "2026-03",
+            "2026-04",
+            "2026-05",
+            "2026-06",
+            "2026-07"
+          ],
+          "unavailableFixtureMonths": [],
+          "unobservedFixtureMonths": [
+            "2026-08"
+          ],
+          "fixtureEntries": 89,
+          "meetingStates": {
+            "accepted": 3,
+            "partial": 50,
+            "pending": 35,
+            "programme_without_race_count": 1
+          },
+          "exceptions": [
+            {
+              "basis": "official_fixture_programme",
+              "date": "2025-09-24",
+              "plannedRaces": 0,
+              "programmeStatusRaw": "24",
+              "venue": "HV",
+              "state": "programme_without_race_count",
+              "cancellationVerified": false
+            }
+          ],
+          "seasonComplete": false,
+          "scope": "retained fixture inventory; missing months and zero-count programme entries do not establish no racing"
+        },
+        "dividends": {
+          "observedRaces": 9,
+          "quotedRows": 144,
+          "scope": "quoted final-dividend tables in accepted results",
+          "stakeNormalized": false
+        },
+        "sourceBudget": {
+          "attempts": 200,
+          "chargedBytes": 31974830,
+          "unresolved": [],
+          "limits": {
+            "attempts": 200,
+            "bytes": 67108864
+          },
+          "resetsAt": "2026-10-28T00:00:00.000Z",
+          "durable": true
+        },
+        "familyStateEvidence": "all-gates-audit-20261027.json"
+      },
+      "version": "racing-results-v1-637469f489a3d2f206f9189c55a582c83fdbd7a841bdbc79f79107619d7f924e",
       "evidence": [],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Resume the existing bounded scheduler after the 28 October 00:00 UTC budget reset; preserve original 2025/26 inventory, fixture exceptions and every unqualified family.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W05.racing-odds-pool-changes-series",
       "workPackage": "W05",
       "state": "pending",
-      "dependency": [],
-      "actualCoverage": null,
-      "version": null,
+      "dependency": [
+        "existing_daily_source_allowance",
+        "actual_family_and_fixture_evidence"
+      ],
+      "actualCoverage": {
+        "acceptedCoverage": {
+          "meetings": 17,
+          "races": 167,
+          "resultRows": 2100,
+          "earliest": "2026-07-08",
+          "latest": "2026-10-25"
+        },
+        "acceptedDatedProfiles": 39,
+        "originalSeason": {
+          "season": "2025/26",
+          "originalHistoricalTarget": true,
+          "observedFixtureMonths": [
+            "2025-09",
+            "2025-10",
+            "2025-11",
+            "2025-12",
+            "2026-01",
+            "2026-02",
+            "2026-03",
+            "2026-04",
+            "2026-05",
+            "2026-06",
+            "2026-07"
+          ],
+          "unavailableFixtureMonths": [],
+          "unobservedFixtureMonths": [
+            "2026-08"
+          ],
+          "fixtureEntries": 89,
+          "meetingStates": {
+            "accepted": 3,
+            "partial": 50,
+            "pending": 35,
+            "programme_without_race_count": 1
+          },
+          "exceptions": [
+            {
+              "basis": "official_fixture_programme",
+              "date": "2025-09-24",
+              "plannedRaces": 0,
+              "programmeStatusRaw": "24",
+              "venue": "HV",
+              "state": "programme_without_race_count",
+              "cancellationVerified": false
+            }
+          ],
+          "seasonComplete": false,
+          "scope": "retained fixture inventory; missing months and zero-count programme entries do not establish no racing"
+        },
+        "dividends": {
+          "observedRaces": 9,
+          "quotedRows": 144,
+          "scope": "quoted final-dividend tables in accepted results",
+          "stakeNormalized": false
+        },
+        "sourceBudget": {
+          "attempts": 200,
+          "chargedBytes": 31974830,
+          "unresolved": [],
+          "limits": {
+            "attempts": 200,
+            "bytes": 67108864
+          },
+          "resetsAt": "2026-10-28T00:00:00.000Z",
+          "durable": true
+        },
+        "familyStateEvidence": "all-gates-audit-20261027.json"
+      },
+      "version": "racing-results-v1-637469f489a3d2f206f9189c55a582c83fdbd7a841bdbc79f79107619d7f924e",
       "evidence": [],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Resume the existing bounded scheduler after the 28 October 00:00 UTC budget reset; preserve original 2025/26 inventory, fixture exceptions and every unqualified family.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W05.racing-narrative-output-disposition",
       "workPackage": "W05",
       "state": "pending",
-      "dependency": [],
-      "actualCoverage": null,
-      "version": null,
+      "dependency": [
+        "existing_daily_source_allowance",
+        "actual_family_and_fixture_evidence"
+      ],
+      "actualCoverage": {
+        "acceptedCoverage": {
+          "meetings": 17,
+          "races": 167,
+          "resultRows": 2100,
+          "earliest": "2026-07-08",
+          "latest": "2026-10-25"
+        },
+        "acceptedDatedProfiles": 39,
+        "originalSeason": {
+          "season": "2025/26",
+          "originalHistoricalTarget": true,
+          "observedFixtureMonths": [
+            "2025-09",
+            "2025-10",
+            "2025-11",
+            "2025-12",
+            "2026-01",
+            "2026-02",
+            "2026-03",
+            "2026-04",
+            "2026-05",
+            "2026-06",
+            "2026-07"
+          ],
+          "unavailableFixtureMonths": [],
+          "unobservedFixtureMonths": [
+            "2026-08"
+          ],
+          "fixtureEntries": 89,
+          "meetingStates": {
+            "accepted": 3,
+            "partial": 50,
+            "pending": 35,
+            "programme_without_race_count": 1
+          },
+          "exceptions": [
+            {
+              "basis": "official_fixture_programme",
+              "date": "2025-09-24",
+              "plannedRaces": 0,
+              "programmeStatusRaw": "24",
+              "venue": "HV",
+              "state": "programme_without_race_count",
+              "cancellationVerified": false
+            }
+          ],
+          "seasonComplete": false,
+          "scope": "retained fixture inventory; missing months and zero-count programme entries do not establish no racing"
+        },
+        "dividends": {
+          "observedRaces": 9,
+          "quotedRows": 144,
+          "scope": "quoted final-dividend tables in accepted results",
+          "stakeNormalized": false
+        },
+        "sourceBudget": {
+          "attempts": 200,
+          "chargedBytes": 31974830,
+          "unresolved": [],
+          "limits": {
+            "attempts": 200,
+            "bytes": 67108864
+          },
+          "resetsAt": "2026-10-28T00:00:00.000Z",
+          "durable": true
+        },
+        "familyStateEvidence": "all-gates-audit-20261027.json"
+      },
+      "version": "racing-results-v1-637469f489a3d2f206f9189c55a582c83fdbd7a841bdbc79f79107619d7f924e",
       "evidence": [],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Resume the existing bounded scheduler after the 28 October 00:00 UTC budget reset; preserve original 2025/26 inventory, fixture exceptions and every unqualified family.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W05.racing-rest-mcp-browser-zips",
       "workPackage": "W05",
       "state": "partial",
-      "dependency": [],
+      "dependency": [
+        "existing_daily_source_allowance",
+        "actual_family_and_fixture_evidence"
+      ],
       "actualCoverage": {
-        "meetings": 15,
-        "races": 147,
-        "resultRows": 1840,
-        "earliest": "2026-07-15",
-        "latest": "2026-10-25",
-        "originalHeldTarget": "2026-07-15 HV",
-        "targetRaces": 9,
-        "targetRows": 107,
-        "archiveRoutingHoldResolved": true,
-        "broaderSeasonComplete": false,
-        "recentMeetings": 14,
-        "historicalMeetings": 1
+        "acceptedCoverage": {
+          "meetings": 17,
+          "races": 167,
+          "resultRows": 2100,
+          "earliest": "2026-07-08",
+          "latest": "2026-10-25"
+        },
+        "acceptedDatedProfiles": 39,
+        "originalSeason": {
+          "season": "2025/26",
+          "originalHistoricalTarget": true,
+          "observedFixtureMonths": [
+            "2025-09",
+            "2025-10",
+            "2025-11",
+            "2025-12",
+            "2026-01",
+            "2026-02",
+            "2026-03",
+            "2026-04",
+            "2026-05",
+            "2026-06",
+            "2026-07"
+          ],
+          "unavailableFixtureMonths": [],
+          "unobservedFixtureMonths": [
+            "2026-08"
+          ],
+          "fixtureEntries": 89,
+          "meetingStates": {
+            "accepted": 3,
+            "partial": 50,
+            "pending": 35,
+            "programme_without_race_count": 1
+          },
+          "exceptions": [
+            {
+              "basis": "official_fixture_programme",
+              "date": "2025-09-24",
+              "plannedRaces": 0,
+              "programmeStatusRaw": "24",
+              "venue": "HV",
+              "state": "programme_without_race_count",
+              "cancellationVerified": false
+            }
+          ],
+          "seasonComplete": false,
+          "scope": "retained fixture inventory; missing months and zero-count programme entries do not establish no racing"
+        },
+        "dividends": {
+          "observedRaces": 9,
+          "quotedRows": 144,
+          "scope": "quoted final-dividend tables in accepted results",
+          "stakeNormalized": false
+        },
+        "sourceBudget": {
+          "attempts": 200,
+          "chargedBytes": 31974830,
+          "unresolved": [],
+          "limits": {
+            "attempts": 200,
+            "bytes": 67108864
+          },
+          "resetsAt": "2026-10-28T00:00:00.000Z",
+          "durable": true
+        },
+        "familyStateEvidence": "all-gates-audit-20261027.json"
       },
-      "version": "9828dc0c2a59392dad0f58c5cfb5d8529495b8d7",
+      "version": "racing-results-v1-637469f489a3d2f206f9189c55a582c83fdbd7a841bdbc79f79107619d7f924e",
       "evidence": [
         "racing-archive-live-release-20261027.json",
         "RACING-ARCHIVE-LIVE-RELEASE.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Resume only missing historical coverage under the existing source budget and schedule; separately qualify declarations, remaining families and ordinary trigger provenance."
+      "nextAction": "Resume the existing bounded scheduler after the 28 October 00:00 UTC budget reset; preserve original 2025/26 inventory, fixture exceptions and every unqualified family.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W05.racing-ordinary-ingestion-fresh-recovery",
       "workPackage": "W05",
       "state": "partial",
-      "dependency": [],
+      "dependency": [
+        "existing_daily_source_allowance",
+        "actual_family_and_fixture_evidence"
+      ],
       "actualCoverage": {
-        "meetings": 15,
-        "races": 147,
-        "resultRows": 1840,
-        "earliest": "2026-07-15",
-        "latest": "2026-10-25",
-        "originalHeldTarget": "2026-07-15 HV",
-        "targetRaces": 9,
-        "targetRows": 107,
-        "archiveRoutingHoldResolved": true,
-        "broaderSeasonComplete": false,
-        "recentMeetings": 14,
-        "historicalMeetings": 1
+        "acceptedCoverage": {
+          "meetings": 17,
+          "races": 167,
+          "resultRows": 2100,
+          "earliest": "2026-07-08",
+          "latest": "2026-10-25"
+        },
+        "acceptedDatedProfiles": 39,
+        "originalSeason": {
+          "season": "2025/26",
+          "originalHistoricalTarget": true,
+          "observedFixtureMonths": [
+            "2025-09",
+            "2025-10",
+            "2025-11",
+            "2025-12",
+            "2026-01",
+            "2026-02",
+            "2026-03",
+            "2026-04",
+            "2026-05",
+            "2026-06",
+            "2026-07"
+          ],
+          "unavailableFixtureMonths": [],
+          "unobservedFixtureMonths": [
+            "2026-08"
+          ],
+          "fixtureEntries": 89,
+          "meetingStates": {
+            "accepted": 3,
+            "partial": 50,
+            "pending": 35,
+            "programme_without_race_count": 1
+          },
+          "exceptions": [
+            {
+              "basis": "official_fixture_programme",
+              "date": "2025-09-24",
+              "plannedRaces": 0,
+              "programmeStatusRaw": "24",
+              "venue": "HV",
+              "state": "programme_without_race_count",
+              "cancellationVerified": false
+            }
+          ],
+          "seasonComplete": false,
+          "scope": "retained fixture inventory; missing months and zero-count programme entries do not establish no racing"
+        },
+        "dividends": {
+          "observedRaces": 9,
+          "quotedRows": 144,
+          "scope": "quoted final-dividend tables in accepted results",
+          "stakeNormalized": false
+        },
+        "sourceBudget": {
+          "attempts": 200,
+          "chargedBytes": 31974830,
+          "unresolved": [],
+          "limits": {
+            "attempts": 200,
+            "bytes": 67108864
+          },
+          "resetsAt": "2026-10-28T00:00:00.000Z",
+          "durable": true
+        },
+        "familyStateEvidence": "all-gates-audit-20261027.json"
       },
-      "version": "9828dc0c2a59392dad0f58c5cfb5d8529495b8d7",
+      "version": "racing-results-v1-637469f489a3d2f206f9189c55a582c83fdbd7a841bdbc79f79107619d7f924e",
       "evidence": [
         "racing-archive-live-release-20261027.json",
         "RACING-ARCHIVE-LIVE-RELEASE.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Resume only missing historical coverage under the existing source budget and schedule; separately qualify declarations, remaining families and ordinary trigger provenance."
+      "nextAction": "Resume the existing bounded scheduler after the 28 October 00:00 UTC budget reset; preserve original 2025/26 inventory, fixture exceptions and every unqualified family.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W06.hkex-webb-archive-preserved",
       "workPackage": "W06",
       "state": "pending",
-      "dependency": [],
+      "dependency": [
+        "qualified_filing_date_inventory",
+        "in_scope_real_form_parsers",
+        "issuer_security_identity",
+        "amendment_withdrawal_closure",
+        "accepted_recovery_and_live_modes"
+      ],
       "actualCoverage": null,
       "version": null,
       "evidence": [],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Keep archive/daily feeds usable; qualify a complete seven-day filing-date inventory, every in-scope form/channel and revision/withdrawal closure before activating full filings.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W06.hkex-145-amendment-reference-audit",
       "workPackage": "W06",
       "state": "partial",
-      "dependency": [],
+      "dependency": [
+        "qualified_filing_date_inventory",
+        "in_scope_real_form_parsers",
+        "issuer_security_identity",
+        "amendment_withdrawal_closure",
+        "accepted_recovery_and_live_modes"
+      ],
       "actualCoverage": {
         "archiveReferenceRows": 8313,
         "resolvedSupersedingEdges": 4205,
@@ -942,7 +1907,11 @@
         "FOLLOWUP-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Qualify legacy target access and all target/relation/withdrawal semantics without rewriting immutable Webb identity or treating reachability as closure."
+      "nextAction": "Keep archive/daily feeds usable; qualify a complete seven-day filing-date inventory, every in-scope form/channel and revision/withdrawal closure before activating full filings.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W06.hkex-daily-ordinary-occurrence",
@@ -960,7 +1929,11 @@
         "RESUMED-DATA-WORK-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Continue normal schedule; fresh accepted recovery and report-gap warnings verified separately"
+      "nextAction": "Keep archive/daily feeds usable; qualify a complete seven-day filing-date inventory, every in-scope form/channel and revision/withdrawal closure before activating full filings.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W06.hkex-daily-report-gap-handling",
@@ -984,7 +1957,11 @@
         "hkex-fresh-public-proof-20261027.json"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Retain normal scheduled operation; full-filing coverage remains independently gated"
+      "nextAction": "Keep archive/daily feeds usable; qualify a complete seven-day filing-date inventory, every in-scope form/channel and revision/withdrawal closure before activating full filings.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W06.hkex-daily-fresh-recovery",
@@ -1004,18 +1981,28 @@
         "hkex-normal-recovery-20261027.json"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Retain normal scheduled operation; full-filing coverage remains independently gated"
+      "nextAction": "Keep archive/daily feeds usable; qualify a complete seven-day filing-date inventory, every in-scope form/channel and revision/withdrawal closure before activating full filings.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W06.hkex-real-listing-document-transport-parser",
       "workPackage": "W06",
       "state": "in_progress",
-      "dependency": [],
+      "dependency": [
+        "qualified_filing_date_inventory",
+        "in_scope_real_form_parsers",
+        "issuer_security_identity",
+        "amendment_withdrawal_closure",
+        "accepted_recovery_and_live_modes"
+      ],
       "actualCoverage": {
-        "realForm3BTechnicalReads": 3,
-        "rawHtmlRetained": false,
-        "filingDateLabelObserved": true,
-        "publishedFullFilingWindow": false
+        "Form3BCandidate": "integrated from PR107 with outgoing-revision/withdrawal fail-closed repair",
+        "completeFilingDateListing": false,
+        "otherFormsQualified": false,
+        "productionAcceptedFullFilingVersion": null
       },
       "version": null,
       "evidence": [
@@ -1023,51 +2010,95 @@
         "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement real provider inventory/parser with source identity, missing fields and revision closure; do not substitute daily summaries"
+      "nextAction": "Keep archive/daily feeds usable; qualify a complete seven-day filing-date inventory, every in-scope form/channel and revision/withdrawal closure before activating full filings.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W06.hkex-filing-window-revision-closure",
       "workPackage": "W06",
       "state": "pending",
-      "dependency": [],
+      "dependency": [
+        "qualified_filing_date_inventory",
+        "in_scope_real_form_parsers",
+        "issuer_security_identity",
+        "amendment_withdrawal_closure",
+        "accepted_recovery_and_live_modes"
+      ],
       "actualCoverage": null,
       "version": null,
       "evidence": [],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Keep archive/daily feeds usable; qualify a complete seven-day filing-date inventory, every in-scope form/channel and revision/withdrawal closure before activating full filings.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W06.hkex-one-issuer-seven-day-pilot",
       "workPackage": "W06",
       "state": "pending",
-      "dependency": [],
+      "dependency": [
+        "qualified_filing_date_inventory",
+        "in_scope_real_form_parsers",
+        "issuer_security_identity",
+        "amendment_withdrawal_closure",
+        "accepted_recovery_and_live_modes"
+      ],
       "actualCoverage": null,
       "version": null,
       "evidence": [],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Keep archive/daily feeds usable; qualify a complete seven-day filing-date inventory, every in-scope form/channel and revision/withdrawal closure before activating full filings.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W06.hkex-declared-coverage-expansion",
       "workPackage": "W06",
       "state": "pending",
-      "dependency": [],
+      "dependency": [
+        "qualified_filing_date_inventory",
+        "in_scope_real_form_parsers",
+        "issuer_security_identity",
+        "amendment_withdrawal_closure",
+        "accepted_recovery_and_live_modes"
+      ],
       "actualCoverage": null,
       "version": null,
       "evidence": [],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Keep archive/daily feeds usable; qualify a complete seven-day filing-date inventory, every in-scope form/channel and revision/withdrawal closure before activating full filings.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W06.hkex-rest-mcp-browser-exports",
       "workPackage": "W06",
       "state": "pending",
-      "dependency": [],
+      "dependency": [
+        "qualified_filing_date_inventory",
+        "in_scope_real_form_parsers",
+        "issuer_security_identity",
+        "amendment_withdrawal_closure",
+        "accepted_recovery_and_live_modes"
+      ],
       "actualCoverage": null,
       "version": null,
       "evidence": [],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Keep archive/daily feeds usable; qualify a complete seven-day filing-date inventory, every in-scope form/channel and revision/withdrawal closure before activating full filings.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W07.four-family-archive-live-discovery",
@@ -1078,7 +2109,11 @@
       "version": null,
       "evidence": [],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Verify archive/live discovery and bilingual states for each actually available source; unavailable modes remain explicit pending source/data/authority gates.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W07.source-bound-deterministic-health",
@@ -1089,7 +2124,11 @@
       "version": null,
       "evidence": [],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Verify archive/live discovery and bilingual states for each actually available source; unavailable modes remain explicit pending source/data/authority gates.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W07.bilingual-mobile-keyboard-states",
@@ -1115,7 +2154,11 @@
         "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Complete remaining-family and full original-company cohort UX acceptance"
+      "nextAction": "Verify archive/live discovery and bilingual states for each actually available source; unavailable modes remain explicit pending source/data/authority gates.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W08.source-scoped-pr-review",
@@ -1156,7 +2199,11 @@
         "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Keep broader four-family acceptance incomplete; preserve each source/version proof separately"
+      "nextAction": "Complete exact-head hooks, required CI, serialized release, actual runtime adoption and fresh accepted restores; final matrix stays incomplete while any source/data/authority gate remains.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W08.exact-head-checks-real-postgres-ci",
@@ -1197,7 +2244,11 @@
         "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Keep broader four-family acceptance incomplete; preserve each source/version proof separately"
+      "nextAction": "Complete exact-head hooks, required CI, serialized release, actual runtime adoption and fresh accepted restores; final matrix stays incomplete while any source/data/authority gate remains.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W08.serialized-release-runtime-adoption",
@@ -1238,7 +2289,11 @@
         "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Keep broader four-family acceptance incomplete; preserve each source/version proof separately"
+      "nextAction": "Complete exact-head hooks, required CI, serialized release, actual runtime adoption and fresh accepted restores; final matrix stays incomplete while any source/data/authority gate remains.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W08.all-five-crons-source-timers-restored",
@@ -1279,7 +2334,11 @@
         "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Keep broader four-family acceptance incomplete; preserve each source/version proof separately"
+      "nextAction": "Complete exact-head hooks, required CI, serialized release, actual runtime adoption and fresh accepted restores; final matrix stays incomplete while any source/data/authority gate remains.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W08.live-parity-rollback-fresh-restores",
@@ -1320,7 +2379,11 @@
         "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Keep broader four-family acceptance incomplete; preserve each source/version proof separately"
+      "nextAction": "Complete exact-head hooks, required CI, serialized release, actual runtime adoption and fresh accepted restores; final matrix stays incomplete while any source/data/authority gate remains.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     },
     {
       "id": "W08.final-four-family-matrix",
@@ -1328,10 +2391,24 @@
       "state": "partial",
       "dependency": [],
       "actualCoverage": {
-        "company": "all original 188 files qualified; 168 published; final accepted-version matrix pending normal publication",
-        "sfc": "archive available; fresh cohort/purpose not approved; production policy not activated",
-        "racing": "17 accepted meetings, 167 races, 2100 rows, 38 dated profiles; historical season and other families incomplete",
-        "hkex": "archive and 1585 daily-summary rows; 145 archive amendment targets unresolved; no complete filing-date inventory"
+        "companies": {
+          "originalPairs": 94,
+          "originalFiles": 188,
+          "qualifiedFiles": 188,
+          "publishedQualifiedFiles": 168,
+          "acceptedVersion": "official-799798307f9db9968bd238c02b1de49f",
+          "inventoryPublicationPassed": false,
+          "sourceKeysSha256": "48ecc65094f222c99acb3a930f8036a38fd15bad9fa94f51d68369125458a8fe"
+        },
+        "racing": {
+          "meetings": 17,
+          "races": 167,
+          "resultRows": 2100,
+          "earliest": "2026-07-08",
+          "latest": "2026-10-25"
+        },
+        "sfc": "archive usable; fresh cohort/purpose and activation decisions pending",
+        "hkex": "archive and 1585 daily-summary rows; 145 missing archive targets and full filing inventory/closure pending"
       },
       "version": null,
       "evidence": [
@@ -1340,7 +2417,11 @@
         "FOLLOWUP-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Complete remaining source-specific dependencies and unblocked engineering"
+      "nextAction": "Complete exact-head hooks, required CI, serialized release, actual runtime adoption and fresh accepted restores; final matrix stays incomplete while any source/data/authority gate remains.",
+      "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
+      "reviewEvidence": [
+        "all-gates-audit-20261027.json"
+      ]
     }
   ]
 }
