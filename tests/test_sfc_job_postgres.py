@@ -255,3 +255,66 @@ def test_retained_candidate_cannot_automatically_regress_a_newer_accepted_pointe
         )
     assert state.job_state(policy.sha256)["acceptedVersion"] == newer
     assert state.job_state(policy.sha256)["pendingCandidate"]["version"] == older
+
+
+def test_prebuilt_export_uses_restored_accepted_state_and_fresh_policy(
+    model, tmp_path, monkeypatch
+):
+    from fastapi.testclient import TestClient
+    from sfc_support import source_page
+    from mcp_open_data_hk.curated.backend import create_app
+    from mcp_open_data_hk.curated.sfc.artifacts import build_from_reader
+    from mcp_open_data_hk.curated.sfc import read
+    from mcp_open_data_hk.curated.read import ReadError
+
+    state, base, reader, _ = model
+    policy = fake_policy(route=ROUTE, modes=dict(base.modes, export="allowed"))
+    state.activate(policy, policy.sha256)
+    reader.policy = policy
+    result = run_cycle(
+        state,
+        policy.sha256,
+        datetime.now(timezone.utc),
+        ["ZZZ001"],
+        recovery(state, tmp_path),
+        collector=Collector(
+            state,
+            policy,
+            transport=httpx.MockTransport(
+                lambda request: httpx.Response(
+                    200, content=source_page(), headers={"Content-Type": "text/html"}
+                )
+            ),
+        ),
+        check_recovery=lambda: GATE,
+    )
+    version = result["version"]
+    target = tmp_path / "artifacts"
+    proof = build_from_reader(reader, version, target)
+    monkeypatch.setattr(read, "configured_policy", lambda: policy)
+    monkeypatch.setenv("MCP_HK_SFC_EXPORT_DIRECTORY", str(target))
+    app = create_app(reader.reader, "b" * 40)
+    with TestClient(app) as client:
+        assert client.get("/v1/sfc/exports/" + version).status_code == 401
+        response = client.get(
+            "/v1/sfc/exports/" + version,
+            headers={"Authorization": "Bearer " + "b" * 40},
+        )
+        assert (
+            response.status_code == 200
+            and response.headers["x-content-sha256"] == proof["sha256"]
+        )
+        assert (
+            response.headers["x-sfc-version"] == version
+            and response.content[:2] == b"PK"
+        )
+        state.revoke(policy.sha256)
+        assert (
+            client.get(
+                "/v1/sfc/exports/" + version,
+                headers={"Authorization": "Bearer " + "b" * 40},
+            ).status_code
+            == 503
+        )
+    with pytest.raises(ReadError):
+        reader.artifact_state(version)

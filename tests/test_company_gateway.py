@@ -172,3 +172,48 @@ async def test_grouped_search_requires_adopted_backend_capability(monkeypatch, v
             "search", {"q": "HSBC", "view": view, "groupBy": "organisation"}
         )
     assert error.value.code == "CAPABILITY_UNAVAILABLE"
+
+
+@pytest.mark.asyncio
+async def test_official_search_pinned_version_reaches_backend_and_wrong_version_is_rejected(
+    monkeypatch,
+):
+    monkeypatch.setenv("MCP_HK_CURATED_ORIGIN", "https://archive.example")
+    monkeypatch.setenv("MCP_HK_CURATED_TOKEN", "x" * 32)
+    version = "official-" + "a" * 32
+
+    def upstream(request):
+        assert request.url.params["version"] == version
+        return httpx.Response(
+            200,
+            json={
+                "version": version,
+                "data": [],
+                "provenance": {"view": "latest_observed"},
+                "nextCursor": None,
+            },
+        )
+
+    client = Companies(transport=httpx.MockTransport(upstream))
+    assert (
+        await client.query(
+            "search", {"q": "香港", "view": "latest_observed", "version": version}
+        )
+    )["meta"]["version"] == version
+
+    def wrong(request):
+        return httpx.Response(
+            200,
+            json={
+                "version": "official-" + "b" * 32,
+                "data": [],
+                "provenance": {"view": "latest_observed"},
+                "nextCursor": None,
+            },
+        )
+
+    client.transport = httpx.MockTransport(wrong)
+    with pytest.raises(DomainError, match="version contract"):
+        await client.query(
+            "search", {"q": "香港", "view": "latest_observed", "version": version}
+        )

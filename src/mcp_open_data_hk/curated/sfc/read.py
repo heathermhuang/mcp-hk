@@ -2,6 +2,7 @@
 
 from datetime import datetime, timezone
 import re
+import os
 
 from ..build import connect
 from ..read import ReadError
@@ -54,6 +55,72 @@ def capability_status():
 class SfcReader:
     def __init__(self, reader, policy=None):
         self.reader, self.policy = reader, policy or configured_policy()
+
+    def artifact_state(self, version, mode="browser"):
+        """Fresh metadata for an offline artifact; no full SQL export on a request."""
+        from psycopg.rows import dict_row
+
+        if mode not in {"rest", "mcp", "browser", "export"} or not re.fullmatch(
+            r"sfc-[a-f0-9]{32}", version or ""
+        ):
+            raise ReadError("INVALID_QUERY", "Use an accepted SFC export version")
+        try:
+            self.policy.require(mode, "export", "retention")
+            if not self.reader.slots.acquire(timeout=0.25):
+                raise ReadError("QUERY_BUSY", "Shared query slots busy")
+            try:
+                with connect(
+                    self.reader.dsn,
+                    row_factory=dict_row,
+                    options="-c default_transaction_read_only=on -c statement_timeout=2000 -c lock_timeout=250",
+                ) as conn:
+                    if not safe_reader_role(conn):
+                        raise ReadError("UNSAFE_READER", "Use a SELECT-only reader")
+                    source_reader_safe(conn)
+                    row = conn.execute(
+                        "SELECT v.*,p.record,(SELECT version FROM curated_sfc.pointer) AS current_version FROM curated_sfc.versions v JOIN curated_sfc.policies p ON p.sha256=v.policy_sha256 WHERE v.version=%s AND v.published_at IS NOT NULL AND p.active AND p.revoked_at IS NULL",
+                        (version,),
+                    ).fetchone()
+                    if not row:
+                        raise ReadError(
+                            "SFC_VERSION_UNAVAILABLE", "No accepted SFC export"
+                        )
+                    qualified_manifest(row)
+                    if (
+                        row["manifest"].get("format") != "sfc-public-register-v1"
+                        or (row["restore_proof"] or {}).get("acceptedPointerIncluded")
+                        is not True
+                    ):
+                        raise ReadError(
+                            "SFC_EXPORT_UNAVAILABLE",
+                            "Accepted source and pointer recovery are required",
+                        )
+                    policy = Policy.model_validate(row["record"])
+                    if (
+                        policy.sha256 != self.policy.sha256
+                        or row["policy_sha256"] != policy.sha256
+                    ):
+                        raise ReadError(
+                            "SFC_POLICY_CHANGED", "SFC export policy changed"
+                        )
+                    policy.require(mode, "export", "retention")
+                    if row["current_version"] != version:
+                        policy.require("history")
+                    now = datetime.now(timezone.utc)
+                    if row["expires_at"] <= now:
+                        raise ReadError("VERSION_EXPIRED", "SFC export expired")
+                    return {
+                        "version": version,
+                        "policySha256": policy.sha256,
+                        "factsSha256": row["facts_sha256"],
+                        "expiresAt": row["expires_at"].isoformat(),
+                        "cohort": row["manifest"]["cohort"],
+                        "acceptedAndRestored": True,
+                    }
+            finally:
+                self.reader.slots.release()
+        except Rejected as exc:
+            raise ReadError(str(exc), "SFC export mode is unqualified") from exc
 
     def history(self, ce, version=None, limit=20, cursor=None, mode="rest"):
         """Accepted observation versions only; never inferred regulatory history."""
@@ -362,7 +429,7 @@ class SfcReader:
             raise ReadError(
                 str(exc), "Fresh SFC verification is not qualified"
             ) from exc
-        if mode not in {"rest", "mcp", "browser"}:
+        if mode not in {"rest", "mcp", "browser", "export"}:
             raise ReadError("SFC_MODE_UNQUALIFIED", "Unsupported SFC read mode")
         if version is not None and (not isinstance(version, str) or len(version) > 100):
             raise ReadError("INVALID_QUERY", "Invalid SFC version")
@@ -442,6 +509,34 @@ class SfcReader:
                         "sourceUrl": active.route.replace("{ce}", ce),
                     },
                 }
+                folder = os.environ.get("MCP_HK_SFC_EXPORT_DIRECTORY")
+                if (
+                    folder
+                    and active.modes.get("export") == "allowed"
+                    and (row["restore_proof"] or {}).get("acceptedPointerIncluded")
+                    is True
+                ):
+                    from .artifacts import deliver
+
+                    state = {
+                        "version": row["version"],
+                        "policySha256": active.sha256,
+                        "factsSha256": row["facts_sha256"],
+                        "expiresAt": row["expires_at"].isoformat(),
+                        "cohort": row["manifest"]["cohort"],
+                        "acceptedAndRestored": True,
+                    }
+                    try:
+                        _, descriptor = deliver(
+                            folder,
+                            row["version"],
+                            lambda version: state,
+                            active,
+                            mode=mode,
+                        )
+                        result["prebuiltExport"] = descriptor
+                    except (Rejected, OSError, ValueError):
+                        result["prebuiltExport"] = None
                 # Recheck the pointer: a concurrent publication can turn this
                 # selected version into history while its facts are read.
                 current = conn.execute(

@@ -16,6 +16,29 @@ from mcp_open_data_hk.curated.hkex_daily import store
 from mcp_open_data_hk.curated.hkex_daily.runner import collect
 from mcp_open_data_hk.curated.hkex_daily.read import DailyReader
 
+
+def held_inspection_fixture(c):
+    from mcp_open_data_hk.curated.hkex_daily.inspection import PATH, ORIGINAL_SHA
+
+    c.execute("INSERT INTO hkex_daily.runs(id,provenance) VALUES('original','manual')")
+    c.execute(
+        "INSERT INTO hkex_daily.requests(id,run_id,path,state,status,received_bytes,reserved_bytes,sha256) VALUES(142,'original',%s,'received',302,159,409600,%s)",
+        (PATH, ORIGINAL_SHA),
+    )
+    c.execute(
+        "UPDATE hkex_daily.control SET hold_code='SOURCE_ACCESS_HOLD',hold_until=NULL"
+    )
+    return {
+        "action": "inspect_exact_legacy_response_once",
+        "serial": "DA20030606000076",
+        "originalLedgerId": 142,
+        "retainHold": True,
+        "followRedirects": False,
+        "evidenceRef": "synthetic-test-only",
+        "evidenceSha256": "a" * 64,
+    }
+
+
 DSN = os.environ.get("CURATED_TEST_DSN")
 pytestmark = pytest.mark.skipif(
     not DSN and not os.environ.get("CURATED_REQUIRE_DB"),
@@ -356,3 +379,99 @@ def test_changed_then_reverted_summary_creates_new_revisions_and_keeps_old_curso
     source = Source()
     assert intake(model, source)["state"] == "unchanged"
     assert all(headers for _, headers in source.calls[1:])
+
+
+def test_exact_approved_inspection_is_charged_once_and_cannot_release_hold(model):
+    import httpx
+    from mcp_open_data_hk.curated.hkex_daily.inspection import inspect, reserve, PATH
+
+    calls = []
+
+    def response(request):
+        calls.append(str(request.url))
+        return httpx.Response(
+            302,
+            headers={"location": "/login?session=NEVER_RETAIN"},
+            content=b"synthetic redirect",
+        )
+
+    with store.writer(model["owner"]) as c:
+        approval = held_inspection_fixture(c)
+        with pytest.raises(ValueError, match="SOURCE_HOLD"):
+            store.reserve(c, "original", PATH)
+        receipt = inspect(
+            c, uuid.uuid4().hex, approval, transport=httpx.MockTransport(response)
+        )
+        assert (
+            receipt["holdRetained"] and receipt["redirect"]["sanitizedLocation"] is None
+        )
+        assert "NEVER_RETAIN" not in str(receipt) and len(calls) == 1
+        assert c.execute(
+            "SELECT hold_code,hold_until FROM hkex_daily.control"
+        ).fetchone() == {"hold_code": "SOURCE_ACCESS_HOLD", "hold_until": None}
+        assert (
+            c.execute(
+                "SELECT count(*) AS n FROM hkex_daily.requests WHERE state='received'"
+            ).fetchone()["n"]
+            == 2
+        )
+        with pytest.raises(ValueError, match="ALREADY_RESERVED"):
+            reserve(c, uuid.uuid4().hex, approval)
+        with pytest.raises(ValueError, match="SOURCE_HOLD"):
+            store.reserve(c, "original", PATH)
+
+
+def test_hold_inspection_requires_exact_approval_and_preserves_unknown_budget(model):
+    import httpx
+    from mcp_open_data_hk.curated.hkex_daily.inspection import inspect, reserve
+
+    def interrupted(request):
+        raise httpx.ReadTimeout("synthetic interrupted response")
+
+    with store.writer(model["owner"]) as c:
+        approval = held_inspection_fixture(c)
+        for field, value in [
+            ("serial", "other"),
+            ("followRedirects", True),
+            ("retainHold", False),
+        ]:
+            with pytest.raises(ValueError, match="EXPLICIT_EXACT"):
+                reserve(c, uuid.uuid4().hex, dict(approval, **{field: value}))
+        with pytest.raises(httpx.ReadTimeout):
+            inspect(
+                c,
+                uuid.uuid4().hex,
+                approval,
+                transport=httpx.MockTransport(interrupted),
+            )
+        assert (
+            c.execute(
+                "SELECT reserved_bytes FROM hkex_daily.requests WHERE state='unknown'"
+            ).fetchone()["reserved_bytes"]
+            == 409600
+        )
+        with pytest.raises(ValueError, match="ALREADY_RESERVED"):
+            reserve(c, uuid.uuid4().hex, approval)
+        assert (
+            c.execute("SELECT hold_code FROM hkex_daily.control").fetchone()[
+                "hold_code"
+            ]
+            == "SOURCE_ACCESS_HOLD"
+        )
+
+
+def test_hold_inspection_cannot_exceed_shared_daily_allowance(model):
+    from mcp_open_data_hk.curated.hkex_daily.inspection import reserve
+
+    with store.writer(model["owner"]) as c:
+        approval = held_inspection_fixture(c)
+        for index in range(99):
+            c.execute(
+                "INSERT INTO hkex_daily.requests(run_id,path,state,reserved_bytes,received_bytes) VALUES('original',%s,'received',409600,1)",
+                ("synthetic-" + str(index),),
+            )
+        with pytest.raises(ValueError, match="BUDGET_EXHAUSTED"):
+            reserve(c, uuid.uuid4().hex, approval)
+        assert (
+            c.execute("SELECT count(*) AS n FROM hkex_daily.runs").fetchone()["n"] == 1
+        )

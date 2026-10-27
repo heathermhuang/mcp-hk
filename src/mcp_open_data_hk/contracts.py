@@ -128,6 +128,9 @@ class PlateComparablesQuery(Model):
 
 
 class CompanySearchQuery(Model):
+    version: str | None = Field(
+        default=None, max_length=100, pattern=r"^official-[a-f0-9]{32}$"
+    )
     groupBy: Literal["organisation"] | None = None
     q: str | None = Field(default=None, min_length=2, max_length=200)
     namespace: str | None = Field(default=None, max_length=100)
@@ -139,6 +142,8 @@ class CompanySearchQuery(Model):
 
     @model_validator(mode="after")
     def choose_search(self):
+        if self.version is not None and self.view != "latest_observed":
+            raise ValueError("Explicit search version applies to official observations")
         if self.groupBy and self.limit > 20:
             raise ValueError("Grouped search returns at most 20 organisations")
         if self.q is not None:
