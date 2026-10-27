@@ -116,7 +116,7 @@ def combination_key(raw, pool, language):
     """
     if not isinstance(raw, str) or not 1 <= len(raw) <= 100:
         raise RacingRejected("DIVIDEND_COMBINATION_UNQUALIFIED")
-    if re.fullmatch(r"[0-9]+(?:[ ,/-]*[0-9]+)*", raw):
+    if re.fullmatch(r"[0-9]+(?:[ ,/-]+[0-9]+)*", raw):
         return re.sub(r"\s+", "", raw)
     markers = {"en": "Any Combination", "zhHant": "任何組合"}
     legs = raw.split("/")

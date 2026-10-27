@@ -47,6 +47,7 @@ def test_consolation_marker_is_literal_bilingual_text_with_stable_identity():
     "pool,raw,lang",
     [
         ("WIN", "01,02,03/04,05,06/Any Combination", "en"),
+        ("WIN", "9" * 99 + "x", "en"),
         ("TRIPLE TRIO(Consolation)", "01,02/04,05,06/Any Combination", "en"),
         ("TRIPLE TRIO(Consolation)", "01,02,03/04,05,06/Any winner", "en"),
         ("TRIPLE TRIO(Consolation)", "01,02,03/04,05,06/任何組合", "en"),
