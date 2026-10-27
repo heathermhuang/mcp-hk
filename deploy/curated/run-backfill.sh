@@ -13,7 +13,7 @@ inside=n.strftime('%a').upper()==p['providerBackupWeekdayUtc'] and p['providerBa
 raise SystemExit(1 if inside else 0)
 PYPOLICY
 then echo 'Backfill held: provider maintenance window or missing policy'; exit 0; fi
-image=$(docker compose -p curated -f deploy/curated/production.compose.yaml images -q backend)
+image=$(python3 deploy/curated/backend-image.py)
 checkpoint=$(docker run --rm --memory 128m --cpus 1 --network curated_default --env-file /etc/mcp-hk-curated/owner.env "$image" python -m mcp_open_data_hk.curated.official_backfill_checkpoint)
 if printf '%s' "$checkpoint" | python3 -c 'import json,sys; raise SystemExit(not json.load(sys.stdin)["noOp"])'; then echo 'Backfill unchanged: no backlog or new milestone'; exit 0; fi
 result=0

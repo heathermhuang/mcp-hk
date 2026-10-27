@@ -4,7 +4,44 @@ import os
 from pathlib import Path
 import subprocess
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def image_resolver(folder):
+    (folder / "backend-image.py").write_bytes(
+        (ROOT / "deploy/curated/backend-image.py").read_bytes()
+    )
+
+
+def with_image_inspection(source):
+    import json
+
+    cid = "b" * 64
+    data = [
+        {
+            "Id": cid,
+            "Image": "sha256:" + "a" * 64,
+            "State": {"Running": True},
+            "Config": {
+                "Labels": {
+                    "com.docker.compose.project": "curated",
+                    "com.docker.compose.service": "backend",
+                    "com.docker.compose.oneoff": "False",
+                }
+            },
+        }
+    ]
+    return (
+        '[ "$1" = ps ] && { printf "%s\\n" "'
+        + cid
+        + '"; exit 0; }\n'
+        + "[ \"$1\" = inspect ] && { printf '%s\\n' '"
+        + json.dumps(data)
+        + "'; exit 0; }\n"
+        + source
+    )
 
 
 def executable(path, source):
@@ -28,6 +65,7 @@ def test_backfill_overlap_skips_without_starting_or_stopping_any_container(tmp_p
 def test_collector_interruption_still_runs_independent_logical_backup(tmp_path):
     release = tmp_path / "release" / "deploy" / "curated"
     release.mkdir(parents=True)
+    image_resolver(release)
     runner = release / "run-official.sh"
     runner.write_bytes((ROOT / "deploy/curated/run-official.sh").read_bytes())
     executable(
@@ -43,7 +81,9 @@ def test_collector_interruption_still_runs_independent_logical_backup(tmp_path):
     )
     executable(
         binaries / "docker",
-        '[ "$1" = compose ] && { printf "fixture-image\\n"; exit 0; }; exit 137',
+        with_image_inspection(
+            '[ "$1" = compose ] && { printf "fixture-image\\n"; exit 0; }; exit 137'
+        ),
     )
     result = subprocess.run(
         ["sh", str(runner), "freshness"],
@@ -60,11 +100,53 @@ def test_collector_interruption_still_runs_independent_logical_backup(tmp_path):
     assert (release / "backup-observed").exists()
 
 
+@pytest.mark.parametrize("gate_exit,expected", [(1, 0), (125, 125)])
+def test_backfill_distinguishes_closed_gate_from_docker_execution_failure(
+    tmp_path, gate_exit, expected
+):
+    release = tmp_path / "release" / "deploy" / "curated"
+    release.mkdir(parents=True)
+    image_resolver(release)
+    runner = release / "run-official.sh"
+    runner.write_bytes((ROOT / "deploy/curated/run-official.sh").read_bytes())
+    binaries = tmp_path / "bin"
+    binaries.mkdir()
+    executable(binaries / "flock", "exit 0")
+    executable(binaries / "systemctl", "exit 1")
+    executable(binaries / "awk", 'printf "20971520\\n"')
+    marker = tmp_path / "provider-dispatch"
+    executable(
+        binaries / "docker",
+        with_image_inspection(
+            f"""case "$*" in *official_ingest*) touch '{marker}';; esac
+exit {gate_exit}"""
+        ),
+    )
+    result = subprocess.run(
+        ["sh", str(runner), "backfill"],
+        env=dict(
+            os.environ,
+            PATH=str(binaries) + ":" + os.environ["PATH"],
+            MCP_HK_MAINTENANCE_LOCK=str(tmp_path / "maintenance.lock"),
+        ),
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == expected
+    assert not marker.exists()
+    if gate_exit == 1:
+        assert "Backfill held: offsite recovery gate" in result.stdout
+    else:
+        assert "recovery gate execution failed" in result.stderr
+        assert "Backfill held" not in result.stdout
+
+
 def test_partial_backfill_still_requests_recovery_milestone(tmp_path):
     import json
 
     release = tmp_path / "release" / "deploy" / "curated"
     release.mkdir(parents=True)
+    image_resolver(release)
     runner = release / "run-backfill.sh"
     runner.write_bytes((ROOT / "deploy/curated/run-backfill.sh").read_bytes())
     executable(release / "run-official.sh", "exit 1")
@@ -73,7 +155,9 @@ def test_partial_backfill_still_requests_recovery_milestone(tmp_path):
     counter = tmp_path / "counter"
     executable(
         binaries / "docker",
-        f"""if [ -f '{counter}' ]; then printf '%s\\n' '{{"pendingPairs":80,"milestoneNeeded":10,"noOp":false}}'; else touch '{counter}'; printf '%s\\n' '{{"pendingPairs":84,"milestoneNeeded":null,"noOp":false}}'; fi""",
+        with_image_inspection(
+            f"""if [ -f '{counter}' ]; then printf '%s\\n' '{{"pendingPairs":80,"milestoneNeeded":10,"noOp":false}}'; else touch '{counter}'; printf '%s\\n' '{{"pendingPairs":84,"milestoneNeeded":null,"noOp":false}}'; fi"""
+        ),
     )
     marker = tmp_path / "milestone"
     executable(binaries / "systemctl", f'touch "{marker}"')
@@ -107,6 +191,7 @@ def test_timer_provenance_uses_typed_monotonic_value(tmp_path):
         folder = tmp_path / mode
         release = folder / "release" / "deploy" / "curated"
         release.mkdir(parents=True)
+        image_resolver(release)
         source = (
             ROOT
             / "deploy/curated"
@@ -135,9 +220,11 @@ def test_timer_provenance_uses_typed_monotonic_value(tmp_path):
         arguments = folder / "arguments"
         executable(
             binaries / "docker",
-            f"""[ "$1" = compose ] && {{ printf 'fixture-image\\n'; exit 0; }}
+            with_image_inspection(
+                f"""[ "$1" = compose ] && {{ printf 'fixture-image\\n'; exit 0; }}
 printf '%s\\n' "$@" > '{arguments}'
-printf '%s\\n' '{{"status":"success","jobId":""}}'""",
+printf '%s\\n' '{{"status":"success","jobId":""}}'"""
+            ),
         )
         result = subprocess.run(
             ["sh", str(runner)],
@@ -159,6 +246,7 @@ printf '%s\\n' '{{"status":"success","jobId":""}}'""",
 def test_restore_prepares_statistics_before_reader_qualification(tmp_path):
     release = tmp_path / "release" / "deploy" / "curated"
     release.mkdir(parents=True)
+    image_resolver(release)
     runner = release / "restore-official.sh"
     runner.write_text(
         (ROOT / "deploy/curated/restore-official.sh")
@@ -177,13 +265,15 @@ def test_restore_prepares_statistics_before_reader_qualification(tmp_path):
     calls = tmp_path / "calls"
     executable(
         binaries / "docker",
-        f"""printf '%s\\n' "$*" >> '{calls}'
+        with_image_inspection(
+            f"""printf '%s\\n' "$*" >> '{calls}'
 [ "$1" = compose ] && {{ printf 'fixture-image\\n'; exit 0; }}
 case "$*" in
  *vacuumdb*) touch '{marker}';;
  *official_restore_check*) [ -f '{marker}' ] || exit 1; printf '%s\\n' '{{"freshOffsiteRestoreVerified":true}}';;
 esac
-exit 0""",
+exit 0"""
+        ),
     )
     result = subprocess.run(
         ["sh", str(runner), job],
@@ -208,6 +298,7 @@ def test_health_defers_checkpoint_writes_until_snapshot_owner_releases_lock(tmp_
 
     release = tmp_path / "release" / "deploy" / "curated"
     release.mkdir(parents=True)
+    image_resolver(release)
     state = tmp_path / "state"
     state.mkdir()
     runner = release / "verify-official.sh"
@@ -235,9 +326,11 @@ def test_health_defers_checkpoint_writes_until_snapshot_owner_releases_lock(tmp_
     calls = tmp_path / "checkpoint-writes"
     executable(
         binaries / "docker",
-        f"""[ "$1" = compose ] && {{ printf 'fixture-image\\n'; exit 0; }}
+        with_image_inspection(
+            f"""[ "$1" = compose ] && {{ printf 'fixture-image\\n'; exit 0; }}
 printf 'write\\n' >> '{calls}'
-printf '%s\\n' '{{"status":"success"}}'""",
+printf '%s\\n' '{{"status":"success"}}'"""
+        ),
     )
     lock = tmp_path / "maintenance.lock"
     environment = dict(

@@ -1,0 +1,145 @@
+{
+  "after": [
+    {
+      "outcome": "SOURCE_HTTP_400",
+      "next_due": "2026-10-27 00:00:00+00",
+      "priority": true,
+      "entity_id": "cr:foreign:00562995",
+      "last_attempt": "2026-10-26 01:00:36.356643+00",
+      "last_success": null,
+      "latest_capture": null
+    },
+    {
+      "outcome": "success",
+      "next_due": "2026-10-27 00:00:00+00",
+      "priority": true,
+      "entity_id": "cr:foreign:77596226",
+      "last_attempt": "2026-10-26 02:07:05.725553+00",
+      "last_success": "2026-10-26 02:07:10.3631+00",
+      "latest_capture": "e9f8050a1edb3b7a47c865c015701dba50a8bee47fe04a2a3ba5a41cbc1c01e2"
+    }
+  ],
+  "before": [
+    {
+      "outcome": "SOURCE_HTTP_400",
+      "next_due": "2026-11-02 01:00:38.830071+00",
+      "priority": false,
+      "entity_id": "cr:foreign:00562995",
+      "last_attempt": "2026-10-26 01:00:36.356643+00",
+      "last_success": null,
+      "latest_capture": null
+    },
+    {
+      "outcome": "success",
+      "next_due": "2027-01-24 02:07:10.3631+00",
+      "priority": false,
+      "entity_id": "cr:foreign:77596226",
+      "last_attempt": "2026-10-26 02:07:05.725553+00",
+      "last_success": "2026-10-26 02:07:10.3631+00",
+      "latest_capture": "e9f8050a1edb3b7a47c865c015701dba50a8bee47fe04a2a3ba5a41cbc1c01e2"
+    }
+  ],
+  "checks": [
+    {
+      "cohort": "priority",
+      "job_id": "19c1a0461e3d2330ef230e88e2ee2949",
+      "outcome": "SOURCE_NO_MATCH",
+      "receipt": {
+        "bytes": 43,
+        "sha256": "fd07bd9b2620e7275f07e2872abe61424541e91ced41ab36d4e8e3dba0de6296",
+        "outcome": "SOURCE_NO_MATCH",
+        "checkedAt": "2026-10-27T01:00:55.455139+00:00",
+        "sourceUrl": "https://data.cr.gov.hk/cr/api/api/v1/api_builder/json/foreign/search?query%5B0%5D%5Bkey1%5D=Brn&query%5B0%5D%5Bkey2%5D=equal&query%5B0%5D%5Bkey3%5D=00562995",
+        "httpStatus": 400,
+        "bodyTruncated": false,
+        "durationSeconds": 0.65,
+        "sourceLastModified": null
+      },
+      "entity_id": "cr:foreign:00562995",
+      "operation": "addresses",
+      "capture_id": null,
+      "checked_at": "2026-10-27 01:00:54.786326+00",
+      "scheduled_for": "2026-10-27 01:00:19+00"
+    },
+    {
+      "cohort": "priority",
+      "job_id": "19c1a0461e3d2330ef230e88e2ee2949",
+      "outcome": "success",
+      "receipt": {
+        "bytes": 464,
+        "sha256": "d931bf56200fdf06e14a4ae1b06a747add4caae4a2289822128038ef6e3b7243",
+        "checkedAt": "2026-10-27T01:01:16.275977+00:00",
+        "sourceUrl": "https://data.cr.gov.hk/cr/api/api/v1/api_builder/json/foreign/search?query%5B0%5D%5Bkey1%5D=Brn&query%5B0%5D%5Bkey2%5D=equal&query%5B0%5D%5Bkey3%5D=77596226",
+        "httpStatus": 200,
+        "durationSeconds": 13.231,
+        "sourceLastModified": null
+      },
+      "entity_id": "cr:foreign:77596226",
+      "operation": "addresses",
+      "capture_id": "d76439d6117097105dcefe13ca651acde87ab75e2bd62c05244b117c194d58a4",
+      "checked_at": "2026-10-27 01:01:03.045941+00",
+      "scheduled_for": "2026-10-27 01:00:19+00"
+    }
+  ],
+  "reason": "Post-PR92 exact source-no-match and success-control verification after quota reset",
+  "status": "verified_and_priority_restored",
+  "followup": "Inspect retained check receipts then restore recorded prior priority flags",
+  "notBefore": "2026-10-27T00:00:00+00:00",
+  "requestedAt": "2026-10-26T18:29:34.270969+00:00",
+  "addressDailyCap": 250,
+  "afterRestoration": [
+    {
+      "outcome": "SOURCE_NO_MATCH",
+      "next_due": "2026-11-26 01:00:55.459299+00",
+      "priority": false,
+      "entity_id": "cr:foreign:00562995",
+      "last_attempt": "2026-10-27 01:00:54.786326+00",
+      "last_success": null,
+      "latest_capture": null
+    },
+    {
+      "outcome": "success",
+      "next_due": "2027-01-25 01:01:16.417778+00",
+      "priority": false,
+      "entity_id": "cr:foreign:77596226",
+      "last_attempt": "2026-10-27 01:01:03.045941+00",
+      "last_success": "2026-10-27 01:01:16.417778+00",
+      "latest_capture": "d76439d6117097105dcefe13ca651acde87ab75e2bd62c05244b117c194d58a4"
+    }
+  ],
+  "budgetsUnchanged": [
+    {
+      "day": "2026-10-27",
+      "bytes": 154378400,
+      "provider": "cr",
+      "requests": 331
+    }
+  ],
+  "sharedCrDailyCap": 500,
+  "beforeRestoration": [
+    {
+      "outcome": "SOURCE_NO_MATCH",
+      "next_due": "2026-11-26 01:00:55.459299+00",
+      "priority": true,
+      "entity_id": "cr:foreign:00562995",
+      "last_attempt": "2026-10-27 01:00:54.786326+00",
+      "last_success": null,
+      "latest_capture": null
+    },
+    {
+      "outcome": "success",
+      "next_due": "2027-01-25 01:01:16.417778+00",
+      "priority": true,
+      "entity_id": "cr:foreign:77596226",
+      "last_attempt": "2026-10-27 01:01:03.045941+00",
+      "last_success": "2026-10-27 01:01:16.417778+00",
+      "latest_capture": "d76439d6117097105dcefe13ca651acde87ab75e2bd62c05244b117c194d58a4"
+    }
+  ],
+  "priorityRestoredAt": "2026-10-27T08:05:06.254401+00:00",
+  "providerRequestsNow": 0,
+  "freshNextDuePreserved": true,
+  "acceptedVersionUnchanged": "official-799798307f9db9968bd238c02b1de49f",
+  "sourceRequestsDispatched": 0,
+  "nextExistingAddressSchedule": "2026-10-27T01:00:00Z"
+}

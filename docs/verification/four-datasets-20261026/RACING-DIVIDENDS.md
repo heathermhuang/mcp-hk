@@ -1,9 +1,10 @@
 # Reported final dividends
 
-This increment implements quoted final dividends from the existing bounded public
-results collector. It is source-format and engineering qualification, pending a
-checked release, actual accepted collection and independent production restore.
-It does not complete sectionals or the remaining Racing families.
+Quoted final dividends are released. The selected July 8 Happy Valley meeting now
+has nine accepted races, 105 result rows and 144 reconciled quotes after a fresh
+normal collection and independent restore. REST/MCP and 24 real bilingual browser
+ZIP journeys matched the restored facts. This does not complete sectionals or the
+remaining Racing families. See [the live receipt](dividends-complete-meeting-20261027.json).
 
 The operating basis is the owner's authorized implementation of ordinary public
 factual racing results. This is not an HKJC licence or endorsement claim. Exact

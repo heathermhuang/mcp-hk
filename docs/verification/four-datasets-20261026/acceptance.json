@@ -496,19 +496,20 @@
     {
       "id": "W02.ordinary-daily-offsite-rpo",
       "workPackage": "W02",
-      "state": "partial",
+      "state": "passed",
       "dependency": [],
       "actualCoverage": {
-        "dailyOffsite": "failed before upload due source state race",
-        "repair": "PR96 lock deployed",
-        "rpoQualified": false
+        "normalDailyOccurrenceObserved": true,
+        "observedRecoveryWindowMeets24HourTarget": true,
+        "sustainedDailyReliabilityProven": false,
+        "acceptedWeekPairsAtOccurrence": 84
       },
       "version": null,
       "evidence": [
-        "progress-20261027.json"
+        "company-daily-occurrence-20261027.json"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Observe next ordinary exact-dump offsite/restore sequence; retained manual proof does not substitute"
+      "nextAction": "Continue normal daily qualification; full 94-pair public acceptance remains separate"
     },
     {
       "id": "W03.company-archive-preserved",
@@ -818,19 +819,20 @@
       "state": "partial",
       "dependency": [],
       "actualCoverage": {
-        "privateBilingualQualifiedRaceCount": 1,
-        "privateQuotedDividendRows": 20,
-        "privateDeferredNonmonetaryRows": 2,
-        "publicDividendVersions": 0,
-        "sectionalsComplete": false
+        "selectedMeetingDividendRaces": 9,
+        "selectedMeetingRaces": 9,
+        "quotedRows": 144,
+        "sourceAnyCombinationMarkerPreserved": true,
+        "sectionalsComplete": false,
+        "seasonComplete": false
       },
-      "version": null,
+      "version": "de0324a80dc35de550054b6bd42acdde367643af",
       "evidence": [
-        "RACING-DIVIDENDS.md",
-        "racing-dividends-format-qualification-20261027.json"
+        "dividends-live-release-20261027.json",
+        "dividends-complete-meeting-20261027.json"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Complete checked release, actual accepted dividends and fresh recovery verification; sectionals remain to implement"
+      "nextAction": "Implement and qualify sectionals and remaining Racing families; continue bounded historical inventory"
     },
     {
       "id": "W05.racing-trials-rankings",
@@ -955,20 +957,20 @@
     {
       "id": "W06.hkex-daily-ordinary-occurrence",
       "workPackage": "W06",
-      "state": "partial",
+      "state": "passed",
       "dependency": [],
       "actualCoverage": {
-        "latestSummaryDate": "2026-10-26",
-        "rows": 1288,
-        "timerProvenanceFix": "deployed"
+        "ordinaryTimerObserved": true,
+        "latestObservedRows": 1585,
+        "latestSummaryDate": "2026-10-27",
+        "summaryDateIsFilingDate": false
       },
       "version": "060fec150c7dcfcf8b97159165a3d5bb6808d7e0",
       "evidence": [
-        "production-release-20261027.json",
-        "RELEASE-20261027.md"
+        "RESUMED-DATA-WORK-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Verify the next actual canonical timer occurrence at 2026-10-27T01:20:00Z"
+      "nextAction": "Qualify fresh accepted recovery and report-gap handling separately"
     },
     {
       "id": "W06.hkex-daily-report-gap-handling",

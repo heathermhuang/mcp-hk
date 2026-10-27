@@ -19,7 +19,7 @@ flock -n 9 || { echo 'Official maintenance skipped: another owning host job'; ex
 [ -s /etc/mcp-hk-curated/official-uploader.json ] || { echo 'Offsite capability not installed'; exit 1; }
 [ "$(df -Pk /srv/mcp-hk-curated | awk 'NR==2 {print $4}')" -ge 10485760 ] || exit 1
 [ "$(awk '/MemAvailable:/ {print $2}' /proc/meminfo)" -ge 1048576 ] || exit 1
-image=$(docker compose -p curated -f deploy/curated/production.compose.yaml images -q backend)
+image=$(python3 deploy/curated/backend-image.py)
 folder=/srv/mcp-hk-curated/official-offsite
 install -d -m 700 "$folder"
 start=$(docker run --rm --memory 128m --cpus 1 --network curated_default --env-file /etc/mcp-hk-curated/owner.env "$image" python -m mcp_open_data_hk.curated.official_offsite_job begin --scheduled-for "$stamp")

@@ -15,9 +15,12 @@ available=$(df -Pk /srv/mcp-hk-curated | awk 'NR==2 {print $4}')
 [ "$available" -ge 10485760 ] || { echo 'Official ingestion blocked: less than 10 GiB free'; exit 1; }
 memory=$(awk '/MemAvailable:/ {print $2}' /proc/meminfo)
 [ "$memory" -ge 1048576 ] || { echo 'Official ingestion blocked: less than 1 GiB available memory'; exit 1; }
-image=$(docker compose -p curated -f deploy/curated/production.compose.yaml images -q backend)
+image=$(python3 deploy/curated/backend-image.py)
 if [ "$mode" = backfill ]; then
- if ! docker run --rm --memory 128m --cpus 1 --network curated_default --env-file /etc/mcp-hk-curated/owner.env "$image" python -m mcp_open_data_hk.curated.official_offsite_job gate; then echo 'Backfill held: offsite recovery gate'; exit 0; fi
+ gate_result=0
+ docker run --rm --memory 128m --cpus 1 --network curated_default --env-file /etc/mcp-hk-curated/owner.env "$image" python -m mcp_open_data_hk.curated.official_offsite_job gate || gate_result=$?
+ if [ "$gate_result" -eq 1 ]; then echo 'Backfill held: offsite recovery gate'; exit 0; fi
+ if [ "$gate_result" -ne 0 ]; then echo 'Backfill failed: recovery gate execution failed' >&2; exit "$gate_result"; fi
 fi
 if [ "$mode" = addresses ]; then
  remaining=$(docker run --rm --memory 128m --cpus 1 --network curated_default --env-file /etc/mcp-hk-curated/owner.env "$image" python -m mcp_open_data_hk.curated.official_address_stage | python3 -c 'import json,sys; print(json.load(sys.stdin)["remaining"])')

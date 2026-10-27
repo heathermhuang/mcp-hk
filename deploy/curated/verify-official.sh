@@ -12,7 +12,7 @@ if ! flock -n 9; then
  echo 'Health comparison deferred: owning maintenance job; 06:00 follow-up retained'
  exit 0
 fi
-image=$(docker compose -p curated -f deploy/curated/production.compose.yaml images -q backend)
+image=$(python3 deploy/curated/backend-image.py)
 # Also recheck an actual recovery-state change after an earlier failed check.
 if [ "$(date -u +%H)" = 06 ] && [ "$(cat /srv/mcp-hk-curated/official-health-running 2>/dev/null || true)" != "$stamp" ]; then
  needed=$(docker run --rm --memory 128m --cpus 1 --network curated_default --env-file /etc/mcp-hk-curated/owner.env "$image" python -m mcp_open_data_hk.curated.official_health recheck-needed --scheduled-for "$stamp")

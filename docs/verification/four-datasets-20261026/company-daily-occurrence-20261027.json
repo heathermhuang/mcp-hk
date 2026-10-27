@@ -1,0 +1,71 @@
+{
+  "checkpoint": "native source status at this continuation's start; scheduled jobs may subsequently progress",
+  "meta": {
+    "version": "official-799798307f9db9968bd238c02b1de49f",
+    "view": "latest_observed",
+    "snapshotIds": [
+      "official-799798307f9db9968bd238c02b1de49f"
+    ],
+    "nextCursor": null,
+    "returnedCount": 1,
+    "countScope": "this_page",
+    "currentVerification": false
+  },
+  "acceptedWeekPairs": 84,
+  "acceptedWeeklyFiles": 168,
+  "recordCounts": {
+    "money_lender": {
+      "rows": 6776,
+      "entities": 6770
+    },
+    "company_event": {
+      "rows": 376943,
+      "entities": 366861
+    },
+    "address_observation": {
+      "rows": 962,
+      "entities": 961
+    }
+  },
+  "limitations": [
+    "Observed official subset; not a complete current company-status register",
+    "Dissolution events are not covered; absence never establishes dissolution",
+    "Local weekly dates combine incorporation and re-domiciliation unless the address source distinguishes them",
+    "No inferred CRN/BRN crosswalk, name-based join, current officers or SFC/HKEX update coverage",
+    "Money-lender MLR identities are separate from company BRNs; source cutoff can precede collection"
+  ],
+  "offsite": {
+    "lastUploadAt": "2026-10-27T05:22:36.218661+00:00",
+    "lastAttemptOutcome": "offsite_verified",
+    "lastUploadScheduleKind": "daily",
+    "restoreVerifiedAt": "2026-10-27T05:26:42.662494+00:00",
+    "coverageCurrent": true,
+    "dailyCadenceObserved": true,
+    "targetRpoHours": 24
+  },
+  "dailyOffsiteJob": {
+    "jobId": "bb247df7c53462da58dc649b947c0651",
+    "operation": "offsite",
+    "scheduledFor": "2026-10-27T05:17:00+00:00",
+    "startedAt": "2026-10-27T05:17:21.377676+00:00",
+    "finishedAt": "2026-10-27T05:26:42.628017+00:00",
+    "publishedAt": null,
+    "status": "success",
+    "collectionStatus": "not_applicable",
+    "publicationStatus": "not_applicable",
+    "backupStatus": "offsite_verified"
+  },
+  "dailyPublicationJob": {
+    "jobId": "69d789723c9375b9b90d6f3000774e73",
+    "operation": "freshness",
+    "scheduledFor": "2026-10-27T05:00:00+00:00",
+    "startedAt": "2026-10-27T05:00:11.596671+00:00",
+    "finishedAt": "2026-10-27T05:01:19.835754+00:00",
+    "publishedAt": "2026-10-27T05:01:19.835754+00:00",
+    "status": "success",
+    "collectionStatus": "success",
+    "publicationStatus": "published",
+    "backupStatus": "local_verified"
+  },
+  "fullOriginalInventoryPubliclyComplete": false
+}
