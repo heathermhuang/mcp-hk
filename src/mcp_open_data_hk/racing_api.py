@@ -148,7 +148,7 @@ def register_mcp(server, current):
 
     @server.tool(annotations={"readOnlyHint": True, "destructiveHint": False})
     async def hk_racing_results(raceId: str, version: str) -> dict:
-        """Read exact stored factual results and withdrawals at a returned version. Final published odds are not intraday odds history."""
+        """Read stored results/withdrawals and quoted final dividends where captured at the returned version. Dividend stake basis can remain unknown; final published odds are not intraday history."""
         RaceQuery(version=version)
         return await current().racing.query("results", race_id=raceId, version=version)
 

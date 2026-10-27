@@ -47,6 +47,16 @@ def ingestion_status():
 
 class RacingReader(PrototypeReader):
     def envelope(self, snapshot, data):
+        from .curated.racing.dividends import validate_observation
+
+        records = (
+            data.get("items", [])
+            if isinstance(data, dict) and "items" in data
+            else [data]
+        )
+        for record in records:
+            if isinstance(record, dict) and "dividends" in record:
+                validate_observation(record["dividends"], record["id"])
         return {
             "data": data,
             "meta": {
@@ -79,11 +89,21 @@ class RacingReader(PrototypeReader):
                     "SELECT count(*) AS meetings,coalesce(sum(json_extract(coverage,'$.observedRaces')),0) AS races,coalesce(sum(json_extract(coverage,'$.resultRows')),0) AS resultRows,min(day) AS earliest,max(day) AS latest FROM racing_accepted"
                 ).fetchone()
             )
+            dividends = dict(
+                db.execute(
+                    "SELECT count(*) AS observedRaces,coalesce(sum(json_array_length(json_extract(r.value,'$.dividends.quotes'))),0) AS quotedRows FROM racing_accepted a JOIN racing_snapshots s USING(version),json_each(s.payload,'$.races') r WHERE json_extract(r.value,'$.dividends.state')='observed'"
+                ).fetchone()
+            )
             held = db.execute(
                 "SELECT state,error FROM racing_attempts WHERE state IN ('reserved','unknown','held') ORDER BY id DESC LIMIT 1"
             ).fetchone()
         return {
             "data": {
+                "dividendCoverage": {
+                    **dividends,
+                    "scope": "quoted final-dividend tables in accepted results",
+                    "stakeNormalized": False,
+                },
                 "source": "hkjc",
                 "state": "available" if meetings else "ingestion_in_progress",
                 "liveQualified": bool(meetings),
@@ -100,6 +120,10 @@ class RacingReader(PrototypeReader):
                 "families": [
                     {"id": "results", "enabled": bool(meetings)},
                     {"id": "participant_identities", "enabled": bool(meetings)},
+                    {
+                        "id": "final_dividends",
+                        "enabled": bool(dividends["observedRaces"]),
+                    },
                     {"id": "full_profiles", "enabled": False},
                     {"id": "intraday_observations", "enabled": False},
                 ],
@@ -151,11 +175,57 @@ class RacingReader(PrototypeReader):
             "results.csv": text.getvalue().encode("utf-8-sig"),
             "NOTICE.txt": b"Source: The Hong Kong Jockey Club public factual results. Independent mcp.hk dataset; not endorsed by HKJC. Coverage and observation times are explicit. No betting advice, media or commentary.\n",
         }
+        dividend = payload["data"].get(
+            "dividends", {"state": "not_extracted", "quotes": None}
+        )
+        dividend_fields = (
+            "id",
+            "pool",
+            "winningCombinationRaw",
+            "amount",
+            "amountRaw",
+            "currency",
+            "stakeBasis",
+        )
+        if dividend["state"] == "observed":
+            stream = io.StringIO(newline="")
+            csvwriter = csv.DictWriter(
+                stream,
+                fieldnames=dividend_fields,
+                quoting=csv.QUOTE_ALL,
+                lineterminator="\n",
+            )
+            csvwriter.writeheader()
+            for quote in dividend["quotes"]:
+                csvwriter.writerow({k: quote[k] for k in dividend_fields})
+            files["dividends.csv"] = stream.getvalue().encode("utf-8-sig")
+        files["schema.json"] = canonical(
+            {
+                "format": "mcp-hk-race-export-v1",
+                "scope": "one accepted race and version",
+                "results.csv": {
+                    "scope": "runner summary; full nested facts in results.json",
+                    "fields": list(fields),
+                },
+                "dividends.csv": {
+                    "scope": "quoted final-dividend rows when observed; not stake-normalized returns",
+                    "fields": list(dividend_fields),
+                    "types": {k: "string" for k in dividend_fields},
+                },
+                "unknown": "JSON null remains unknown; no inferred stake or current value",
+                "numericStrings": "source decimal precision preserved; import combination identifiers as text",
+            }
+        )
         files["manifest.json"] = canonical(
             {
                 "version": version,
                 "raceId": race_id,
                 "rowCount": len(payload["data"]["results"]),
+                "resultRows": len(payload["data"]["results"]),
+                "dividendRows": (
+                    len(dividend["quotes"]) if dividend["state"] == "observed" else None
+                ),
+                "dividendState": dividend["state"],
                 "files": {
                     n: {"bytes": len(b), "sha256": hashlib.sha256(b).hexdigest()}
                     for n, b in files.items()
@@ -226,6 +296,8 @@ class Racing:
                     if code == "RACING_DATA_NOT_READY"
                     or code.startswith("SOURCE_")
                     or code == "PROFILE_CONTENT_MISMATCH"
+                    or code == "DIVIDEND_RECORD_INVALID"
+                    or code == "DEVELOPMENT_SNAPSHOT_CHECKSUM_MISMATCH"
                     else 400
                 )
             )

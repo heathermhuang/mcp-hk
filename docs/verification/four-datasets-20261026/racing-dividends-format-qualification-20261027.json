@@ -1,0 +1,604 @@
+{
+  "scope": "private real bilingual source-format qualification; no public publication or full-range claim",
+  "raceId": "hkjc:meeting:v1:2026-07-15:HV:09",
+  "acceptedResultsContext": "racing-results-v1-7338db3c7faf9638cbb6c736d67c8c2cf6bb660d7914c39297cdb62ed913bede",
+  "publicDividendVersion": null,
+  "rawHtmlRetained": false,
+  "captures": [
+    {
+      "language": "en",
+      "sourceUrl": "https://racing.hkjc.com/en-us/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV&RaceNo=9",
+      "admissionId": "ac038af561594d448207c6b445f5bb57",
+      "providerStatus": 200,
+      "bytes": 216172,
+      "bodySha256": "4966c399e5d636ccebbb5f3bde25d635313792f1a3563ffe5f9bc5623c5eef25",
+      "settlement": {
+        "settled": true
+      },
+      "at": "2026-10-27T02:31:58.467677+00:00"
+    },
+    {
+      "language": "zhHant",
+      "sourceUrl": "https://racing.hkjc.com/zh-hk/local/information/archive/localresults?racedate=2026/07/15&racecourse=HV&RaceNo=9",
+      "admissionId": "3a9013a09250406288a531901d9992c4",
+      "providerStatus": 200,
+      "bytes": 212977,
+      "bodySha256": "57883cf44f65d01e0c60618d316f194c3c1998a86406ee1186dda13a46bdf4ac",
+      "settlement": {
+        "settled": true
+      },
+      "at": "2026-10-27T02:32:47.493486+00:00"
+    }
+  ],
+  "parserSha256": "79c881002be866af8d26e16064fde163d0e3af9b107c11d51af9e7e7b6639eec",
+  "observation": {
+    "state": "observed",
+    "quotes": [
+      {
+        "id": "hkjc:dividend:v1:aec81d38d8b9a6f0b51f1f3b67996f2d2bc645abca00564c61d2c1aa26632b14",
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:09",
+        "pool": "WIN",
+        "poolSource": "WIN",
+        "winningCombinationRaw": "3",
+        "combinationKey": "3",
+        "amount": "111.00",
+        "amountRaw": "111.00",
+        "currency": "HKD",
+        "stakeAmount": null,
+        "stakeCurrency": null,
+        "stakeBasis": "not_stated_in_captured_table",
+        "sourceRow": 1,
+        "sourceLanguage": "en",
+        "sources": {
+          "en": {
+            "pool": "WIN",
+            "combination": "3",
+            "amount": "111.00"
+          },
+          "zhHant": {
+            "pool": "獨贏",
+            "combination": "3",
+            "amount": "111.00"
+          }
+        }
+      },
+      {
+        "id": "hkjc:dividend:v1:59582e1bfc08c403dc34045e265ba1861ddb622b946903911ac6ad939aec5dfb",
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:09",
+        "pool": "PLACE",
+        "poolSource": "PLACE",
+        "winningCombinationRaw": "3",
+        "combinationKey": "3",
+        "amount": "33.50",
+        "amountRaw": "33.50",
+        "currency": "HKD",
+        "stakeAmount": null,
+        "stakeCurrency": null,
+        "stakeBasis": "not_stated_in_captured_table",
+        "sourceRow": 2,
+        "sourceLanguage": "en",
+        "sources": {
+          "en": {
+            "pool": "PLACE",
+            "combination": "3",
+            "amount": "33.50"
+          },
+          "zhHant": {
+            "pool": "位置",
+            "combination": "3",
+            "amount": "33.50"
+          }
+        }
+      },
+      {
+        "id": "hkjc:dividend:v1:795f293f784a6556c4812d3cd81e74247579049b7e675417c6c81d616c2e93a6",
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:09",
+        "pool": "PLACE",
+        "poolSource": "PLACE",
+        "winningCombinationRaw": "11",
+        "combinationKey": "11",
+        "amount": "14.00",
+        "amountRaw": "14.00",
+        "currency": "HKD",
+        "stakeAmount": null,
+        "stakeCurrency": null,
+        "stakeBasis": "not_stated_in_captured_table",
+        "sourceRow": 3,
+        "sourceLanguage": "en",
+        "sources": {
+          "en": {
+            "pool": "PLACE",
+            "combination": "11",
+            "amount": "14.00"
+          },
+          "zhHant": {
+            "pool": "位置",
+            "combination": "11",
+            "amount": "14.00"
+          }
+        }
+      },
+      {
+        "id": "hkjc:dividend:v1:a84ebcce2c828972951ea339f1fe676c4538bdd5cfee5c09fba36d50d10c2d93",
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:09",
+        "pool": "PLACE",
+        "poolSource": "PLACE",
+        "winningCombinationRaw": "4",
+        "combinationKey": "4",
+        "amount": "20.50",
+        "amountRaw": "20.50",
+        "currency": "HKD",
+        "stakeAmount": null,
+        "stakeCurrency": null,
+        "stakeBasis": "not_stated_in_captured_table",
+        "sourceRow": 4,
+        "sourceLanguage": "en",
+        "sources": {
+          "en": {
+            "pool": "PLACE",
+            "combination": "4",
+            "amount": "20.50"
+          },
+          "zhHant": {
+            "pool": "位置",
+            "combination": "4",
+            "amount": "20.50"
+          }
+        }
+      },
+      {
+        "id": "hkjc:dividend:v1:38366c30a33e1ebca4649583c054e023643828ced87a9bb7a1ab3f8f2f096e25",
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:09",
+        "pool": "QUINELLA",
+        "poolSource": "QUINELLA",
+        "winningCombinationRaw": "3,11",
+        "combinationKey": "3,11",
+        "amount": "121.00",
+        "amountRaw": "121.00",
+        "currency": "HKD",
+        "stakeAmount": null,
+        "stakeCurrency": null,
+        "stakeBasis": "not_stated_in_captured_table",
+        "sourceRow": 5,
+        "sourceLanguage": "en",
+        "sources": {
+          "en": {
+            "pool": "QUINELLA",
+            "combination": "3,11",
+            "amount": "121.00"
+          },
+          "zhHant": {
+            "pool": "連贏",
+            "combination": "3,11",
+            "amount": "121.00"
+          }
+        }
+      },
+      {
+        "id": "hkjc:dividend:v1:208fabeec51aecc49619eadb0b3c313fe5714deb5ce9b6e7e7b74eb701f0de7b",
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:09",
+        "pool": "QUINELLA PLACE",
+        "poolSource": "QUINELLA PLACE",
+        "winningCombinationRaw": "3,11",
+        "combinationKey": "3,11",
+        "amount": "54.00",
+        "amountRaw": "54.00",
+        "currency": "HKD",
+        "stakeAmount": null,
+        "stakeCurrency": null,
+        "stakeBasis": "not_stated_in_captured_table",
+        "sourceRow": 6,
+        "sourceLanguage": "en",
+        "sources": {
+          "en": {
+            "pool": "QUINELLA PLACE",
+            "combination": "3,11",
+            "amount": "54.00"
+          },
+          "zhHant": {
+            "pool": "位置Q",
+            "combination": "3,11",
+            "amount": "54.00"
+          }
+        }
+      },
+      {
+        "id": "hkjc:dividend:v1:2a7e69a496ef9646a695b22f5d20fee681aec4564acd25f5141fc2d73a21c16e",
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:09",
+        "pool": "QUINELLA PLACE",
+        "poolSource": "QUINELLA PLACE",
+        "winningCombinationRaw": "3,4",
+        "combinationKey": "3,4",
+        "amount": "104.50",
+        "amountRaw": "104.50",
+        "currency": "HKD",
+        "stakeAmount": null,
+        "stakeCurrency": null,
+        "stakeBasis": "not_stated_in_captured_table",
+        "sourceRow": 7,
+        "sourceLanguage": "en",
+        "sources": {
+          "en": {
+            "pool": "QUINELLA PLACE",
+            "combination": "3,4",
+            "amount": "104.50"
+          },
+          "zhHant": {
+            "pool": "位置Q",
+            "combination": "3,4",
+            "amount": "104.50"
+          }
+        }
+      },
+      {
+        "id": "hkjc:dividend:v1:1722546f336580dce78320dfcb11d08494dfe45b4632be7eaee7f616589f9311",
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:09",
+        "pool": "QUINELLA PLACE",
+        "poolSource": "QUINELLA PLACE",
+        "winningCombinationRaw": "4,11",
+        "combinationKey": "4,11",
+        "amount": "38.00",
+        "amountRaw": "38.00",
+        "currency": "HKD",
+        "stakeAmount": null,
+        "stakeCurrency": null,
+        "stakeBasis": "not_stated_in_captured_table",
+        "sourceRow": 8,
+        "sourceLanguage": "en",
+        "sources": {
+          "en": {
+            "pool": "QUINELLA PLACE",
+            "combination": "4,11",
+            "amount": "38.00"
+          },
+          "zhHant": {
+            "pool": "位置Q",
+            "combination": "4,11",
+            "amount": "38.00"
+          }
+        }
+      },
+      {
+        "id": "hkjc:dividend:v1:bef92991b5bf114caa99a912a1c2135982ca88b69e25fa200f0e169713071264",
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:09",
+        "pool": "FORECAST",
+        "poolSource": "FORECAST",
+        "winningCombinationRaw": "3,11",
+        "combinationKey": "3,11",
+        "amount": "424.00",
+        "amountRaw": "424.00",
+        "currency": "HKD",
+        "stakeAmount": null,
+        "stakeCurrency": null,
+        "stakeBasis": "not_stated_in_captured_table",
+        "sourceRow": 9,
+        "sourceLanguage": "en",
+        "sources": {
+          "en": {
+            "pool": "FORECAST",
+            "combination": "3,11",
+            "amount": "424.00"
+          },
+          "zhHant": {
+            "pool": "二重彩",
+            "combination": "3,11",
+            "amount": "424.00"
+          }
+        }
+      },
+      {
+        "id": "hkjc:dividend:v1:46245126a56423892ea2b267dd2ce73baac45871eee888bf6ea0cfcc2db76baf",
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:09",
+        "pool": "TIERCE",
+        "poolSource": "TIERCE",
+        "winningCombinationRaw": "3,11,4",
+        "combinationKey": "3,11,4",
+        "amount": "2082.00",
+        "amountRaw": "2,082.00",
+        "currency": "HKD",
+        "stakeAmount": null,
+        "stakeCurrency": null,
+        "stakeBasis": "not_stated_in_captured_table",
+        "sourceRow": 10,
+        "sourceLanguage": "en",
+        "sources": {
+          "en": {
+            "pool": "TIERCE",
+            "combination": "3,11,4",
+            "amount": "2,082.00"
+          },
+          "zhHant": {
+            "pool": "三重彩",
+            "combination": "3,11,4",
+            "amount": "2,082.00"
+          }
+        }
+      },
+      {
+        "id": "hkjc:dividend:v1:5ef733dbaf90bcffdd2dfc40f6054e24059b57708fed998928307ad65ce88c52",
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:09",
+        "pool": "TRIO",
+        "poolSource": "TRIO",
+        "winningCombinationRaw": "3,4,11",
+        "combinationKey": "3,4,11",
+        "amount": "267.00",
+        "amountRaw": "267.00",
+        "currency": "HKD",
+        "stakeAmount": null,
+        "stakeCurrency": null,
+        "stakeBasis": "not_stated_in_captured_table",
+        "sourceRow": 11,
+        "sourceLanguage": "en",
+        "sources": {
+          "en": {
+            "pool": "TRIO",
+            "combination": "3,4,11",
+            "amount": "267.00"
+          },
+          "zhHant": {
+            "pool": "單T",
+            "combination": "3,4,11",
+            "amount": "267.00"
+          }
+        }
+      },
+      {
+        "id": "hkjc:dividend:v1:e3363084434637f64e9d26065ca25cf678384bf31bd3f4af68da146b2ff9f8d6",
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:09",
+        "pool": "FIRST 4",
+        "poolSource": "FIRST 4",
+        "winningCombinationRaw": "2,3,4,11",
+        "combinationKey": "2,3,4,11",
+        "amount": "439.00",
+        "amountRaw": "439.00",
+        "currency": "HKD",
+        "stakeAmount": null,
+        "stakeCurrency": null,
+        "stakeBasis": "not_stated_in_captured_table",
+        "sourceRow": 12,
+        "sourceLanguage": "en",
+        "sources": {
+          "en": {
+            "pool": "FIRST 4",
+            "combination": "2,3,4,11",
+            "amount": "439.00"
+          },
+          "zhHant": {
+            "pool": "四連環",
+            "combination": "2,3,4,11",
+            "amount": "439.00"
+          }
+        }
+      },
+      {
+        "id": "hkjc:dividend:v1:fac74c7d8f1766bcd14cbdb5a9b2eec388ea20b0099f22998caa78f206670909",
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:09",
+        "pool": "QUARTET",
+        "poolSource": "QUARTET",
+        "winningCombinationRaw": "3,11,4,2",
+        "combinationKey": "3,11,4,2",
+        "amount": "12519.00",
+        "amountRaw": "12,519.00",
+        "currency": "HKD",
+        "stakeAmount": null,
+        "stakeCurrency": null,
+        "stakeBasis": "not_stated_in_captured_table",
+        "sourceRow": 13,
+        "sourceLanguage": "en",
+        "sources": {
+          "en": {
+            "pool": "QUARTET",
+            "combination": "3,11,4,2",
+            "amount": "12,519.00"
+          },
+          "zhHant": {
+            "pool": "四重彩",
+            "combination": "3,11,4,2",
+            "amount": "12,519.00"
+          }
+        }
+      },
+      {
+        "id": "hkjc:dividend:v1:19fe278150c3d339cfc914e48d495934311e44ba57530aabd936ba13a0bc6c9b",
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:09",
+        "pool": "8TH DOUBLE",
+        "poolSource": "8TH DOUBLE",
+        "winningCombinationRaw": "3/3",
+        "combinationKey": "3/3",
+        "amount": "1059.50",
+        "amountRaw": "1,059.50",
+        "currency": "HKD",
+        "stakeAmount": null,
+        "stakeCurrency": null,
+        "stakeBasis": "not_stated_in_captured_table",
+        "sourceRow": 14,
+        "sourceLanguage": "en",
+        "sources": {
+          "en": {
+            "pool": "8TH DOUBLE",
+            "combination": "3/3",
+            "amount": "1,059.50"
+          },
+          "zhHant": {
+            "pool": "第八口孖寶",
+            "combination": "3/3",
+            "amount": "1,059.50"
+          }
+        }
+      },
+      {
+        "id": "hkjc:dividend:v1:14308845ff447f41241c5a7a816cc22e2350df128db1dc42550dbd219371c41c",
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:09",
+        "pool": "8TH DOUBLE",
+        "poolSource": "8TH DOUBLE",
+        "winningCombinationRaw": "3/11",
+        "combinationKey": "3/11",
+        "amount": "38.00",
+        "amountRaw": "38.00",
+        "currency": "HKD",
+        "stakeAmount": null,
+        "stakeCurrency": null,
+        "stakeBasis": "not_stated_in_captured_table",
+        "sourceRow": 15,
+        "sourceLanguage": "en",
+        "sources": {
+          "en": {
+            "pool": "8TH DOUBLE",
+            "combination": "3/11",
+            "amount": "38.00"
+          },
+          "zhHant": {
+            "pool": "第八口孖寶",
+            "combination": "3/11",
+            "amount": "38.00"
+          }
+        }
+      },
+      {
+        "id": "hkjc:dividend:v1:f822670d4df25b422df4b726a895924e3373da491e238336bd02858906582e88",
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:09",
+        "pool": "2ND TREBLE",
+        "poolSource": "2ND TREBLE",
+        "winningCombinationRaw": "11/3/3",
+        "combinationKey": "11/3/3",
+        "amount": "3700.00",
+        "amountRaw": "3,700.00",
+        "currency": "HKD",
+        "stakeAmount": null,
+        "stakeCurrency": null,
+        "stakeBasis": "not_stated_in_captured_table",
+        "sourceRow": 16,
+        "sourceLanguage": "en",
+        "sources": {
+          "en": {
+            "pool": "2ND TREBLE",
+            "combination": "11/3/3",
+            "amount": "3,700.00"
+          },
+          "zhHant": {
+            "pool": "第二口三寶",
+            "combination": "11/3/3",
+            "amount": "3,700.00"
+          }
+        }
+      },
+      {
+        "id": "hkjc:dividend:v1:c5a6943963bc9cf2c64b09173a5a7c00834ac8025c8ff8c92527c1a17df1f223",
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:09",
+        "pool": "2ND TREBLE",
+        "poolSource": "2ND TREBLE",
+        "winningCombinationRaw": "11/3/11",
+        "combinationKey": "11/3/11",
+        "amount": "179.00",
+        "amountRaw": "179.00",
+        "currency": "HKD",
+        "stakeAmount": null,
+        "stakeCurrency": null,
+        "stakeBasis": "not_stated_in_captured_table",
+        "sourceRow": 17,
+        "sourceLanguage": "en",
+        "sources": {
+          "en": {
+            "pool": "2ND TREBLE",
+            "combination": "11/3/11",
+            "amount": "179.00"
+          },
+          "zhHant": {
+            "pool": "第二口三寶",
+            "combination": "11/3/11",
+            "amount": "179.00"
+          }
+        }
+      },
+      {
+        "id": "hkjc:dividend:v1:c4ec073276fffff39e165a11d0b64884fef371afe28a322ab116e0f7e1fef820",
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:09",
+        "pool": "4TH DOUBLE TRIO",
+        "poolSource": "4TH DOUBLE TRIO",
+        "winningCombinationRaw": "1,3,11/3,4,11",
+        "combinationKey": "1,3,11/3,4,11",
+        "amount": "28159.00",
+        "amountRaw": "28,159.00",
+        "currency": "HKD",
+        "stakeAmount": null,
+        "stakeCurrency": null,
+        "stakeBasis": "not_stated_in_captured_table",
+        "sourceRow": 18,
+        "sourceLanguage": "en",
+        "sources": {
+          "en": {
+            "pool": "4TH DOUBLE TRIO",
+            "combination": "1,3,11/3,4,11",
+            "amount": "28,159.00"
+          },
+          "zhHant": {
+            "pool": "第四口孖T",
+            "combination": "1,3,11/3,4,11",
+            "amount": "28,159.00"
+          }
+        }
+      },
+      {
+        "id": "hkjc:dividend:v1:54737f1ddd095f55e4abe34a01b1cb4e1fd0cb5548ee93a4d7d944afa2f4402d",
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:09",
+        "pool": "SIX UP",
+        "poolSource": "SIX UP",
+        "winningCombinationRaw": "1,6/9,12/6,11/4,11/1,3/3,11",
+        "combinationKey": "1,6/9,12/6,11/4,11/1,3/3,11",
+        "amount": "47074.00",
+        "amountRaw": "47,074.00",
+        "currency": "HKD",
+        "stakeAmount": null,
+        "stakeCurrency": null,
+        "stakeBasis": "not_stated_in_captured_table",
+        "sourceRow": 19,
+        "sourceLanguage": "en",
+        "sources": {
+          "en": {
+            "pool": "SIX UP",
+            "combination": "1,6/9,12/6,11/4,11/1,3/3,11",
+            "amount": "47,074.00"
+          },
+          "zhHant": {
+            "pool": "六環彩",
+            "combination": "1,6/9,12/6,11/4,11/1,3/3,11",
+            "amount": "47,074.00"
+          }
+        }
+      },
+      {
+        "id": "hkjc:dividend:v1:d13ad80cc6c02a7adfa3e22fd8b6c3ac8e55cd3da0265e94cf4c0095eb457ea7",
+        "raceId": "hkjc:meeting:v1:2026-07-15:HV:09",
+        "pool": "SIX UP",
+        "poolSource": "SIX UP",
+        "winningCombinationRaw": "6/12/6/11/3/3",
+        "combinationKey": "6/12/6/11/3/3",
+        "amount": "24643450.00",
+        "amountRaw": "24,643,450.00",
+        "currency": "HKD",
+        "stakeAmount": null,
+        "stakeCurrency": null,
+        "stakeBasis": "not_stated_in_captured_table",
+        "sourceRow": 20,
+        "sourceLanguage": "en",
+        "sources": {
+          "en": {
+            "pool": "SIX UP",
+            "combination": "6/12/6/11/3/3",
+            "amount": "24,643,450.00"
+          },
+          "zhHant": {
+            "pool": "六環彩",
+            "combination": "6/12/6/11/3/3",
+            "amount": "24,643,450.00"
+          }
+        }
+      }
+    ],
+    "sourceRows": 20,
+    "reportedCurrency": "HKD",
+    "stakeNormalized": false,
+    "tableDataRows": 22,
+    "deferredNonmonetaryRows": 2
+  }
+}
