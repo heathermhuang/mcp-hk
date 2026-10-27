@@ -13,7 +13,7 @@ file=$folder/retrieved-$job.dump
 size=$(stat -c %s "$file")
 free=$(df -Pk /srv/mcp-hk-curated | awk 'NR==2 {print $4}')
 [ "$free" -ge "$((10485760+size/1024*20))" ] || { echo 'Restore headroom gate'; exit 1; }
-image=$(docker compose -p curated -f deploy/curated/production.compose.yaml images -q backend)
+image=$(python3 deploy/curated/backend-image.py)
 docker exec curated-postgres-1 createdb -U postgres "$database"
 docker exec -i curated-postgres-1 pg_restore -U postgres -d "$database" --exit-on-error --single-transaction --no-owner --no-acl < "$file"
 # Logical dumps do not preserve planner statistics. Qualify a prepared restore,
