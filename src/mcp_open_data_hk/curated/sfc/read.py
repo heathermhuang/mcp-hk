@@ -84,9 +84,25 @@ class SfcReader:
                 active = conn.execute(
                     "SELECT sha256,record FROM curated_sfc.policies WHERE active AND revoked_at IS NULL"
                 ).fetchone()
+                columns = "scheduled_for,started_at,state,requests"
+                extended = conn.execute(
+                    "SELECT EXISTS(SELECT 1 FROM pg_attribute WHERE attrelid='curated_sfc.runs'::regclass AND attname='job_outcomes' AND NOT attisdropped) AS installed"
+                ).fetchone()["installed"]
+                if (
+                    extended
+                    and conn.execute(
+                        "SELECT has_column_privilege('curated_sfc.runs','job_outcomes','SELECT') AS allowed"
+                    ).fetchone()["allowed"]
+                ):
+                    columns += ",provenance,source_release,job_outcomes,job_updated_at"
                 last = conn.execute(
-                    "SELECT scheduled_for,started_at,state,requests FROM curated_sfc.runs ORDER BY started_at DESC,run_id DESC LIMIT 1"
+                    "SELECT "
+                    + columns
+                    + " FROM curated_sfc.runs ORDER BY started_at DESC,run_id DESC LIMIT 1"
                 ).fetchone()
+                unresolved = conn.execute(
+                    "SELECT count(*) AS n FROM curated_sfc.attempts WHERE state='unknown'"
+                ).fetchone()["n"]
                 successful = conn.execute(
                     "SELECT max(settled_at) AS stamp FROM curated_sfc.attempts WHERE state='ok'"
                 ).fetchone()["stamp"]
@@ -94,6 +110,7 @@ class SfcReader:
                     lastAttemptAt=last["started_at"] if last else None,
                     lastSuccessAt=successful,
                     lastRun=last,
+                    unresolvedRequests=unresolved,
                 )
                 row = conn.execute(
                     "SELECT v.* FROM curated_sfc.versions v JOIN curated_sfc.pointer p USING(version)"

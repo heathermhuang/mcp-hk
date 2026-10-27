@@ -218,14 +218,16 @@ class Collector:
     def __init__(self, state, policy, transport=None):
         self.state, self.policy, self.transport = state, policy, transport
 
-    def collect(self, scheduled_for, cohort):
+    def collect(self, scheduled_for, cohort, provenance="manual", source_release=None):
         if self.policy.route != ROUTE:
             raise Rejected("SFC_ROUTE_CHANGED")
         self.policy.require("automation", "retention", "backup")
         payloads, lineage = {}, {}
         deadline = time.monotonic() + 600
         with self.state.session():
-            run, new = self.state.start(scheduled_for, cohort, self.policy.sha256)
+            run, new = self.state.start(
+                scheduled_for, cohort, self.policy.sha256, provenance, source_release
+            )
             if not new:
                 return {"runId": run, "state": "already_processed", "networkReads": 0}
             try:
@@ -298,8 +300,13 @@ class Collector:
                             "rawRetained": False,
                             "scope": "SFO_corporate_licence_intervals_only",
                         }
-                    except Exception:
-                        if attempt is not None:
+                    except Exception as exc:
+                        uncertain = (
+                            isinstance(exc, httpx.HTTPError)
+                            or isinstance(exc, Rejected)
+                            and str(exc) == "SFC_SOURCE_TIMEOUT"
+                        )
+                        if attempt is not None and not uncertain:
                             self.state.settle(attempt, "failed")
                         raise
                 if time.monotonic() > deadline:
