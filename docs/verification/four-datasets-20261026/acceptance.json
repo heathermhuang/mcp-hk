@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-26T22:00:46.551438+00:00",
+  "updatedAt": "2026-10-27T11:44:03.283935+00:00",
   "overallState": "incomplete",
   "sourcePlan": "../../../../../../docs/designs/mcp-hk-four-datasets-completion-20261026.md",
   "originalInventories": {
@@ -213,54 +213,64 @@
       "state": "partial",
       "dependency": [],
       "actualCoverage": {
-        "version": "official-731745eb39cd14f3f986ac01521f0525",
-        "acceptedWeeks": 72,
-        "inventoryWeeks": 94,
-        "acceptedCsvFiles": 144,
+        "currentPublicVersion": "official-799798307f9db9968bd238c02b1de49f",
+        "publicPairs": 84,
+        "publicCsvFiles": 168,
+        "downloadedStagedPairs": 94,
+        "downloadedStagedCsvFiles": 188,
+        "inventoryPairs": 94,
         "inventoryCsvFiles": 188,
-        "counts": {
-          "money_lender": {
-            "rows": 6776,
-            "entities": 6770
+        "priorDetailedReceipt": {
+          "version": "official-731745eb39cd14f3f986ac01521f0525",
+          "acceptedWeeks": 72,
+          "inventoryWeeks": 94,
+          "acceptedCsvFiles": 144,
+          "inventoryCsvFiles": 188,
+          "counts": {
+            "money_lender": {
+              "rows": 6776,
+              "entities": 6770
+            },
+            "company_event": {
+              "rows": 312706,
+              "entities": 305101
+            },
+            "address_observation": {
+              "rows": 726,
+              "entities": 726
+            }
           },
-          "company_event": {
-            "rows": 312706,
-            "entities": 305101
-          },
-          "address_observation": {
-            "rows": 726,
-            "entities": 726
+          "offsiteRpoQualified": false,
+          "addressCapacity": {
+            "eligible": 305101,
+            "dailyAttemptLimit": 250,
+            "sharedCrDailyRequestLimit": 500,
+            "fullPassMinimumDaysAtCurrentCap": 1221,
+            "wholeSubset90DayCycleFeasible": false,
+            "successfulReadsPerDayNeededFor90Days": 3391,
+            "guaranteedWholeSubsetCycleDays": null,
+            "refreshTargetDays": 90,
+            "priorityCohortCapacityAt90Days": 4500,
+            "targetScope": "observed_and_explicit_priority_cohorts; capacity-dependent, not a whole-subset guarantee",
+            "saturatedShares": {
+              "priority": 0.2,
+              "refresh": 0.4,
+              "initial": 0.3,
+              "retry": 0.1
+            },
+            "idleShareBorrowing": true,
+            "basis": "optimistic lower bound; failures, holds and other CR reads reduce throughput"
           }
-        },
-        "offsiteRpoQualified": false,
-        "addressCapacity": {
-          "eligible": 305101,
-          "dailyAttemptLimit": 250,
-          "sharedCrDailyRequestLimit": 500,
-          "fullPassMinimumDaysAtCurrentCap": 1221,
-          "wholeSubset90DayCycleFeasible": false,
-          "successfulReadsPerDayNeededFor90Days": 3391,
-          "guaranteedWholeSubsetCycleDays": null,
-          "refreshTargetDays": 90,
-          "priorityCohortCapacityAt90Days": 4500,
-          "targetScope": "observed_and_explicit_priority_cohorts; capacity-dependent, not a whole-subset guarantee",
-          "saturatedShares": {
-            "priority": 0.2,
-            "refresh": 0.4,
-            "initial": 0.3,
-            "retry": 0.1
-          },
-          "idleShareBorrowing": true,
-          "basis": "optimistic lower bound; failures, holds and other CR reads reduce throughput"
         }
       },
       "version": "official-731745eb39cd14f3f986ac01521f0525",
       "evidence": [
         "production-release-20261027.json",
-        "RELEASE-20261027.md"
+        "RELEASE-20261027.md",
+        "company-full-inventory-recovery-20261027.json"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Reuse existing owner retry; qualify all original 188 source cases once full version publishes"
+      "nextAction": "Observe next normal daily acceptance of all 94 pairs; then verify pinned-version REST/MCP and actual bilingual exports"
     },
     {
       "id": "W02.staged-bytes-reused",
@@ -276,40 +286,48 @@
     {
       "id": "W02.full-state-offsite-restore",
       "workPackage": "W02",
-      "state": "partial",
+      "state": "passed",
       "dependency": [],
       "actualCoverage": {
-        "retainedRestoreRawCaptures": 900,
-        "retainedRestoreP95Ms": 64,
-        "proofScope": "retained dump reported by owner; not ordinary daily RPO"
+        "scope": "complete staged 94-pair source state; published pointer is still 84 pairs",
+        "qualifiedWeekPairs": 94,
+        "rawCaptureChecksumsVerified": 1180,
+        "stagedReadP95Ms": 41.864245002216194,
+        "allTableFingerprintsMatch": true,
+        "recoveryJob": "8aea0be1505c18fa76cf7ef42508a037",
+        "backupSha256": "f469f8393c77de9d3169808f2144f209e4788462daff768bab269f6882c677c9",
+        "ordinaryDailyOccurrence": false,
+        "sustainedDailyReliabilityProven": false
       },
-      "version": null,
+      "version": "official-799798307f9db9968bd238c02b1de49f",
       "evidence": [
-        "QUERY-REVIEW.md",
-        "query-restored-proof.json",
-        "progress-20261027.json"
+        "company-full-inventory-recovery-20261027.json"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Obtain current full-inventory proof and observe an ordinary daily cycle separately"
+      "nextAction": "Keep normal daily recovery enabled and observe public acceptance separately"
     },
     {
       "id": "W02.full-state-performance",
       "workPackage": "W02",
-      "state": "partial",
+      "state": "passed",
       "dependency": [],
       "actualCoverage": {
-        "retainedRestoreRawCaptures": 900,
-        "retainedRestoreP95Ms": 64,
-        "proofScope": "retained dump reported by owner; not ordinary daily RPO"
+        "scope": "complete staged 94-pair source state; published pointer is still 84 pairs",
+        "qualifiedWeekPairs": 94,
+        "rawCaptureChecksumsVerified": 1180,
+        "stagedReadP95Ms": 41.864245002216194,
+        "allTableFingerprintsMatch": true,
+        "recoveryJob": "8aea0be1505c18fa76cf7ef42508a037",
+        "backupSha256": "f469f8393c77de9d3169808f2144f209e4788462daff768bab269f6882c677c9",
+        "ordinaryDailyOccurrence": false,
+        "sustainedDailyReliabilityProven": false
       },
-      "version": null,
+      "version": "official-799798307f9db9968bd238c02b1de49f",
       "evidence": [
-        "QUERY-REVIEW.md",
-        "query-restored-proof.json",
-        "progress-20261027.json"
+        "company-full-inventory-recovery-20261027.json"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Obtain current full-inventory proof and observe an ordinary daily cycle separately"
+      "nextAction": "Keep normal daily recovery enabled and observe public acceptance separately"
     },
     {
       "id": "W02.same-version-188-rest-mcp-pairs",
@@ -970,29 +988,51 @@
         "RESUMED-DATA-WORK-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Qualify fresh accepted recovery and report-gap handling separately"
+      "nextAction": "Continue normal schedule; fresh accepted recovery and report-gap warnings verified separately"
     },
     {
       "id": "W06.hkex-daily-report-gap-handling",
       "workPackage": "W06",
-      "state": "pending",
+      "state": "passed",
       "dependency": [],
-      "actualCoverage": null,
-      "version": null,
-      "evidence": [],
+      "actualCoverage": {
+        "source": "daily_summaries",
+        "publicWarning": "UNOBSERVED_REPORT_DATES",
+        "completeRequestedReports": false,
+        "observedQueryWindow": [
+          "2026-10-21",
+          "2026-10-28 exclusive"
+        ],
+        "unobservedDateCategoryPairs": 8,
+        "unavailableReportsRemainRecheckable": true,
+        "missingDoesNotMeanZeroFilings": true
+      },
+      "version": "hkex-daily-2d654797ea0d194718c996e1e5f979a0",
+      "evidence": [
+        "hkex-fresh-public-proof-20261027.json"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Retain normal scheduled operation; full-filing coverage remains independently gated"
     },
     {
       "id": "W06.hkex-daily-fresh-recovery",
       "workPackage": "W06",
-      "state": "pending",
+      "state": "passed",
       "dependency": [],
-      "actualCoverage": null,
-      "version": null,
-      "evidence": [],
+      "actualCoverage": {
+        "source": "daily_summaries",
+        "normalTimerRun": "06f9a476ac104225859409f2bf909a46",
+        "acceptedRestoreVerifiedAt": "2026-10-27T10:21:15.227676+00:00",
+        "allTables": 7,
+        "dumpSha256": "ef2afcf73a44808f2c29eb00becdc2cffd79c137d1484deb882f7aa5eaec94d0",
+        "retainedOriginalAndDownloadedHashesVerified": true
+      },
+      "version": "hkex-daily-2d654797ea0d194718c996e1e5f979a0",
+      "evidence": [
+        "hkex-normal-recovery-20261027.json"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Retain normal scheduled operation; full-filing coverage remains independently gated"
     },
     {
       "id": "W06.hkex-real-listing-document-transport-parser",

@@ -32,5 +32,12 @@
   "effectiveFilterBasisQualified": false,
   "completeFilingDateInventoryQualified": false,
   "opaqueSearchReferenceNotPromotedToPermanentIssuerIdentity": true,
-  "nextAction": "Qualify effective source filters and group/form navigation, then independently reconcile an explicit filing-date inventory; do not infer filing dates from event columns, serial prefixes or daily summary dates."
+  "nextAction": "Qualify effective source filters and group/form navigation, then independently reconcile an explicit filing-date inventory; do not infer filing dates from event columns, serial prefixes or daily summary dates.",
+  "followup": {
+    "evidence": "hkex-event-filter-qualification-20261027.json",
+    "providerRequests": 5,
+    "observedFilterBasisForOneFormPath": "relevant_event_date",
+    "completeFilingDateInventoryQualified": false,
+    "consequence": "An event-date search alone cannot prove filing-date completeness. Reconcile an independent filing-date inventory and amendment closure."
+  }
 }

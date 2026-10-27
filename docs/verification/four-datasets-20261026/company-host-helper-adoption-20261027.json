@@ -1,0 +1,35 @@
+{
+  "observedAt": "2026-10-27T11:31:54.943530+00:00",
+  "helperSourceCommit": "3f9824f50a21eaced2b71716eb4770832cad4692",
+  "backendSourceCommit": "3aeaaafbd7f51636c314e707de82911c48567632",
+  "priorAlias": "/opt/mcp-hk-releases/3aeaaafbd7f51636c314e707de82911c48567632",
+  "newAlias": "/opt/mcp-hk-releases/host-3f9824f50a21eaced2b71716eb4770832cad4692",
+  "helperFiles": {
+    "deploy/curated/run-official.sh": "c56e8abd27e150dd8fba64914e939e904034d93501befe5c113e654dd64c1adf",
+    "deploy/curated/run-backfill.sh": "22618d09ca3833b33863b0087cf9e81f49e8f8142542e79d4e1a937a8c8fbe02",
+    "deploy/curated/run-offsite.sh": "faaa65dd833c14098bf385acab06e50ed546bc7e596405e9200a25b1692446c1",
+    "deploy/curated/restore-official.sh": "62086ddaa278893766158b71c1bcf90c5c56cc701c4fb3f4dbf806e101f2e226",
+    "deploy/curated/verify-official.sh": "ded287d678a88fe5f36f831e5d2b725c953e045539d1f5d1251a1712c70a09b2",
+    "deploy/curated/backend-image.py": "9732cf97576660c347492aabe98cab187687ea8c440dbf26b90f862c3017ce23"
+  },
+  "before": {
+    "runtime": {
+      "id": "9970d3015886eca8f6f63d16ea595be4d06b66651450cc613ed08e03b3c6182a",
+      "image": "sha256:e1cd220b04b366371537e185c72ad701848837cd3783f31ea22d4bb7f84cab33",
+      "running": true
+    },
+    "configurationHashesSha256": "5c5001d2e927b2ff845201e71f6e6dc2dee479f4ff17bd2bb3e9a259d59c0381"
+  },
+  "providerRequests": 0,
+  "servingContainerRestarted": false,
+  "after": {
+    "runtime": {
+      "id": "9970d3015886eca8f6f63d16ea595be4d06b66651450cc613ed08e03b3c6182a",
+      "image": "sha256:e1cd220b04b366371537e185c72ad701848837cd3783f31ea22d4bb7f84cab33",
+      "running": true
+    },
+    "configurationHashesSha256": "5c5001d2e927b2ff845201e71f6e6dc2dee479f4ff17bd2bb3e9a259d59c0381"
+  },
+  "configurationAndRuntimeUnchanged": true,
+  "status": "adopted"
+}

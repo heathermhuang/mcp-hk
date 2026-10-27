@@ -1,0 +1,65 @@
+{
+  "observedAt": "2026-10-27T11:29:19.911380+00:00",
+  "source": "hkex_daily_summary",
+  "normalTimerRun": "06f9a476ac104225859409f2bf909a46",
+  "manifest": {
+    "source": "hkex_daily_summary",
+    "stamp": "20261027T102057Z-d638211d",
+    "stage": "accepted",
+    "version": "hkex-daily-2d654797ea0d194718c996e1e5f979a0",
+    "dump": {
+      "bytes": 600950,
+      "sha256": "ef2afcf73a44808f2c29eb00becdc2cffd79c137d1484deb882f7aa5eaec94d0"
+    },
+    "restoreVerified": true,
+    "allTables": {
+      "control": {
+        "rows": 1,
+        "sha256": "634ae79493ce09657ca8772d60c4bde932fb238f43e612be8998f97200b6cda4"
+      },
+      "versions": {
+        "rows": 10,
+        "sha256": "334bd7fd904b9b22f8184f99969269a2b5b8ac16f9e99ec1d54b2b54337707db"
+      },
+      "reports": {
+        "rows": 84,
+        "sha256": "2062bb47acc9567e9993d3db9d755da4faee19fad53ceef752d5c2a2e921ae9e"
+      },
+      "records": {
+        "rows": 5516,
+        "sha256": "23041a180bd42498219420b46e5c47978c4c07891d9ee9f5bb3b9fbbfe70aaa2"
+      },
+      "version_reports": {
+        "rows": 196,
+        "sha256": "72965a7aa242e5f1112d263cdc174f4fd46584fb368b8925d6cc994e1b644bf3"
+      },
+      "runs": {
+        "rows": 23,
+        "sha256": "99638dac45a9b77db0d21d9ca06c3292e30d3ea9bc65b87d0a65669c770a07ee"
+      },
+      "requests": {
+        "rows": 128,
+        "sha256": "e2a1e9bbf6a62e893b7c477e98b9fb41befc63f466b06f1bb727c0c0b9cd8810",
+        "sequence": {
+          "lastValue": 128,
+          "isCalled": true
+        }
+      }
+    },
+    "publicationRevision": 10,
+    "verifiedAt": "2026-10-27T10:21:15.227676+00:00",
+    "manifestSha256": "1df500609b6e0e29f61acb73ca38cf65454e5b10e8d54d96da4151deef70b3f4"
+  },
+  "retainedDumpVerification": {
+    "source.dump": {
+      "bytes": 600950,
+      "sha256": "ef2afcf73a44808f2c29eb00becdc2cffd79c137d1484deb882f7aa5eaec94d0"
+    },
+    "offsite.dump": {
+      "bytes": 600950,
+      "sha256": "ef2afcf73a44808f2c29eb00becdc2cffd79c137d1484deb882f7aa5eaec94d0"
+    }
+  },
+  "newProviderRequests": 0,
+  "fullFilingsActivated": false
+}
