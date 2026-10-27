@@ -1,0 +1,2102 @@
+{
+  "scope": "complete retained Webb revision-reference census; not a full-filing/date-window closure",
+  "archiveVersion": "webb-sdi-enigma251227-v1",
+  "archiveRowsWithRevisionLinks": 8313,
+  "edgeCounts": {
+    "supersedeEdges": 4205,
+    "supersedeResolved": 4205,
+    "amendEdges": 4380,
+    "amendResolved": 4235,
+    "amendMissing": 145
+  },
+  "uniqueMissingTargets": 145,
+  "missingTargetFormats": {
+    "legacySerial": 140,
+    "DIONSerial": 5
+  },
+  "crossIssuerReferences": [
+    {
+      "sourceId": 255144,
+      "serial": "DA20200714E00314",
+      "relation": "supersede",
+      "targetSerial": "DA20200717E00341",
+      "sourceIssuerId": 419,
+      "targetIssuerId": 418
+    },
+    {
+      "sourceId": 255373,
+      "serial": "DA20200717E00341",
+      "relation": "amend",
+      "targetSerial": "DA20200714E00314",
+      "sourceIssuerId": 418,
+      "targetIssuerId": 419
+    }
+  ],
+  "sourceTechnicalReads": [
+    {
+      "phase": "source_receipt",
+      "serial": "DA20170929E00098",
+      "run": "250775bc131f43269d3b61b75a1ca426",
+      "ledgerId": 134,
+      "status": 200,
+      "bytes": 41281,
+      "sha256": "774e61db01bb735bc9bc0544367f97724f0ee4993b2dcb6b4e0f9eab1fa54874",
+      "hold": null,
+      "sourceUrl": "https://di.hkex.com.hk/di/NSForm3A.aspx?fn=DA20170929E00098",
+      "rawHtmlRetained": false,
+      "requestedSerialVisible": true,
+      "form3ALabelVisible": true,
+      "relatedSerials": [
+        "DA20170913E00106",
+        "DA20170929E00098",
+        "DA20180102E00145"
+      ],
+      "dateRows": [
+        [
+          "1. Date of relevant event :",
+          "13/09/2017 (dd/mm/yyyy)"
+        ],
+        [
+          "2. Date when director became aware of the relevant event/ interest in the shares (if later) :",
+          "(dd/mm/yyyy)"
+        ],
+        [
+          "Date of filing this Form 3A :",
+          "29/09/2017 (dd/mm/yyyy)"
+        ]
+      ],
+      "acceptedDailyVersionUnchanged": "hkex-daily-2d654797ea0d194718c996e1e5f979a0",
+      "observedAt": "2026-10-27T12:10:17.964674+00:00"
+    },
+    {
+      "phase": "source_receipt",
+      "serial": "DA20181004E00213",
+      "run": "40886d774cb94f6a954455649d348849",
+      "ledgerId": 135,
+      "status": 200,
+      "bytes": 42441,
+      "sha256": "967b5ce08bfde9ba5c503618aeacf82497466918eb48d57b2791a58f64e2b563",
+      "hold": null,
+      "sourceUrl": "https://di.hkex.com.hk/di/NSForm3A.aspx?fn=DA20181004E00213",
+      "rawHtmlRetained": false,
+      "requestedSerialVisible": true,
+      "form3ALabelVisible": true,
+      "relatedSerials": [
+        "DA20181004E00213",
+        "DA20181004E00377"
+      ],
+      "dateRows": [
+        [
+          "1. Date of relevant event :",
+          "28/09/2018 (dd/mm/yyyy)"
+        ],
+        [
+          "2. Date when director became aware of the relevant event/ interest in the shares (if later) :",
+          "(dd/mm/yyyy)"
+        ],
+        [
+          "Date of filing this Form 3A :",
+          "04/10/2018 (dd/mm/yyyy)"
+        ]
+      ],
+      "acceptedDailyVersionUnchanged": "hkex-daily-2d654797ea0d194718c996e1e5f979a0",
+      "observedAt": "2026-10-27T12:10:25.037896+00:00"
+    },
+    {
+      "phase": "source_receipt",
+      "serial": "DA20190404E00451",
+      "run": "85e644a398e249dba04be1db1fdb2b05",
+      "ledgerId": 136,
+      "status": 200,
+      "bytes": 38008,
+      "sha256": "d12594a7c121094d1c9a812fc434e092d81dbdfad7fc6959d4a3dfeb2a5e5bb0",
+      "hold": null,
+      "sourceUrl": "https://di.hkex.com.hk/di/NSForm3A.aspx?fn=DA20190404E00451",
+      "rawHtmlRetained": false,
+      "requestedSerialVisible": true,
+      "form3ALabelVisible": true,
+      "relatedSerials": [
+        "DA20190404E00451",
+        "DA20190408E00471"
+      ],
+      "dateRows": [
+        [
+          "1. Date of relevant event :",
+          "02/04/2019 (dd/mm/yyyy)"
+        ],
+        [
+          "2. Date when director became aware of the relevant event/ interest in the shares (if later) :",
+          "(dd/mm/yyyy)"
+        ],
+        [
+          "Date of filing this Form 3A :",
+          "04/04/2019 (dd/mm/yyyy)"
+        ]
+      ],
+      "acceptedDailyVersionUnchanged": "hkex-daily-2d654797ea0d194718c996e1e5f979a0",
+      "observedAt": "2026-10-27T12:10:34.167804+00:00"
+    },
+    {
+      "phase": "source_receipt",
+      "serial": "DA20190404E00452",
+      "run": "db1e85e941aa4c8eb56cc7e407ab180b",
+      "ledgerId": 137,
+      "status": 200,
+      "bytes": 39315,
+      "sha256": "fb311ae562d9de7b030b26a8751047e3803edc3e26a1cc5b40917b360bb5671d",
+      "hold": null,
+      "sourceUrl": "https://di.hkex.com.hk/di/NSForm3A.aspx?fn=DA20190404E00452",
+      "rawHtmlRetained": false,
+      "requestedSerialVisible": true,
+      "form3ALabelVisible": true,
+      "relatedSerials": [
+        "DA20190404E00452",
+        "DA20190408E00479"
+      ],
+      "dateRows": [
+        [
+          "1. Date of relevant event :",
+          "02/04/2019 (dd/mm/yyyy)"
+        ],
+        [
+          "2. Date when director became aware of the relevant event/ interest in the shares (if later) :",
+          "(dd/mm/yyyy)"
+        ],
+        [
+          "Date of filing this Form 3A :",
+          "04/04/2019 (dd/mm/yyyy)"
+        ]
+      ],
+      "acceptedDailyVersionUnchanged": "hkex-daily-2d654797ea0d194718c996e1e5f979a0",
+      "observedAt": "2026-10-27T12:10:42.845690+00:00"
+    },
+    {
+      "phase": "source_receipt",
+      "serial": "DA20200224E00003",
+      "run": "600cc848bc404279adb99b4f0f1ef8fc",
+      "ledgerId": 138,
+      "status": 200,
+      "bytes": 39717,
+      "sha256": "84fa3c1c4a0f6b9aabfb331b2e4293bf8e0073e5d02711002a0a835f960fe804",
+      "hold": null,
+      "sourceUrl": "https://di.hkex.com.hk/di/NSForm3A.aspx?fn=DA20200224E00003",
+      "rawHtmlRetained": false,
+      "requestedSerialVisible": true,
+      "form3ALabelVisible": true,
+      "relatedSerials": [
+        "DA20200224E00003",
+        "DA20200225E00083"
+      ],
+      "dateRows": [
+        [
+          "1. Date of relevant event :",
+          "21/02/2020 (dd/mm/yyyy)"
+        ],
+        [
+          "2. Date when director became aware of the relevant event/ interest in the shares (if later) :",
+          "(dd/mm/yyyy)"
+        ],
+        [
+          "Date of filing this Form 3A :",
+          "24/02/2020 (dd/mm/yyyy)"
+        ]
+      ],
+      "acceptedDailyVersionUnchanged": "hkex-daily-2d654797ea0d194718c996e1e5f979a0",
+      "observedAt": "2026-10-27T12:10:50.548769+00:00"
+    }
+  ],
+  "sourceTechnicalReadCount": 5,
+  "sourceTechnicalReadBytes": 200762,
+  "rawHtmlRetained": false,
+  "archivePointerChanged": false,
+  "fullFilingsActivated": false,
+  "completeFilingDateInventoryQualified": false,
+  "amendmentClosureQualified": false,
+  "missingTargets": [
+    {
+      "serial": "DA20030606000076",
+      "references": [
+        {
+          "sourceId": 220412,
+          "serial": "DA20180605E00216",
+          "relation": "amend",
+          "issuerId": 1624,
+          "eventDate": "2003-05-21"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20030806000007",
+      "references": [
+        {
+          "sourceId": 232949,
+          "serial": "DA20190124E00412",
+          "relation": "amend",
+          "issuerId": 5025,
+          "eventDate": "2003-08-01"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20030812000044",
+      "references": [
+        {
+          "sourceId": 220411,
+          "serial": "DA20180605E00217",
+          "relation": "amend",
+          "issuerId": 1624,
+          "eventDate": "2003-08-07"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20030812000045",
+      "references": [
+        {
+          "sourceId": 220410,
+          "serial": "DA20180605E00219",
+          "relation": "amend",
+          "issuerId": 1624,
+          "eventDate": "2003-08-07"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20031023000086",
+      "references": [
+        {
+          "sourceId": 232948,
+          "serial": "DA20190124E00405",
+          "relation": "amend",
+          "issuerId": 5025,
+          "eventDate": "2003-10-19"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20040531000015",
+      "references": [
+        {
+          "sourceId": 232947,
+          "serial": "DA20190124E00404",
+          "relation": "amend",
+          "issuerId": 5025,
+          "eventDate": "2004-05-25"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20040614000023",
+      "references": [
+        {
+          "sourceId": 232946,
+          "serial": "DA20190124E00400",
+          "relation": "amend",
+          "issuerId": 5025,
+          "eventDate": "2004-06-09"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20040716000072",
+      "references": [
+        {
+          "sourceId": 266647,
+          "serial": "DA20210317E00247",
+          "relation": "amend",
+          "issuerId": 485,
+          "eventDate": "2004-07-14"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20040716000073",
+      "references": [
+        {
+          "sourceId": 266646,
+          "serial": "DA20210317E00248",
+          "relation": "amend",
+          "issuerId": 485,
+          "eventDate": "2004-07-15"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20040803000120",
+      "references": [
+        {
+          "sourceId": 232945,
+          "serial": "DA20190124E00399",
+          "relation": "amend",
+          "issuerId": 5025,
+          "eventDate": "2004-07-31"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20040803000129",
+      "references": [
+        {
+          "sourceId": 232944,
+          "serial": "DA20190124E00402",
+          "relation": "amend",
+          "issuerId": 5025,
+          "eventDate": "2004-07-31"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20050323000084",
+      "references": [
+        {
+          "sourceId": 242026,
+          "serial": "DA20190909E00206",
+          "relation": "amend",
+          "issuerId": 4814,
+          "eventDate": "2004-10-21"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20050511000089",
+      "references": [
+        {
+          "sourceId": 272487,
+          "serial": "DA20210708E00377",
+          "relation": "amend",
+          "issuerId": 365,
+          "eventDate": "2005-05-10"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20050524000101",
+      "references": [
+        {
+          "sourceId": 242025,
+          "serial": "DA20190909E00208",
+          "relation": "amend",
+          "issuerId": 4814,
+          "eventDate": "2005-05-20"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20050627000008",
+      "references": [
+        {
+          "sourceId": 242023,
+          "serial": "DA20190909E00214",
+          "relation": "amend",
+          "issuerId": 4814,
+          "eventDate": "2005-06-23"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20050630000141",
+      "references": [
+        {
+          "sourceId": 242022,
+          "serial": "DA20190909E00226",
+          "relation": "amend",
+          "issuerId": 4814,
+          "eventDate": "2005-06-29"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20050711000041",
+      "references": [
+        {
+          "sourceId": 242021,
+          "serial": "DA20190909E00228",
+          "relation": "amend",
+          "issuerId": 4814,
+          "eventDate": "2005-07-05"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20050802000153",
+      "references": [
+        {
+          "sourceId": 232943,
+          "serial": "DA20190124E00398",
+          "relation": "amend",
+          "issuerId": 5025,
+          "eventDate": "2005-07-29"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20050804000033",
+      "references": [
+        {
+          "sourceId": 232942,
+          "serial": "DA20190124E00397",
+          "relation": "amend",
+          "issuerId": 5025,
+          "eventDate": "2005-08-01"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20051010000084",
+      "references": [
+        {
+          "sourceId": 242020,
+          "serial": "DA20190909E00230",
+          "relation": "amend",
+          "issuerId": 4814,
+          "eventDate": "2005-10-06"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20051107000221",
+      "references": [
+        {
+          "sourceId": 242019,
+          "serial": "DA20190909E00232",
+          "relation": "amend",
+          "issuerId": 4814,
+          "eventDate": "2005-11-04"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20060331000092",
+      "references": [
+        {
+          "sourceId": 272486,
+          "serial": "DA20210708E00379",
+          "relation": "amend",
+          "issuerId": 365,
+          "eventDate": "2006-03-30"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20060804000033",
+      "references": [
+        {
+          "sourceId": 232941,
+          "serial": "DA20190124E00396",
+          "relation": "amend",
+          "issuerId": 5025,
+          "eventDate": "2006-07-31"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20060804000034",
+      "references": [
+        {
+          "sourceId": 232940,
+          "serial": "DA20190124E00395",
+          "relation": "amend",
+          "issuerId": 5025,
+          "eventDate": "2006-08-01"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20070309000022",
+      "references": [
+        {
+          "sourceId": 272485,
+          "serial": "DA20210708E00386",
+          "relation": "amend",
+          "issuerId": 365,
+          "eventDate": "2007-03-06"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20070508000021",
+      "references": [
+        {
+          "sourceId": 272484,
+          "serial": "DA20210708E00389",
+          "relation": "amend",
+          "issuerId": 365,
+          "eventDate": "2007-05-07"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20070803000284",
+      "references": [
+        {
+          "sourceId": 232939,
+          "serial": "DA20190124E00394",
+          "relation": "amend",
+          "issuerId": 5025,
+          "eventDate": "2007-07-31"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20070803000288",
+      "references": [
+        {
+          "sourceId": 232938,
+          "serial": "DA20190124E00401",
+          "relation": "amend",
+          "issuerId": 5025,
+          "eventDate": "2007-07-31"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20081030000161",
+      "references": [
+        {
+          "sourceId": 228268,
+          "serial": "DA20181023E00441",
+          "relation": "amend",
+          "issuerId": 39476,
+          "eventDate": "2008-10-29"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20081103000351",
+      "references": [
+        {
+          "sourceId": 228267,
+          "serial": "DA20181023E00442",
+          "relation": "amend",
+          "issuerId": 39476,
+          "eventDate": "2008-10-30"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20110830000192",
+      "references": [
+        {
+          "sourceId": 242018,
+          "serial": "DA20190909E00235",
+          "relation": "amend",
+          "issuerId": 4814,
+          "eventDate": "2011-08-29"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20110902000227",
+      "references": [
+        {
+          "sourceId": 242017,
+          "serial": "DA20190909E00239",
+          "relation": "amend",
+          "issuerId": 4814,
+          "eventDate": "2011-08-31"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20120405000126",
+      "references": [
+        {
+          "sourceId": 251222,
+          "serial": "DA20200428E00149",
+          "relation": "amend",
+          "issuerId": 5432,
+          "eventDate": "2012-01-06"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20120731000048",
+      "references": [
+        {
+          "sourceId": 247671,
+          "serial": "DA20200122E00442",
+          "relation": "amend",
+          "issuerId": 15161,
+          "eventDate": "2012-07-27"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20120731000049",
+      "references": [
+        {
+          "sourceId": 247670,
+          "serial": "DA20200122E00443",
+          "relation": "amend",
+          "issuerId": 15161,
+          "eventDate": "2012-07-27"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20130308000154",
+      "references": [
+        {
+          "sourceId": 222824,
+          "serial": "DA20180710E00557",
+          "relation": "amend",
+          "issuerId": 25466,
+          "eventDate": "2013-03-06"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20130308000155",
+      "references": [
+        {
+          "sourceId": 222810,
+          "serial": "DA20180710E00500",
+          "relation": "amend",
+          "issuerId": 25466,
+          "eventDate": "2013-03-06"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20131009000139",
+      "references": [
+        {
+          "sourceId": 251643,
+          "serial": "DA20200508E00224",
+          "relation": "amend",
+          "issuerId": 50500,
+          "eventDate": "2013-10-09"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20140317000147",
+      "references": [
+        {
+          "sourceId": 232696,
+          "serial": "DA20190122E00249",
+          "relation": "amend",
+          "issuerId": 2202232,
+          "eventDate": "2014-03-05"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20150324000149",
+      "references": [
+        {
+          "sourceId": 237348,
+          "serial": "DA20190529E00175",
+          "relation": "amend",
+          "issuerId": 65427,
+          "eventDate": "2015-03-20"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20150509000039",
+      "references": [
+        {
+          "sourceId": 222809,
+          "serial": "DA20180710E00506",
+          "relation": "amend",
+          "issuerId": 25466,
+          "eventDate": "2015-05-07"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20150509000040",
+      "references": [
+        {
+          "sourceId": 222823,
+          "serial": "DA20180710E00563",
+          "relation": "amend",
+          "issuerId": 25466,
+          "eventDate": "2015-05-07"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20150925000141",
+      "references": [
+        {
+          "sourceId": 222808,
+          "serial": "DA20180710E00510",
+          "relation": "amend",
+          "issuerId": 25466,
+          "eventDate": "2015-11-04"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20150925000142",
+      "references": [
+        {
+          "sourceId": 222822,
+          "serial": "DA20180710E00565",
+          "relation": "amend",
+          "issuerId": 25466,
+          "eventDate": "2015-11-04"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20151214000216",
+      "references": [
+        {
+          "sourceId": 238078,
+          "serial": "DA20190613E00181",
+          "relation": "amend",
+          "issuerId": 2126566,
+          "eventDate": "2015-12-08"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20151214000250",
+      "references": [
+        {
+          "sourceId": 238079,
+          "serial": "DA20190613E00180",
+          "relation": "amend",
+          "issuerId": 2126566,
+          "eventDate": "2015-09-10"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20160115000406",
+      "references": [
+        {
+          "sourceId": 222807,
+          "serial": "DA20180710E00513",
+          "relation": "amend",
+          "issuerId": 25466,
+          "eventDate": "2016-01-13"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20160115000408",
+      "references": [
+        {
+          "sourceId": 222821,
+          "serial": "DA20180710E00568",
+          "relation": "amend",
+          "issuerId": 25466,
+          "eventDate": "2016-01-13"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20160121000209",
+      "references": [
+        {
+          "sourceId": 222806,
+          "serial": "DA20180710E00517",
+          "relation": "amend",
+          "issuerId": 25466,
+          "eventDate": "2016-01-20"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20160121000218",
+      "references": [
+        {
+          "sourceId": 222820,
+          "serial": "DA20180710E00569",
+          "relation": "amend",
+          "issuerId": 25466,
+          "eventDate": "2016-01-20"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20160121000293",
+      "references": [
+        {
+          "sourceId": 213535,
+          "serial": "DA20171222E00403",
+          "relation": "amend",
+          "issuerId": 1894,
+          "eventDate": "2015-12-21"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20160122000124",
+      "references": [
+        {
+          "sourceId": 222805,
+          "serial": "DA20180710E00519",
+          "relation": "amend",
+          "issuerId": 25466,
+          "eventDate": "2016-01-21"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20160122000125",
+      "references": [
+        {
+          "sourceId": 222819,
+          "serial": "DA20180710E00573",
+          "relation": "amend",
+          "issuerId": 25466,
+          "eventDate": "2016-01-21"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20160122000246",
+      "references": [
+        {
+          "sourceId": 222804,
+          "serial": "DA20180710E00521",
+          "relation": "amend",
+          "issuerId": 25466,
+          "eventDate": "2016-01-21"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20160122000247",
+      "references": [
+        {
+          "sourceId": 222818,
+          "serial": "DA20180710E00576",
+          "relation": "amend",
+          "issuerId": 25466,
+          "eventDate": "2016-01-21"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20160506000014",
+      "references": [
+        {
+          "sourceId": 222803,
+          "serial": "DA20180710E00522",
+          "relation": "amend",
+          "issuerId": 25466,
+          "eventDate": "2016-05-05"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20160506000016",
+      "references": [
+        {
+          "sourceId": 222817,
+          "serial": "DA20180710E00582",
+          "relation": "amend",
+          "issuerId": 25466,
+          "eventDate": "2016-05-05"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20160506000136",
+      "references": [
+        {
+          "sourceId": 222802,
+          "serial": "DA20180710E00525",
+          "relation": "amend",
+          "issuerId": 25466,
+          "eventDate": "2016-05-06"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20160506000137",
+      "references": [
+        {
+          "sourceId": 222816,
+          "serial": "DA20180710E00586",
+          "relation": "amend",
+          "issuerId": 25466,
+          "eventDate": "2016-05-06"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20160506000159",
+      "references": [
+        {
+          "sourceId": 216560,
+          "serial": "DA20180312E00204",
+          "relation": "amend",
+          "issuerId": 23740,
+          "eventDate": "2016-03-30"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20160509000167",
+      "references": [
+        {
+          "sourceId": 222801,
+          "serial": "DA20180710E00526",
+          "relation": "amend",
+          "issuerId": 25466,
+          "eventDate": "2016-05-09"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20160509000172",
+      "references": [
+        {
+          "sourceId": 222815,
+          "serial": "DA20180710E00590",
+          "relation": "amend",
+          "issuerId": 25466,
+          "eventDate": "2016-05-09"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20160610000165",
+      "references": [
+        {
+          "sourceId": 222146,
+          "serial": "DA20180703E00466",
+          "relation": "amend",
+          "issuerId": 56299,
+          "eventDate": "2016-06-08"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20160615000085",
+      "references": [
+        {
+          "sourceId": 222800,
+          "serial": "DA20180710E00528",
+          "relation": "amend",
+          "issuerId": 25466,
+          "eventDate": "2016-06-14"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20160615000086",
+      "references": [
+        {
+          "sourceId": 222814,
+          "serial": "DA20180710E00594",
+          "relation": "amend",
+          "issuerId": 25466,
+          "eventDate": "2016-06-14"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20160727000138",
+      "references": [
+        {
+          "sourceId": 227255,
+          "serial": "DA20181008E00140",
+          "relation": "amend",
+          "issuerId": 2538,
+          "eventDate": "2016-07-25"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20160801000023",
+      "references": [
+        {
+          "sourceId": 243786,
+          "serial": "DA20191022E00028",
+          "relation": "amend",
+          "issuerId": 2273882,
+          "eventDate": "2016-07-26"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20160802000059",
+      "references": [
+        {
+          "sourceId": 243784,
+          "serial": "DA20191022E00033",
+          "relation": "amend",
+          "issuerId": 2273882,
+          "eventDate": "2016-07-27"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20160803000044",
+      "references": [
+        {
+          "sourceId": 243785,
+          "serial": "DA20191022E00029",
+          "relation": "amend",
+          "issuerId": 2273882,
+          "eventDate": "2016-07-27"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20160803000045",
+      "references": [
+        {
+          "sourceId": 243783,
+          "serial": "DA20191022E00030",
+          "relation": "amend",
+          "issuerId": 2273882,
+          "eventDate": "2016-07-28"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20160822000018",
+      "references": [
+        {
+          "sourceId": 227330,
+          "serial": "DA20181009E00052",
+          "relation": "amend",
+          "issuerId": 2538,
+          "eventDate": "2016-08-17"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20160823000041",
+      "references": [
+        {
+          "sourceId": 223743,
+          "serial": "DA20180727E00276",
+          "relation": "amend",
+          "issuerId": 2273882,
+          "eventDate": "2016-08-17"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20160823000043",
+      "references": [
+        {
+          "sourceId": 243782,
+          "serial": "DA20191022E00031",
+          "relation": "amend",
+          "issuerId": 2273882,
+          "eventDate": "2016-08-17"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20160826000033",
+      "references": [
+        {
+          "sourceId": 243780,
+          "serial": "DA20191022E00034",
+          "relation": "amend",
+          "issuerId": 2273882,
+          "eventDate": "2016-08-22"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20160826000034",
+      "references": [
+        {
+          "sourceId": 243781,
+          "serial": "DA20191022E00032",
+          "relation": "amend",
+          "issuerId": 2273882,
+          "eventDate": "2016-08-22"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20160902000124",
+      "references": [
+        {
+          "sourceId": 222799,
+          "serial": "DA20180710E00531",
+          "relation": "amend",
+          "issuerId": 25466,
+          "eventDate": "2016-08-31"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20160902000126",
+      "references": [
+        {
+          "sourceId": 222813,
+          "serial": "DA20180710E00597",
+          "relation": "amend",
+          "issuerId": 25466,
+          "eventDate": "2016-08-31"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20160908000167",
+      "references": [
+        {
+          "sourceId": 211207,
+          "serial": "DA20171113E00299",
+          "relation": "amend",
+          "issuerId": 66797,
+          "eventDate": "2016-09-05"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20161031000133",
+      "references": [
+        {
+          "sourceId": 241564,
+          "serial": "DA20190902E00281",
+          "relation": "amend",
+          "issuerId": 1368,
+          "eventDate": "2016-10-28"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20161102000243",
+      "references": [
+        {
+          "sourceId": 241563,
+          "serial": "DA20190902E00282",
+          "relation": "amend",
+          "issuerId": 1368,
+          "eventDate": "2016-11-01"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20161208000306",
+      "references": [
+        {
+          "sourceId": 227329,
+          "serial": "DA20181009E00165",
+          "relation": "amend",
+          "issuerId": 2538,
+          "eventDate": "2016-12-02"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20161215000136",
+      "references": [
+        {
+          "sourceId": 213066,
+          "serial": "DA20171218E00126",
+          "relation": "amend",
+          "issuerId": 511,
+          "eventDate": "2016-12-13"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170105000140",
+      "references": [
+        {
+          "sourceId": 211203,
+          "serial": "DA20171113E00309",
+          "relation": "amend",
+          "issuerId": 66797,
+          "eventDate": "2017-01-05"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170110000054",
+      "references": [
+        {
+          "sourceId": 234465,
+          "serial": "DA20190401E00002",
+          "relation": "amend",
+          "issuerId": 2365876,
+          "eventDate": "2018-11-16"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170111000187",
+      "references": [
+        {
+          "sourceId": 241562,
+          "serial": "DA20190902E00283",
+          "relation": "amend",
+          "issuerId": 1368,
+          "eventDate": "2017-01-10"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170112000107",
+      "references": [
+        {
+          "sourceId": 227328,
+          "serial": "DA20181009E00196",
+          "relation": "amend",
+          "issuerId": 2538,
+          "eventDate": "2017-01-11"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170113000099",
+      "references": [
+        {
+          "sourceId": 233382,
+          "serial": "DA20190214E00282",
+          "relation": "amend",
+          "issuerId": 1891481,
+          "eventDate": "2017-01-12"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170120000077",
+      "references": [
+        {
+          "sourceId": 227406,
+          "serial": "DA20181010E00040",
+          "relation": "amend",
+          "issuerId": 2538,
+          "eventDate": "2017-01-18"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170120000205",
+      "references": [
+        {
+          "sourceId": 241561,
+          "serial": "DA20190902E00284",
+          "relation": "amend",
+          "issuerId": 1368,
+          "eventDate": "2017-01-19"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170125000074",
+      "references": [
+        {
+          "sourceId": 213533,
+          "serial": "DA20171222E00407",
+          "relation": "amend",
+          "issuerId": 1894,
+          "eventDate": "2016-12-15"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170126000228",
+      "references": [
+        {
+          "sourceId": 222145,
+          "serial": "DA20180703E00468",
+          "relation": "amend",
+          "issuerId": 56299,
+          "eventDate": "2017-01-25"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170201000010",
+      "references": [
+        {
+          "sourceId": 251642,
+          "serial": "DA20200508E00225",
+          "relation": "amend",
+          "issuerId": 50500,
+          "eventDate": "2017-01-27"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170206000135",
+      "references": [
+        {
+          "sourceId": 227405,
+          "serial": "DA20181010E00177",
+          "relation": "amend",
+          "issuerId": 2538,
+          "eventDate": "2017-01-22"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170206000136",
+      "references": [
+        {
+          "sourceId": 227461,
+          "serial": "DA20181011E00077",
+          "relation": "amend",
+          "issuerId": 2538,
+          "eventDate": "2017-01-23"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170206000137",
+      "references": [
+        {
+          "sourceId": 227460,
+          "serial": "DA20181011E00099",
+          "relation": "amend",
+          "issuerId": 2538,
+          "eventDate": "2017-01-30"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170215000033",
+      "references": [
+        {
+          "sourceId": 213061,
+          "serial": "DA20171218E00131",
+          "relation": "amend",
+          "issuerId": 511,
+          "eventDate": "2017-02-14"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170217000092",
+      "references": [
+        {
+          "sourceId": 223444,
+          "serial": "DA20180723E00228",
+          "relation": "amend",
+          "issuerId": 45237,
+          "eventDate": "2017-02-16"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170303000149",
+      "references": [
+        {
+          "sourceId": 213060,
+          "serial": "DA20171218E00132",
+          "relation": "amend",
+          "issuerId": 511,
+          "eventDate": "2017-03-01"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170313000209",
+      "references": [
+        {
+          "sourceId": 209874,
+          "serial": "DA20171013E00287",
+          "relation": "amend",
+          "issuerId": 2605980,
+          "eventDate": "2017-02-28"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170313000210",
+      "references": [
+        {
+          "sourceId": 209873,
+          "serial": "DA20171013E00288",
+          "relation": "amend",
+          "issuerId": 2605980,
+          "eventDate": "2017-02-28"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170313000215",
+      "references": [
+        {
+          "sourceId": 209877,
+          "serial": "DA20171013E00291",
+          "relation": "amend",
+          "issuerId": 2605980,
+          "eventDate": "2017-02-28"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170313000216",
+      "references": [
+        {
+          "sourceId": 209876,
+          "serial": "DA20171013E00292",
+          "relation": "amend",
+          "issuerId": 2605980,
+          "eventDate": "2017-02-28"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170328000140",
+      "references": [
+        {
+          "sourceId": 233380,
+          "serial": "DA20190214E00284",
+          "relation": "amend",
+          "issuerId": 1891481,
+          "eventDate": "2017-03-27"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170328000237",
+      "references": [
+        {
+          "sourceId": 209872,
+          "serial": "DA20171013E00286",
+          "relation": "amend",
+          "issuerId": 2605980,
+          "eventDate": "2017-03-23"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170328000238",
+      "references": [
+        {
+          "sourceId": 209875,
+          "serial": "DA20171013E00290",
+          "relation": "amend",
+          "issuerId": 2605980,
+          "eventDate": "2017-03-23"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170329000110",
+      "references": [
+        {
+          "sourceId": 213057,
+          "serial": "DA20171218E00133",
+          "relation": "amend",
+          "issuerId": 511,
+          "eventDate": "2017-03-27"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170329000113",
+      "references": [
+        {
+          "sourceId": 211723,
+          "serial": "DA20171122E00338",
+          "relation": "amend",
+          "issuerId": 511,
+          "eventDate": "2017-03-27"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170330000200",
+      "references": [
+        {
+          "sourceId": 273250,
+          "serial": "DA20210723E00281",
+          "relation": "amend",
+          "issuerId": 2377099,
+          "eventDate": "2017-03-29"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170403000039",
+      "references": [
+        {
+          "sourceId": 233378,
+          "serial": "DA20190214E00286",
+          "relation": "amend",
+          "issuerId": 1891481,
+          "eventDate": "2017-03-31"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170413000047",
+      "references": [
+        {
+          "sourceId": 213534,
+          "serial": "DA20171222E00405",
+          "relation": "amend",
+          "issuerId": 1894,
+          "eventDate": "2016-12-15"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170418000002",
+      "references": [
+        {
+          "sourceId": 233377,
+          "serial": "DA20190214E00287",
+          "relation": "amend",
+          "issuerId": 1891481,
+          "eventDate": "2017-04-12"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170418000163",
+      "references": [
+        {
+          "sourceId": 236774,
+          "serial": "DA20190516E00420",
+          "relation": "amend",
+          "issuerId": 2570226,
+          "eventDate": "2017-04-13"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170421000086",
+      "references": [
+        {
+          "sourceId": 233375,
+          "serial": "DA20190214E00289",
+          "relation": "amend",
+          "issuerId": 1891481,
+          "eventDate": "2017-04-20"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170425000191",
+      "references": [
+        {
+          "sourceId": 233374,
+          "serial": "DA20190214E00290",
+          "relation": "amend",
+          "issuerId": 1891481,
+          "eventDate": "2017-04-21"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170511000237",
+      "references": [
+        {
+          "sourceId": 213053,
+          "serial": "DA20171218E00134",
+          "relation": "amend",
+          "issuerId": 511,
+          "eventDate": "2017-05-08"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170511000249",
+      "references": [
+        {
+          "sourceId": 211716,
+          "serial": "DA20171122E00345",
+          "relation": "amend",
+          "issuerId": 511,
+          "eventDate": "2017-05-08"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170512000035",
+      "references": [
+        {
+          "sourceId": 233368,
+          "serial": "DA20190214E00298",
+          "relation": "amend",
+          "issuerId": 1891481,
+          "eventDate": "2017-05-11"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170602000155",
+      "references": [
+        {
+          "sourceId": 222144,
+          "serial": "DA20180703E00470",
+          "relation": "amend",
+          "issuerId": 56299,
+          "eventDate": "2017-06-01"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170602000237",
+      "references": [
+        {
+          "sourceId": 222143,
+          "serial": "DA20180703E00471",
+          "relation": "amend",
+          "issuerId": 56299,
+          "eventDate": "2017-06-01"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170606000217",
+      "references": [
+        {
+          "sourceId": 214233,
+          "serial": "DA20180104E00567",
+          "relation": "amend",
+          "issuerId": 11096,
+          "eventDate": "2017-06-05"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170607000062",
+      "references": [
+        {
+          "sourceId": 222142,
+          "serial": "DA20180703E00473",
+          "relation": "amend",
+          "issuerId": 56299,
+          "eventDate": "2017-06-06"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170615000181",
+      "references": [
+        {
+          "sourceId": 233366,
+          "serial": "DA20190214E00300",
+          "relation": "amend",
+          "issuerId": 1891481,
+          "eventDate": "2017-06-15"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170619000046",
+      "references": [
+        {
+          "sourceId": 233365,
+          "serial": "DA20190214E00304",
+          "relation": "amend",
+          "issuerId": 1891481,
+          "eventDate": "2017-06-16"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170621000208",
+      "references": [
+        {
+          "sourceId": 241560,
+          "serial": "DA20190902E00285",
+          "relation": "amend",
+          "issuerId": 1368,
+          "eventDate": "2017-06-20"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170622000274",
+      "references": [
+        {
+          "sourceId": 241559,
+          "serial": "DA20190902E00286",
+          "relation": "amend",
+          "issuerId": 1368,
+          "eventDate": "2017-06-21"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170626000229",
+      "references": [
+        {
+          "sourceId": 241557,
+          "serial": "DA20190902E00288",
+          "relation": "amend",
+          "issuerId": 1368,
+          "eventDate": "2017-06-23"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170628000220",
+      "references": [
+        {
+          "sourceId": 241556,
+          "serial": "DA20190902E00289",
+          "relation": "amend",
+          "issuerId": 1368,
+          "eventDate": "2017-06-27"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170629000264",
+      "references": [
+        {
+          "sourceId": 215337,
+          "serial": "DA20180124E00241",
+          "relation": "amend",
+          "issuerId": 2429688,
+          "eventDate": "2017-06-24"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170630000388",
+      "references": [
+        {
+          "sourceId": 206947,
+          "serial": "DA20170815E00015",
+          "relation": "amend",
+          "issuerId": 135729,
+          "eventDate": "2017-06-29"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170705000072",
+      "references": [
+        {
+          "sourceId": 228681,
+          "serial": "DA20181031E00241",
+          "relation": "amend",
+          "issuerId": 135019,
+          "eventDate": "2017-06-22"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170710000028",
+      "references": [
+        {
+          "sourceId": 223741,
+          "serial": "DA20180727E00278",
+          "relation": "amend",
+          "issuerId": 2273882,
+          "eventDate": "2017-07-03"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170725000017",
+      "references": [
+        {
+          "sourceId": 210050,
+          "serial": "DA20171018E00429",
+          "relation": "amend",
+          "issuerId": 6611,
+          "eventDate": "2017-07-19"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170725000160",
+      "references": [
+        {
+          "sourceId": 228680,
+          "serial": "DA20181031E00242",
+          "relation": "amend",
+          "issuerId": 135019,
+          "eventDate": "2017-07-24"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170728000064",
+      "references": [
+        {
+          "sourceId": 228679,
+          "serial": "DA20181031E00244",
+          "relation": "amend",
+          "issuerId": 135019,
+          "eventDate": "2017-07-25"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170809000006",
+      "references": [
+        {
+          "sourceId": 243779,
+          "serial": "DA20191022E00035",
+          "relation": "amend",
+          "issuerId": 2273882,
+          "eventDate": "2017-08-07"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170809000007",
+      "references": [
+        {
+          "sourceId": 243778,
+          "serial": "DA20191022E00036",
+          "relation": "amend",
+          "issuerId": 2273882,
+          "eventDate": "2017-08-08"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170908000039",
+      "references": [
+        {
+          "sourceId": 243777,
+          "serial": "DA20191022E00037",
+          "relation": "amend",
+          "issuerId": 2273882,
+          "eventDate": "2017-09-06"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170911000033",
+      "references": [
+        {
+          "sourceId": 210863,
+          "serial": "DA20171106E00298",
+          "relation": "amend",
+          "issuerId": 2351509,
+          "eventDate": "2017-11-01"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170915000065",
+      "references": [
+        {
+          "sourceId": 218176,
+          "serial": "DA20180413E00281",
+          "relation": "amend",
+          "issuerId": 2472817,
+          "eventDate": "2017-11-10"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170915000078",
+      "references": [
+        {
+          "sourceId": 221514,
+          "serial": "DA20180625E00152",
+          "relation": "amend",
+          "issuerId": 2068181,
+          "eventDate": "2017-08-31"
+        }
+      ],
+      "disposition": "absent_from_retained_archive_legacy_source_not_yet_qualified"
+    },
+    {
+      "serial": "DA20170929E00098",
+      "references": [
+        {
+          "sourceId": 213898,
+          "serial": "DA20180102E00145",
+          "relation": "amend",
+          "issuerId": 11905,
+          "eventDate": "2017-09-13"
+        }
+      ],
+      "disposition": "official_document_access_observed_parser_and_link_qualification_pending"
+    },
+    {
+      "serial": "DA20181004E00213",
+      "references": [
+        {
+          "sourceId": 227174,
+          "serial": "DA20181004E00377",
+          "relation": "amend",
+          "issuerId": 3144,
+          "eventDate": "2018-09-28"
+        }
+      ],
+      "disposition": "official_document_access_observed_parser_and_link_qualification_pending"
+    },
+    {
+      "serial": "DA20190404E00451",
+      "references": [
+        {
+          "sourceId": 235003,
+          "serial": "DA20190408E00471",
+          "relation": "amend",
+          "issuerId": 11775517,
+          "eventDate": "2019-04-02"
+        }
+      ],
+      "disposition": "official_document_access_observed_parser_and_link_qualification_pending"
+    },
+    {
+      "serial": "DA20190404E00452",
+      "references": [
+        {
+          "sourceId": 235006,
+          "serial": "DA20190408E00479",
+          "relation": "amend",
+          "issuerId": 11775517,
+          "eventDate": "2019-04-02"
+        }
+      ],
+      "disposition": "official_document_access_observed_parser_and_link_qualification_pending"
+    },
+    {
+      "serial": "DA20200224E00003",
+      "references": [
+        {
+          "sourceId": 248467,
+          "serial": "DA20200225E00083",
+          "relation": "amend",
+          "issuerId": 17149,
+          "eventDate": "2020-02-21"
+        }
+      ],
+      "disposition": "official_document_access_observed_parser_and_link_qualification_pending"
+    }
+  ]
+}

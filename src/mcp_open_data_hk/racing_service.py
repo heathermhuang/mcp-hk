@@ -76,7 +76,10 @@ class RacingReader(PrototypeReader):
         }
 
     def status(self):
+        from .racing_coverage import inventory, families
+
         meetings = self.store.meetings()
+        profiles = self.store.profiles.status()
         with self.store.connect() as db:
             queue = [
                 dict(r)
@@ -97,6 +100,8 @@ class RacingReader(PrototypeReader):
             held = db.execute(
                 "SELECT state,error FROM racing_attempts WHERE state IN ('reserved','unknown','held') ORDER BY id DESC LIMIT 1"
             ).fetchone()
+            seasons = inventory(db)
+            family_coverage = families(db, totals, dividends, profiles)
         return {
             "data": {
                 "dividendCoverage": {
@@ -110,23 +115,15 @@ class RacingReader(PrototypeReader):
                 "acceptedVersion": meetings[0]["version"] if meetings else None,
                 "sourceBasis": "public_factual_results",
                 "coverage": totals,
-                "profileObservations": self.store.profiles.status(),
+                "profileObservations": profiles,
+                "seasonCoverage": seasons,
                 "meetings": meetings,
                 "queue": queue,
                 "hold": dict(held) if held else None,
                 "durableIngestion": ingestion_status(),
                 "collectionOnRead": False,
                 "scheduled": True,
-                "families": [
-                    {"id": "results", "enabled": bool(meetings)},
-                    {"id": "participant_identities", "enabled": bool(meetings)},
-                    {
-                        "id": "final_dividends",
-                        "enabled": bool(dividends["observedRaces"]),
-                    },
-                    {"id": "full_profiles", "enabled": False},
-                    {"id": "intraday_observations", "enabled": False},
-                ],
+                "families": family_coverage,
                 "cadence": "one bounded source step per existing five-minute maintenance tick; manual bounded backfill batches share the same durable budget",
             },
             "meta": {"pack": "hkjc_racing"},

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-27T11:44:03.283935+00:00",
+  "updatedAt": "2026-10-27T12:14:25.961478+00:00",
   "overallState": "incomplete",
   "sourcePlan": "../../../../../../docs/designs/mcp-hk-four-datasets-completion-20261026.md",
   "originalInventories": {
@@ -213,64 +213,23 @@
       "state": "partial",
       "dependency": [],
       "actualCoverage": {
-        "currentPublicVersion": "official-799798307f9db9968bd238c02b1de49f",
-        "publicPairs": 84,
-        "publicCsvFiles": 168,
-        "downloadedStagedPairs": 94,
-        "downloadedStagedCsvFiles": 188,
-        "inventoryPairs": 94,
-        "inventoryCsvFiles": 188,
-        "priorDetailedReceipt": {
-          "version": "official-731745eb39cd14f3f986ac01521f0525",
-          "acceptedWeeks": 72,
-          "inventoryWeeks": 94,
-          "acceptedCsvFiles": 144,
-          "inventoryCsvFiles": 188,
-          "counts": {
-            "money_lender": {
-              "rows": 6776,
-              "entities": 6770
-            },
-            "company_event": {
-              "rows": 312706,
-              "entities": 305101
-            },
-            "address_observation": {
-              "rows": 726,
-              "entities": 726
-            }
-          },
-          "offsiteRpoQualified": false,
-          "addressCapacity": {
-            "eligible": 305101,
-            "dailyAttemptLimit": 250,
-            "sharedCrDailyRequestLimit": 500,
-            "fullPassMinimumDaysAtCurrentCap": 1221,
-            "wholeSubset90DayCycleFeasible": false,
-            "successfulReadsPerDayNeededFor90Days": 3391,
-            "guaranteedWholeSubsetCycleDays": null,
-            "refreshTargetDays": 90,
-            "priorityCohortCapacityAt90Days": 4500,
-            "targetScope": "observed_and_explicit_priority_cohorts; capacity-dependent, not a whole-subset guarantee",
-            "saturatedShares": {
-              "priority": 0.2,
-              "refresh": 0.4,
-              "initial": 0.3,
-              "retry": 0.1
-            },
-            "idleShareBorrowing": true,
-            "basis": "optimistic lower bound; failures, holds and other CR reads reduce throughput"
-          }
-        }
+        "originalPairs": 94,
+        "originalCsvKeys": 188,
+        "qualifiedFiles": 188,
+        "publishedFiles": 168,
+        "sourceKeysSha256": "48ecc65094f222c99acb3a930f8036a38fd15bad9fa94f51d68369125458a8fe",
+        "allExactKeysReconciled": true,
+        "public94PairAcceptanceProven": false
       },
       "version": "official-731745eb39cd14f3f986ac01521f0525",
       "evidence": [
         "production-release-20261027.json",
         "RELEASE-20261027.md",
-        "company-full-inventory-recovery-20261027.json"
+        "company-full-inventory-recovery-20261027.json",
+        "company-original-inventory-reconciliation-20261027.json"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Observe next normal daily acceptance of all 94 pairs; then verify pinned-version REST/MCP and actual bilingual exports"
+      "nextAction": "Verify the normal 28 October 05:00 UTC accepted publication, then same-version REST/MCP/bilingual actual downloads and fresh accepted restore; preserve daily gate."
     },
     {
       "id": "W02.staged-bytes-reused",
@@ -964,13 +923,26 @@
     {
       "id": "W06.hkex-145-amendment-reference-audit",
       "workPackage": "W06",
-      "state": "pending",
+      "state": "partial",
       "dependency": [],
-      "actualCoverage": null,
+      "actualCoverage": {
+        "archiveReferenceRows": 8313,
+        "resolvedSupersedingEdges": 4205,
+        "resolvedAmendmentEdges": 4235,
+        "unresolvedAmendmentTargets": 145,
+        "legacyTargets": 140,
+        "DionTargets": 5,
+        "DionTargetsReachableTechnicalOnly": 5,
+        "crossIssuerReferenceEdges": 2,
+        "closureQualified": false
+      },
       "version": null,
-      "evidence": [],
+      "evidence": [
+        "hkex-amendment-audit-20261027.json",
+        "FOLLOWUP-20261027.md"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Qualify legacy target access and all target/relation/withdrawal semantics without rewriting immutable Webb identity or treating reachability as closure."
     },
     {
       "id": "W06.hkex-daily-ordinary-occurrence",
@@ -1356,15 +1328,16 @@
       "state": "partial",
       "dependency": [],
       "actualCoverage": {
-        "company": "144/188 CSVs, daily RPO unqualified",
-        "sfc": "archive available; official cohort not activated",
-        "racing": "14 meetings and 3 dated profiles; history/families incomplete",
-        "hkex": "archive and 1288 summary rows; full filing window not accepted"
+        "company": "all original 188 files qualified; 168 published; final accepted-version matrix pending normal publication",
+        "sfc": "archive available; fresh cohort/purpose not approved; production policy not activated",
+        "racing": "17 accepted meetings, 167 races, 2100 rows, 38 dated profiles; historical season and other families incomplete",
+        "hkex": "archive and 1585 daily-summary rows; 145 archive amendment targets unresolved; no complete filing-date inventory"
       },
       "version": null,
       "evidence": [
         "production-release-20261027.json",
-        "RELEASE-20261027.md"
+        "RELEASE-20261027.md",
+        "FOLLOWUP-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
       "nextAction": "Complete remaining source-specific dependencies and unblocked engineering"
