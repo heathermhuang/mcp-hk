@@ -21,6 +21,7 @@ POOLS = {
     "FIRST 4",
     "QUARTET",
     "SIX UP",
+    "TRIPLE TRIO(Consolation)",
 }
 HEADERS = ["Pool", "Winning Combination", "Dividend (HK$)"]
 ZH_HEADERS = ["彩池", "勝出組合", "派彩 (HK$)"]
@@ -35,6 +36,7 @@ ZH_POOLS = {
     "四連環": "FIRST 4",
     "四重彩": "QUARTET",
     "六環彩": "SIX UP",
+    "三T(安慰獎)": "TRIPLE TRIO(Consolation)",
 }
 
 
@@ -105,6 +107,32 @@ def amount(raw):
     return raw.replace(",", "")
 
 
+def combination_key(raw, pool, language):
+    """Preserve numeric order and one qualified literal source marker.
+
+    Any Combination is source text in the third leg of the inspected consolation
+    row. Translate its label for identity only; never enumerate or infer winners.
+    Existing numeric quote identities remain unchanged.
+    """
+    if not isinstance(raw, str) or not 1 <= len(raw) <= 100:
+        raise RacingRejected("DIVIDEND_COMBINATION_UNQUALIFIED")
+    if re.fullmatch(r"[0-9]+(?:[ ,/-]*[0-9]+)*", raw):
+        return re.sub(r"\s+", "", raw)
+    markers = {"en": "Any Combination", "zhHant": "任何組合"}
+    legs = raw.split("/")
+    if (
+        pool == "TRIPLE TRIO(Consolation)"
+        and language in markers
+        and len(legs) == 3
+        and legs[2].strip() == markers[language]
+        and all(
+            re.fullmatch(r"[0-9]+(?:\s*,\s*[0-9]+){2}", leg.strip()) for leg in legs[:2]
+        )
+    ):
+        return re.sub(r"\s+", "", "/".join(legs[:2])) + "/AnyCombination"
+    raise RacingRejected("DIVIDEND_COMBINATION_UNQUALIFIED")
+
+
 def parse_dividend_table(root, race_id, language="en"):
     """Use a race ID already validated by the factual results parser.
 
@@ -169,21 +197,19 @@ def parse_dividend_table(root, race_id, language="en"):
                 raise RacingRejected("DIVIDEND_ROWSPAN_UNQUALIFIED")
             remaining = int(span) - 1
         combination, raw_amount = (cell.text() for cell in values)
-        if not re.fullmatch(r"(?=.{1,100}$)[0-9]+(?:[ ,/-]*[0-9]+)*", combination):
-            raise RacingRejected("DIVIDEND_COMBINATION_UNQUALIFIED")
-        combination_key = re.sub(r"\s+", "", combination)
-        identity = (pool, combination_key)
+        combination_id = combination_key(combination, pool, language)
+        identity = (pool, combination_id)
         if identity in seen:
             raise RacingRejected("DIVIDEND_DUPLICATE_COMBINATION")
         seen.add(identity)
         quotes.append(
             {
-                "id": "hkjc:dividend:v1:" + checksum([race_id, pool, combination_key]),
+                "id": "hkjc:dividend:v1:" + checksum([race_id, pool, combination_id]),
                 "raceId": race_id,
                 "pool": pool,
                 "poolSource": source_pool,
                 "winningCombinationRaw": combination,
-                "combinationKey": combination_key,
+                "combinationKey": combination_id,
                 "amount": amount(raw_amount),
                 "amountRaw": raw_amount,
                 "currency": "HKD",
@@ -368,11 +394,7 @@ def validate_observation(value, race_id):
                 or quote["raceId"] != race_id
                 or quote["id"] != "hkjc:dividend:v1:" + checksum([race_id, *key])
                 or quote["combinationKey"]
-                != re.sub(r"\s+", "", quote["winningCombinationRaw"])
-                or not re.fullmatch(
-                    r"(?=.{1,100}$)[0-9]+(?:[ ,/-]*[0-9]+)*",
-                    quote["winningCombinationRaw"],
-                )
+                != combination_key(quote["winningCombinationRaw"], quote["pool"], "en")
             ):
                 raise ValueError()
             if (
@@ -400,9 +422,9 @@ def validate_observation(value, race_id):
                 or quote["sourceRow"] in source_rows
                 or canonical_pool(zh["pool"], "zhHant") != quote["pool"]
                 or any(
-                    re.sub(r"\s+", "", r["combination"]) != key[1]
+                    combination_key(r["combination"], quote["pool"], lang) != key[1]
                     or Decimal(amount(r["amount"])) != Decimal(quote["amount"])
-                    for r in (en, zh)
+                    for lang, r in (("en", en), ("zhHant", zh))
                 )
             ):
                 raise ValueError()

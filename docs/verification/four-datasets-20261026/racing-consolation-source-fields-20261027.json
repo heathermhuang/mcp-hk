@@ -1,0 +1,48 @@
+{
+  "scope": "exact source-cell qualification; full candidate HTML parsing awaits normal post-release refresh",
+  "rawHtmlRetained": false,
+  "rawHtmlReplayed": false,
+  "sourceRequests": 2,
+  "captures": [
+    {
+      "language": "en",
+      "raceId": "hkjc:meeting:v1:2026-07-08:HV:07",
+      "sourceUrl": "https://racing.hkjc.com/en-us/local/information/archive/localresults?racedate=2026/07/08&racecourse=HV&RaceNo=7",
+      "admissionId": "ade6dd29b95247e38cf71118b5b96fd4",
+      "status": 200,
+      "bytes": 214372,
+      "bodySha256": "96c5112f79f2c721e70f821dfdc216f69c0e7373cc973b6200b47899ed8411a3",
+      "settlement": {
+        "settled": true
+      },
+      "reportedRow": {
+        "pool": "TRIPLE TRIO(Consolation)",
+        "combination": "2,9,12/2,3,4/Any Combination",
+        "amount": "6,881.00"
+      },
+      "canonicalPool": "TRIPLE TRIO(Consolation)",
+      "combinationKey": "2,9,12/2,3,4/AnyCombination"
+    },
+    {
+      "language": "zhHant",
+      "raceId": "hkjc:meeting:v1:2026-07-08:HV:07",
+      "sourceUrl": "https://racing.hkjc.com/zh-hk/local/information/archive/localresults?racedate=2026/07/08&racecourse=HV&RaceNo=7",
+      "admissionId": "3527a4b8ce3e46ccb94d6bbb96fffea7",
+      "status": 200,
+      "bytes": 211286,
+      "bodySha256": "b01eb25b248d5b84512a175b66764471fd0245cfc501a148fb900967140a2fee",
+      "settlement": {
+        "settled": true
+      },
+      "reportedRow": {
+        "pool": "三T(安慰獎)",
+        "combination": "2,9,12/2,3,4/任何組合",
+        "amount": "6,881.00"
+      },
+      "canonicalPool": "TRIPLE TRIO(Consolation)",
+      "combinationKey": "2,9,12/2,3,4/AnyCombination"
+    }
+  ],
+  "markerMeaning": "literal source Any Combination label; no winning combinations expanded or inferred",
+  "stakeBasis": "not_stated_in_captured_table"
+}
