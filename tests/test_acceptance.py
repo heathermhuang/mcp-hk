@@ -255,3 +255,28 @@ def test_reviewed_correction_reopens_only_failed_step_and_preserves_prior_attemp
             "ready",
             "passed",
         ]
+
+
+def test_coordinator_runs_successive_batches_in_one_bounded_wake_without_models(
+    tmp_path,
+):
+    from mcp_open_data_hk.curated.company_suite import run
+
+    plan = {
+        "version": "v",
+        "cases": [{"id": str(n), "steps": ["rest", "mcp"]} for n in range(12)],
+    }
+    journal = Journal(tmp_path / "suite.sqlite3", plan)
+    artifact = tmp_path / "receipt.json"
+    artifact.write_text("{}")
+    calls = []
+
+    def verify(case, step, version):
+        calls.append((case["id"], step, version))
+        return [artifact]
+
+    assert run(journal, verify, seconds=10)["allRequiredStepsPassed"]
+    assert len(calls) == 24
+    assert (
+        run(journal, verify, seconds=10)["allRequiredStepsPassed"] and len(calls) == 24
+    )

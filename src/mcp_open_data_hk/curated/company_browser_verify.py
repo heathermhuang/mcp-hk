@@ -16,15 +16,7 @@ from .acceptance import (
 )
 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--cohort", required=True)
-    parser.add_argument("--folder", required=True)
-    parser.add_argument("--limit", type=int, default=2)
-    args = parser.parse_args()
-    plan = company_plan(json.loads(Path(args.cohort).read_text()))
-    folder = Path(args.folder).resolve() / plan["version"]
-    journal = Journal(folder / "progress.sqlite3", plan)
+def visible_verifier(plan, folder):
     script = (
         Path(__file__).resolve().parents[3] / "deploy/cloudflare/company-acceptance.mjs"
     )
@@ -88,6 +80,19 @@ def main():
             target / "envelope.json",
         ]
 
+    return verify
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--cohort", required=True)
+    parser.add_argument("--folder", required=True)
+    parser.add_argument("--limit", type=int, default=2)
+    args = parser.parse_args()
+    plan = company_plan(json.loads(Path(args.cohort).read_text()))
+    folder = Path(args.folder).resolve() / plan["version"]
+    journal = Journal(folder / "progress.sqlite3", plan)
+    verify = visible_verifier(plan, folder)
     journal.run(
         verify,
         limit=args.limit,

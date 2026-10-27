@@ -131,3 +131,18 @@ requires actual filing-date fields, and rejects absent revision targets. It cann
 turn Form 3B event-date navigation, a document or an unqualified identity assertion
 into a real inventory. No production listing adapter/source evidence is supplied
 by this verifier; the corresponding acceptance gates remain open.
+
+For a complete qualification wake, prefer the deterministic coordinator:
+
+```sh
+PYTHONPATH=src python -m mcp_open_data_hk.curated.company_suite --cohort <actual-cohort.json> --folder <shared-progress-folder> --seconds 5400
+```
+
+It runs successive serialized batches of at most 20 steps, each with a 580-second
+work window and bounded request/browser deadlines, within one finite 90-minute
+public-read session. It saves each step before continuing and stops on the first
+new failure. It creates no schedule and invokes no model. Reuse the same journal
+to resume a timed-out session. Running only one tiny batch on each daily wake
+could exceed the version-retention window; this coordinator lets the existing
+owner complete the matrix within a single pinned-version wake when quotas and
+service availability permit. A timeout/failed/unknown cell is still pending.
