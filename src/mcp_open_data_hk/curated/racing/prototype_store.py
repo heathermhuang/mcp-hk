@@ -294,6 +294,14 @@ class PilotCollector:
                 if redirect
                 else self.parse_page(raw.decode("utf-8"), url)
             )
+            if not redirect and "race" in parsed:
+                from .dividends import candidate
+
+                parsed["race"]["dividendCandidate"] = candidate(
+                    raw.decode("utf-8"),
+                    parsed["race"]["id"],
+                    "zhHant" if "/zh-hk/" in url else "en",
+                )
         except RacingRejected as exc:
             self.store.settled(attempt, "held", MAX_PAGE, str(exc))
             raise
@@ -368,7 +376,12 @@ class PilotCollector:
                     or zh["race"]["id"] != en["race"]["id"]
                 ):
                     raise RacingRejected("BILINGUAL_MEETING_MISMATCH")
-                left, right = en["race"], zh["race"]
+                left, right = dict(en["race"]), zh["race"]
+                from .dividends import qualified_pair
+
+                left["dividends"] = qualified_pair(
+                    left.pop("dividendCandidate", None), right.get("dividendCandidate")
+                )
                 a = {r["participantId"]: r for r in left["results"]}
                 b = {r["participantId"]: r for r in right["results"]}
                 fields = (

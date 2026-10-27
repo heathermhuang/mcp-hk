@@ -815,13 +815,22 @@
     {
       "id": "W05.racing-sectionals-dividends",
       "workPackage": "W05",
-      "state": "pending",
+      "state": "partial",
       "dependency": [],
-      "actualCoverage": null,
+      "actualCoverage": {
+        "privateBilingualQualifiedRaceCount": 1,
+        "privateQuotedDividendRows": 20,
+        "privateDeferredNonmonetaryRows": 2,
+        "publicDividendVersions": 0,
+        "sectionalsComplete": false
+      },
       "version": null,
-      "evidence": [],
+      "evidence": [
+        "RACING-DIVIDENDS.md",
+        "racing-dividends-format-qualification-20261027.json"
+      ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Implement and verify against the saved completion plan"
+      "nextAction": "Complete checked release, actual accepted dividends and fresh recovery verification; sectionals remain to implement"
     },
     {
       "id": "W05.racing-trials-rankings",

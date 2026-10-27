@@ -47,6 +47,12 @@ def validate_snapshot(payload):
             raise RacingRejected("RACING_CAPTURE_IDENTITY")
     rows = 0
     for r in races:
+        if "dividendCandidate" in r:
+            raise RacingRejected("DIVIDEND_UNRECONCILED_CANDIDATE")
+        if "dividends" in r:
+            from .curated.racing.dividends import validate_observation
+
+            validate_observation(r["dividends"], r["id"])
         if (
             r["id"] != race(m["date"], m["venue"], r["number"])
             or len(r["provenance"]) != 2
