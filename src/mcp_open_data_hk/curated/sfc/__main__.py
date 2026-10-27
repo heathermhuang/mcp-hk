@@ -26,6 +26,8 @@ def main():
     collect.add_argument("--policy-sha256", required=True)
     collect.add_argument("--scheduled-for", required=True)
     collect.add_argument("--ce", action="append", required=True)
+    collect.add_argument("--provenance", choices=("manual", "timer"), default="manual")
+    collect.add_argument("--source-release")
     install = commands.add_parser(
         "install", help="Apply the source-only schema and SELECT-only reader grants"
     )
@@ -39,6 +41,25 @@ def main():
     commands.add_parser(
         "status", help="Read actual persisted state through SFC_READER_DSN"
     )
+    job = commands.add_parser(
+        "job-state",
+        help="Read a resumable candidate and accepted pointer using the source writer",
+    )
+    job.add_argument("--policy-sha256", required=True)
+    outcome = commands.add_parser(
+        "job-outcome", help="Record separate proof-bound source job outcomes"
+    )
+    outcome.add_argument("--run", required=True)
+    outcome.add_argument(
+        "--phase",
+        choices=("collection", "backup", "publication", "accepted_backup"),
+        required=True,
+    )
+    outcome.add_argument(
+        "--state", choices=("pending", "succeeded", "failed", "skipped"), required=True
+    )
+    outcome.add_argument("--code")
+    outcome.add_argument("--artifact-sha256")
     publish = commands.add_parser(
         "publish", help="Publish or roll back an independently restored source version"
     )
@@ -83,7 +104,17 @@ def main():
             from .state import State
 
             state = State(os.environ["SFC_WRITER_DSN"])
-            if args.command == "install":
+            if args.command == "job-state":
+                result = state.job_state(args.policy_sha256)
+            elif args.command == "job-outcome":
+                result = state.job_outcome(
+                    args.run,
+                    args.phase,
+                    args.state,
+                    code=args.code,
+                    artifact_sha256=args.artifact_sha256,
+                )
+            elif args.command == "install":
                 from .state import grant_reader
 
                 sha = state.migrate()
@@ -107,9 +138,20 @@ def main():
                     "dataDeleted": False,
                 }
             elif args.command == "qualify-restore":
+                restored_dsn = os.environ.get("SFC_RESTORED_DSN")
+                if not restored_dsn:
+                    import re
+                    from psycopg.conninfo import conninfo_to_dict, make_conninfo
+
+                    name = os.environ.get("SFC_RESTORED_DATABASE", "")
+                    if not re.fullmatch(r"sfc_restore_[a-z0-9_]{8,64}", name):
+                        raise Rejected("SFC_RESTORE_DATABASE_INVALID")
+                    restored_dsn = make_conninfo(
+                        **dict(conninfo_to_dict(state.dsn), dbname=name)
+                    )
                 result = state.qualify_restore(
                     args.version,
-                    State(os.environ["SFC_RESTORED_DSN"]),
+                    State(restored_dsn),
                     args.artifact,
                     args.sha256,
                 )
@@ -141,7 +183,9 @@ def collect_run(state, args):
         or when > datetime.now(timezone.utc)
     ):
         raise Rejected("SFC_INVALID_OCCURRENCE")
-    return Collector(state, policy).collect(when, args.ce)
+    return Collector(state, policy).collect(
+        when, args.ce, args.provenance, args.source_release
+    )
 
 
 if __name__ == "__main__":

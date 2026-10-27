@@ -1,0 +1,14 @@
+[Unit]
+Description=Bounded policy-qualified SFC source cycle
+After=docker.service network-online.target
+Requires=docker.service
+ConditionPathExists=/etc/mcp-hk-curated/sfc-job.json
+ConditionPathExists=/etc/mcp-hk-curated/sfc.env
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/mcp-hk-sfc-current
+ExecStart=/opt/mcp-hk-sfc-current/deploy/curated/run-sfc.sh
+TimeoutStartSec=1800
+Nice=10
+IOSchedulingClass=idle
