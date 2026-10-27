@@ -13,7 +13,7 @@ from fastmcp import Client
 
 from test_racing_prototype import page
 from test_racing_public import service as base_service, accept
-from test_racing_dividends import fixture
+from test_racing_dividends import fixture, consolation_fixture
 from mcp_open_data_hk.api import create_app
 from mcp_open_data_hk.curated.racing.prototype_store import (
     PrototypeStore,
@@ -24,16 +24,18 @@ service = base_service
 
 
 @pytest.fixture
-def pilot(tmp_path, monkeypatch):
+def pilot(tmp_path, monkeypatch, request):
     monkeypatch.setattr(
         "mcp_open_data_hk.curated.racing.prototype_store.time.sleep", lambda _: None
     )
     private = PrototypeStore(tmp_path / "private.sqlite3")
 
-    def source(request):
-        q = parse_qs(request.url.query.decode())
-        zh = "/zh-hk/" in request.url.path
-        table = fixture()
+    use_consolation = getattr(request, "param", None) == "consolation"
+
+    def source(source_request):
+        q = parse_qs(source_request.url.query.decode())
+        zh = "/zh-hk/" in source_request.url.path
+        table = consolation_fixture() if use_consolation else fixture()
         if zh:
             table = (
                 table.replace("Pool", "彩池")
@@ -41,6 +43,8 @@ def pilot(tmp_path, monkeypatch):
                 .replace("Dividend", "派彩")
                 .replace("WIN", "獨贏")
                 .replace("PLACE", "位置")
+                .replace("TRIPLE TRIO(Consolation)", "三T(安慰獎)")
+                .replace("Any Combination", "任何組合")
             )
         return httpx.Response(
             200,
@@ -57,6 +61,49 @@ def pilot(tmp_path, monkeypatch):
             "pages": [dict(r) for r in db.execute("SELECT * FROM racing_pages")],
             "attempts": [dict(r) for r in db.execute("SELECT * FROM racing_attempts")],
         }
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("pilot", ["consolation"], indirect=True)
+async def test_consolation_literal_survives_restore_rest_mcp_and_real_zip(
+    service, pilot, tmp_path
+):
+    candidate, _ = accept(service, pilot, tmp_path)
+    race = pilot["snapshot"]["races"][0]["id"]
+    app = create_app(service)
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app), base_url="http://testserver"
+    ) as http:
+        response = await http.get(
+            "/api/v1/racing/races/" + race + "/results",
+            params={"version": candidate["version"]},
+        )
+        assert response.status_code == 200
+        result = response.json()
+        async with Client(app.state.mcp) as mcp:
+            assert (
+                await mcp.call_tool(
+                    "hk_racing_results",
+                    {"raceId": race, "version": candidate["version"]},
+                )
+            ).data == result
+        packed = await http.get(
+            "/api/v1/racing/exports",
+            params={"version": candidate["version"], "raceId": race},
+        )
+        assert packed.status_code == 200
+    archive = zipfile.ZipFile(io.BytesIO(packed.content))
+    rows = list(
+        csv.DictReader(io.StringIO(archive.read("dividends.csv").decode("utf-8-sig")))
+    )
+    assert (
+        len(rows) == 1
+        and rows[0]["winningCombinationRaw"] == "01,02,03/04,05,06/Any Combination"
+    )
+    assert result["data"]["dividends"]["quotes"][0]["sources"]["zhHant"][
+        "combination"
+    ].endswith("/任何組合")
+    assert json.loads(archive.read("results.json")) == result
 
 
 @pytest.mark.asyncio

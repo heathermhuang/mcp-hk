@@ -6,10 +6,58 @@ from mcp_open_data_hk.curated.racing.dividends import (
     reconcile_dividends,
     validate_observation,
     qualified_pair,
+    combination_key,
 )
 from mcp_open_data_hk.curated.racing.policy import RacingRejected
 
 RACE = "hkjc:race:v1:2026-07-15:HV:1"
+
+
+def consolation_fixture():
+    return (
+        "<table><tr><td>Pool</td><td>Winning Combination</td><td>Dividend (HK$)</td></tr>"
+        "<tr><td>TRIPLE TRIO(Consolation)</td><td>01,02,03/04,05,06/Any Combination</td>"
+        "<td>1,234.50</td></tr></table>"
+    )
+
+
+def test_consolation_marker_is_literal_bilingual_text_with_stable_identity():
+    en = consolation_fixture()
+    zh = (
+        en.replace("Pool", "彩池")
+        .replace("Winning Combination", "勝出組合")
+        .replace("Dividend", "派彩")
+        .replace("TRIPLE TRIO(Consolation)", "三T(安慰獎)")
+        .replace("Any Combination", "任何組合")
+    )
+    left = parse_dividend_table(Document(en).root, RACE)
+    right = parse_dividend_table(Document(zh).root, RACE, "zhHant")
+    value = reconcile_dividends(left, right)
+    validate_observation(value, RACE)
+    quote = value["quotes"][0]
+    assert quote["id"] == right["quotes"][0]["id"]
+    assert quote["combinationKey"] == "01,02,03/04,05,06/AnyCombination"
+    assert quote["winningCombinationRaw"] == "01,02,03/04,05,06/Any Combination"
+    assert quote["sources"]["zhHant"]["combination"].endswith("/任何組合")
+    assert quote["amount"] == "1234.50" and quote["stakeAmount"] is None
+    assert combination_key("03,11/02", "8TH DOUBLE", "en") == "03,11/02"
+
+
+@pytest.mark.parametrize(
+    "pool,raw,lang",
+    [
+        ("WIN", "01,02,03/04,05,06/Any Combination", "en"),
+        ("WIN", "9" * 99 + "x", "en"),
+        ("TRIPLE TRIO(Consolation)", "01,02/04,05,06/Any Combination", "en"),
+        ("TRIPLE TRIO(Consolation)", "01,02,03/04,05,06/Any winner", "en"),
+        ("TRIPLE TRIO(Consolation)", "01,02,03/04,05,06/任何組合", "en"),
+    ],
+)
+def test_consolation_marker_does_not_allow_arbitrary_nonnumeric_combinations(
+    pool, raw, lang
+):
+    with pytest.raises(RacingRejected, match="COMBINATION_UNQUALIFIED"):
+        combination_key(raw, pool, lang)
 
 
 def fixture(span="2", continuation=True):

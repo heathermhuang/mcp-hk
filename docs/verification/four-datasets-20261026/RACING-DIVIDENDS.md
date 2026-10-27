@@ -22,8 +22,9 @@ retain their URL, UTC capture time, byte count and SHA256.
 Keep the reported pool label, raw combination, raw amount and exact decimal string.
 Commas may be removed from the decimal representation; no rounding, combination
 sorting, numeric conversion of identifiers or inferred payout tier occurs. A
-stable quote ID binds the race, canonical pool label and whitespace-normalized
-combination. Both language observations must reconcile every quote and numeric
+stable quote ID binds the race, canonical pool label and qualified normalized
+combination key. Numeric identities use whitespace normalization; the consolation
+source marker has one qualified bilingual label mapping. Both language observations must reconcile every quote and numeric
 amount. Each language's printed precision and labels remain available.
 
 The inspected table explicitly labels HK dollars but does not state the stake
@@ -70,3 +71,23 @@ rows. All 22 table rows reconcile. See
 These private captures have no public dividend version. Eight rendered fixture
 journeys passed at 320, 390, 768 and 1280px, with zero page errors or provider
 requests; the second meeting correctly clears the first meeting's dividend table.
+
+## Triple Trio consolation source marker
+
+A normal live July 8 meeting exposed the exact `TRIPLE TRIO(Consolation)` /
+`三T(安慰獎)` row. Its final leg is the literal source label `Any Combination` /
+`任何組合`, not a number. The original strict parser correctly held that field
+family unqualified while retaining all core results. See
+[racing-consolation-source-fields-20261027.json](racing-consolation-source-fields-20261027.json).
+
+The correction admits only this exact pool and the inspected three-leg shape:
+two comma-separated triples followed by that exact source marker. Both original
+language strings remain intact; identity uses the English marker with whitespace
+removed. No combinations are enumerated, reordered or treated as a winning-ticket
+inventory. Existing numeric quote IDs do not change. Other nonnumeric phrases,
+wrong pool/locale, malformed legs and unsupported labels still fail closed.
+
+The accepted pre-correction version remains immutable, including its old-cache
+and unqualified states. Only an ordinarily charged source refresh and a new
+independently restored accepted version can fill those gaps. Source-cell inspection
+is not described as retained-HTML replay or a completed production refresh.
