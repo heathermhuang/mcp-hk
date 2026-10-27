@@ -1,7 +1,7 @@
-"""Strict normalized intake contract, not an HKEX HTML/PDF format claim.
+"""Strict normalized intake contract; provider formats are qualified separately.
 
-No provider response parser is qualified yet. Extra fields fail closed so personal
-contacts, signatures and arbitrary source documents cannot enter public facts.
+Extra fields fail closed so personal contacts, signatures and arbitrary source
+documents cannot enter public facts.
 """
 
 import hashlib
@@ -77,6 +77,12 @@ class Security(Strict):
     share_class: str | None = Field(None, min_length=1, max_length=200)
     name: str = Field(min_length=1, max_length=300)
     name_date: SourceDate = SourceDate()
+    issued_shares: str | None = None
+
+    @field_validator("issued_shares")
+    @classmethod
+    def quantity(cls, v):
+        return Interest.numeric(v)
 
     @field_validator("source_id")
     @classmethod
@@ -88,7 +94,7 @@ class Interest(Strict):
     line: str = Field(min_length=1, max_length=80)
     section: str = Field(min_length=1, max_length=80)
     security_id: str
-    capacity_code: str = Field(min_length=1, max_length=40)
+    capacity_code: str | None = Field(None, min_length=1, max_length=40)
     nature: Literal["direct", "deemed", "indirect", "unknown"]
     position: Literal["long", "short", "lending_pool", "unknown"]
     phase: Literal["before", "after", "declared", "unknown"]
@@ -114,6 +120,18 @@ class Interest(Strict):
         return v
 
 
+class Price(Strict):
+    kind: Literal["highest", "average"]
+    value: str
+    currency: str | None = Field(None, pattern=r"^[A-Z]{3}$")
+    unit: Literal["per_share"] = "per_share"
+
+    @field_validator("value")
+    @classmethod
+    def numeric(cls, v):
+        return Interest.numeric(v)
+
+
 class Particular(Strict):
     line: str = Field(min_length=1, max_length=80)
     reason_code: str = Field(min_length=1, max_length=40)
@@ -121,6 +139,17 @@ class Particular(Strict):
     price: str | None = None
     currency: str | None = Field(None, pattern=r"^[A-Z]{3}$")
     unit: str = Field(min_length=1, max_length=80)
+    security_id: str | None = None
+    capacity_before: str | None = Field(None, min_length=1, max_length=40)
+    capacity_after: str | None = Field(None, min_length=1, max_length=40)
+    prices: tuple[Price, ...] = Field(default=(), max_length=3)
+    position: Literal["long", "short", "unknown"] = "unknown"
+
+    @model_validator(mode="after")
+    def distinct_prices(self):
+        if len({p.kind for p in self.prices}) != len(self.prices):
+            raise ValueError("DUPLICATE_PRICE_KIND")
+        return self
 
     @field_validator("shares", "price")
     @classmethod
@@ -135,6 +164,22 @@ class Party(Strict):
     association: str | None = Field(None, max_length=200)
 
 
+class Control(Strict):
+    line: str = Field(min_length=1, max_length=80)
+    controlled_party_ref: str
+    controlling_party_ref: str
+    percentage_control: str | None = None
+    direct_interest: Literal["yes", "no", "unknown"] = "unknown"
+
+    @field_validator("percentage_control")
+    @classmethod
+    def percentage(cls, v):
+        value = Interest.numeric(v)
+        if value is not None and Decimal(value) > 100:
+            raise ValueError("CONTROL_PERCENTAGE_RANGE")
+        return value
+
+
 class Filing(Strict):
     serial: str
     issuer_id: str
@@ -142,7 +187,9 @@ class Filing(Strict):
     channel: Literal["dion", "pre_dion"]
     form: Literal["1", "2", "3A", "3B", "3C", "3D"]
     subject: str = Field(min_length=1, max_length=300)
+    subject_name_zh_hant: str | None = Field(None, max_length=300)
     event_date: SourceDate = SourceDate()
+    aware_date: SourceDate = SourceDate()
     filed_date: SourceDate = SourceDate()
     published_date: SourceDate = SourceDate()
     withdrawn_date: SourceDate = SourceDate()
@@ -153,6 +200,7 @@ class Filing(Strict):
     interests: tuple[Interest, ...] = Field(max_length=500)
     particulars: tuple[Particular, ...] = Field(default=(), max_length=500)
     parties: tuple[Party, ...] = Field(default=(), max_length=500)
+    controls: tuple[Control, ...] = Field(default=(), max_length=500)
 
     @field_validator("serial", "issuer_id", "replaces", "superseded_by")
     @classmethod
@@ -183,6 +231,7 @@ class Filing(Strict):
         for values, key in (
             (self.interests, lambda x: (x.section, x.line)),
             (self.particulars, lambda x: x.line),
+            (self.controls, lambda x: x.line),
         ):
             if len({key(x) for x in values}) != len(values):
                 raise ValueError("DUPLICATE_SOURCE_LINE")
@@ -191,6 +240,16 @@ class Filing(Strict):
                 line.party_ref and line.party_ref not in refs
             ):
                 raise ValueError("UNRESOLVED_SCOPED_REFERENCE")
+        for line in self.particulars:
+            if line.security_id is not None and line.security_id not in ids:
+                raise ValueError("UNRESOLVED_SCOPED_REFERENCE")
+        for relation in self.controls:
+            if (
+                relation.controlled_party_ref not in refs
+                or relation.controlling_party_ref not in refs
+                or relation.controlled_party_ref == relation.controlling_party_ref
+            ):
+                raise ValueError("UNRESOLVED_CONTROL_REFERENCE")
         return self
 
 
@@ -283,11 +342,17 @@ def parse_filing(raw, policy):
     if set(raw) - set(policy.allowed_fields) or row.form not in policy.forms:
         raise ValueError("UNQUALIFIED_FIELDS_OR_FORM")
     for line in row.interests:
-        if line.capacity_code not in policy.codes.get("capacity", {}):
+        if (
+            line.capacity_code is not None
+            and line.capacity_code not in policy.codes.get("capacity", {})
+        ):
             raise ValueError("UNKNOWN_CAPACITY_CODE")
     for line in row.particulars:
         if line.reason_code not in policy.codes.get("reason", {}):
             raise ValueError("UNKNOWN_REASON_CODE")
+        for code in (line.capacity_before, line.capacity_after):
+            if code is not None and code not in policy.codes.get("capacity", {}):
+                raise ValueError("UNKNOWN_CAPACITY_CODE")
     return row
 
 

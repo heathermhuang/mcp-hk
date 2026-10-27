@@ -1,8 +1,7 @@
 """Durable bounded collection engine with an injected qualified route adapter.
 
-There is deliberately no production provider parser/transport until exact routes
-and response formats are authorised and inspected. Tests inject synthetic bytes.
-The adapter gets a fixed operator policy route + typed key; no public URL reaches it.
+Adapters receive a fixed operator policy route and typed key; no public URL reaches
+them. Document-format qualification is separate from complete source inventory.
 """
 
 import hashlib
@@ -141,14 +140,22 @@ class Collector:
                 raise ValueError("SOURCE_BUDGET_EXHAUSTED")
             if kind not in policy.routes:
                 raise ValueError("QUALIFIED_ROUTE_REQUIRED")
+            route = policy.routes[kind]
+            # Pure context validation precedes reservation. Only fetch dispatches
+            # HTTP; unsupported document formats are not uncertain requests.
+            capture_route = (
+                self.adapter.source_url(kind, route, key)
+                if hasattr(self.adapter, "source_url")
+                else route
+            )
             request_id = c.execute(
                 "INSERT INTO hkex.requests(run_id,kind,request_key,reserved_bytes) VALUES(%s,%s,%s,%s) RETURNING id",
                 (run_id, kind, key, available),
             ).fetchone()["id"]
             c.execute("UPDATE hkex.control SET last_read_at=now() WHERE singleton")
-            route = policy.routes[kind]
         # Adapter must enforce no redirects, fixed origins, timeout and stream cap.
-        # No such production adapter is installed while qualification is pending.
+        # An adapter can resolve only its own fixed source context, never a URL
+        # supplied by a public query. The actual response bytes remain lineage.
         status, body, retry_after = self.adapter.fetch(
             kind,
             route,
@@ -187,7 +194,7 @@ class Collector:
                     run_id,
                     self.store.policy_hash,
                     kind,
-                    route,
+                    capture_route,
                     observed,
                     raw_hash,
                     TRANSFORM,
@@ -198,13 +205,22 @@ class Collector:
         if status != 200:
             raise ValueError("SOURCE_" + str(status))
         try:
-            value = json.loads(
-                body,
-                parse_constant=lambda _: (_ for _ in ()).throw(
-                    ValueError("NONFINITE_JSON")
-                ),
+            value = (
+                self.adapter.normalize(kind, route, key, body)
+                if hasattr(self.adapter, "normalize")
+                else json.loads(
+                    body,
+                    parse_constant=lambda _: (_ for _ in ()).throw(
+                        ValueError("NONFINITE_JSON")
+                    ),
+                )
             )
         except (ValueError, UnicodeError) as exc:
+            with self.store.connection("collect", "retain") as (c, _):
+                c.execute(
+                    "UPDATE hkex.captures SET validation='rejected' WHERE id=%s",
+                    (capture_id,),
+                )
             raise ValueError("SOURCE_SCHEMA_CHANGED") from exc
         return value, capture_id
 

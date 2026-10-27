@@ -29,6 +29,7 @@ TABLES = (
     "interests",
     "particulars",
     "parties",
+    "controls",
     "codes",
     "accepted",
 )
@@ -51,6 +52,11 @@ def migrate(dsn):
             .joinpath("migrations/008_hkex_unknown_security_fields.sql")
             .read_text()
         )
+        c.execute(
+            files("mcp_open_data_hk.curated")
+            .joinpath("migrations/009_hkex_form_price_control.sql")
+            .read_text()
+        )
 
 
 def grant_reader(dsn, role):
@@ -71,6 +77,7 @@ def grant_reader(dsn, role):
             "interests",
             "particulars",
             "parties",
+            "controls",
             "codes",
         ):
             c.execute(
@@ -229,7 +236,7 @@ class Store:
                 )
             for (issuer, sid), sec in securities.items():
                 c.execute(
-                    "INSERT INTO hkex.securities VALUES(%s,%s,%s,%s,%s,%s,%s)",
+                    "INSERT INTO hkex.securities(version,issuer_id,id,stock_code,share_class,name,name_date,issued_shares,issued_shares_raw) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)",
                     (
                         version,
                         issuer,
@@ -238,6 +245,8 @@ class Store:
                         sec.share_class,
                         sec.name,
                         Jsonb(sec.name_date.model_dump(mode="json")),
+                        sec.issued_shares,
+                        sec.issued_shares,
                     ),
                 )
             for row in filings:
@@ -287,7 +296,7 @@ class Store:
                     )
                 for line in row.particulars:
                     c.execute(
-                        "INSERT INTO hkex.particulars VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+                        "INSERT INTO hkex.particulars(version,serial,line,reason_code,shares,shares_raw,price,price_raw,currency,unit,security_id,capacity_before,capacity_after,prices,position) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
                         (
                             version,
                             row.serial,
@@ -299,6 +308,11 @@ class Store:
                             line.price,
                             line.currency,
                             line.unit,
+                            line.security_id,
+                            line.capacity_before,
+                            line.capacity_after,
+                            Jsonb([p.model_dump(mode="json") for p in line.prices]),
+                            line.position,
                         ),
                     )
                 for party in row.parties:
@@ -311,6 +325,20 @@ class Store:
                             party.disclosed_name,
                             party.source_global_id,
                             party.association,
+                        ),
+                    )
+                for relation in row.controls:
+                    c.execute(
+                        "INSERT INTO hkex.controls VALUES(%s,%s,%s,%s,%s,%s,%s,%s)",
+                        (
+                            version,
+                            row.serial,
+                            relation.line,
+                            relation.controlled_party_ref,
+                            relation.controlling_party_ref,
+                            relation.percentage_control,
+                            relation.percentage_control,
+                            relation.direct_interest,
                         ),
                     )
             for older, newer in closure["edges"]:
