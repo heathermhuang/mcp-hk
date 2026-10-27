@@ -8,6 +8,7 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
 from importlib.resources import files
 import uuid
+import re
 
 from ..build import connect
 from ..security import safe_reader_role
@@ -61,9 +62,27 @@ class State:
                 ).fetchone()
                 if not row or row["sha256"] != sha:
                     raise Rejected("SFC_MIGRATION_CHANGED")
-                return sha
-            conn.execute(ddl)
-            conn.execute("INSERT INTO curated_sfc.migrations VALUES('003',%s)", (sha,))
+            else:
+                conn.execute(ddl)
+                conn.execute(
+                    "INSERT INTO curated_sfc.migrations VALUES('003',%s)", (sha,)
+                )
+            extra = (
+                files("mcp_open_data_hk.curated")
+                .joinpath("migrations/010_sfc_job_outcomes.sql")
+                .read_text()
+            )
+            extra_sha = digest(extra.encode())
+            prior = conn.execute(
+                "SELECT sha256 FROM curated_sfc.migrations WHERE version='010'"
+            ).fetchone()
+            if prior and prior["sha256"] != extra_sha:
+                raise Rejected("SFC_MIGRATION_CHANGED")
+            if not prior:
+                conn.execute(extra)
+                conn.execute(
+                    "INSERT INTO curated_sfc.migrations VALUES('010',%s)", (extra_sha,)
+                )
         return sha
 
     def activate(self, policy, expected_sha256):
@@ -126,12 +145,27 @@ class State:
             finally:
                 conn.execute("SELECT pg_advisory_unlock(%s)", (LOCK + 1,))
 
-    def start(self, scheduled_for, cohort, policy_sha256):
+    def start(
+        self,
+        scheduled_for,
+        cohort,
+        policy_sha256,
+        provenance="manual",
+        source_release=None,
+    ):
         cohort = [ce_reference(ce) for ce in cohort]
         if not 1 <= len(cohort) <= 25 or len(set(cohort)) != len(cohort):
             raise Rejected("SFC_INVALID_COHORT")
         if scheduled_for.tzinfo is None or scheduled_for.utcoffset() is None:
             raise Rejected("SFC_INVALID_OCCURRENCE")
+        if (
+            provenance not in {"manual", "timer"}
+            or provenance == "timer"
+            and source_release is None
+            or source_release is not None
+            and not re.fullmatch(r"[a-f0-9]{40}", source_release)
+        ):
+            raise Rejected("SFC_JOB_PROVENANCE_INVALID")
         with self.connection() as conn, conn.transaction():
             conn.execute("SELECT pg_advisory_xact_lock(%s)", (LOCK,))
             policy = self.policy(conn, policy_sha256, "automation")
@@ -145,19 +179,106 @@ class State:
                 if (
                     existing["cohort"] != sorted(cohort)
                     or existing["policy_sha256"] != policy_sha256
+                    or existing["provenance"] != provenance
                 ):
                     raise Rejected("SFC_OCCURRENCE_CONFLICT")
                 return existing["run_id"], False
+            if conn.execute(
+                "SELECT 1 FROM curated_sfc.attempts WHERE state='unknown' LIMIT 1"
+            ).fetchone():
+                raise Rejected("SFC_REQUEST_RECONCILIATION_REQUIRED")
             if conn.execute(
                 "SELECT 1 FROM curated_sfc.runs WHERE state='running'"
             ).fetchone():
                 raise Rejected("SFC_UNSETTLED_RUN")
             run_id = uuid.uuid4().hex
             conn.execute(
-                "INSERT INTO curated_sfc.runs(run_id,scheduled_for,policy_sha256,cohort,state) VALUES(%s,%s,%s,%s,'running')",
-                (run_id, scheduled_for, policy_sha256, sorted(cohort)),
+                "INSERT INTO curated_sfc.runs(run_id,scheduled_for,policy_sha256,cohort,state,provenance,source_release) VALUES(%s,%s,%s,%s,'running',%s,%s)",
+                (
+                    run_id,
+                    scheduled_for,
+                    policy_sha256,
+                    sorted(cohort),
+                    provenance,
+                    source_release,
+                ),
             )
             return run_id, True
+
+    def job_outcome(self, run_id, phase, state, *, code=None, artifact_sha256=None):
+        """Record separate outcomes only after the corresponding durable proof.
+
+        A failed backup does not relabel collection failure or delete a candidate.
+        Arbitrary error text, credentials and caller-provided success flags cannot
+        create a successful restore/publication outcome.
+        """
+        from psycopg.types.json import Jsonb
+
+        if phase not in {
+            "collection",
+            "backup",
+            "publication",
+            "accepted_backup",
+        } or state not in {"pending", "succeeded", "failed", "skipped"}:
+            raise Rejected("SFC_JOB_OUTCOME_INVALID")
+        if code is not None and not re.fullmatch(r"[A-Z0-9_]{1,80}", code):
+            raise Rejected("SFC_JOB_OUTCOME_INVALID")
+        if artifact_sha256 is not None and not re.fullmatch(
+            r"[a-f0-9]{64}", artifact_sha256
+        ):
+            raise Rejected("SFC_JOB_OUTCOME_INVALID")
+        with self.connection() as conn, conn.transaction():
+            conn.execute("SELECT pg_advisory_xact_lock(%s)", (LOCK,))
+            run = conn.execute(
+                "SELECT * FROM curated_sfc.runs WHERE run_id=%s FOR UPDATE", (run_id,)
+            ).fetchone()
+            if not run:
+                raise Rejected("SFC_RUN_UNAVAILABLE")
+            version = conn.execute(
+                "SELECT * FROM curated_sfc.versions WHERE run_id=%s", (run_id,)
+            ).fetchone()
+            if state == "succeeded":
+                if phase == "collection" and (
+                    not version or run["state"] not in {"validated", "published"}
+                ):
+                    raise Rejected("SFC_COLLECTION_PROOF_REQUIRED")
+                if phase in {"backup", "accepted_backup"}:
+                    proof = (version or {}).get("restore_proof") or {}
+                    if (
+                        not artifact_sha256
+                        or proof.get("artifactSha256") != artifact_sha256
+                        or not proof.get("independentDatabase")
+                    ):
+                        raise Rejected("SFC_RESTORE_REQUIRED")
+                    if (
+                        phase == "accepted_backup"
+                        and proof.get("acceptedPointerIncluded") is not True
+                    ):
+                        raise Rejected("SFC_ACCEPTED_RECOVERY_REQUIRED")
+                if phase in {"publication", "accepted_backup"}:
+                    pointer = conn.execute(
+                        "SELECT version FROM curated_sfc.pointer"
+                    ).fetchone()
+                    if (
+                        not version
+                        or not version["published_at"]
+                        or not pointer
+                        or pointer["version"] != version["version"]
+                    ):
+                        raise Rejected("SFC_PUBLICATION_PROOF_REQUIRED")
+            value = {
+                "state": state,
+                "at": datetime.now(timezone.utc).isoformat(),
+                "code": code,
+                "artifactSha256": artifact_sha256,
+            }
+            outcomes = dict(run["job_outcomes"])
+            outcomes[phase] = value
+            conn.execute(
+                "UPDATE curated_sfc.runs SET job_outcomes=%s,job_updated_at=now() WHERE run_id=%s",
+                (Jsonb(outcomes), run_id),
+            )
+            return value
 
     def reserve(self, run_id, ce, kind, max_bytes=262144):
         ce = ce_reference(ce)
@@ -329,6 +450,15 @@ class State:
                 "transformSha256": transform,
                 "format": "normalised-offline-v1",
                 "completeRegulatoryHistory": False,
+                "baseVersion": (
+                    base["version"]
+                    if (
+                        base := conn.execute(
+                            "SELECT version FROM curated_sfc.pointer"
+                        ).fetchone()
+                    )
+                    else None
+                ),
             }
             if source_metadata is not None:
                 manifest.update(
@@ -432,13 +562,58 @@ class State:
                 "manifestSha256": digest(encoded(row["manifest"])),
                 "factsSha256": row["facts_sha256"],
                 "allSourceTablesSha256": digest(encoded(expected)),
+                "tables": {
+                    name: {"rows": len(rows), "sha256": digest(encoded(rows))}
+                    for name, rows in expected.items()
+                },
                 "independentDatabase": True,
+                "acceptedPointerIncluded": bool(
+                    (
+                        pointer := target.execute(
+                            "SELECT version FROM curated_sfc.pointer"
+                        ).fetchone()
+                    )
+                    and pointer["version"] == version
+                    and target.execute(
+                        "SELECT published_at FROM curated_sfc.versions WHERE version=%s",
+                        (version,),
+                    ).fetchone()["published_at"]
+                ),
             }
             source.execute(
                 "UPDATE curated_sfc.versions SET restore_proof=%s WHERE version=%s",
                 (Jsonb(proof), version),
             )
             return proof
+
+    def job_state(self, policy_sha256):
+        """Bounded coordinator state; reuse a valid candidate before new reads."""
+        with self.connection() as conn:
+            policy = self.policy(
+                conn, policy_sha256, "automation", "retention", "backup"
+            )
+            oldest = conn.execute(
+                "SELECT min(expires_at) AS stamp FROM curated_sfc.versions"
+            ).fetchone()["stamp"]
+            if oldest and oldest <= datetime.now(timezone.utc):
+                raise Rejected("SFC_RETENTION_RECONCILIATION_REQUIRED")
+            pointer = conn.execute("SELECT version FROM curated_sfc.pointer").fetchone()
+            pending = conn.execute(
+                "SELECT v.version,v.run_id,v.policy_sha256,v.expires_at,v.manifest->>'baseVersion' AS base_version,v.manifest?'baseVersion' AS base_qualified FROM curated_sfc.versions v JOIN curated_sfc.runs r USING(run_id) WHERE v.policy_sha256=%s AND v.published_at IS NULL AND v.expires_at>now() AND r.state='validated' ORDER BY r.started_at,run_id LIMIT 1",
+                (policy_sha256,),
+            ).fetchone()
+            accepted_recovery = conn.execute(
+                "SELECT v.version,v.run_id FROM curated_sfc.versions v JOIN curated_sfc.runs r USING(run_id) JOIN curated_sfc.pointer p USING(version) WHERE v.policy_sha256=%s AND v.published_at IS NOT NULL AND v.expires_at>now() AND COALESCE(r.job_outcomes->'accepted_backup'->>'state','pending')<>'succeeded'",
+                (policy_sha256,),
+            ).fetchone()
+            return {
+                "acceptedVersion": pointer["version"] if pointer else None,
+                "pendingCandidate": pending,
+                "acceptedRecoveryPending": accepted_recovery,
+                "backupSeconds": policy.backupSeconds,
+                "retentionSeconds": policy.retentionSeconds,
+                "oldestVersionExpiresAt": oldest,
+            }
 
     @staticmethod
     def snapshot(conn):
@@ -518,7 +693,20 @@ def grant_reader(dsn, role):
                 )
             )
         for table, columns in [
-            ("runs", ("run_id", "scheduled_for", "started_at", "state", "requests")),
+            (
+                "runs",
+                (
+                    "run_id",
+                    "scheduled_for",
+                    "started_at",
+                    "state",
+                    "requests",
+                    "provenance",
+                    "source_release",
+                    "job_outcomes",
+                    "job_updated_at",
+                ),
+            ),
             ("attempts", ("state", "settled_at")),
             ("holds", ("until_at", "reason")),
         ]:
