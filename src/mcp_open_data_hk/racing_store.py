@@ -22,6 +22,15 @@ from .curated.racing.public_results import result_url
 from .racing_calendar import source_url, CalendarCollector
 
 
+def dividend_parser_hash():
+    from .curated.racing import dividends, public_results
+
+    return hashlib.sha256(
+        Path(dividends.__file__).read_bytes()
+        + Path(public_results.__file__).read_bytes()
+    ).hexdigest()
+
+
 def validate_snapshot(payload):
     if len(canonical(payload)) > 2 * 1024 * 1024:
         raise RacingRejected("RACING_OUTPUT_LIMIT")
@@ -531,6 +540,65 @@ class RacingStore(ResultsStore):
                         (key, datetime.now(timezone.utc).isoformat()),
                     )
 
+    def queue_dividend_recapture(self):
+        """One checkpointed recapture per meeting/parser through the existing queue.
+
+        No reads or accepted-pointer changes. An explicit refresh (including July
+        15) or pending recovery takes precedence. Missing tables after this pass
+        require changed source/parser evidence, never repeated blind recapture.
+        """
+        parser = dividend_parser_hash()
+        with self.connect() as db:
+            db.execute("BEGIN IMMEDIATE")
+            if (
+                db.execute(
+                    "SELECT 1 FROM racing_control WHERE key LIKE 'refresh:%' LIMIT 1"
+                ).fetchone()
+                or db.execute(
+                    "SELECT 1 FROM racing_publications p JOIN racing_current c USING(version) WHERE p.state='staged' LIMIT 1"
+                ).fetchone()
+                or db.execute(
+                    "SELECT 1 FROM racing_profile_versions WHERE state='staged' LIMIT 1"
+                ).fetchone()
+                or db.execute(
+                    "SELECT 1 FROM racing_attempts WHERE state IN ('unknown','reserved','held') LIMIT 1"
+                ).fetchone()
+            ):
+                return {
+                    "state": "deferred_existing_owner_or_hold",
+                    "providerRequests": 0,
+                }
+            rows = db.execute(
+                "SELECT a.meeting,a.day,a.venue,a.version FROM racing_accepted a JOIN racing_snapshots s USING(version) JOIN racing_queue q ON q.day=a.day AND q.venue=a.venue WHERE q.state='accepted' AND EXISTS(SELECT 1 FROM json_each(s.payload,'$.races') r WHERE coalesce(json_extract(r.value,'$.dividends.state'),'not_extracted')<>'observed') AND NOT EXISTS(SELECT 1 FROM racing_control c WHERE c.key='dividend-recapture:'||a.meeting AND c.value=?) ORDER BY (a.day BETWEEN '2025-09-01' AND '2026-08-31') DESC,a.day,a.venue LIMIT 1",
+                (parser,),
+            ).fetchall()
+            if not rows:
+                return {"state": "unchanged", "providerRequests": 0}
+            row = rows[0]
+            db.execute(
+                "UPDATE racing_queue SET state='refresh',error=NULL,updated=? WHERE day=? AND venue=? AND state='accepted'",
+                (time.time(), row["day"], row["venue"]),
+            )
+            db.execute(
+                "INSERT INTO racing_control VALUES(?,?)",
+                (
+                    "refresh:" + row["day"] + ":" + row["venue"],
+                    datetime.now(timezone.utc).isoformat(),
+                ),
+            )
+            db.execute(
+                "INSERT OR REPLACE INTO racing_control VALUES(?,?)",
+                ("dividend-recapture:" + row["meeting"], parser),
+            )
+            return {
+                "state": "queued",
+                "meeting": row["meeting"],
+                "baseVersion": row["version"],
+                "parserSha256": parser,
+                "providerRequests": 0,
+                "acceptedPointerChanged": False,
+            }
+
     def calendar(self, year, month, client=None):
         if (
             not 1970 <= year <= datetime.now(timezone.utc).year + 1
@@ -630,6 +698,16 @@ class RacingStore(ResultsStore):
                 "requests": collector.attempts,
             }
             with self.connect() as db:
+                if refresh:
+                    # An existing explicit refresh already exercises this parser;
+                    # do not schedule a duplicate recapture after it completes.
+                    db.execute(
+                        "INSERT OR REPLACE INTO racing_control VALUES(?,?)",
+                        (
+                            "dividend-recapture:" + meeting(job["day"], job["venue"]),
+                            dividend_parser_hash(),
+                        ),
+                    )
                 db.execute("DELETE FROM racing_control WHERE key=?", (key,))
         except RacingRejected as exc:
             error = str(exc)

@@ -318,6 +318,7 @@ class Racing:
                 return discovered
         except RacingRejected as exc:
             return {"state": "held", "code": str(exc)}
+        self.store.queue_dividend_recapture()
         self.store.profiles.seed()
         with self.store.connect() as db:
             profile_due = db.execute(

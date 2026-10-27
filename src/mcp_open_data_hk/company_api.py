@@ -14,6 +14,7 @@ def register_company_tools(server, current):
         value: str | None = None,
         limit: int = 20,
         cursor: str | None = None,
+        version: str | None = None,
         view: Literal["archive", "latest_observed"] = "archive",
         requireFresh: bool = False,
     ) -> dict:
@@ -25,6 +26,7 @@ def register_company_tools(server, current):
             value=value,
             limit=limit,
             cursor=cursor,
+            version=version,
             view=view,
             requireFresh=requireFresh,
         )

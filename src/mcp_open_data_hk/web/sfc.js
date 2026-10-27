@@ -94,6 +94,7 @@ liveForm?.addEventListener('submit',async event=>{
    }catch(error){if(error.name!=='AbortError'&&run===liveGeneration){button.disabled=false;liveStatus.textContent=t('sfcLiveFailed');}}});
    section.append(element('p',t('sfcHistoryScope')),button,items);
   }
+  if(response.meta?.export&&response.meta.export.url==='/api/v1/sfc/exports/'+version+'.zip'){const download=element('a',t('sfcExportDownload'));download.id='sfc-observation-download';download.className='mhk-button mhk-secondary';download.href=response.meta.export.url;download.download=version+'.zip';section.append(element('p',t('sfcExportScope')),download);}
   liveRecord.replaceChildren(section);liveRecord.hidden=false;liveRecord.focus();liveStatus.textContent=t('sfcLiveLoaded');
  }catch(error){if(error.name!=='AbortError'&&run===liveGeneration)liveStatus.textContent=t('sfcLiveFailed');}
 });

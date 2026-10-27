@@ -748,6 +748,10 @@ def test_official_idempotence_exact_joins_failures_and_rollback(model):
             {"view": "latest_observed"},
         )
         assert v2 != v1
+        assert official.search(name="10", version=v1)["version"] == v1
+        assert official.search(name="10", version=v2)["version"] == v2
+        with pytest.raises(ReadError, match="Cursor version differs"):
+            official.search(name="10", cursor=first["nextCursor"], version=v2)
         assert len(official.get("cr:local:" + brn, v2)["data"]["observations"]) == 2
         assert len(official.get("cr:local:" + brn, v1)["data"]["observations"]) == 1
         second = official.search(name="10", limit=1, cursor=first["nextCursor"])

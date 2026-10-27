@@ -61,6 +61,44 @@ def create_app(reader, token):
 
     sfc = SfcReader(reader)
 
+    @app.get("/v1/sfc/exports/{version}")
+    async def sfc_export(
+        version: str,
+        mode: Literal["rest", "mcp", "browser"] = "rest",
+        authorization: str | None = Header(None),
+    ):
+        from fastapi.responses import Response
+        from .sfc.artifacts import deliver
+
+        def artifact():
+            folder = os.environ.get("MCP_HK_SFC_EXPORT_DIRECTORY")
+            if not folder:
+                raise ReadError(
+                    "SFC_EXPORT_UNAVAILABLE", "SFC export is not configured"
+                )
+            raw, proof = deliver(
+                folder,
+                version,
+                lambda v: sfc.artifact_state(v, mode),
+                sfc.policy,
+                mode=mode,
+            )
+            return Response(
+                raw,
+                media_type="application/zip",
+                headers={
+                    "Cache-Control": "no-store",
+                    "X-Content-SHA256": proof["sha256"],
+                    "X-SFC-Version": version,
+                    "X-SFC-Policy": proof["policySha256"],
+                    "Content-Disposition": 'attachment; filename="sfc-'
+                    + version
+                    + '.zip"',
+                },
+            )
+
+        return await call(artifact, authorization)
+
     @app.get("/v1/sfc/status")
     async def sfc_status(authorization: str | None = Header(None)):
         return await call(sfc.status, authorization)
@@ -289,6 +327,7 @@ def create_app(reader, token):
         value: str | None = Query(None, max_length=200),
         limit: int = Query(20, ge=1, le=100),
         cursor: str | None = Query(None, max_length=2048),
+        version: str | None = Query(None, max_length=100),
         authorization: str | None = Header(None),
     ):
         return await call(
@@ -300,6 +339,7 @@ def create_app(reader, token):
             value=value,
             limit=limit,
             cursor=cursor,
+            version=version,
         )
 
     @app.get("/v1/official/entities/{entity_id}")

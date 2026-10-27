@@ -85,7 +85,14 @@ class OfficialReader:
         }
 
     def search(
-        self, name=None, namespace=None, value=None, limit=20, cursor=None, groupBy=None
+        self,
+        name=None,
+        namespace=None,
+        value=None,
+        limit=20,
+        cursor=None,
+        groupBy=None,
+        version=None,
     ):
         from .official_queries import PREFIX, prefix_rows
 
@@ -127,8 +134,12 @@ class OfficialReader:
         state = (
             self.archive.unseal(cursor, "official_search", filters) if cursor else None
         )
+        if state and version and state["version"] != version:
+            raise ReadError(
+                "INVALID_CURSOR", "Cursor version differs from selected version"
+            )
         with self.request() as conn:
-            release = self.version(conn, state["version"] if state else None)
+            release = self.version(conn, state["version"] if state else version)
             if name is not None:
                 query = prefix_rows()
                 query_params = (

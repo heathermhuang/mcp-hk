@@ -149,5 +149,15 @@ def families(db, totals, dividends, profiles):
         ),
         ("narrative_comments", "source_and_output_modes_not_qualified"),
     ):
-        enabled.append({"id": name, "enabled": False, "reasonCode": reason})
+        from .curated.racing.families import DEPENDENCIES
+
+        enabled.append(
+            {
+                "id": name,
+                "enabled": False,
+                "reasonCode": reason,
+                "sourceDependencies": DEPENDENCIES[name],
+                "providerParserQualified": False,
+            }
+        )
     return enabled

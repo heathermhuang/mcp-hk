@@ -1,6 +1,7 @@
 """Public SFC capability contract. No request can activate source access."""
 
 import asyncio
+import hashlib
 import re
 from datetime import datetime
 
@@ -44,6 +45,28 @@ def status(payload=None):
     ).model_dump(mode="json")
 
 
+def export_metadata(payload, version, policy_sha, enabled):
+    value = payload.get("prebuiltExport")
+    if (
+        not enabled
+        or not isinstance(value, dict)
+        or value.get("version") != version
+        or value.get("policySha256") != policy_sha
+        or not re.fullmatch(r"[a-f0-9]{64}", value.get("sha256", ""))
+        or type(value.get("bytes")) is not int
+        or not 0 < value["bytes"] <= 2 * 1024**2
+    ):
+        return {}
+    return {
+        "export": {
+            "url": "/api/v1/sfc/exports/" + version + ".zip",
+            "sha256": value["sha256"],
+            "bytes": value["bytes"],
+            "scope": "accepted_tracked_corporate_cohort",
+        }
+    }
+
+
 def unavailable(ce=None):
     if ce is not None:
         try:
@@ -72,6 +95,66 @@ class Sfc:
             return self.backend.configured
         except Rejected:
             return False
+
+    async def download(self, version):
+        """Bounded forwarding of an already built, currently qualified artifact."""
+        from .curated.sfc.artifacts import MAX_BYTES
+
+        if not re.fullmatch(r"sfc-[a-f0-9]{32}", version or ""):
+            raise DomainError("INVALID_QUERY", "Use an accepted SFC version", 400)
+        if not self.enabled("export") or not self.enabled("rest"):
+            return unavailable()
+        try:
+            await asyncio.wait_for(self.backend.slots.acquire(), timeout=0.25)
+        except asyncio.TimeoutError as exc:
+            raise DomainError("QUERY_BUSY", "Shared query slots busy", 429) from exc
+        try:
+            origin, token = self.backend.config
+            async with httpx.AsyncClient(
+                transport=self.backend.transport,
+                timeout=10,
+                trust_env=False,
+                follow_redirects=False,
+            ) as client:
+                async with client.stream(
+                    "GET",
+                    origin + "/v1/sfc/exports/" + version,
+                    headers={"Authorization": "Bearer " + token},
+                    params={"mode": "rest"},
+                ) as response:
+                    if response.status_code != 200:
+                        raise DomainError(
+                            "SFC_EXPORT_UNAVAILABLE",
+                            "No qualified prebuilt SFC export",
+                            503,
+                        )
+                    raw = bytearray()
+                    async for block in response.aiter_bytes(32768):
+                        if len(raw) + len(block) > MAX_BYTES:
+                            raise DomainError(
+                                "OUTPUT_LIMIT", "SFC artifact exceeds its bound", 413
+                            )
+                        raw.extend(block)
+                    sha = hashlib.sha256(raw).hexdigest()
+                    if (
+                        response.headers.get("content-type") != "application/zip"
+                        or response.headers.get("x-content-sha256") != sha
+                        or response.headers.get("x-sfc-version") != version
+                        or response.headers.get("x-sfc-policy") != self.policy.sha256
+                    ):
+                        raise DomainError(
+                            "SOURCE_SCHEMA_CHANGED",
+                            "SFC artifact identity differs",
+                            503,
+                        )
+            self.policy.require("rest", "export", "retention")
+            return bytes(raw), sha
+        except (httpx.HTTPError, Rejected) as exc:
+            raise DomainError(
+                "SFC_EXPORT_UNAVAILABLE", "SFC export is unavailable", 503
+            ) from exc
+        finally:
+            self.backend.slots.release()
 
     async def query(
         self, operation, ce=None, version=None, mode="rest", limit=20, cursor=None
@@ -215,6 +298,12 @@ class Sfc:
                 "version": actual_version,
                 "view": "sfc_observation",
                 "currentVerification": False,
+                **export_metadata(
+                    payload,
+                    actual_version,
+                    self.policy.sha256,
+                    self.enabled("export") and operation == "verify",
+                ),
                 **(
                     {
                         "nextCursor": payload.get("nextCursor"),
@@ -238,6 +327,24 @@ def register_http(app, service):
     @app.get("/api/v1/sfc/status")
     async def sfc_status():
         return await service.sfc.query("status")
+
+    @app.get(
+        "/api/v1/sfc/exports/{version}.zip",
+        include_in_schema=service.sfc.enabled("rest") and service.sfc.enabled("export"),
+    )
+    async def sfc_export(version: str):
+        from fastapi.responses import Response
+
+        raw, sha = await service.sfc.download(version)
+        return Response(
+            raw,
+            media_type="application/zip",
+            headers={
+                "Cache-Control": "no-store",
+                "X-Content-SHA256": sha,
+                "Content-Disposition": 'attachment; filename="' + version + '.zip"',
+            },
+        )
 
     @app.get("/api/v1/sfc/corporations", include_in_schema=False)
     def sfc_search():
@@ -269,6 +376,20 @@ def register_mcp(server, current):
         return await current().sfc.query("status")
 
     if current().sfc.enabled("mcp"):
+
+        if current().sfc.enabled("rest") and current().sfc.enabled("export"):
+
+            @server.tool(annotations={"readOnlyHint": True, "destructiveHint": False})
+            async def hk_sfc_export(version: str) -> dict:
+                """Locate a qualified prebuilt tracked-corporate export. Does not collect SFC or run a SQL export. Policy and expiry apply on every download."""
+                raw, sha = await current().sfc.download(version)
+                return {
+                    "version": version,
+                    "bytes": len(raw),
+                    "sha256": sha,
+                    "url": "https://mcp.hk/api/v1/sfc/exports/" + version + ".zip",
+                    "scope": "accepted_tracked_corporate_cohort",
+                }
 
         @server.tool(annotations={"readOnlyHint": True, "destructiveHint": False})
         async def hk_sfc_verify(ce: str, version: str | None = None) -> dict:

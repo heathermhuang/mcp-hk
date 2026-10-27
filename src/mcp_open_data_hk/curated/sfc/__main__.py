@@ -41,6 +41,12 @@ def main():
     commands.add_parser(
         "status", help="Read actual persisted state through SFC_READER_DSN"
     )
+    export = commands.add_parser(
+        "build-export",
+        help="Prebuild a qualified accepted-cohort artifact using the SELECT-only SFC reader",
+    )
+    export.add_argument("--version", required=True)
+    export.add_argument("--folder", required=True)
     job = commands.add_parser(
         "job-state",
         help="Read a resumable candidate and accepted pointer using the source writer",
@@ -90,16 +96,22 @@ def main():
                 args.ce,
                 datetime.fromisoformat(args.observed_at.replace("Z", "+00:00")),
             ).model_dump(mode="json")
-        elif args.command == "status":
+        elif args.command in {"status", "build-export"}:
             from ..read import Reader
             from .read import SfcReader
 
-            result = SfcReader(
+            reader = SfcReader(
                 Reader(
                     os.environ["SFC_READER_DSN"],
                     b"operator-status-only-secret-32-bytes",
                 )
-            ).status()
+            )
+            if args.command == "status":
+                result = reader.status()
+            else:
+                from .artifacts import build_from_reader
+
+                result = build_from_reader(reader, args.version, args.folder)
         else:
             from .state import State
 
