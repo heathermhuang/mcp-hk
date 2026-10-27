@@ -1,0 +1,164 @@
+{
+  "baselineSha256": "6cd172c5f30142adb43c1ca51295800c37629066133835d22a7fcc7bdd118f54",
+  "sourceKeysSha256": "48ecc65094f222c99acb3a930f8036a38fd15bad9fa94f51d68369125458a8fe",
+  "originalPairs": 94,
+  "originalFiles": 188,
+  "qualifiedFiles": 188,
+  "publishedQualifiedFiles": 168,
+  "acceptedVersion": "official-799798307f9db9968bd238c02b1de49f",
+  "inventoryPublicationPassed": false,
+  "restMcpBrowserDownloadAcceptancePassed": false,
+  "freshAcceptedBackupRestorePassed": false,
+  "issues": [],
+  "newSourceKeys": [],
+  "observedAt": "2026-10-27T12:07:58.074189+00:00",
+  "planFile": ".data/company-cohort-plan.json",
+  "planSha256": "1759ceeb8b4cf45e2727f2721b549963711447d0534cca5c6d01a648462b75c4",
+  "newProviderRequests": 0,
+  "sourceRowsInGit": false,
+  "nextNormalPublicationUtc": "2026-10-28T05:00:00Z",
+  "nextNormalOffsiteUtc": "2026-10-28T05:17:00Z",
+  "scope": "all original source keys; publication and live acceptance still pending",
+  "pendingSources": [
+    {
+      "sourceKey": "https://www.cr.gov.hk/docs/wrpt/RNC063/RNC063F_20260727.csv",
+      "captureId": "ab60e352b6f916c6872a856be37b28e87d95a9583b864bfa9afc24addecabf10",
+      "rawSha256": "e6d9644ab59d4cca16647512db1c5d159cc969964cc9d2db70840deec4028019",
+      "verificationSha256": "2b0a4f59cf9574e0c3e9dc2ce5f88f43187adb13186adc20b5e5a295ab7e3429",
+      "rowCount": 43
+    },
+    {
+      "sourceKey": "https://www.cr.gov.hk/docs/wrpt/RNC063/RNC063F_20260803.csv",
+      "captureId": "fa46188094a37ef8804a946a1a23dc15e82258c86091f2574674a08f04f0e5b1",
+      "rawSha256": "39b2ab8ef290196df3c5f3f36472ea24512f563dbaae7094f4e0cb29c4d7fcb5",
+      "verificationSha256": "7af118ef055ca3f76c75c1419f951b5d1305a89f8b5c542f25765167588eff20",
+      "rowCount": 39
+    },
+    {
+      "sourceKey": "https://www.cr.gov.hk/docs/wrpt/RNC063/RNC063F_20260810.csv",
+      "captureId": "bb8cb22b82529e256cce69217d663b46baad2ab71d9db1d49e795f3965a7a333",
+      "rawSha256": "793e1e047f5d47fd97bb5e171c4e6b11c3d788bfaf20d63b5d92d347477bd491",
+      "verificationSha256": "876cc8f3c79cf3fbcc0f7cc2f55fcafd4066d063fe64c12e3561ce84fe9d1cb7",
+      "rowCount": 36
+    },
+    {
+      "sourceKey": "https://www.cr.gov.hk/docs/wrpt/RNC063/RNC063F_20260817.csv",
+      "captureId": "e4926ee76205151ee2c4d156eaff71417e69893356a28fc52a68108d195e2491",
+      "rawSha256": "53f2ebd05afa70358268b1efe7445c98ba7945f61ef0e53cf2cdc72a9b680ca0",
+      "verificationSha256": "640bd1224a2f345e02fcd32a94af89a0f9f104c0d795b541832334487fadeac1",
+      "rowCount": 33
+    },
+    {
+      "sourceKey": "https://www.cr.gov.hk/docs/wrpt/RNC063/RNC063F_20260824.csv",
+      "captureId": "5055b101859d3ece31d607c7399e401ce95ea76b8393e74dd018fdb768160c74",
+      "rawSha256": "fa2401be56a6f71b722c7d2061af5a6567c9dfde301b2345ccccfdeddebdff91",
+      "verificationSha256": "60fb566658cd58843e80f082598280474bc47c3788c7568e9ee00376ccda55f7",
+      "rowCount": 59
+    },
+    {
+      "sourceKey": "https://www.cr.gov.hk/docs/wrpt/RNC063/RNC063F_20260831.csv",
+      "captureId": "b5fc952bd568dccebdc481b85c60c271126d8acd4b08f9b6554616ed9ecec35e",
+      "rawSha256": "d11f670eee0c452c068a3eca0d747f13f0b1bd2d48b19b1a2de79a453eb60651",
+      "verificationSha256": "fd607ecc84cded33abf1fa5d8d48f32d0ae83ca8f659e9ee8f4b8a48939dc4c3",
+      "rowCount": 44
+    },
+    {
+      "sourceKey": "https://www.cr.gov.hk/docs/wrpt/RNC063/RNC063F_20260907.csv",
+      "captureId": "61ff855a7cde0c49bf673b825b594c0b17977c3f71e8240df3b803dc08880e89",
+      "rawSha256": "0230a5c4c07b4dbdecef4161b68a0cf3b99f6b197f000dde0995ab319cb5e2fd",
+      "verificationSha256": "c431ee2d04e625757f9b97fc8e63382cc4a155bd420568430935d9f7e0296ca4",
+      "rowCount": 55
+    },
+    {
+      "sourceKey": "https://www.cr.gov.hk/docs/wrpt/RNC063/RNC063F_20260914.csv",
+      "captureId": "9d6ae4c494987e245c05fe07b4e41ccba87ba1de6cbc7359adb57f970cdccc2b",
+      "rawSha256": "9aec3f31f939de1e10ae9f38ac019c131c5dff5cdeee0f2b9c13f26f21ccaf4e",
+      "verificationSha256": "589f3b7240acc1d4a613c0448d80c48531b5806521b8fd99e0727ad750b09139",
+      "rowCount": 114
+    },
+    {
+      "sourceKey": "https://www.cr.gov.hk/docs/wrpt/RNC063/RNC063F_20260921.csv",
+      "captureId": "499f88bc5d01a14c84d70bdbbb0c637ccd80f6ca404b52551269c73617451acf",
+      "rawSha256": "b126cf9ee526c2af3e921ce84f09aed0bb49a773f7f471bb5b345ce550501c2a",
+      "verificationSha256": "1beeef2a7e693e1b0e297905907726e9170a069a9f0b5144704e5090ad6947fb",
+      "rowCount": 45
+    },
+    {
+      "sourceKey": "https://www.cr.gov.hk/docs/wrpt/RNC063/RNC063F_20260928.csv",
+      "captureId": "fc5028f507448d2fcfa8276c72b4b023ea3bf0b4a29f143e9baedcdcb8d79299",
+      "rawSha256": "25cac62d4989f6e40103a845dbc801988f2eb575a45a579a9f9c900c021b5cee",
+      "verificationSha256": "058531175b726e558159c06c307f1d2c9489cb4fc94236cd91e883e51a647d8a",
+      "rowCount": 52
+    },
+    {
+      "sourceKey": "https://www.cr.gov.hk/docs/wrpt/RNC063/RNC063L_20260727.csv",
+      "captureId": "fea4a54d0f8173ddb83ab4deed7f280028db52ed5adbc0e40fb5441ccdef048b",
+      "rawSha256": "5e20cc1f80d4b26b53f194d31cc7b6e1de6f0fc7c11562b629c0cf6ea2e3f90d",
+      "verificationSha256": "84cfd48c3df202ef867c1c671af518b5ff4ec84bed8dfa7e98c631f7d89bbf19",
+      "rowCount": 4781
+    },
+    {
+      "sourceKey": "https://www.cr.gov.hk/docs/wrpt/RNC063/RNC063L_20260803.csv",
+      "captureId": "1b12abca3b11abdbefb1f97e0beb4b0851db7eb9b015600db05837b0e649a234",
+      "rawSha256": "3ac2ea16a4eea1857b1e422ccedeb33f6e16dae55b118477abb84de28b34deb2",
+      "verificationSha256": "3cb81da65103cd1d1ed571b97d3b1b1c42e6e8f8f601825fa8a29ec56998b473",
+      "rowCount": 4719
+    },
+    {
+      "sourceKey": "https://www.cr.gov.hk/docs/wrpt/RNC063/RNC063L_20260810.csv",
+      "captureId": "d4136febc8a6b0d8ff8735b9c6c0616d2fbe6f8f618a7ff4a8cbb89da2b780c8",
+      "rawSha256": "0a9c25cfd464877f2ecee0cb84f1f360c700f7febfd9a2c9d3445c176ba8c395",
+      "verificationSha256": "b90f95c9ca47f36e1b87a9ceaf90da136ebf5fb60acc90912db8ddd06cf18927",
+      "rowCount": 5086
+    },
+    {
+      "sourceKey": "https://www.cr.gov.hk/docs/wrpt/RNC063/RNC063L_20260817.csv",
+      "captureId": "1636e3eada657fd7000f3d7a3a4c0dce5e7ebb3e13e99d098c78a34e6c14bd1a",
+      "rawSha256": "4e08bcf23af7361992aefb041956030c140edae87c59995aee4724430f222060",
+      "verificationSha256": "a4093928632e0889ca27f691a2bb4592e963fbe06114a20a18f230c5d0254c74",
+      "rowCount": 4573
+    },
+    {
+      "sourceKey": "https://www.cr.gov.hk/docs/wrpt/RNC063/RNC063L_20260824.csv",
+      "captureId": "4e4054c840eadc5102e0fbd90309456476a8846a50353d7bf9a4ef5f253c95b2",
+      "rawSha256": "9388bb4c7bd9d41a558cda96f712bd8c7935effd040494adbfe44350ec2aa330",
+      "verificationSha256": "824261c77f3cf295b73175a3f000f0ae60338b64302bef07bb6cb418e6a0d7a6",
+      "rowCount": 4533
+    },
+    {
+      "sourceKey": "https://www.cr.gov.hk/docs/wrpt/RNC063/RNC063L_20260831.csv",
+      "captureId": "06357dec3148a9000f02fcdaada7bc64ba7f39ddc4c8801ef9d68f63e68d39cc",
+      "rawSha256": "87d4c16635abc6a8e92326751afc918abc8d2a5f4a49652aba797ac47ebbc401",
+      "verificationSha256": "df2a4c6ae11fa5c730da6c0863c7428212084a492e01311186c27162bcd4b0ba",
+      "rowCount": 4556
+    },
+    {
+      "sourceKey": "https://www.cr.gov.hk/docs/wrpt/RNC063/RNC063L_20260907.csv",
+      "captureId": "fd1a960b9021a7d2b7e82e5d1f2aa2677390848b22b694d8b131df3f3ab7ed23",
+      "rawSha256": "cf635eae8b4956d25910173825456fdb9e80accc1536b71f0841a496216c4896",
+      "verificationSha256": "a5e01d39d89c618be21faf957b0d47d1467920de735cc32f902e66187f100500",
+      "rowCount": 4672
+    },
+    {
+      "sourceKey": "https://www.cr.gov.hk/docs/wrpt/RNC063/RNC063L_20260914.csv",
+      "captureId": "1609e08bbd00350c04d21b0344ea9374faf9f7190b466f7b333e1f5bd09736fe",
+      "rawSha256": "1c96966dcb932d1625b10dacd073df1ee382fffe837ec88c8a59f5d1799035da",
+      "verificationSha256": "9ab179d19bdc2d01948a7815e183d825e27c0170c88c407aefaedd7d18b83e88",
+      "rowCount": 4772
+    },
+    {
+      "sourceKey": "https://www.cr.gov.hk/docs/wrpt/RNC063/RNC063L_20260921.csv",
+      "captureId": "fb36b9e7e8ac36189a86b5b27d177c3e3f5952609018f1f97657bbd201e90134",
+      "rawSha256": "f1c3d2910b282c7093b2855b27c038b10152ac0907b6eccebe216b633b0da4ad",
+      "verificationSha256": "5347839cda2e29dad624190043655cf8f8ba25b2ae0b7fe776d22f31cb58b2dd",
+      "rowCount": 4148
+    },
+    {
+      "sourceKey": "https://www.cr.gov.hk/docs/wrpt/RNC063/RNC063L_20260928.csv",
+      "captureId": "48d4eb430f814807f4f6623d5548a3172582ddb2f94cf6ae1243158c5deeaac6",
+      "rawSha256": "e7fba6151281d9f99730069079570d3e8b2aa372abb49f57ec334d0e171abf35",
+      "verificationSha256": "cd0254bd43ba2c2f088d22981755aa2d9ea805658ac452450fa7b7cd045ed916",
+      "rowCount": 3146
+    }
+  ]
+}
