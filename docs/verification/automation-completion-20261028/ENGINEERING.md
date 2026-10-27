@@ -146,3 +146,9 @@ to resume a timed-out session. Running only one tiny batch on each daily wake
 could exceed the version-retention window; this coordinator lets the existing
 owner complete the matrix within a single pinned-version wake when quotas and
 service availability permit. A timeout/failed/unknown cell is still pending.
+
+Operator HTTP verification and the exceptional HKEX inspection also have absolute
+POSIX deadlines, beyond per-I/O timeouts, so a slow trickle cannot extend a batch
+indefinitely. Expiry preserves the journal/request reservation as failed/unknown;
+there is no automatic retry or hold clearing. These CLIs already require POSIX
+file locks and run on the existing macOS/Linux operator and host environments.

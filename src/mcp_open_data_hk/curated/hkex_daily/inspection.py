@@ -14,6 +14,7 @@ from urllib.parse import parse_qs, urljoin, urlsplit
 import httpx
 
 from . import store
+from ..deadline import deadline
 
 SERIAL = "DA20030606000076"
 PATH = "/di/NSForm3A.aspx?fn=" + SERIAL
@@ -143,9 +144,12 @@ def reserve(c, run, approval):
 def inspect(c, run, approval, *, transport=None):
     key = reserve(c, run, approval)
     body, started = bytearray(), time.monotonic()
-    with httpx.Client(
-        timeout=20, trust_env=False, follow_redirects=False, transport=transport
-    ) as client:
+    with (
+        deadline(20),
+        httpx.Client(
+            timeout=20, trust_env=False, follow_redirects=False, transport=transport
+        ) as client,
+    ):
         with client.stream(
             "GET",
             ORIGIN + PATH,

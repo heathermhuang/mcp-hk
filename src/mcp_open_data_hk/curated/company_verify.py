@@ -12,6 +12,7 @@ from urllib.parse import quote
 
 import httpx
 
+from .deadline import deadline
 from .acceptance import Journal, company_plan, verify_company_record, sha, canonical
 
 
@@ -34,7 +35,10 @@ class PublicVerifier:
         time.sleep(max(0, 2.1 - (time.monotonic() - self.last)))
         self.last = time.monotonic()
         body = bytearray()
-        with self.client.stream(method, "https://mcp.hk" + path, **kwargs) as response:
+        with (
+            deadline(30),
+            self.client.stream(method, "https://mcp.hk" + path, **kwargs) as response,
+        ):
             if response.status_code not in {200, 202}:
                 # In particular, no automatic 429/recovering/provider retry.
                 raise ValueError("ACCEPTANCE_HTTP_" + str(response.status_code))

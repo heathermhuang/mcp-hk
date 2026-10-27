@@ -28,3 +28,15 @@ def test_only_exact_public_legacy_context_may_be_retained():
     url = "/di/NSForm3A.aspx?fn=" + SERIAL + "&sc=00005&lang=EN"
     assert redirect_metadata(url)["sanitizedLocation"] == url
     assert redirect_metadata(None) == {"present": False}
+
+
+def test_absolute_operator_deadline_restores_prior_signal_state():
+    import signal
+    from mcp_open_data_hk.curated.deadline import deadline
+
+    previous = signal.getsignal(signal.SIGALRM)
+    with pytest.raises(TimeoutError, match="OPERATOR_REQUEST_DEADLINE"):
+        with deadline(20):
+            signal.raise_signal(signal.SIGALRM)
+    assert signal.getsignal(signal.SIGALRM) == previous
+    assert signal.getitimer(signal.ITIMER_REAL) == (0.0, 0.0)
