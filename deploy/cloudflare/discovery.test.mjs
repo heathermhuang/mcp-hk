@@ -55,3 +55,11 @@ test('company selection URLs are noindex in both locale assets and preserve cano
  }
  assert.equal(discoveryTarget(new URL('https://mcp.hk/companies?lang=zh-Hant')).noindex,false);
 });
+
+test('integrated disclosure and licensing selections are noindex in both locales',()=>{
+ for(const route of ['/hkex','/sfc'])for(const lang of ['en','zh-Hant']){
+  const selected=discoveryTarget(new URL(`https://mcp.hk${route}?lang=${lang}&q=ABC123&record=source:1`));
+  assert.equal(selected.noindex,true);assert.match(selected.asset,/-filtered\.html$/);
+  assert.equal(discoveryTarget(new URL(`https://mcp.hk${route}?lang=${lang}`)).noindex,false);
+ }
+});

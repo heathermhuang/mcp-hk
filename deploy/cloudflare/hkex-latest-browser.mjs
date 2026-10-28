@@ -1,3 +1,4 @@
+import {openSourceExplorer} from './source-explorer-browser.mjs';
 import {chromium} from 'playwright';
 import assert from 'node:assert/strict';
 import {mkdir,readFile,writeFile} from 'node:fs/promises';
@@ -22,7 +23,7 @@ try{
    else data=envelope(row);
    await r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(data)});
   });
-  await page.goto(origin+'/hkex?lang='+lang);await page.locator('#daily-workspace').waitFor({state:'visible'});await page.locator('#daily-list button').first().click();await page.locator('#daily-detail-section').waitFor({state:'visible'});
+  await page.goto(origin+'/hkex?lang='+lang);await openSourceExplorer(page);await page.locator('#daily-workspace').waitFor({state:'visible'});await page.locator('#daily-list button').first().click();await page.locator('#daily-detail-section').waitFor({state:'visible'});
   assert.equal(await page.locator('#daily-detail-title').evaluate(e=>e===document.activeElement),true);
   assert.match(await page.locator('#daily-detail').innerText(),lang==='en'?/Unknown/:/未知/);
   if(!real){assert.match(await page.locator('#daily-detail').innerText(),/9007199254740993\.00000001/);assert.match(await page.locator('#daily-gaps').innerText(),/2026-10-19/);}
