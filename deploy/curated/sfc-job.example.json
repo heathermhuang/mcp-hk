@@ -1,5 +1,6 @@
 {
   "image": "mcp-hk-curated:APPROVED_RELEASE_COMMIT",
+  "imageId": "sha256:QUALIFIED_SOURCE_IMAGE_SHA256",
   "policySha256": "QUALIFIED_POLICY_SHA256",
   "cohort": ["ZZZ001"],
   "token": "SEPARATE_SOURCE_ONLY_TOKEN_REQUIRES_APPROVAL",

@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "selectedOn": "2026-10-28",
+  "timezone": "Asia/Singapore",
+  "selectionState": "selected_by_agent_under_explicit_user_delegation",
+  "selectionIsNoLongerAwaitingUserNames": true,
+  "initialCohortSize": 10,
+  "designMaximum": 25,
+  "selectionRationale": "Bounded ten-firm pilot spanning digital and established brokers, an institutional securities firm, global managers and Hong Kong asset managers; exact entity/CE pairs verified against the pinned archive and primary identity documents.",
+  "intendedImmediateUse": "bounded corporate-register connector qualification",
+  "productContext": "mcp.hk source-backed public factual reference product, as specified by the original programme; no assertion of intended financial dealings",
+  "productionCollectionActivated": false,
+  "publicRegisterReadsDispatchedThisSelection": 0,
+  "newCredentialsCreated": false,
+  "outputModePermissionsGranted": false,
+  "selectionDoesNotApprove": [
+    "source rights or retention",
+    "public REST/MCP/browser/history/export source permission",
+    "new source login/uploader credentials",
+    "a source-hold exception"
+  ],
+  "basis": {
+    "archive": "enigma251227-hk-v1",
+    "attribution": "David Webb / Webb-site, original released Enigma archive",
+    "freshRegisterQualification": "Each exact name/CE must still reconcile with the actual qualified official source capture; old dates/unknown bounds remain explicit."
+  },
+  "cohort": [
+    {
+      "displayName": "Futu Securities International (Hong Kong) Limited",
+      "archiveName": "Futu Securities International (HONG KONG) Limited",
+      "ce": "AZT137",
+      "archiveEntityId": 1879449,
+      "archiveVersion": "enigma251227-hk-v1",
+      "selectionStratum": "digital brokerage",
+      "primaryIdentityEvidence": "https://www.sfc.hk/-/media/EN/files/LIC/pr/condition_20240731_eng.pdf?hash=E87DD3462778FD365CF49BBD73C21114&rev=b515e6a370b245b6bd90010c62d76c56",
+      "currentLicenceStatus": "not_asserted_by_selection",
+      "officialCaptureIdentityReconciliationRequired": true
+    },
+    {
+      "displayName": "Tiger Brokers (HK) Global Limited",
+      "archiveName": "Tiger Brokers (HK) Global Limited",
+      "ce": "BMU940",
+      "archiveEntityId": 12770784,
+      "archiveVersion": "enigma251227-hk-v1",
+      "selectionStratum": "digital brokerage",
+      "primaryIdentityEvidence": "https://www.sfc.hk/-/media/EN/files/LIC/pr/variation_condition_20260228.pdf?hash=AB5AE1BDBEC134EA6FAF472066564355&rev=96000fc9e4ca452999b7d41934c2fc61",
+      "currentLicenceStatus": "not_asserted_by_selection",
+      "officialCaptureIdentityReconciliationRequired": true
+    },
+    {
+      "displayName": "Interactive Brokers Hong Kong Limited",
+      "archiveName": "Interactive Brokers Hong Kong Limited",
+      "ce": "ADI249",
+      "archiveEntityId": 51102,
+      "archiveVersion": "enigma251227-hk-v1",
+      "selectionStratum": "international brokerage",
+      "primaryIdentityEvidence": "https://www.sfc.hk/-/media/EN/files/LIC/pr/variations-condition_20231130_eng.pdf?hash=0398086F7C5014F6148DA16F9744EC69&rev=ab9791c981e34dcba5204c1a98ffa6ae",
+      "currentLicenceStatus": "not_asserted_by_selection",
+      "officialCaptureIdentityReconciliationRequired": true
+    },
+    {
+      "displayName": "Saxo Capital Markets HK Limited",
+      "archiveName": "Saxo Capital Markets HK Limited",
+      "ce": "AVD061",
+      "archiveEntityId": 131879,
+      "archiveVersion": "enigma251227-hk-v1",
+      "selectionStratum": "international multi-product brokerage",
+      "primaryIdentityEvidence": "https://www.help.saxo/hc/en-hk",
+      "currentLicenceStatus": "not_asserted_by_selection",
+      "officialCaptureIdentityReconciliationRequired": true
+    },
+    {
+      "displayName": "Phillip Securities (Hong Kong) Limited",
+      "archiveName": "PHILLIP SECURITIES (HONG KONG) LIMITED",
+      "ce": "AAG460",
+      "archiveEntityId": 49853,
+      "archiveVersion": "enigma251227-hk-v1",
+      "selectionStratum": "established Hong Kong brokerage",
+      "primaryIdentityEvidence": "https://www.hkgb.gov.hk/en/infrastructurebond/infra_silver_Highlights.html",
+      "currentLicenceStatus": "not_asserted_by_selection",
+      "officialCaptureIdentityReconciliationRequired": true
+    },
+    {
+      "displayName": "Goldman Sachs (Asia) L.L.C.",
+      "archiveName": "GOLDMAN SACHS (ASIA) L.L.C.",
+      "ce": "ACC536",
+      "archiveEntityId": 5596,
+      "archiveVersion": "enigma251227-hk-v1",
+      "selectionStratum": "institutional securities",
+      "primaryIdentityEvidence": "https://pwm.gs.com/emea/en-gb/disclosures/asia-pacific-cross-border-disclosures",
+      "currentLicenceStatus": "not_asserted_by_selection",
+      "officialCaptureIdentityReconciliationRequired": true
+    },
+    {
+      "displayName": "BlackRock Asset Management North Asia Limited",
+      "archiveName": "BlackRock Asset Management North Asia Limited",
+      "ce": "AFF275",
+      "archiveEntityId": 59750,
+      "archiveVersion": "enigma251227-hk-v1",
+      "selectionStratum": "global asset management",
+      "primaryIdentityEvidence": "https://www.sfc.hk/sfc/doc/EN/intermediaries/trading/licensed/4_conditions_variation_eng_mar_2011.pdf",
+      "currentLicenceStatus": "not_asserted_by_selection",
+      "officialCaptureIdentityReconciliationRequired": true
+    },
+    {
+      "displayName": "Schroder Investment Management (Hong Kong) Limited",
+      "archiveName": "SCHRODER INVESTMENT MANAGEMENT (HONG KONG) LIMITED",
+      "ce": "ACJ591",
+      "archiveEntityId": 1465,
+      "archiveVersion": "enigma251227-hk-v1",
+      "selectionStratum": "global asset management",
+      "primaryIdentityEvidence": "https://api.schroders.com/document-store/form-of-application.pdf",
+      "currentLicenceStatus": "not_asserted_by_selection",
+      "officialCaptureIdentityReconciliationRequired": true
+    },
+    {
+      "displayName": "CSOP Asset Management Limited",
+      "archiveName": "CSOP Asset Management Limited",
+      "ce": "ARN075",
+      "archiveEntityId": 73558,
+      "archiveVersion": "enigma251227-hk-v1",
+      "selectionStratum": "ETF and asset management",
+      "primaryIdentityEvidence": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0529/2026052901410.pdf",
+      "currentLicenceStatus": "not_asserted_by_selection",
+      "officialCaptureIdentityReconciliationRequired": true
+    },
+    {
+      "displayName": "Value Partners Limited",
+      "archiveName": "VALUE PARTNERS LIMITED",
+      "ce": "ABN759",
+      "archiveEntityId": 1469,
+      "archiveVersion": "enigma251227-hk-v1",
+      "selectionStratum": "Hong Kong asset management",
+      "primaryIdentityEvidence": "https://www.valuepartners-group.com/ftp/files/reports/vpgb/001_fact_sheet/eng/vpgb_fact_sheet_2026-05-01_en.pdf",
+      "currentLicenceStatus": "not_asserted_by_selection",
+      "officialCaptureIdentityReconciliationRequired": true
+    }
+  ]
+}

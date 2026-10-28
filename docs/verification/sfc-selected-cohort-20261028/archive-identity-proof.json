@@ -1,0 +1,97 @@
+{
+  "cohortSize": 10,
+  "allExactArchiveIdentitiesReconciled": true,
+  "freshRegisterProviderReads": 0,
+  "rows": [
+    {
+      "ce": "AZT137",
+      "archiveEntityId": 1879449,
+      "archiveName": "Futu Securities International (HONG KONG) Limited",
+      "archiveVersion": "enigma251227-hk-v1",
+      "identityVerified": true,
+      "currentLicenceStatusAsserted": false,
+      "responseSha256": "966015ebe7271231bccebb5ad1f08b69eeba5ff118c82ebab493e2798ba3cc63"
+    },
+    {
+      "ce": "BMU940",
+      "archiveEntityId": 12770784,
+      "archiveName": "Tiger Brokers (HK) Global Limited",
+      "archiveVersion": "enigma251227-hk-v1",
+      "identityVerified": true,
+      "currentLicenceStatusAsserted": false,
+      "responseSha256": "52da00d177d44297d3db7bc02966a8496715cc405782970b74b46306c36ab4e5"
+    },
+    {
+      "ce": "ADI249",
+      "archiveEntityId": 51102,
+      "archiveName": "Interactive Brokers Hong Kong Limited",
+      "archiveVersion": "enigma251227-hk-v1",
+      "identityVerified": true,
+      "currentLicenceStatusAsserted": false,
+      "responseSha256": "faa1121805c5d05a9e645307b3b95b8f0949fa2b9658565153340145fdcd56dc"
+    },
+    {
+      "ce": "AVD061",
+      "archiveEntityId": 131879,
+      "archiveName": "Saxo Capital Markets HK Limited",
+      "archiveVersion": "enigma251227-hk-v1",
+      "identityVerified": true,
+      "currentLicenceStatusAsserted": false,
+      "responseSha256": "6b55c598f54a93fcd93b6ae1d04941d4b6be85c445b9c9ae9e7b1b583e99db59"
+    },
+    {
+      "ce": "AAG460",
+      "archiveEntityId": 49853,
+      "archiveName": "PHILLIP SECURITIES (HONG KONG) LIMITED",
+      "archiveVersion": "enigma251227-hk-v1",
+      "identityVerified": true,
+      "currentLicenceStatusAsserted": false,
+      "responseSha256": "f2a3d0b247850c701248b615dd8281298d5866f23f9b0b754fb191ce8067f1b5"
+    },
+    {
+      "ce": "ACC536",
+      "archiveEntityId": 5596,
+      "archiveName": "GOLDMAN SACHS (ASIA) L.L.C.",
+      "archiveVersion": "enigma251227-hk-v1",
+      "identityVerified": true,
+      "currentLicenceStatusAsserted": false,
+      "responseSha256": "b0f7d869e62fb1f1de5619eb576d6d9860ecd1cb0bcdb69e6fb3c3e0c2e2505f"
+    },
+    {
+      "ce": "AFF275",
+      "archiveEntityId": 59750,
+      "archiveName": "BlackRock Asset Management North Asia Limited",
+      "archiveVersion": "enigma251227-hk-v1",
+      "identityVerified": true,
+      "currentLicenceStatusAsserted": false,
+      "responseSha256": "c4f150740798d5d5509e3102a1cd947381292b02fe23e09c8ea41868fe154d73"
+    },
+    {
+      "ce": "ACJ591",
+      "archiveEntityId": 1465,
+      "archiveName": "SCHRODER INVESTMENT MANAGEMENT (HONG KONG) LIMITED",
+      "archiveVersion": "enigma251227-hk-v1",
+      "identityVerified": true,
+      "currentLicenceStatusAsserted": false,
+      "responseSha256": "c2d72076557a2c2894f9293ab4aaab5e2baedf0622f0ec51a77c21145cd4a43d"
+    },
+    {
+      "ce": "ARN075",
+      "archiveEntityId": 73558,
+      "archiveName": "CSOP Asset Management Limited",
+      "archiveVersion": "enigma251227-hk-v1",
+      "identityVerified": true,
+      "currentLicenceStatusAsserted": false,
+      "responseSha256": "5461c2f333329c290fc7bf63c279f6967e0ce224a13d992d24b518be5e950f2f"
+    },
+    {
+      "ce": "ABN759",
+      "archiveEntityId": 1469,
+      "archiveName": "VALUE PARTNERS LIMITED",
+      "archiveVersion": "enigma251227-hk-v1",
+      "identityVerified": true,
+      "currentLicenceStatusAsserted": false,
+      "responseSha256": "1f6e8bae660c751817cee4dbd02fc393a769866195e58e750db34b500c7fa64a"
+    }
+  ]
+}

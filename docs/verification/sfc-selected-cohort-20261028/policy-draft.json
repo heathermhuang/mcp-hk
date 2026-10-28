@@ -1,0 +1,42 @@
+{
+  "source": "sfc_register",
+  "purpose": "connector_development",
+  "route": "https://apps.sfc.hk/publicregWeb/corp/{ce}/licences",
+  "evidenceRef": "docs/verification/sfc-selected-cohort-20261028/MODE-QUALIFICATION.md",
+  "evidenceSha256": "fa264fa68ab04d173063a079b5d06dfb6bffcba4a374166d1d037d3b0aad21f3",
+  "qualifiedAt": "2026-10-28T01:18:33.437241Z",
+  "recheckAt": "2026-11-25T01:18:33.437241Z",
+  "modes": {
+    "automation": "unknown",
+    "cache": "unknown",
+    "retention": "unknown",
+    "backup": "unknown",
+    "rest": "unknown",
+    "mcp": "unknown",
+    "browser": "unknown",
+    "search": "unknown",
+    "history": "unknown",
+    "export": "unknown",
+    "raw": "unknown"
+  },
+  "allowedFields": [],
+  "trackedCorporateReferences": [
+    "AZT137",
+    "BMU940",
+    "ADI249",
+    "AVD061",
+    "AAG460",
+    "ACC536",
+    "AFF275",
+    "ACJ591",
+    "ARN075",
+    "ABN759"
+  ],
+  "cacheSeconds": 0,
+  "retentionSeconds": 0,
+  "backupSeconds": 0,
+  "readsPerRun": 25,
+  "readsPerDay": 100,
+  "bytesPerRun": 8388608,
+  "bytesPerDay": 16777216
+}

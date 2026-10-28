@@ -1,19 +1,24 @@
 # SFC activation decision and protected runtime packet
 
-27 October 2026. **Not approved or activated.** Existing production inspection
+27 October 2026. **Production activation not approved or activated.** Existing production inspection
 found zero SFC policies, versions and requests, no `sfc_writer` role, and no SFC
 timer. Existing SSH administration works. The development CE example is not a
 production cohort. This packet creates no credential and grants no source rights.
 
 ## Required cohort and source decision
 
-Supply 1–25 exact corporate CE references, the actual verification purpose, and
-independent allowed/denied/unknown decisions for automation, cache, retention,
-backup, REST, MCP, browser, search, history, export and raw material. Record the
-evidence reference and SHA256, exact approved route/fields, qualification/recheck
-dates, and each permitted retention duration. `connector_development` cannot
-enable public outputs. Unknown modes remain closed. History lists our retained
-accepted observation versions; it cannot establish complete regulatory history.
+The initial ten corporate targets are now selected in
+[the selected-cohort packet](../sfc-selected-cohort-20261028/cohort.json).
+No user-supplied firm names are needed. The immediate purpose is connector
+qualification; the product purpose is public factual reference. No actual
+financial dealing is asserted. The disabled technical policy uses
+`connector_development`, and the [refreshed independent mode assessment](../sfc-selected-cohort-20261028/MODE-QUALIFICATION.md)
+grants no collection, cache, retention, backup or public output mode.
+
+Before activation, record the qualified purpose, evidence reference/hash, exact
+route/fields, dates and each allowed duration. Each REST/MCP/browser/search/history/
+export/raw decision remains independent. Unknown modes stay closed. Retained
+observation history cannot establish complete regulatory history.
 
 The policy route is the qualified corporate licence-interval route only. Do not
 expand to people, contacts, AML institutions, arbitrary URLs or name matching.
@@ -32,7 +37,7 @@ step; no password is included in this packet.
 
 The writer environment is `/etc/mcp-hk-curated/sfc.env`, mode 0600, containing only
 the SFC writer DSN. The host's separate `/etc/mcp-hk-curated/sfc-job.json`, mode 0600,
-contains the approved source image SHA, policy hash, exact cohort, a new independent
+contains the reviewed image tag plus required immutable imageId, policy hash, exact cohort, a new independent
 uploader token and qualified storage-duration/evidence hashes. Templates are
 [sfc.env.example](../../../deploy/curated/sfc.env.example) and
 [sfc-job.example.json](../../../deploy/curated/sfc-job.example.json).

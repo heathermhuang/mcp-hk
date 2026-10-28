@@ -91,3 +91,26 @@ Source-job, history and Form 3B PostgreSQL tests now run explicitly in the manda
 database CI lane; general Python CI alone could previously skip the new files.
 The exact source/credential/retention decisions are in
 [the activation packet](SFC-ACTIVATION-APPROVAL-20261027.md).
+
+## Selected cohort and immutable source image — 28 October
+
+Ten exact corporate targets are selected in
+[the new cohort packet](../sfc-selected-cohort-20261028/README.md); selection is no
+longer awaiting user firm names. Technical work uses `connector_development` and
+the actual product context is public factual reference. The refreshed mode record
+keeps every unqualified mode closed and asserts no financial dealing.
+
+Protected job configuration now requires both a reviewed repository image tag and
+`imageId`. The host checks the actual tag identity before source/offsite operations;
+each child then uses the immutable digest, UID/GID 65532, no capabilities and no
+new privileges. A retag cannot change a validated child. Only its source writer
+environment enters the child. Existing proof-file readability/restoration behavior
+is retained. This read-only preparation command requires no source configuration,
+credential, database or provider call:
+
+```sh
+python3 deploy/curated/sfc-job.py --check-image --image <reviewed-repository-tag> --image-id <actual-sha256-image-id>
+```
+
+Do not install the invalid proposal as a working source configuration. All earlier
+source rights, new credential/uploader, retention and activation approvals remain.

@@ -640,7 +640,7 @@
       "workPackage": "W04",
       "state": "pending",
       "dependency": [
-        "actual_exact_CE_cohort_and_purpose",
+        "source_purpose_and_independent_mode_qualification",
         "independent_mode_policy",
         "scoped_credentials_approval",
         "physical_expiry_and_capacity_qualification"
@@ -649,18 +649,27 @@
       "version": null,
       "evidence": [],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Integrate the reviewed producer/history code; await the actual exact CE cohort and purpose/modes, pinned source policy, separate scoped credential decision and physical retention qualification before real activation, public parity and ordinary occurrence.",
+      "nextAction": "Use the selected exact ten corporate CEs; qualify the actual public-reference purpose and independent source modes, retention/physical expiry and separately approved scoped credentials. Then perform real candidate/accepted restores and permitted public/ordinary qualification. Do not request company names or assert financial dealings.",
       "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
       "reviewEvidence": [
         "all-gates-audit-20261027.json"
-      ]
+      ],
+      "selectedCohort": {
+        "size": 10,
+        "designMaximum": 25,
+        "state": "selected_not_freshly_accepted",
+        "technicalPurpose": "connector_development",
+        "productContext": "public_factual_reference",
+        "sourcePermissionsQualified": false,
+        "evidence": "../sfc-selected-cohort-20261028/qualification.json"
+      }
     },
     {
       "id": "W04.sfc-production-schema-config",
       "workPackage": "W04",
       "state": "partial",
       "dependency": [
-        "actual_exact_CE_cohort_and_purpose",
+        "source_purpose_and_independent_mode_qualification",
         "independent_mode_policy",
         "scoped_credentials_approval",
         "physical_expiry_and_capacity_qualification"
@@ -677,18 +686,27 @@
         "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Apply additive SFC migration 010 and read-only status/history grants with existing administrator access during this source-scoped release; do not create a writer/login/uploader/policy/timer.",
+      "nextAction": "Use the selected exact ten corporate CEs; qualify the actual public-reference purpose and independent source modes, retention/physical expiry and separately approved scoped credentials. Then perform real candidate/accepted restores and permitted public/ordinary qualification. Do not request company names or assert financial dealings.",
       "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
       "reviewEvidence": [
         "all-gates-audit-20261027.json"
-      ]
+      ],
+      "selectedCohort": {
+        "size": 10,
+        "designMaximum": 25,
+        "state": "selected_not_freshly_accepted",
+        "technicalPurpose": "connector_development",
+        "productContext": "public_factual_reference",
+        "sourcePermissionsQualified": false,
+        "evidence": "../sfc-selected-cohort-20261028/qualification.json"
+      }
     },
     {
       "id": "W04.sfc-bounded-scheduled-collector",
       "workPackage": "W04",
       "state": "partial",
       "dependency": [
-        "actual_exact_CE_cohort_and_purpose",
+        "source_purpose_and_independent_mode_qualification",
         "independent_mode_policy",
         "scoped_credentials_approval",
         "physical_expiry_and_capacity_qualification"
@@ -702,11 +720,20 @@
       "version": null,
       "evidence": [],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Integrate the reviewed producer/history code; await the actual exact CE cohort and purpose/modes, pinned source policy, separate scoped credential decision and physical retention qualification before real activation, public parity and ordinary occurrence.",
+      "nextAction": "Use the selected exact ten corporate CEs; qualify the actual public-reference purpose and independent source modes, retention/physical expiry and separately approved scoped credentials. Then perform real candidate/accepted restores and permitted public/ordinary qualification. Do not request company names or assert financial dealings.",
       "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
       "reviewEvidence": [
         "all-gates-audit-20261027.json"
-      ]
+      ],
+      "selectedCohort": {
+        "size": 10,
+        "designMaximum": 25,
+        "state": "selected_not_freshly_accepted",
+        "technicalPurpose": "connector_development",
+        "productContext": "public_factual_reference",
+        "sourcePermissionsQualified": false,
+        "evidence": "../sfc-selected-cohort-20261028/qualification.json"
+      }
     },
     {
       "id": "W04.sfc-persisted-status",
@@ -725,11 +752,20 @@
         "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Integrate the reviewed producer/history code; await the actual exact CE cohort and purpose/modes, pinned source policy, separate scoped credential decision and physical retention qualification before real activation, public parity and ordinary occurrence.",
+      "nextAction": "Use the selected exact ten corporate CEs; qualify the actual public-reference purpose and independent source modes, retention/physical expiry and separately approved scoped credentials. Then perform real candidate/accepted restores and permitted public/ordinary qualification. Do not request company names or assert financial dealings.",
       "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
       "reviewEvidence": [
         "all-gates-audit-20261027.json"
-      ]
+      ],
+      "selectedCohort": {
+        "size": 10,
+        "designMaximum": 25,
+        "state": "selected_not_freshly_accepted",
+        "technicalPurpose": "connector_development",
+        "productContext": "public_factual_reference",
+        "sourcePermissionsQualified": false,
+        "evidence": "../sfc-selected-cohort-20261028/qualification.json"
+      }
     },
     {
       "id": "W04.sfc-real-reader-wiring",
@@ -748,18 +784,27 @@
         "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Integrate the reviewed producer/history code; await the actual exact CE cohort and purpose/modes, pinned source policy, separate scoped credential decision and physical retention qualification before real activation, public parity and ordinary occurrence.",
+      "nextAction": "Use the selected exact ten corporate CEs; qualify the actual public-reference purpose and independent source modes, retention/physical expiry and separately approved scoped credentials. Then perform real candidate/accepted restores and permitted public/ordinary qualification. Do not request company names or assert financial dealings.",
       "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
       "reviewEvidence": [
         "all-gates-audit-20261027.json"
-      ]
+      ],
+      "selectedCohort": {
+        "size": 10,
+        "designMaximum": 25,
+        "state": "selected_not_freshly_accepted",
+        "technicalPurpose": "connector_development",
+        "productContext": "public_factual_reference",
+        "sourcePermissionsQualified": false,
+        "evidence": "../sfc-selected-cohort-20261028/qualification.json"
+      }
     },
     {
       "id": "W04.sfc-independent-restored-candidate",
       "workPackage": "W04",
       "state": "pending",
       "dependency": [
-        "actual_exact_CE_cohort_and_purpose",
+        "source_purpose_and_independent_mode_qualification",
         "independent_mode_policy",
         "scoped_credentials_approval",
         "physical_expiry_and_capacity_qualification"
@@ -768,18 +813,27 @@
       "version": null,
       "evidence": [],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Integrate the reviewed producer/history code; await the actual exact CE cohort and purpose/modes, pinned source policy, separate scoped credential decision and physical retention qualification before real activation, public parity and ordinary occurrence.",
+      "nextAction": "Use the selected exact ten corporate CEs; qualify the actual public-reference purpose and independent source modes, retention/physical expiry and separately approved scoped credentials. Then perform real candidate/accepted restores and permitted public/ordinary qualification. Do not request company names or assert financial dealings.",
       "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
       "reviewEvidence": [
         "all-gates-audit-20261027.json"
-      ]
+      ],
+      "selectedCohort": {
+        "size": 10,
+        "designMaximum": 25,
+        "state": "selected_not_freshly_accepted",
+        "technicalPurpose": "connector_development",
+        "productContext": "public_factual_reference",
+        "sourcePermissionsQualified": false,
+        "evidence": "../sfc-selected-cohort-20261028/qualification.json"
+      }
     },
     {
       "id": "W04.sfc-publication-rollback",
       "workPackage": "W04",
       "state": "partial",
       "dependency": [
-        "actual_exact_CE_cohort_and_purpose",
+        "source_purpose_and_independent_mode_qualification",
         "independent_mode_policy",
         "scoped_credentials_approval",
         "physical_expiry_and_capacity_qualification"
@@ -793,18 +847,27 @@
         "progress-20261027.json"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Integrate the reviewed producer/history code; await the actual exact CE cohort and purpose/modes, pinned source policy, separate scoped credential decision and physical retention qualification before real activation, public parity and ordinary occurrence.",
+      "nextAction": "Use the selected exact ten corporate CEs; qualify the actual public-reference purpose and independent source modes, retention/physical expiry and separately approved scoped credentials. Then perform real candidate/accepted restores and permitted public/ordinary qualification. Do not request company names or assert financial dealings.",
       "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
       "reviewEvidence": [
         "all-gates-audit-20261027.json"
-      ]
+      ],
+      "selectedCohort": {
+        "size": 10,
+        "designMaximum": 25,
+        "state": "selected_not_freshly_accepted",
+        "technicalPurpose": "connector_development",
+        "productContext": "public_factual_reference",
+        "sourcePermissionsQualified": false,
+        "evidence": "../sfc-selected-cohort-20261028/qualification.json"
+      }
     },
     {
       "id": "W04.sfc-25-ce-pilot",
       "workPackage": "W04",
       "state": "pending",
       "dependency": [
-        "actual_exact_CE_cohort_and_purpose",
+        "source_purpose_and_independent_mode_qualification",
         "independent_mode_policy",
         "scoped_credentials_approval",
         "physical_expiry_and_capacity_qualification"
@@ -819,18 +882,27 @@
         "progress-20261027.json"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Integrate the reviewed producer/history code; await the actual exact CE cohort and purpose/modes, pinned source policy, separate scoped credential decision and physical retention qualification before real activation, public parity and ordinary occurrence.",
+      "nextAction": "Use the selected exact ten corporate CEs; qualify the actual public-reference purpose and independent source modes, retention/physical expiry and separately approved scoped credentials. Then perform real candidate/accepted restores and permitted public/ordinary qualification. Do not request company names or assert financial dealings.",
       "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
       "reviewEvidence": [
         "all-gates-audit-20261027.json"
-      ]
+      ],
+      "selectedCohort": {
+        "size": 10,
+        "designMaximum": 25,
+        "state": "selected_not_freshly_accepted",
+        "technicalPurpose": "connector_development",
+        "productContext": "public_factual_reference",
+        "sourcePermissionsQualified": false,
+        "evidence": "../sfc-selected-cohort-20261028/qualification.json"
+      }
     },
     {
       "id": "W04.sfc-rest-mcp-browser-export",
       "workPackage": "W04",
       "state": "partial",
       "dependency": [
-        "actual_exact_CE_cohort_and_purpose",
+        "source_purpose_and_independent_mode_qualification",
         "independent_mode_policy",
         "scoped_credentials_approval",
         "physical_expiry_and_capacity_qualification"
@@ -848,18 +920,27 @@
         "RELEASE-20261027.md"
       ],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Integrate the reviewed producer/history code; await the actual exact CE cohort and purpose/modes, pinned source policy, separate scoped credential decision and physical retention qualification before real activation, public parity and ordinary occurrence.",
+      "nextAction": "Use the selected exact ten corporate CEs; qualify the actual public-reference purpose and independent source modes, retention/physical expiry and separately approved scoped credentials. Then perform real candidate/accepted restores and permitted public/ordinary qualification. Do not request company names or assert financial dealings.",
       "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
       "reviewEvidence": [
         "all-gates-audit-20261027.json"
-      ]
+      ],
+      "selectedCohort": {
+        "size": 10,
+        "designMaximum": 25,
+        "state": "selected_not_freshly_accepted",
+        "technicalPurpose": "connector_development",
+        "productContext": "public_factual_reference",
+        "sourcePermissionsQualified": false,
+        "evidence": "../sfc-selected-cohort-20261028/qualification.json"
+      }
     },
     {
       "id": "W04.sfc-ordinary-jobs-failure-retention",
       "workPackage": "W04",
       "state": "pending",
       "dependency": [
-        "actual_exact_CE_cohort_and_purpose",
+        "source_purpose_and_independent_mode_qualification",
         "independent_mode_policy",
         "scoped_credentials_approval",
         "physical_expiry_and_capacity_qualification"
@@ -868,18 +949,27 @@
       "version": null,
       "evidence": [],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Integrate the reviewed producer/history code; await the actual exact CE cohort and purpose/modes, pinned source policy, separate scoped credential decision and physical retention qualification before real activation, public parity and ordinary occurrence.",
+      "nextAction": "Use the selected exact ten corporate CEs; qualify the actual public-reference purpose and independent source modes, retention/physical expiry and separately approved scoped credentials. Then perform real candidate/accepted restores and permitted public/ordinary qualification. Do not request company names or assert financial dealings.",
       "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
       "reviewEvidence": [
         "all-gates-audit-20261027.json"
-      ]
+      ],
+      "selectedCohort": {
+        "size": 10,
+        "designMaximum": 25,
+        "state": "selected_not_freshly_accepted",
+        "technicalPurpose": "connector_development",
+        "productContext": "public_factual_reference",
+        "sourcePermissionsQualified": false,
+        "evidence": "../sfc-selected-cohort-20261028/qualification.json"
+      }
     },
     {
       "id": "W04.sfc-wider-cohort-disposition",
       "workPackage": "W04",
       "state": "pending",
       "dependency": [
-        "actual_exact_CE_cohort_and_purpose",
+        "source_purpose_and_independent_mode_qualification",
         "independent_mode_policy",
         "scoped_credentials_approval",
         "physical_expiry_and_capacity_qualification"
@@ -888,11 +978,20 @@
       "version": null,
       "evidence": [],
       "owner": "01a17623-2783-7351-93ae-f4cdb29ba9e3",
-      "nextAction": "Integrate the reviewed producer/history code; await the actual exact CE cohort and purpose/modes, pinned source policy, separate scoped credential decision and physical retention qualification before real activation, public parity and ordinary occurrence.",
+      "nextAction": "Use the selected exact ten corporate CEs; qualify the actual public-reference purpose and independent source modes, retention/physical expiry and separately approved scoped credentials. Then perform real candidate/accepted restores and permitted public/ordinary qualification. Do not request company names or assert financial dealings.",
       "lastReviewedAt": "2026-10-27T13:41:00.548967+00:00",
       "reviewEvidence": [
         "all-gates-audit-20261027.json"
-      ]
+      ],
+      "selectedCohort": {
+        "size": 10,
+        "designMaximum": 25,
+        "state": "selected_not_freshly_accepted",
+        "technicalPurpose": "connector_development",
+        "productContext": "public_factual_reference",
+        "sourcePermissionsQualified": false,
+        "evidence": "../sfc-selected-cohort-20261028/qualification.json"
+      }
     },
     {
       "id": "W05.racing-2025-26-results",
