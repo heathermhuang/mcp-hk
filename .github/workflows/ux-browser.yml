@@ -30,6 +30,7 @@ jobs:
           node deploy/cloudflare/sfc-browser.mjs
           node deploy/cloudflare/company-acceptance-browser.mjs
           node deploy/cloudflare/content-browser.mjs
+          MCP_HK_TEST_ORIGIN=http://127.0.0.1:8765 node deploy/cloudflare/unified-records-browser.mjs
 
           MCP_HK_TEST_ORIGIN=http://127.0.0.1:8765 node deploy/cloudflare/racing-browser.mjs
           # This suite reads real fixture APIs; give its independent fixture app

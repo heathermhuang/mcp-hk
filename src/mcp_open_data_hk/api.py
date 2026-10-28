@@ -409,7 +409,7 @@ def create_app(service=None):
             alias = request.url.path in markdown_pages
             path = markdown_pages.get(request.url.path, request.url.path)
             lang = locale(request.query_params.get("lang"))
-            filtered = path in {"/coverage", "/companies"} and any(
+            filtered = path in {"/coverage", "/companies", "/hkex", "/sfc"} and any(
                 key != "lang" and not key.startswith("utm_")
                 for key in request.query_params
             )

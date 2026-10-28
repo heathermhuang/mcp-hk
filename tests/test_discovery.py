@@ -201,7 +201,16 @@ def test_company_explorer_is_bilingual_and_query_state_is_not_indexed(client):
         assert response.status_code == 200 and heading in response.text
         assert 'id="company-search"' in response.text
         assert 'id="company-snapshot-download"' in response.text
-        assert "/assets/companies.js" in response.text
+        assert "/assets/unified-records.js" in response.text
+        assert 'id="record-sources"' in response.text
     response = client.get("/companies?entity=341&version=archive-v1")
     assert response.headers["x-robots-tag"] == "noindex, follow"
     assert '<meta name="robots" content="noindex, follow">' in response.text
+
+
+def test_integrated_record_queries_are_noindex_in_each_public_renderer(client):
+    for path in ("/hkex", "/sfc"):
+        for lang in ("en", "zh-Hant"):
+            response = client.get(path, params={"q": "ABC123", "lang": lang})
+            assert response.headers["x-robots-tag"] == "noindex, follow"
+            assert '<meta name="robots" content="noindex, follow">' in response.text

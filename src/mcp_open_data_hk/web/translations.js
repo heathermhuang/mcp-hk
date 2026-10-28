@@ -1,4 +1,3 @@
-/* Shared UI strings. Source records and API identifiers remain in their original language. */
 const translations = {
   "en": {
     "racingTitle": "Racing results",
@@ -677,7 +676,28 @@ const translations = {
     "racingHappyValley": "Happy Valley",
     "racingShowMeeting": "Show meeting",
     "viewSpecificStatus": "See the dataset’s own coverage, dates and update status",
-    "coverageAndStatus": "Coverage and status"
+    "coverageAndStatus": "Coverage and status",
+    "recordsCompaniesEyebrow": "Company records",
+    "recordsCompaniesTitle": "Find a company",
+    "recordsCompaniesLead": "Search company names, then explore dated registration records, names, officers and licences in one place.",
+    "recordsCompaniesQuery": "English or Chinese company name prefix",
+    "recordsCompaniesLimits": "Coverage is incomplete. Matching names can belong to different organisations; source identifiers keep them distinct.",
+    "recordsSearch": "Search",
+    "recordsResults": "Matching records",
+    "recordsPrevious": "Previous page",
+    "recordsNext": "Next page",
+    "recordsRetry": "Retry unavailable records",
+    "recordsSources": "Source coverage, original records and complete downloads",
+    "recordsHkexEyebrow": "Disclosure records",
+    "recordsHkexTitle": "Explore disclosures",
+    "recordsHkexLead": "Browse available disclosure records across dates, with the same search and record view.",
+    "recordsHkexQuery": "Stock code",
+    "recordsHkexLimits": "Stock codes can be reused by different issuers. Choose the correct issuer when prompted. Event, filing and summary dates are distinct; these records do not establish current holdings.",
+    "recordsSfcEyebrow": "Corporate licensing records",
+    "recordsSfcTitle": "Find licensing records",
+    "recordsSfcLead": "Enter a corporate CE reference to read available licence records and dated observations together.",
+    "recordsSfcQuery": "Corporate CE reference",
+    "recordsSfcLimits": "Dated observations are not current licence verification. Availability depends on accepted coverage and permitted output modes."
   },
   "zh": {
     "racingTitle": "賽馬賽果",
@@ -1356,6 +1376,27 @@ const translations = {
     "racingHappyValley": "跑馬地",
     "racingShowMeeting": "查看賽事",
     "viewSpecificStatus": "請查看該數據的涵蓋範圍、日期及更新狀態",
-    "coverageAndStatus": "涵蓋範圍及狀態"
+    "coverageAndStatus": "涵蓋範圍及狀態",
+    "recordsCompaniesEyebrow": "公司資料",
+    "recordsCompaniesTitle": "查找公司",
+    "recordsCompaniesLead": "搜尋公司名稱，在同一介面查閱附日期的註冊、名稱、董事及牌照紀錄。",
+    "recordsCompaniesQuery": "英文或中文公司名稱開首",
+    "recordsCompaniesLimits": "涵蓋範圍並不完整。同名公司可能是不同實體；各紀錄保留來源識別碼。",
+    "recordsSearch": "搜尋",
+    "recordsResults": "相符紀錄",
+    "recordsPrevious": "上一頁",
+    "recordsNext": "下一頁",
+    "recordsRetry": "重試未能讀取的紀錄",
+    "recordsSources": "來源涵蓋範圍、原始紀錄及完整下載",
+    "recordsHkexEyebrow": "權益披露",
+    "recordsHkexTitle": "查閱披露紀錄",
+    "recordsHkexLead": "以同一搜尋及紀錄介面查閱各日期可用的權益披露。",
+    "recordsHkexQuery": "股份代號",
+    "recordsHkexLimits": "不同發行人可能在不同時期使用相同股份代號，請按提示選擇正確發行人。事件、提交及摘要日期並不相同；紀錄不代表目前持股。",
+    "recordsSfcEyebrow": "法團牌照資料",
+    "recordsSfcTitle": "查找牌照紀錄",
+    "recordsSfcLead": "輸入法團中央編號，在同一介面查閱可用的牌照紀錄及附日期觀察。",
+    "recordsSfcQuery": "法團中央編號",
+    "recordsSfcLimits": "附日期觀察並非目前牌照狀態核實；資料能否提供取決於已接納涵蓋範圍及獲准輸出模式。"
   }
 };

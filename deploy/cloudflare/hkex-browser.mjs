@@ -1,3 +1,4 @@
+import {openSourceExplorer} from './source-explorer-browser.mjs';
 /* Synthetic normalized notices only; never contacts HKEX. */
 import {chromium} from 'playwright';
 import assert from 'node:assert/strict';
@@ -21,7 +22,7 @@ try{
    else{assert.equal(u.searchParams.get('version'),version);data={version,data:row(u.pathname.split('/').pop())};}
    await r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(data)});
   });
-  await page.goto(origin+'/hkex?lang='+lang);await page.locator('#hkex-workspace').waitFor({state:'visible'});
+  await page.goto(origin+'/hkex?lang='+lang);await openSourceExplorer(page);await page.locator('#hkex-workspace').waitFor({state:'visible'});
   await page.locator('#hkex-stock').fill('00001');await page.locator('#hkex-search').evaluate(f=>f.requestSubmit());await page.locator('#hkex-issuers button').click();await page.locator('#hkex-list button').click();
   await page.locator('#hkex-detail').waitFor({state:'visible'});assert.equal(await page.locator('#hkex-detail-heading').evaluate(e=>e===document.activeElement),true);
   assert.match(await page.locator('#hkex-interests').innerText(),/9007199254740993\.000000000000000001/);

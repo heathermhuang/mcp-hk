@@ -31,7 +31,7 @@ for path in discovery.public_paths():
                 agents.markdown_document(discovery, path, lang)
             )
             routes[path][lang + "-markdown"] = md_asset
-        if path in {"/coverage", "/companies"}:
+        if path in {"/coverage", "/companies", "/hkex", "/sfc"}:
             filtered = asset.replace(".html", "-filtered.html")
             (web / filtered.lstrip("/")).write_text(
                 discovery.render_page(path, lang, filtered=True)

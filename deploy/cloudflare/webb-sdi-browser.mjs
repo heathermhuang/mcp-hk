@@ -1,3 +1,4 @@
+import {openSourceExplorer} from './source-explorer-browser.mjs';
 /* Archive browser regression: synthetic edge cases or the actual local/served release. */
 import {chromium} from 'playwright';
 import assert from 'node:assert/strict';
@@ -24,7 +25,7 @@ try{
    else {assert.equal(u.searchParams.get('version'),version);data=wrap(row(u.pathname.endsWith('2')?'2':'1'));}
    await r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(data)});
   });}
-  await page.goto(origin+'/hkex?lang='+lang);await page.locator('#webb-workspace').waitFor({state:'visible'});
+  await page.goto(origin+'/hkex?lang='+lang);await openSourceExplorer(page);await page.locator('#webb-workspace').waitFor({state:'visible'});
   await page.locator('#webb-search').evaluate(f=>f.requestSubmit());await page.locator('#webb-issuers button').first().click();await page.locator('#webb-list button').first().click();await page.locator('#webb-detail-section').waitFor({state:'visible'});
   assert.equal(await page.locator('#webb-detail-title').evaluate(e=>e===document.activeElement),true);
   assert.match(await page.locator('#webb-detail').innerText(),lang==='en'?/Unknown/:/未知/);
