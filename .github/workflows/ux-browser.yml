@@ -28,6 +28,7 @@ jobs:
           node deploy/cloudflare/webb-sdi-browser.mjs
           node deploy/cloudflare/hkex-latest-browser.mjs
           node deploy/cloudflare/sfc-browser.mjs
+          node deploy/cloudflare/company-request-browser.mjs
           node deploy/cloudflare/company-acceptance-browser.mjs
           node deploy/cloudflare/content-browser.mjs
 

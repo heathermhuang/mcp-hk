@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import {readFile,mkdir,writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import {Admission} from './company-admission.mjs';
+import {observeRequest} from './company-request.mjs';
 const [input,output]=process.argv.slice(2);
 const task=JSON.parse(await readFile(input,'utf8'));
 assert.match(task.version,/^official-[a-f0-9]{32}$/);
@@ -14,16 +15,16 @@ await mkdir(output,{recursive:true,mode:0o700});
 const browser=await chromium.launch({headless:false,...(process.env.MCP_HK_CHROME?{executablePath:process.env.MCP_HK_CHROME}:{})});
 const context=await browser.newContext({viewport:{width:1280,height:900},acceptDownloads:true});
 const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
-const admission=new Admission(join(output,'..','..','admission.json'));let tail=Promise.resolve(),admissionFailure=null;
+const admission=new Admission(join(output,'..','..','admission.json'));let tail=Promise.resolve(),admissionFailure=null,failureResolve;const failureSignal=new Promise(resolve=>{failureResolve=resolve;});
 await context.route('**/*',async route=>{
  const u=new URL(route.request().url());
  if(u.protocol==='blob:'||u.origin==='https://mcp.hk'){
   if(u.pathname.startsWith('/api/')||u.pathname.startsWith('/downloads/')){
    const next=tail.then(async()=>{
     if(admissionFailure){await route.abort();return;}
-    try{await admission.before();}catch(e){admissionFailure={code:e.message};await writeFile(join(output,'admission-failure.json'),JSON.stringify(admissionFailure));await route.abort();return;}
-    const pending=page.waitForResponse(r=>r.request()===route.request(),{timeout:90000});await route.continue();const response=await pending;await admission.observe(response.status(),response.headers());
-    if(response.status()>=400){const headers=response.headers(),body=await response.body();admissionFailure={status:response.status(),headers:Object.fromEntries(Object.entries(headers).filter(([k])=>['retry-after','ratelimit-limit','ratelimit-remaining','ratelimit-reset','date','content-type'].includes(k))),body:body.subarray(0,16384).toString('utf8'),bodyBytes:body.length};await writeFile(join(output,'http-failure.json'),JSON.stringify(admissionFailure,null,2)+'\n');}
+    try{await admission.before();}catch(e){admissionFailure={code:e.message};await writeFile(join(output,'admission-failure.json'),JSON.stringify(admissionFailure));failureResolve(admissionFailure);await route.abort();return;}
+    const outcome=await observeRequest(route,admission);
+    if(outcome.failure){admissionFailure=outcome.failure;await writeFile(join(output,'http-failure.json'),JSON.stringify(admissionFailure,null,2)+'\n');failureResolve(admissionFailure);}
    });tail=next.catch(()=>{});return next;
   }
   return route.continue();
@@ -33,8 +34,10 @@ await context.route('**/*',async route=>{
 try{
  const query=new URLSearchParams({companySource:'official',namespace:expected.identifier.namespace,value:expected.identifier.value,official_entity:entity,official_version:task.version,lang:task.language});
  const detailResponse=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/v1/companies/'+encodeURIComponent(entity)||decodeURIComponent(new URL(r.url()).pathname)==='/api/v1/companies/'+entity,{timeout:90000});
+ // Observe rejection immediately, then await the same promise below after navigation.
+ detailResponse.catch(()=>{});
  await page.goto('https://mcp.hk/companies?'+query,{timeout:90000});
- const response=await detailResponse;
+ const response=await Promise.race([detailResponse,failureSignal.then(()=>{throw Error('BROWSER_REQUEST_FAILED');})]);
  assert.equal(response.status(),200);
  const envelope=await response.json();assert.equal(envelope.meta.version,task.version);assert.equal(envelope.meta.view,'latest_observed');
  assert.deepEqual(envelope.data.observations.find(r=>r.fact_id===expected.fact_id),expected);
