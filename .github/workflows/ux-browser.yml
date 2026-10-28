@@ -28,6 +28,7 @@ jobs:
           node deploy/cloudflare/webb-sdi-browser.mjs
           node deploy/cloudflare/hkex-latest-browser.mjs
           node deploy/cloudflare/sfc-browser.mjs
+          node deploy/cloudflare/company-request-browser.mjs
           node deploy/cloudflare/company-acceptance-browser.mjs
           node deploy/cloudflare/content-browser.mjs
           MCP_HK_TEST_ORIGIN=http://127.0.0.1:8765 node deploy/cloudflare/unified-records-browser.mjs

@@ -164,3 +164,12 @@ A day-long hold stops the bounded batch instead of blocking indefinitely. The
 service quotas and all 1,128 assertions are unchanged. Prior passing cells remain
 valid; failed cells require the existing explicit review/reopen procedure. This
 operator-only correction changes no serving source, Worker, container or timer.
+
+The first admission repair exposed a request-lifecycle bug during live validation:
+a response-event waiter could remain pending when a routed request failed without
+an HTTP response, then reject outside the journey's error handling. The follow-up
+uses the request-owned `response()` result, retains network/deadline failures,
+and signals the journey without automatic retries. A real local Chromium fixture
+covers cancellation, actual HTTP 429 and a never-responding request in rendered CI.
+These are engineering regressions, never substitutes for the full live matrix.
+Reference: https://playwright.dev/docs/api/class-request#request-response.
