@@ -349,8 +349,8 @@
       "en": "JSON pages and original provider publications; no mcp.hk bulk auction ZIP.",
       "zh-Hant": "提供 JSON 分頁及原始供應者文件，mcp.hk 沒有全量拍賣 ZIP。"
     },
-    "httpExample": "/api/v1/plates/search?q=AA88&mode=exact&limit=5",
-    "mcpExample": "hk_plate_search({\"q\":\"AA88\",\"mode\":\"exact\",\"limit\":5})",
+    "httpExample": "/api/v1/plates/search?q=AA88&mode=exact&pageSize=5",
+    "mcpExample": "hk_plate_search({\"q\":\"AA88\",\"mode\":\"exact\",\"pageSize\":5})",
     "status": "/api/v1/status",
     "path": "/plates",
     "keywords": "plate.hk plate hk platehk plates vehicle registration auctions auction history 車牌 车牌 拍賣 拍卖 成交 牌價 牌价",

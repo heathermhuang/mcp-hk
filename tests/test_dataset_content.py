@@ -1,6 +1,8 @@
 """Public navigation and discovery must describe the same source views."""
 
-from urllib.parse import urlsplit
+import json
+import re
+from urllib.parse import parse_qsl, urlsplit
 
 import pytest
 
@@ -13,6 +15,14 @@ from mcp_open_data_hk.discovery import (
     text_response,
 )
 from mcp_open_data_hk.sources import available_packs
+from mcp_open_data_hk.contracts import (
+    CompanySearchQuery,
+    PlateSearchQuery,
+    PropertySearchQuery,
+    RestaurantQuery,
+)
+from mcp_open_data_hk.hkex_daily import DailyQuery
+from mcp_open_data_hk.webb_sdi import IssuerQuery
 
 
 @pytest.mark.parametrize("lang", ["en", "zh-Hant"])
@@ -67,3 +77,23 @@ def test_optional_archive_discovery_respects_existing_configuration(monkeypatch)
         assert "hk_sfc_verify" not in entry["access"]["tools"]
     monkeypatch.setenv("MCP_HK_WEBB_SDI_ENABLED", "false")
     assert "webb_sdi" not in {p["id"] for p in available_packs()}
+
+
+@pytest.mark.parametrize(
+    "key,contract",
+    [
+        ("company_registry", CompanySearchQuery),
+        ("enigma", CompanySearchQuery),
+        ("sfc_archive", CompanySearchQuery),
+        ("hkex_daily", DailyQuery),
+        ("webb_sdi", IssuerQuery),
+        ("restaurants", RestaurantQuery),
+        ("platehk", PlateSearchQuery),
+        ("seehouse", PropertySearchQuery),
+    ],
+)
+def test_examples_use_the_actual_http_and_mcp_parameter_contracts(key, contract):
+    row = next(r for r in families() if r["id"] == key)
+    http_args = dict(parse_qsl(urlsplit(row["httpExample"]).query))
+    mcp_args = json.loads(re.fullmatch(r"\w+\((.*)\)", row["mcpExample"])[1])
+    assert contract.model_validate(http_args) == contract.model_validate(mcp_args)
