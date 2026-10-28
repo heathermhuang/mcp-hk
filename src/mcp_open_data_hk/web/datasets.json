@@ -1,0 +1,483 @@
+[
+  {
+    "id": "company_registry",
+    "title": {
+      "en": "Official company observations",
+      "zh-Hant": "官方公司觀察資料"
+    },
+    "question": {
+      "en": "Which registrations, names, addresses or money-lender entries have been observed?",
+      "zh-Hant": "已觀察到哪些公司註冊、名稱、地址或放債人紀錄？"
+    },
+    "availability": {
+      "en": "Dated observations · partial coverage",
+      "zh-Hant": "具日期的觀察紀錄 · 部分涵蓋"
+    },
+    "limits": {
+      "en": "A collected subset, not a current company-status register. BRNs and money-lender numbers are separate. Missing records do not prove dissolution.",
+      "zh-Hant": "僅涵蓋已收集子集，並非現時公司狀態名冊。商業登記號碼與放債人號碼分開；缺少紀錄不證明公司已解散。"
+    },
+    "dates": {
+      "en": "Weekly coverage, address observation date and money-lender cutoff differ. Check the accepted version and missing-week inventory.",
+      "zh-Hant": "每週涵蓋範圍、地址觀察日期及放債人截止日期各有不同，請查看已接納版本及缺漏星期。"
+    },
+    "download": {
+      "en": "ZIP of the displayed page or selected observations; source facts, schema and manifest included.",
+      "zh-Hant": "可下載目前一頁或所選觀察紀錄的 ZIP，附來源資料、欄位定義及清單。"
+    },
+    "httpExample": "/api/v1/companies?view=latest_observed&q=HSBC&groupBy=organisation&limit=5",
+    "mcpExample": "hk_company_search({\"view\":\"latest_observed\",\"q\":\"HSBC\",\"groupBy\":\"organisation\",\"limit\":5})",
+    "status": "/api/v1/companies/updates/status",
+    "path": "/companies",
+    "keywords": "company companies registry registration name change BRN money lenders 公司 註冊 商業登記 名稱 地址 放債人",
+    "action": {
+      "en": "Search official observations",
+      "zh-Hant": "搜尋官方觀察資料"
+    },
+    "statusPage": "/companies#official-companies"
+  },
+  {
+    "id": "enigma",
+    "title": {
+      "en": "Webb organisation archive",
+      "zh-Hant": "Webb 機構歷史檔案"
+    },
+    "question": {
+      "en": "What names, appointments and relationships appear in the historical archive?",
+      "zh-Hant": "歷史檔案記錄了哪些機構名稱、職位及關係？"
+    },
+    "availability": {
+      "en": "Historical archive",
+      "zh-Hant": "歷史檔案"
+    },
+    "limits": {
+      "en": "Original Webb identities and date precision are retained. Names never establish a cross-source identity match or current status.",
+      "zh-Hant": "保留原有 Webb 識別碼及日期精確度，不會憑名稱推斷跨來源身份或現況。"
+    },
+    "dates": {
+      "en": "Record-specific dates; the archive release date is not a current observation date.",
+      "zh-Hant": "各紀錄有其來源日期，檔案發布日期並非現況觀察日期。"
+    },
+    "download": {
+      "en": "Displayed-page ZIP and a separately labelled complete approved Hong Kong subset.",
+      "zh-Hant": "提供目前一頁的 ZIP，以及另行標示的完整已核准香港子集。"
+    },
+    "httpExample": "/api/v1/companies?q=HSBC&groupBy=organisation&limit=5",
+    "mcpExample": "hk_company_search({\"q\":\"HSBC\",\"groupBy\":\"organisation\",\"limit\":5})",
+    "status": "/api/v1/companies/notice",
+    "path": "/companies",
+    "keywords": "enigma webb companies company organisations officers licence SFC archive 公司 機構 董事 牌照 歷史",
+    "action": {
+      "en": "Search archival organisations",
+      "zh-Hant": "搜尋機構歷史資料"
+    },
+    "statusPage": "/companies#archive-companies"
+  },
+  {
+    "id": "sfc_archive",
+    "title": {
+      "en": "SFC licence archive",
+      "zh-Hant": "證監會牌照歷史檔案"
+    },
+    "question": {
+      "en": "Which historical licence intervals are recorded for an exact corporate CE reference?",
+      "zh-Hant": "指定法團中央編號有哪些歷史牌照期間紀錄？"
+    },
+    "availability": {
+      "en": "Historical archive · fresh verification not activated",
+      "zh-Hant": "歷史檔案 · 官方新觀察核實尚未啟用"
+    },
+    "limits": {
+      "en": "Webb licence facts do not establish current SFC status. Official-source observations, history and exports require separate activation.",
+      "zh-Hant": "Webb 牌照資料不證明目前的證監會狀態。官方來源觀察、歷史及匯出須另行啟用。"
+    },
+    "dates": {
+      "en": "Licence interval dates retain unknown values and original precision. CE references are not BRNs.",
+      "zh-Hant": "牌照期間保留未知值及原有日期精確度；中央編號並非商業登記號碼。"
+    },
+    "download": {
+      "en": "Archive records can be opened in the company explorer. No fresh SFC download is activated.",
+      "zh-Hant": "可在公司瀏覽器查閱歷史紀錄；官方新觀察資料下載尚未啟用。"
+    },
+    "httpExample": "/api/v1/companies?namespace=sfc%3Ace_reference&value=AAB241&groupBy=organisation&limit=5",
+    "mcpExample": "hk_company_search({\"namespace\":\"sfc:ce_reference\",\"value\":\"AAB241\",\"groupBy\":\"organisation\",\"limit\":5})",
+    "status": "/api/v1/sfc/status",
+    "path": "/sfc",
+    "keywords": "SFC licence license CE corporate archive 證監會 牌照 中央編號 法團 歷史",
+    "action": {
+      "en": "Explore records",
+      "zh-Hant": "查閱紀錄"
+    },
+    "statusPage": "/sfc#sfc-archive-heading"
+  },
+  {
+    "id": "hkex_daily",
+    "title": {
+      "en": "HKEX published summaries",
+      "zh-Hant": "港交所已發布摘要"
+    },
+    "question": {
+      "en": "What shareholder and director notices appear in the accepted daily summaries?",
+      "zh-Hant": "已接納的每日摘要有哪些股東及董事披露？"
+    },
+    "availability": {
+      "en": "Retained dated summaries · partial coverage",
+      "zh-Hant": "保留的具日期摘要 · 部分涵蓋"
+    },
+    "limits": {
+      "en": "Summary facts, not full filings, executed trades or current holdings. A source hold stops updates while retained summaries remain readable.",
+      "zh-Hant": "摘要資料並非完整申報文件、已執行交易或現時持股。來源暫停更新時，仍可讀取保留摘要。"
+    },
+    "dates": {
+      "en": "Filter by summary date; relevant-event dates can be earlier. Exact filing/publication times are not inferred.",
+      "zh-Hant": "按摘要日期篩選；有關事件日期可較早，不會推算確切提交或公布時間。"
+    },
+    "download": {
+      "en": "Displayed-page ZIP with source, version, schema and checksums.",
+      "zh-Hant": "可下載目前一頁的 ZIP，附來源、版本、欄位定義及校驗碼。"
+    },
+    "httpExample": "/api/v1/hkex/latest/disclosures?stockCode=00005&limit=5",
+    "mcpExample": "hk_hkex_latest_disclosures({\"stockCode\":\"00005\",\"limit\":5})",
+    "status": "/api/v1/hkex/latest/status",
+    "path": "/hkex#daily-feed",
+    "keywords": "HKEX DI shareholder director disclosure summaries 港交所 權益 披露 股東 董事 摘要",
+    "action": {
+      "en": "Explore records",
+      "zh-Hant": "查閱紀錄"
+    },
+    "statusPage": "/hkex#daily-feed"
+  },
+  {
+    "id": "webb_sdi",
+    "title": {
+      "en": "Webb disclosure archive",
+      "zh-Hant": "Webb 權益披露歷史檔案"
+    },
+    "question": {
+      "en": "What historical Form 3A disclosures were recorded for a source issuer?",
+      "zh-Hant": "指定來源發行人有哪些歷史表格 3A 權益披露？"
+    },
+    "availability": {
+      "en": "Historical archive · full fresh filings not activated",
+      "zh-Hant": "歷史檔案 · 完整官方新申報資料尚未啟用"
+    },
+    "limits": {
+      "en": "Stock codes can be reused. Preserve returned issuer identities, unresolved amendments and source numeric precision. Not current holdings.",
+      "zh-Hant": "股票編號可能重用，請保留回傳的發行人身份、未解決修訂及來源數值精確度；並非現時持股。"
+    },
+    "dates": {
+      "en": "Event dates are available; filing/publication dates are not recorded.",
+      "zh-Hant": "可查事件日期，來源沒有記錄提交或公布日期。"
+    },
+    "download": {
+      "en": "Displayed-page ZIP; full official filing documents and attachments are not offered.",
+      "zh-Hant": "可下載目前一頁的 ZIP；不提供完整官方申報文件或附件。"
+    },
+    "httpExample": "/api/v1/hkex/archive/issuers?stockCode=00005&limit=5",
+    "mcpExample": "hk_hkex_archive_issuers({\"stockCode\":\"00005\",\"limit\":5})",
+    "status": "/api/v1/hkex/archive/status",
+    "path": "/hkex#webb-archive",
+    "keywords": "HKEX Webb Form 3A disclosure archive 港交所 Webb 表格 權益 披露 歷史",
+    "action": {
+      "en": "Explore records",
+      "zh-Hant": "查閱紀錄"
+    },
+    "statusPage": "/hkex#webb-archive"
+  },
+  {
+    "id": "racing",
+    "title": {
+      "en": "Racing results and dated profiles",
+      "zh-Hant": "賽馬賽果及具日期檔案"
+    },
+    "question": {
+      "en": "What happened in an imported meeting, and which participant facts were observed?",
+      "zh-Hant": "已匯入賽事有哪些賽果及參賽者觀察資料？"
+    },
+    "availability": {
+      "en": "Accepted meetings and profiles · partial coverage",
+      "zh-Hant": "已接納賽事及檔案 · 部分涵蓋"
+    },
+    "limits": {
+      "en": "Not a complete season or career history. Declarations, sectionals, remaining dividends and other families have separate gaps. Missing observations do not mean no racing.",
+      "zh-Hant": "並非完整馬季或生涯紀錄。排位名單、分段時間、其餘派彩及其他類別各有缺漏；缺少觀察不代表沒有賽事。"
+    },
+    "dates": {
+      "en": "Meeting date, result observation time and profile statistics cutoff differ. Final odds are not historical intraday ticks.",
+      "zh-Hant": "賽事日、賽果觀察時間及檔案統計截止日期各有不同；最終賠率並非即場歷史走勢。"
+    },
+    "download": {
+      "en": "Selected race ZIP or selected profile and history-page ZIP, pinned to the displayed version.",
+      "zh-Hant": "可下載所選場次，或所選檔案及本頁往績的 ZIP，固定至目前顯示版本。"
+    },
+    "httpExample": "/api/v1/racing/status",
+    "mcpExample": "hk_racing_status()",
+    "status": "/api/v1/racing/status",
+    "path": "/racing",
+    "keywords": "racing hkjc horse jockey trainer race results odds 賽馬 賽果 馬匹 騎師 練馬師 跑馬地 沙田",
+    "action": {
+      "en": "Browse racing results",
+      "zh-Hant": "查看賽馬賽果"
+    },
+    "statusPage": "/racing#coverage"
+  },
+  {
+    "id": "addresses",
+    "title": {
+      "en": "Hong Kong addresses",
+      "zh-Hant": "香港地址"
+    },
+    "question": {
+      "en": "Where is a building or street address?",
+      "zh-Hant": "大廈或街道地址位於何處？"
+    },
+    "availability": {
+      "en": "On-demand source lookup",
+      "zh-Hant": "按需查詢來源"
+    },
+    "limits": {
+      "en": "Choose a returned address candidate; a similar name is not a verified match. Provider availability and request limits apply.",
+      "zh-Hant": "請選擇回傳的地址選項；相似名稱不代表已核實配對，並受來源供應情況及請求限制約束。"
+    },
+    "dates": {
+      "en": "Source check/retrieval time is separate from when an address changed.",
+      "zh-Hant": "來源檢查或讀取時間，與地址變更時間各有不同。"
+    },
+    "download": {
+      "en": "JSON through the API; no separate bulk address ZIP.",
+      "zh-Hant": "可透過 API 讀取 JSON，沒有另行提供全量地址 ZIP。"
+    },
+    "httpExample": "/api/v1/addresses/search?q=Central%20Government%20Offices",
+    "mcpExample": "hk_address_search({\"q\":\"Central Government Offices\"})",
+    "status": "/api/v1/status",
+    "path": "/demo",
+    "keywords": "address addresses ALS 地址 大廈 街道 neighbourhood",
+    "action": {
+      "en": "Find an address",
+      "zh-Hant": "查詢地址"
+    },
+    "statusPage": "/sources"
+  },
+  {
+    "id": "restaurants",
+    "title": {
+      "en": "Licensed restaurants",
+      "zh-Hant": "持牌食肆"
+    },
+    "question": {
+      "en": "Which recorded restaurant licences are near an address?",
+      "zh-Hant": "指定地址附近有哪些食肆牌照紀錄？"
+    },
+    "availability": {
+      "en": "Accepted source snapshot",
+      "zh-Hant": "已接納來源快照"
+    },
+    "limits": {
+      "en": "Licence records are not reviews or proof that a restaurant is open now. Unlocated records are counted separately.",
+      "zh-Hant": "牌照紀錄並非食評，亦不證明食肆現正營業；無座標紀錄另行計算。"
+    },
+    "dates": {
+      "en": "Source update, retrieval and validation times are separate. Preserve snapshot and stale warnings.",
+      "zh-Hant": "來源更新、讀取及驗證時間各有不同，請保留快照及過時警告。"
+    },
+    "download": {
+      "en": "Bounded JSON query pages through the API; no separate whole-pack ZIP.",
+      "zh-Hant": "可透過 API 讀取有界 JSON 分頁，沒有另行提供整個數據包 ZIP。"
+    },
+    "httpExample": "/api/v1/restaurants?lat=22.281&lon=114.165&radiusM=500&limit=5",
+    "mcpExample": "hk_restaurant_search({\"lat\":22.281,\"lon\":114.165,\"radiusM\":500,\"limit\":5})",
+    "status": "/api/v1/status",
+    "path": "/demo",
+    "keywords": "restaurants food FEHD 食肆 餐廳 餐厅 飲食 牌照 附近",
+    "action": {
+      "en": "Find nearby restaurants",
+      "zh-Hant": "尋找附近食肆"
+    },
+    "statusPage": "/sources"
+  },
+  {
+    "id": "population",
+    "title": {
+      "en": "District population and density",
+      "zh-Hant": "地區人口及密度"
+    },
+    "question": {
+      "en": "What is the published population of an address’s district?",
+      "zh-Hant": "指定地址所屬地區的已公布人口是多少？"
+    },
+    "availability": {
+      "en": "Published district statistics",
+      "zh-Hant": "已公布地區統計"
+    },
+    "limits": {
+      "en": "Whole-district statistics, not population within the restaurant search radius. Units and reference year matter.",
+      "zh-Hant": "屬全區統計，並非食肆搜尋半徑內的人口，請留意單位及參考年份。"
+    },
+    "dates": {
+      "en": "The statistical reference year does not advance when the source is checked again.",
+      "zh-Hant": "重新檢查來源不會改變統計參考年份。"
+    },
+    "download": {
+      "en": "JSON district records through the API; no separate bulk ZIP.",
+      "zh-Hant": "可透過 API 讀取地區 JSON 紀錄，沒有另行提供全量 ZIP。"
+    },
+    "httpExample": "/api/v1/districts/central-western/statistics",
+    "mcpExample": "hk_district_statistics({\"districtId\":\"central-western\"})",
+    "status": "/api/v1/status",
+    "path": "/demo",
+    "keywords": "population district statistics census 人口 地區 地区 統計 统计 密度",
+    "action": {
+      "en": "Explore district statistics",
+      "zh-Hant": "查看地區統計"
+    },
+    "statusPage": "/sources"
+  },
+  {
+    "id": "platehk",
+    "title": {
+      "en": "Plate.hk auction history",
+      "zh-Hant": "Plate.hk 車牌拍賣紀錄"
+    },
+    "question": {
+      "en": "What did a plate sell for in recorded auctions?",
+      "zh-Hant": "車牌在已記錄拍賣中的成交價是多少？"
+    },
+    "availability": {
+      "en": "Independent provider · historical results",
+      "zh-Hant": "獨立供應者 · 歷史結果"
+    },
+    "limits": {
+      "en": "Not current ownership, availability or valuation. Comparables use their own cohort, distinct from search filters.",
+      "zh-Hant": "並非現時擁有權、可售狀態或估值；相近車牌比較使用獨立組別，與搜尋篩選條件不同。"
+    },
+    "dates": {
+      "en": "Auction date and provider retrieval/cache time are separate.",
+      "zh-Hant": "拍賣日期與供應者資料讀取或快取時間各有不同。"
+    },
+    "download": {
+      "en": "JSON pages and original provider publications; no mcp.hk bulk auction ZIP.",
+      "zh-Hant": "提供 JSON 分頁及原始供應者文件，mcp.hk 沒有全量拍賣 ZIP。"
+    },
+    "httpExample": "/api/v1/plates/search?q=AA88&mode=exact&pageSize=5",
+    "mcpExample": "hk_plate_search({\"q\":\"AA88\",\"mode\":\"exact\",\"pageSize\":5})",
+    "status": "/api/v1/status",
+    "path": "/plates",
+    "keywords": "plate.hk plate hk platehk plates vehicle registration auctions auction history 車牌 车牌 拍賣 拍卖 成交 牌價 牌价",
+    "action": {
+      "en": "Search auction records",
+      "zh-Hant": "搜尋拍賣紀錄"
+    },
+    "statusPage": "/sources"
+  },
+  {
+    "id": "seehouse",
+    "title": {
+      "en": "SeeHouse buildings and listings",
+      "zh-Hant": "SeeHouse 睇樓大廈及放盤"
+    },
+    "question": {
+      "en": "Which source advertisements and asking-price changes were observed for a building?",
+      "zh-Hant": "指定大廈有哪些已觀察到的來源廣告及叫價變動？"
+    },
+    "availability": {
+      "en": "Independent provider · observed advertisements",
+      "zh-Hant": "獨立供應者 · 已觀察廣告"
+    },
+    "limits": {
+      "en": "Asking prices are not completed transactions or valuations. Default qualified listings differ from all older/uncertain adverts.",
+      "zh-Hant": "叫價並非成交價或估值；預設合資格放盤與所有較舊或不確定廣告分開。"
+    },
+    "dates": {
+      "en": "Listing observation time, price-history dates and API retrieval time differ.",
+      "zh-Hant": "放盤觀察時間、價格歷史日期及 API 讀取時間各有不同。"
+    },
+    "download": {
+      "en": "JSON records through the API and source advert links; no bulk listing ZIP.",
+      "zh-Hant": "可透過 API 讀取 JSON 紀錄及來源廣告連結，沒有全量放盤 ZIP。"
+    },
+    "httpExample": "/api/v1/properties/search?q=Taikoo%20Shing",
+    "mcpExample": "hk_property_search({\"q\":\"Taikoo Shing\"})",
+    "status": "/api/v1/properties/coverage",
+    "path": "/properties",
+    "keywords": "seehouse see.house seehouse.hk 睇樓 睇楼 樓盤 楼盘 地產 地产 物業 物业 大廈 大厦 買樓 买楼 租樓 租楼 property properties housing buildings sale rental asking prices",
+    "action": {
+      "en": "Search buildings and listings",
+      "zh-Hant": "搜尋大廈及樓盤"
+    },
+    "statusPage": "/properties"
+  },
+  {
+    "id": "transport",
+    "title": {
+      "en": "Transport arrivals and timetables",
+      "zh-Hant": "交通到站資訊及時間表"
+    },
+    "question": {
+      "en": "What arrival predictions or timetable records are available for a selected route or stop?",
+      "zh-Hant": "所選路線或車站有哪些到站預測或時間表紀錄？"
+    },
+    "availability": {
+      "en": "Source-specific queries · settings may be needed",
+      "zh-Hant": "按來源查詢 · 可能須先設定"
+    },
+    "limits": {
+      "en": "Coverage depends on the operator, route and stop. A successful sample is not whole-network monitoring. Timetables are not live predictions.",
+      "zh-Hant": "範圍視乎營辦商、路線及車站；成功讀取一個樣本並非監測整個網絡，時間表亦非即時預測。"
+    },
+    "dates": {
+      "en": "Prediction timestamp, scheduled departure and source check time have different meanings.",
+      "zh-Hant": "預測時間、預定開出時間及來源檢查時間各有不同。"
+    },
+    "download": {
+      "en": "Use each resource’s original file/API links and bounded query output. No combined transport archive.",
+      "zh-Hant": "使用各資源的原始檔案或 API 連結及有界查詢輸出，沒有整合交通檔案。"
+    },
+    "httpExample": "/api/v1/catalogue/datasets?q=transport&access=sources&limit=5",
+    "mcpExample": "hk_catalogue_search({\"q\":\"transport\",\"access\":\"sources\",\"limit\":5})",
+    "status": "/sources#mhk-feed-status",
+    "path": "/coverage?q=transport&access=sources",
+    "keywords": "Transport arrivals and timetables 交通到站資訊及時間表",
+    "action": {
+      "en": "Explore records",
+      "zh-Hant": "查閱紀錄"
+    },
+    "statusPage": "/sources#mhk-feed-status"
+  },
+  {
+    "id": "catalogue",
+    "title": {
+      "en": "Government dataset catalogue",
+      "zh-Hant": "政府數據目錄"
+    },
+    "question": {
+      "en": "Where can I find weather, schools, holidays, environment and other public datasets?",
+      "zh-Hant": "在哪裏可找到天氣、學校、公眾假期、環境及其他公共數據？"
+    },
+    "availability": {
+      "en": "Catalogue discovery · record access varies",
+      "zh-Hant": "目錄搜尋 · 紀錄存取因來源而異"
+    },
+    "limits": {
+      "en": "DATA.GOV.HK and CSDI can overlap. Catalogue inclusion and a validated read do not prove complete coverage or semantic accuracy. Documents, unsupported and restricted sources remain explicit.",
+      "zh-Hant": "DATA.GOV.HK 與 CSDI 可能重疊。目錄收錄或已驗證讀取不證明資料完整或含義正確，文件、未支援及受限來源均明確標示。"
+    },
+    "dates": {
+      "en": "Catalogue sync, resource validation, source publication and statistical reference period are separate.",
+      "zh-Hant": "目錄同步、資源驗證、來源公布及統計參考期各有不同。"
+    },
+    "download": {
+      "en": "Original file links where supplied; API previews are bounded pages, not whole-dataset exports.",
+      "zh-Hant": "如有提供，可使用原始檔案連結；API 預覽屬有界分頁，並非整個數據集匯出。"
+    },
+    "httpExample": "/api/v1/catalogue/datasets?q=public%20holidays&access=sources&limit=5",
+    "mcpExample": "hk_catalogue_search({\"q\":\"public holidays\",\"access\":\"sources\",\"limit\":5})",
+    "status": "/coverage?access=sources",
+    "path": "/coverage?access=sources",
+    "keywords": "Government dataset catalogue 政府數據目錄",
+    "action": {
+      "en": "Explore records",
+      "zh-Hant": "查閱紀錄"
+    },
+    "statusPage": "/coverage?access=sources#coverage-heading"
+  }
+]

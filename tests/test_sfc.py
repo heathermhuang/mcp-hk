@@ -231,8 +231,8 @@ def test_http_denied_modes_and_public_schema(tmp_path):
     assert "/api/v1/sfc/status" in paths
     assert not any(p.startswith("/api/v1/sfc/corporations") for p in paths)
     for lang, title in (
-        ("en", "SFC corporate verification"),
-        ("zh-Hant", "證監會法團牌照核實"),
+        ("en", "SFC licence archive"),
+        ("zh-Hant", "證監會牌照歷史檔案"),
     ):
         r = client.get("/sfc", params={"lang": lang})
         assert title in r.text and 'id="sfc-ce"' in r.text and " disabled" in r.text

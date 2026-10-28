@@ -84,3 +84,20 @@ body{margin:0;padding:20px;background:#f8f7f2;color-scheme:light dark}#mhk-previ
 #mhk-privacy-choice[open]:not(:modal){position:static;inset:auto;margin:0 0 24px;max-width:100%;width:100%;padding:16px;z-index:auto}#mhk-privacy-choice[open]:not(:modal) h2{font-size:18px;margin-bottom:6px}#mhk-privacy-choice[open]:not(:modal) p{margin:6px 0}#mhk-privacy-choice[open]:not(:modal) button{margin-top:8px}
 
 #mhk-preview .mhk-legal table{width:100%;border-collapse:collapse;font-size:14px}#mhk-preview .mhk-legal th,#mhk-preview .mhk-legal td{text-align:left;vertical-align:top;border-bottom:1px solid var(--mhk-line);padding:10px;overflow-wrap:anywhere}@media(max-width:600px){#mhk-preview .mhk-legal th,#mhk-preview .mhk-legal td{padding:6px}}
+#mhk-preview .dataset-directory{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 32px;margin:24px 0}
+#mhk-preview .dataset-family{min-width:0;padding:24px 0;border-top:1px solid var(--mhk-line);scroll-margin-top:24px}
+#mhk-preview .dataset-family h2{font-size:22px;line-height:1.25;margin:0 0 10px}
+#mhk-preview .dataset-family p{max-width:65ch}
+#mhk-preview .dataset-family .dataset-state{color:var(--mhk-accent);font-size:12px;margin:0 0 12px}
+#mhk-preview .dataset-family dl{font-size:13px;line-height:1.6}
+#mhk-preview .dataset-family dt{font-weight:600;margin:16px 0 4px}
+#mhk-preview .dataset-family dd{margin:0;color:var(--mhk-muted)}
+#mhk-preview .dataset-family .dataset-actions{font-size:13px;line-height:2}
+#mhk-preview .dataset-home .dataset-family{padding:18px 0}
+#mhk-preview .dataset-home .dataset-family h2{font-size:19px}
+#mhk-preview .dataset-context{margin-bottom:24px}
+#mhk-preview .dataset-context .dataset-directory{margin-bottom:0}
+@media(max-width:700px){#mhk-preview .dataset-directory{grid-template-columns:1fr;gap:0}#mhk-preview .dataset-family{padding:20px 0}}
+#mhk-preview .mhk-quick-topics{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:14px}
+#mhk-preview .mhk-quick-topics a{min-height:44px;display:inline-flex;align-items:center}
+@media(max-width:520px){#mhk-preview .mhk-nav nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 12px}}

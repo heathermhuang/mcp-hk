@@ -19,7 +19,7 @@ function browser(url='https://mcp.hk/',saved=null,denied=false,server=false) {
   const label=new Element();label.dataset.i18n='navData';
   const placeholder=new Element({'data-i18n-placeholder':'datasetPlaceholder'}),button=new Element();
   const link=new Element({href:'/coverage?q=weather#results'}),skip=new Element({href:'#main-content'}),external=new Element({href:'https://data.gov.hk/en/'}),api=new Element({href:'/api/v1/coverage'}),localeLink=new Element({href:'https://mcp.hk/coverage?lang=zh-Hant',hreflang:'zh-Hant'});
-  const nav=['/coverage','/connect','/guides','/sources'].map(href=>new Element({href}));
+  const nav=['/datasets','/connect','/guides','/sources'].map(href=>new Element({href}));
   const location=new URL(url),events=[],navigations=[];
   location.assign=value=>navigations.push(value);location.replace=value=>navigations.push(value);
   const document={documentElement:server?{dataset:{discovery:'true'},lang:url.includes('lang=zh-Hant')?'zh-Hant':'en'}:{},createElement:()=>new Element(),querySelectorAll:selector=>({'.mhk-navbutton':nav,'[data-i18n]':[label],'[data-i18n-placeholder]':[placeholder],'.mhk-language':[button],'a[href]':[link,skip,external,api,localeLink]}[selector] || [])};
@@ -81,11 +81,11 @@ test('static translation does not overwrite generated HTTP/MCP request examples'
 });
 
 test('primary routes have one active item and examples are outside primary navigation',()=>{
-  for(const path of ['/','/coverage','/demo','/plates','/connect','/sources','/data']) for(const lang of ['en','zh-Hant']) {
+  for(const path of ['/','/datasets','/coverage','/racing','/companies','/sfc','/hkex','/demo','/plates','/connect','/sources','/data']) for(const lang of ['en','zh-Hant']) {
     const b=browser('https://mcp.hk'+path+'?lang='+lang);
-    const expected=path==='/'?[]:['/demo','/plates','/data'].includes(path)?['/coverage']:[path];
+    const expected=path==='/'?[]:['/coverage','/racing','/companies','/sfc','/hkex','/demo','/plates','/data'].includes(path)?['/datasets']:[path];
     assert.deepEqual(b.nav.filter(link=>link.attrs['aria-current']==='page').map(link=>link.attrs.href),expected);
-    b.button.listeners.click();
+    if(path !== '/racing') b.button.listeners.click();
     assert.equal(b.nav.filter(link=>link.attrs['aria-current']==='page').length,expected.length);
   }
 });
@@ -96,7 +96,7 @@ test('data browser shares the same complete navigation and footer as the other p
   assert.equal(shell('legal.html','header'),shell('coverage.html','header'));
   assert.equal(shell('legal.html','footer'),shell('coverage.html','footer'));
   const links=[...shell('coverage.html','header').matchAll(/class="mhk-navbutton"[^>]*href="([^"]+)"/g)].map(m=>m[1]);
-  assert.deepEqual(links,['/coverage','/connect','/guides','/sources']);
+  assert.deepEqual(links,['/datasets','/connect','/guides','/sources']);
   const examples=read('index.html').match(/<div class="mhk-packs mhk-demos">([\s\S]*?)<\/div>/)[1];
   for(const path of ['/demo','/plates']) assert.ok(examples.includes('href="'+path+'"'),path+' remains accessible as a homepage example');
 });

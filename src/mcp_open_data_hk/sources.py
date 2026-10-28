@@ -311,6 +311,54 @@ SOURCES["company_registry"] = {
 def available_packs():
     from .companies import settings
 
-    return PACKS + (
-        [OFFICIAL_COMPANY_PACK, ENIGMA_PACK] if settings() is not None else []
-    )
+    import os
+
+    from .dataset_content import family
+
+    packs = list(PACKS)
+    if settings() is not None:
+        packs += [OFFICIAL_COMPANY_PACK, ENIGMA_PACK, SFC_ARCHIVE_PACK]
+        if os.environ.get("MCP_HK_WEBB_SDI_ENABLED") == "true":
+            packs.append(WEBB_SDI_PACK)
+        if os.environ.get("MCP_HK_HKEX_DAILY_ENABLED") == "true":
+            packs.append(HKEX_DAILY_PACK)
+    return [{**pack, "title": family(pack["id"])["title"]["en"]} for pack in packs]
+
+
+# Existing read adapters only: these entries do not activate source collection.
+SFC_ARCHIVE_PACK = {
+    "id": "sfc_archive",
+    "provider": "David Webb / Webb-site",
+    "providerType": "independent",
+    "http": ["/api/v1/companies", "/api/v1/companies/{entity_id}/licences"],
+    "tools": ["hk_company_search", "hk_company_licences"],
+}
+WEBB_SDI_PACK = {
+    "id": "webb_sdi",
+    "provider": "David Webb / Webb-site",
+    "providerType": "independent",
+    "http": [
+        "/api/v1/hkex/archive/status",
+        "/api/v1/hkex/archive/issuers",
+        "/api/v1/hkex/archive/disclosures",
+    ],
+    "tools": [
+        "hk_hkex_archive_status",
+        "hk_hkex_archive_issuers",
+        "hk_hkex_archive_disclosures",
+    ],
+}
+HKEX_DAILY_PACK = {
+    "id": "hkex_daily",
+    "provider": "Hong Kong Exchanges and Clearing Limited",
+    "providerType": "independent",
+    "http": ["/api/v1/hkex/latest/status", "/api/v1/hkex/latest/disclosures"],
+    "tools": ["hk_hkex_latest_status", "hk_hkex_latest_disclosures"],
+}
+SOURCES["sfc_archive"] = {**SOURCES["enigma"]}
+SOURCES["webb_sdi"] = {**SOURCES["enigma"]}
+SOURCES["hkex_daily"] = {
+    "sourceUrl": "https://di.hkex.com.hk/di/summary/NSMSumMenu.htm",
+    "attribution": "Hong Kong Exchanges and Clearing Limited, public Disclosure of Interests daily summaries",
+    "freshnessSeconds": 0,
+}

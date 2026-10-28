@@ -5,6 +5,7 @@ from functools import lru_cache
 from html import escape
 from html.parser import HTMLParser
 from pathlib import Path
+from urllib.parse import urlsplit, urlunsplit
 
 ORIGIN = "https://mcp.hk"
 WEB = Path(__file__).parent / "web"
@@ -179,8 +180,13 @@ def editorial_body(path, lang):
     parts = [
         f"<h1>{escape(page['heading'])}</h1><p class=\"mhk-pagelead\">{escape(page['description'])}</p>"
     ]
-    for section in page.get("sections", []):
-        parts.append(f"<section><h2>{escape(section['heading'])}</h2>")
+    for index, section in enumerate(page.get("sections", [])):
+        glossary = path == "/datasets" and index == 1
+        parts.append(
+            f'<details class="mhk-disclosure"><summary>{escape(section["heading"])}</summary>'
+            if glossary
+            else f"<section><h2>{escape(section['heading'])}</h2>"
+        )
         parts.extend(
             f"<p>{escape(paragraph)}</p>" for paragraph in section.get("paragraphs", [])
         )
@@ -190,7 +196,9 @@ def editorial_body(path, lang):
             parts.append(
                 f'<p><a href="{escape(href, quote=True)}">{escape(label)}</a></p>'
             )
-        parts.append("</section>")
+        parts.append("</details>" if glossary else "</section>")
+    if path == "/datasets":
+        parts.append(family_directory(lang))
     if path == "/guides":
         parts.append("<ul>")
         for target, item in content()["pages"].items():
@@ -199,6 +207,52 @@ def editorial_body(path, lang):
                     f'<li><a href="{target}">{escape(item[lang]["heading"])}</a></li>'
                 )
         parts.append("</ul>")
+    return "".join(parts)
+
+
+@lru_cache(maxsize=1)
+def dataset_families():
+    return json.loads((WEB / "datasets.json").read_text())
+
+
+def family_directory(lang, compact=False, keys=None):
+    zh = lang == "zh-Hant"
+    parts = ['<div class="dataset-directory">']
+    for row in dataset_families():
+        if keys is not None and row["id"] not in keys:
+            continue
+        title = escape(row["title"][lang])
+        href = escape(row["path"], quote=True)
+        parts.append(
+            f'<article class="dataset-family" id="dataset-{row["id"]}">'
+            f'<h2><a href="{href}">{title}</a></h2>'
+            f'<p class="dataset-state">{escape(row["availability"][lang])}</p>'
+            f'<p>{escape(row["question"][lang])}</p>'
+        )
+        if not compact:
+            parts.append(
+                f'<p class="mhk-note">{escape(row["limits"][lang])}</p>'
+                '<p class="dataset-actions">'
+                f'<a href="{href}">{"查閱資料" if zh else "Explore data"} →</a> · '
+                f'<a href="{escape(row["statusPage"], quote=True)}">'
+                f'{"查看範圍及狀態" if zh else "Coverage and status"}</a></p>'
+                '<details class="mhk-disclosure"><summary>'
+                f'{"日期、下載及 API / MCP" if zh else "Dates, downloads and API / MCP"}</summary><dl>'
+            )
+            for key, label in [
+                ("dates", "如何解讀日期" if zh else "Reading the dates"),
+                ("download", "下載範圍" if zh else "Download scope"),
+            ]:
+                parts.append(f"<dt>{label}</dt><dd>{escape(row[key][lang])}</dd>")
+            parts.append(
+                "</dl>"
+                f'<pre>GET {escape(row["httpExample"])}\n\nMCP: {escape(row["mcpExample"])}</pre>'
+                f'<p><a href="{escape(row["status"], quote=True)}">'
+                f'{"來源範圍及狀態（技術介面）" if zh else "Source coverage and status (technical interface)"}</a></p>'
+                f'<p><a href="/docs">{"API 參考文件" if zh else "API reference"}</a></p></details>'
+            )
+        parts.append("</article>")
+    parts.append("</div>")
     return "".join(parts)
 
 
@@ -336,6 +390,9 @@ def render_page(path, lang="en", filtered=False):
             )
     if path == "/":
         home = next(n for n in nodes if n.attrs.get("data-page") == "home")
+        packs = next(n for n in nodes if "mhk-demos" in n.attrs.get("class", ""))
+        packs.attrs["class"] = "dataset-home"
+        packs.children = Document(family_directory(lang, compact=True)).root.children
         questions = content()["faq"][lang]
         faq = Element("section", [("aria-label", content()["faqLabel"][lang])])
         faq.children = [Element("h2", children=[content()["faqLabel"][lang]])]
@@ -343,6 +400,78 @@ def render_page(path, lang="en", filtered=False):
             faq.children.append(Element("h3", children=[question]))
             faq.children.append(Element("p", children=[answer]))
         home.children.append(faq)
+    context_keys = {
+        "/companies": ["company_registry", "enigma"],
+        "/sfc": ["sfc_archive"],
+        "/hkex": ["hkex_daily", "webb_sdi"],
+        "/racing": ["racing"],
+        "/properties": ["seehouse"],
+        "/plates": ["platehk"],
+        "/demo": ["addresses", "restaurants", "population"],
+    }
+    if path in context_keys or path in {"/coverage", "/sources"}:
+        main = next(n for n in nodes if n.tag == "main")
+        zh = lang == "zh-Hant"
+        link = Element(
+            "p",
+            [("class", "mhk-breadcrumb")],
+            [
+                Element(
+                    "a",
+                    [("href", "/datasets")],
+                    ["所有數據及使用範圍" if zh else "All datasets and their scope"],
+                )
+            ],
+        )
+        # index.html contains multiple screens; put context in the active screen.
+        target = (
+            next(
+                (n for n in nodes if n.attrs.get("data-page") == SCREENS.get(path)),
+                main,
+            )
+            if path in SCREENS
+            else main
+        )
+        target.children.insert(0, link)
+        if path in context_keys:
+            panel = Element("details", [("class", "mhk-disclosure dataset-context")])
+            panel.children = [
+                Element(
+                    "summary",
+                    children=[
+                        (
+                            "來源、日期、下載及 API"
+                            if zh
+                            else "Sources, dates, downloads and API"
+                        )
+                    ],
+                )
+            ]
+            panel.children += Document(
+                family_directory(lang, keys=context_keys[path])
+            ).root.children
+            target.children.insert(1, panel)
+        elif path == "/sources":
+            target.children.insert(
+                1,
+                Element(
+                    "details",
+                    [("class", "mhk-disclosure")],
+                    [
+                        Element(
+                            "summary",
+                            children=[
+                                (
+                                    "按數據查看涵蓋範圍及狀態"
+                                    if zh
+                                    else "Coverage and status by dataset"
+                                )
+                            ],
+                        ),
+                        *Document(family_directory(lang)).root.children,
+                    ],
+                ),
+            )
     # All pages link to the same stable, human-readable source and connection guides.
     footer = next(n for n in nodes if n.tag == "footer")
     footer.children.append(
@@ -443,10 +572,10 @@ def render_page(path, lang="en", filtered=False):
     )
     for node in doc.elements():
         href = node.attrs.get("href", "")
-        if (
-            lang == "zh-Hant"
-            and href.startswith("/")
-            and href.split("?", 1)[0] in public_paths()
-        ):
-            node.attrs["href"] = href + ("&" if "?" in href else "?") + "lang=zh-Hant"
+        target = urlsplit(href)
+        if lang == "zh-Hant" and href.startswith("/") and target.path in public_paths():
+            query = target.query + ("&" if target.query else "") + "lang=zh-Hant"
+            node.attrs["href"] = urlunsplit(
+                ("", "", target.path, query, target.fragment)
+            )
     return doc.html()

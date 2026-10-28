@@ -320,9 +320,32 @@ class Service:
         )
 
     def status(self):
+        from .dataset_content import family
+
         checks = self.store.checks()
         sources = []
         for pack, source in SOURCES.items():
+            if pack in {"sfc_archive", "webb_sdi", "hkex_daily"}:
+                if pack in {p["id"] for p in available_packs()}:
+                    sources.append(
+                        {
+                            "sourceId": pack,
+                            "title": family(pack)["title"]["en"],
+                            "titleZhHant": family(pack)["title"]["zh-Hant"],
+                            "statusPage": family(pack)["statusPage"],
+                            "sourceUrl": source["sourceUrl"],
+                            "attribution": source["attribution"],
+                            "providerType": "independent",
+                            "availability": "checked_on_query",
+                            "currentVerification": False,
+                            "statusUrl": {
+                                "sfc_archive": "/api/v1/sfc/status",
+                                "webb_sdi": "/api/v1/hkex/archive/status",
+                                "hkex_daily": "/api/v1/hkex/latest/status",
+                            }[pack],
+                        }
+                    )
+                continue
             if pack == "racing":
                 state = self.racing.reader.status()["data"]
                 sources.append(
@@ -335,6 +358,7 @@ class Service:
                         "coverage": state["coverage"],
                         "recordCount": state["coverage"]["resultRows"],
                         "statusUrl": "/api/v1/racing/status",
+                        "statusPage": "/racing#coverage",
                         "currentVerification": False,
                     }
                 )
@@ -352,6 +376,7 @@ class Service:
                             ),
                             "currentVerification": False,
                             "backendConfigured": True,
+                            "statusPage": family(pack)["statusPage"],
                             "availability": "checked_on_query",
                             "stale": True if pack == "enigma" else None,
                             "observationStatusUrl": (

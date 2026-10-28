@@ -550,7 +550,9 @@ async def test_gateway_rest_mcp_and_discovery_share_real_backend(
         assert all(response.status_code == 200 for response in responses), [
             r.text for r in responses
         ]
-        assert http.get("/api/v1/packs").json()["items"][-1]["id"] == "enigma"
+        assert {"enigma", "company_registry", "sfc_archive"} <= {
+            p["id"] for p in http.get("/api/v1/packs").json()["items"]
+        }
         found = http.get(
             "/api/v1/catalogue/datasets", params={"q": "enigma", "access": "connected"}
         ).json()
