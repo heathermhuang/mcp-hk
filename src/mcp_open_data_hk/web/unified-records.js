@@ -2,6 +2,7 @@
 import { RecordFeed, feedRows, feedCheckpoint, readCheckpoint } from './record-feed.js';
 import { fetchPublicJson } from './http.js';
 import { pagePackage } from './company-export.js';
+import {partyNames} from './company-fields.js';
 const $ = id => document.getElementById(id), root = document.querySelector('[data-record-kind]');
 const kind = root.dataset.recordKind, zh = () => MhkI18n.lang === 'zh';
 const common = {
@@ -39,7 +40,7 @@ const sources = {
                         return page(p, matches.map(r => ({ id: r.issuer_id, title: r.name, subtitle: [r.issuer_id, r.first_event, r.last_event].filter(Boolean).join(' · '), issuerChoice: true, raw: r })));
                 }
                 const p = await read('/api/v1/hkex/archive/disclosures', { issuerId: issuer, limit: 20, version, cursor: q.issuer || s.meta?.issuer ? s.cursor : null }, s.signal);
-                return page(p, array(p).map(r => ({ id: r.id, title: [r.discloser.name1, r.discloser.chinese_name].filter(Boolean).join(' / '), subtitle: r.issuer_name || issuer, date: r.event_date, raw: r, identity: r.serial ? 'hkex:serial:' + r.serial : null })), { issuer });
+                return page(p, array(p).map(r => ({ id: r.id, title: [r.discloser.name1, r.discloser.name2, r.discloser.chinese_name].filter(Boolean).join(' / '), subtitle: r.issuer_name || issuer, date: r.event_date, raw: r, identity: r.serial ? 'hkex:serial:' + r.serial : null })), { issuer });
             }, detail: r => read('/api/v1/hkex/archive/disclosures/' + encodeURIComponent(r.id), { version: r.version }) }
     ],
     sfc: [
@@ -137,8 +138,7 @@ function historyRows(target, items) { target.replaceChildren(); if (!items.lengt
     const a = node('article', null, 'mhk-record-observation');
     if (item.observedAt)
         a.append(node('p', tr('observed') + ': ' + item.observedAt));
-    else if (item.display_name || item.activity_label || item.party?.name1)
-        a.append(node('h3', item.display_name || item.activity_label || item.party?.name1));
+    else {const names=partyNames(item.party,MhkI18n.lang),title=item.display_name||names.primary||item.activity_label;if(title)a.append(node('h3',title));if(names.secondary)a.append(node('p',names.secondary));}
     facts(a, [[tr('addresses'), item.address], [MhkI18n.t('companyFactRole'), item.role_label ?? item.role_code], [MhkI18n.t('sfcArchiveActivity'), item.activity_label], [MhkI18n.t('sfcArchiveStart'), item.start_raw == null ? null : disclosedDate(item.start_raw, item.start_precision)], [MhkI18n.t('sfcArchiveEnd'), item.end_raw == null ? null : disclosedDate(item.end_raw, item.end_precision)], [MhkI18n.t('companyFormer'), item.until_raw == null ? null : disclosedDate(item.until_raw, item.until_precision)]]);
     const full = node('details');
     full.append(node('summary', tr('details')), node('pre', JSON.stringify(item, null, 2)));
@@ -175,7 +175,7 @@ async function open(row, { restore = false } = {}) {
             box.append(node('p', tr('failed')));
             continue;
         }
-        if(i===0)$('record-detail-heading').textContent=kind==='hkex'?(typeof d.discloser==='string'?d.discloser:[d.discloser?.name1,d.discloser?.chinese_name].filter(Boolean).join(' / '))||row.title:labelName(d)||row.title;
+        if(i===0)$('record-detail-heading').textContent=kind==='hkex'?(typeof d.discloser==='string'?d.discloser:[d.discloser?.name1,d.discloser?.name2,d.discloser?.chinese_name].filter(Boolean).join(' / '))||row.title:labelName(d)||row.title;
         const section = node('section', null, 'mhk-record-variant');
         if (variants.length > 1)
             section.append(node('h3', labelName(d) || row.title));
