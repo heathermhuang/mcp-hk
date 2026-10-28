@@ -223,7 +223,7 @@
       if (!source.statusUrl && !source.observationStatusUrl && source.availability !== 'checked_on_query') item.append(detail);
       item.append(link);
       const statusPath=source.statusUrl||source.observationStatusUrl;
-      if(statusPath){const a=document.createElement('a');a.href=source.statusPage||statusPath;a.textContent=MhkI18n.t('coverageAndStatus');item.append(document.createTextNode(' · '),a);}
+      if(statusPath){const a=document.createElement('a'),target=new URL(source.statusPage||statusPath,location.origin);if(source.statusPage)target.searchParams.set('lang',MhkI18n.locale);a.href=target.pathname+target.search+target.hash;a.textContent=MhkI18n.t('coverageAndStatus');item.append(document.createTextNode(' · '),a);}
       box.append(item);
     }
   }

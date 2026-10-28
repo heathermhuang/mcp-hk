@@ -110,5 +110,13 @@ await run('SFC paginated intervals are explicitly partial and link to pinned his
   const link=new URL(await page.locator('#sfc-archive-record a').getAttribute('href'),origin);assert.equal(link.searchParams.get('tab'),'licences');assert.equal(link.searchParams.get('version'),'fixture-v1');assert.equal(link.searchParams.get('entity'),'1');assert.equal(link.searchParams.get('lang'),lang);
  }
 });
+await run('asynchronous source status links retain locale and fragment',async({page,context})=>{
+ await context.route('**/api/v1/status',r=>r.fulfill({contentType:'application/json',body:JSON.stringify({sources:[{sourceId:'sfc_archive',title:'SFC licence archive',titleZhHant:'證監會牌照歷史檔案',providerType:'independent',sourceUrl:'https://example.com/archive',availability:'checked_on_query',statusUrl:'/api/v1/sfc/status',statusPage:'/sfc#sfc-archive-heading'}]})}));
+ for(const lang of ['en','zh-Hant'])for(const width of [390,1280]){
+  await page.setViewportSize({width,height:900});await page.goto(origin+'/sources?lang='+lang);const link=page.locator('#mhk-status a[href*="/sfc#"],#mhk-status a[href*="/sfc?"]');await link.waitFor();
+  const target=new URL(await link.getAttribute('href'),origin);assert.equal(target.pathname,'/sfc');assert.equal(target.searchParams.get('lang'),lang);assert.equal(target.hash,'#sfc-archive-heading');
+  await link.click();await page.waitForURL(u=>u.pathname==='/sfc'&&u.searchParams.get('lang')===lang);assert.equal(await page.locator('html').getAttribute('lang'),lang);
+ }
+});
 assert.deepEqual(errors,[]);console.log(JSON.stringify({browser:browser.version(),receipts,errors},null,2));await writeFile(new URL('result.json',output),JSON.stringify({browser:browser.version(),receipts,errors},null,2));
 }finally{await browser.close();}
