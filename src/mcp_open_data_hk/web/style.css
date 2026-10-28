@@ -98,3 +98,6 @@ body{margin:0;padding:20px;background:#f8f7f2;color-scheme:light dark}#mhk-previ
 #mhk-preview .dataset-context{margin-bottom:24px}
 #mhk-preview .dataset-context .dataset-directory{margin-bottom:0}
 @media(max-width:700px){#mhk-preview .dataset-directory{grid-template-columns:1fr;gap:0}#mhk-preview .dataset-family{padding:20px 0}}
+#mhk-preview .mhk-quick-topics{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:14px}
+#mhk-preview .mhk-quick-topics a{min-height:44px;display:inline-flex;align-items:center}
+@media(max-width:520px){#mhk-preview .mhk-nav nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 12px}}
