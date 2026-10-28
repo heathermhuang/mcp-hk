@@ -19,7 +19,7 @@ try{for(const width of [320,390,768,1280])for(const lang of ['en','zh-Hant']){
  await context.route('**/api/v1/**',async route=>{const u=new URL(route.request().url()),p=u.pathname,q=u.searchParams;calls.push(p+u.search);let body,status=200;
  if(p.endsWith('/notice'))return route.fulfill({contentType:'text/plain',body:p.includes('/latest/')?'Source: Hong Kong Exchanges and Clearing Limited (HKEX).':'David Webb / Webb-site'});
  if(p==='/api/v1/companies'){
-  const isOfficial=q.get('view')==='latest_observed';if(isOfficial&&failOfficial){status=503;body={error:{code:'PACK_UNAVAILABLE'}};}
+  const isOfficial=q.get('view')==='latest_observed';if(!isOfficial)assert.equal(q.has('version'),false,'Archive search uses its signed cursor, not an explicit version parameter');if(isOfficial&&failOfficial){status=503;body={error:{code:'PACK_UNAVAILABLE'}};}
   else if(isOfficial)body=envelope([current],official,'latest_observed');
   else{archiveCalls++;body=envelope([{...company,entity_id:q.has('cursor')?2:1}],undefined,undefined,q.has('namespace')||q.has('cursor')?null:'next-archive');}
  }else if(p==='/api/v1/companies/updates/status')body={data:{coverage:{}}};
@@ -52,7 +52,7 @@ try{for(const width of [320,390,768,1280])for(const lang of ['en','zh-Hant']){
  await page.getByRole('button',{name:'EARLIER ISSUER',exact:true}).click();await page.getByRole('button',{name:'ARCHIVE DIRECTOR',exact:true}).waitFor();assert.equal(await page.locator('.mhk-record-row').count(),2);await page.getByRole('button',{name:'ARCHIVE DIRECTOR',exact:true}).click();await page.locator('#record-content details').waitFor();assert.match(await page.locator('#record-content').innerText(),lang==='en'?/Filing date\nUnknown/:/提交日期\n未知/);
  if(width===320)await page.screenshot({path:new URL('disclosures-'+lang+'.png',out).pathname,fullPage:true});
  await page.goto(origin+'/sfc?lang='+lang);await page.locator('#record-query').fill('ABC123');await page.locator('#record-search button').click();await page.locator('.mhk-record-row').waitFor();assert.equal(await page.locator('.mhk-record-row').count(),1,'verified CE combines source variants');await page.locator('.mhk-record-title').click();await page.locator('.mhk-record-variant').nth(1).waitFor();assert.equal(await page.locator('.mhk-record-variant').count(),2);assert.match(await page.locator('#record-content').innerText(),/Dealing in securities/);
- await page.locator('.mhk-language').click();await page.locator('.mhk-record-variant').first().waitFor();assert.equal(await page.locator('#record-query').inputValue(),'ABC123');
+ await page.locator('.mhk-language').click();await page.locator('.mhk-record-variant').first().waitFor();assert.equal(await page.locator('#record-query').inputValue(),'ABC123');assert.equal(await page.locator('.mhk-record-variant').count(),2,'Locale restore retains both supported sources');
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
  if(width===320)await page.screenshot({path:new URL('licensing-'+lang+'.png',out).pathname,fullPage:true});
  await page.goto(origin+'/racing?lang='+lang);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);const style=await page.locator('#mhk-preview').evaluate(e=>({width:getComputedStyle(e).maxWidth,color:getComputedStyle(e).color}));assert.equal(style.width,'1120px');assert.equal(await page.locator('.mhk-window').evaluate(e=>getComputedStyle(e).borderTopWidth),'1px');
