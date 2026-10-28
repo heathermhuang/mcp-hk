@@ -7,12 +7,14 @@ network. Browser and real download cells remain separate, never inferred from AP
 import argparse
 import json
 import time
+import uuid
 from pathlib import Path
 from urllib.parse import quote
 
 import httpx
 
 from .deadline import deadline
+from .acceptance_admission import Admission
 from .acceptance import Journal, company_plan, verify_company_record, sha, canonical
 
 
@@ -30,23 +32,51 @@ class PublicVerifier:
         }
         self.initialized = False
         self.sequence = 0
+        self.admission = Admission(self.folder.parent / "admission.json")
 
     def request(self, method, path, **kwargs):
         time.sleep(max(0, 2.1 - (time.monotonic() - self.last)))
         self.last = time.monotonic()
+        self.admission.before()
         body = bytearray()
         with (
             deadline(30),
             self.client.stream(method, "https://mcp.hk" + path, **kwargs) as response,
         ):
-            if response.status_code not in {200, 202}:
-                # In particular, no automatic 429/recovering/provider retry.
-                raise ValueError("ACCEPTANCE_HTTP_" + str(response.status_code))
+            self.admission.observe(response.status_code, dict(response.headers))
             for block in response.iter_bytes(32768):
                 if len(body) + len(block) > 2 * 1024**2:
                     raise ValueError("ACCEPTANCE_RESPONSE_LIMIT")
                 body.extend(block)
             headers = dict(response.headers)
+            if response.status_code not in {200, 202}:
+                failure = self.folder / ("failure-" + uuid.uuid4().hex + ".json")
+                failure.write_bytes(
+                    canonical(
+                        {
+                            "status": response.status_code,
+                            "headers": {
+                                k: v
+                                for k, v in headers.items()
+                                if k
+                                in {
+                                    "retry-after",
+                                    "ratelimit-limit",
+                                    "ratelimit-remaining",
+                                    "ratelimit-reset",
+                                    "date",
+                                    "content-type",
+                                }
+                            },
+                            "body": body[:16384].decode("utf-8", errors="replace"),
+                            "bodyBytes": len(body),
+                            "bodySha256": sha(bytes(body)),
+                        }
+                    )
+                    + b"\n"
+                )
+                # Preserve the admission and original response; never retry here.
+                raise ValueError("ACCEPTANCE_HTTP_" + str(response.status_code))
         if not body:
             return None, headers
         if "text/event-stream" in headers.get("content-type", ""):
