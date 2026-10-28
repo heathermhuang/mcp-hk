@@ -332,6 +332,7 @@ class Service:
                             "sourceId": pack,
                             "title": family(pack)["title"]["en"],
                             "titleZhHant": family(pack)["title"]["zh-Hant"],
+                            "statusPage": family(pack)["statusPage"],
                             "sourceUrl": source["sourceUrl"],
                             "attribution": source["attribution"],
                             "providerType": "independent",
@@ -357,6 +358,7 @@ class Service:
                         "coverage": state["coverage"],
                         "recordCount": state["coverage"]["resultRows"],
                         "statusUrl": "/api/v1/racing/status",
+                        "statusPage": "/racing#coverage",
                         "currentVerification": False,
                     }
                 )
@@ -374,6 +376,7 @@ class Service:
                             ),
                             "currentVerification": False,
                             "backendConfigured": True,
+                            "statusPage": family(pack)["statusPage"],
                             "availability": "checked_on_query",
                             "stale": True if pack == "enigma" else None,
                             "observationStatusUrl": (

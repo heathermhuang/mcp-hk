@@ -37,6 +37,7 @@ def test_every_family_has_a_reachable_directory_entry_and_reading_contract(lang)
         assert row["dates"][lang] in html
         assert row["download"][lang] in html
         assert urlsplit(row["path"]).path in public_paths()
+        assert urlsplit(row["statusPage"]).path in public_paths()
         assert any(n.attrs.get("id") == "dataset-" + row["id"] for n in nodes)
     assert ("remains incomplete" if lang == "en" else "須待所有必要關卡通過") in html
     home = render_page("/", lang)

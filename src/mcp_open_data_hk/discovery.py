@@ -234,7 +234,7 @@ def family_directory(lang, compact=False, keys=None):
                 f'<p class="mhk-note">{escape(row["limits"][lang])}</p>'
                 '<p class="dataset-actions">'
                 f'<a href="{href}">{"查閱資料" if zh else "Explore data"} →</a> · '
-                f'<a href="{escape(row["status"], quote=True)}">'
+                f'<a href="{escape(row["statusPage"], quote=True)}">'
                 f'{"查看範圍及狀態" if zh else "Coverage and status"}</a></p>'
                 '<details class="mhk-disclosure"><summary>'
                 f'{"日期、下載及 API / MCP" if zh else "Dates, downloads and API / MCP"}</summary><dl>'
@@ -247,6 +247,8 @@ def family_directory(lang, compact=False, keys=None):
             parts.append(
                 "</dl>"
                 f'<pre>GET {escape(row["httpExample"])}\n\nMCP: {escape(row["mcpExample"])}</pre>'
+                f'<p><a href="{escape(row["status"], quote=True)}">'
+                f'{"來源範圍及狀態（技術介面）" if zh else "Source coverage and status (technical interface)"}</a></p>'
                 f'<p><a href="/docs">{"API 參考文件" if zh else "API reference"}</a></p></details>'
             )
         parts.append("</article>")

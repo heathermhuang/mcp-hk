@@ -33,7 +33,8 @@
     "action": {
       "en": "Search official observations",
       "zh-Hant": "搜尋官方觀察資料"
-    }
+    },
+    "statusPage": "/companies#official-companies"
   },
   {
     "id": "enigma",
@@ -69,7 +70,8 @@
     "action": {
       "en": "Search archival organisations",
       "zh-Hant": "搜尋機構歷史資料"
-    }
+    },
+    "statusPage": "/companies#archive-companies"
   },
   {
     "id": "sfc_archive",
@@ -105,7 +107,8 @@
     "action": {
       "en": "Explore records",
       "zh-Hant": "查閱紀錄"
-    }
+    },
+    "statusPage": "/sfc#sfc-archive-heading"
   },
   {
     "id": "hkex_daily",
@@ -141,7 +144,8 @@
     "action": {
       "en": "Explore records",
       "zh-Hant": "查閱紀錄"
-    }
+    },
+    "statusPage": "/hkex#daily-feed"
   },
   {
     "id": "webb_sdi",
@@ -177,7 +181,8 @@
     "action": {
       "en": "Explore records",
       "zh-Hant": "查閱紀錄"
-    }
+    },
+    "statusPage": "/hkex#webb-archive"
   },
   {
     "id": "racing",
@@ -213,7 +218,8 @@
     "action": {
       "en": "Browse racing results",
       "zh-Hant": "查看賽馬賽果"
-    }
+    },
+    "statusPage": "/racing#coverage"
   },
   {
     "id": "addresses",
@@ -249,7 +255,8 @@
     "action": {
       "en": "Find an address",
       "zh-Hant": "查詢地址"
-    }
+    },
+    "statusPage": "/sources"
   },
   {
     "id": "restaurants",
@@ -285,7 +292,8 @@
     "action": {
       "en": "Find nearby restaurants",
       "zh-Hant": "尋找附近食肆"
-    }
+    },
+    "statusPage": "/sources"
   },
   {
     "id": "population",
@@ -321,7 +329,8 @@
     "action": {
       "en": "Explore district statistics",
       "zh-Hant": "查看地區統計"
-    }
+    },
+    "statusPage": "/sources"
   },
   {
     "id": "platehk",
@@ -357,7 +366,8 @@
     "action": {
       "en": "Search auction records",
       "zh-Hant": "搜尋拍賣紀錄"
-    }
+    },
+    "statusPage": "/sources"
   },
   {
     "id": "seehouse",
@@ -393,7 +403,8 @@
     "action": {
       "en": "Search buildings and listings",
       "zh-Hant": "搜尋大廈及樓盤"
-    }
+    },
+    "statusPage": "/properties"
   },
   {
     "id": "transport",
@@ -429,7 +440,8 @@
     "action": {
       "en": "Explore records",
       "zh-Hant": "查閱紀錄"
-    }
+    },
+    "statusPage": "/sources#mhk-feed-status"
   },
   {
     "id": "catalogue",
@@ -465,6 +477,7 @@
     "action": {
       "en": "Explore records",
       "zh-Hant": "查閱紀錄"
-    }
+    },
+    "statusPage": "/coverage?access=sources#coverage-heading"
   }
 ]
