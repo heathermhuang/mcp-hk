@@ -19,7 +19,7 @@
     document.documentElement.lang = lang === 'en' ? 'en' : 'zh-Hant';
     document.querySelectorAll('.mhk-navbutton').forEach(link => {
       const path = new URL(link.getAttribute('href'), location.href).pathname;
-      if (path === location.pathname || (path === '/coverage' && ['/data','/plates','/properties','/companies','/sfc','/hkex','/demo'].includes(location.pathname))) link.setAttribute('aria-current', 'page');
+      if (path === location.pathname || (path === '/guides' && location.pathname.startsWith('/guides/')) || (path === '/datasets' && ['/coverage','/racing','/data','/plates','/properties','/companies','/sfc','/hkex','/demo'].includes(location.pathname))) link.setAttribute('aria-current', 'page');
       else link.removeAttribute('aria-current');
     });
     document.querySelectorAll('[data-i18n]').forEach(e => { e.textContent = t(e.dataset.i18n); });
@@ -39,7 +39,7 @@
       // The canonical locale link is a no-JS fallback. With JS, the single
       // language button preserves the current same-origin discovery state.
       if (e.hasAttribute?.('hreflang')) { e.hidden = true; return; }
-      if (url.origin === location.origin && (['/', '/demo', '/connect', '/sources', '/plates', '/properties', '/companies', '/sfc','/hkex', '/coverage', '/data', '/terms', '/privacy', '/about', '/guides'].includes(url.pathname) || url.pathname.startsWith('/guides/'))) {
+      if (url.origin === location.origin && (['/', '/datasets', '/docs', '/racing', '/demo', '/connect', '/sources', '/plates', '/properties', '/companies', '/sfc','/hkex', '/coverage', '/data', '/terms', '/privacy', '/about', '/guides'].includes(url.pathname) || url.pathname.startsWith('/guides/'))) {
         url.searchParams.set('lang', lang === 'en' ? 'en' : 'zh-Hant');
         e.setAttribute('href', url.pathname + url.search + url.hash);
       }
@@ -50,7 +50,7 @@
     lang = next;
     try { localStorage.setItem('mhk-language', lang); } catch { /* Keep working without storage. */ }
     const url = new URL(location.href); url.searchParams.set('lang', lang === 'en' ? 'en' : 'zh-Hant');
-    if (serverRendered) { location.assign(url.pathname + url.search + url.hash); return; }
+    if (serverRendered || location.pathname === '/racing') { location.assign(url.pathname + url.search + url.hash); return; }
     history.replaceState(null, '', url.pathname + url.search + url.hash);
     apply(); window.dispatchEvent(new Event('mhk:language'));
   }

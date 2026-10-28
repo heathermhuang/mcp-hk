@@ -215,11 +215,16 @@
     if (!sourceStatus) { box.textContent = MhkI18n.t(statusError ? 'statusUnavailable' : 'loading'); return; }
     for (const source of sourceStatus.sources) {
       const item = document.createElement('article');
-      const name = document.createElement('h2'); name.textContent = `${(MhkI18n.t('source_' + source.sourceId).startsWith('source_') ? (source.attribution || source.sourceId) : MhkI18n.t('source_' + source.sourceId))} · ${MhkI18n.t(source.providerType === 'independent' ? 'independent' : 'government')}`;
-      const status = document.createElement('p'); status.textContent = MhkI18n.t(source.refreshHealth?.state === 'degraded' ? 'refreshDegraded' : source.sourceId==='enigma' ? 'archiveQueryable' : !source.lastSuccess ? 'noSuccessfulRead' : source.stale ? 'noRecentCheck' : 'recentCheck') + (source.recordCount ? ` · ${source.recordCount.toLocaleString()} ${MhkI18n.t('records')}` : '');
+      const name = document.createElement('h2'); name.textContent = `${(source.title ? (state.lang === 'en' ? source.title : source.titleZhHant || source.title) : MhkI18n.t('source_' + source.sourceId).startsWith('source_') ? (source.attribution || source.sourceId) : MhkI18n.t('source_' + source.sourceId))} · ${MhkI18n.t(source.providerType === 'independent' ? 'independent' : 'government')}`;
+      const status = document.createElement('p'); status.textContent = MhkI18n.t(source.statusUrl || source.observationStatusUrl || source.availability === 'checked_on_query' ? 'viewSpecificStatus' : source.refreshHealth?.state === 'degraded' ? 'refreshDegraded' : source.sourceId==='enigma' ? 'archiveQueryable' : !source.lastSuccess ? 'noSuccessfulRead' : source.stale ? 'noRecentCheck' : 'recentCheck') + (source.recordCount ? ` · ${source.recordCount.toLocaleString()} ${MhkI18n.t('records')}` : '');
       const detail = document.createElement('p'); detail.className = 'mhk-small'; detail.textContent = `${MhkI18n.t('lastSuccess')}: ${source.lastSuccess ? MhkI18n.date(source.lastSuccess) : MhkI18n.t('notChecked')} · ${MhkI18n.t('lastError')}: ${source.lastError || MhkI18n.t('none')}`;
       const link = document.createElement('a'); link.href = source.sourceUrl; link.textContent = MhkI18n.t(source.providerType === 'independent' ? 'providerData' : 'officialDataset'); link.rel = 'noreferrer';
-      item.append(name, status, detail, link); box.append(item);
+      item.append(name, status);
+      if (!source.statusUrl && !source.observationStatusUrl && source.availability !== 'checked_on_query') item.append(detail);
+      item.append(link);
+      const statusPath=source.statusUrl||source.observationStatusUrl;
+      if(statusPath){const a=document.createElement('a');a.href=statusPath;a.textContent=MhkI18n.t('coverageAndStatus');item.append(document.createTextNode(' · '),a);}
+      box.append(item);
     }
   }
   function renderCoverage() { for (const id of ['#mhk-coverage', '#mhk-source-coverage']) MhkI18n.coverageSummary($(id), inventory, inventoryError); }

@@ -596,6 +596,19 @@
                 "/guides"
               ]
             ]
+          },
+          {
+            "heading": "Archives, dated observations and downloads",
+            "paragraphs": [
+              "Company registration events and address observations do not verify current registration or ownership. SFC archive intervals do not verify current licensing; fresh verification is separately gated. HKEX summary dates differ from event and filing dates; disclosures are not current holdings. Racing meeting results and profile observation dates do not establish complete seasons or career histories.",
+              "A page ZIP contains the labelled selection and version, not necessarily the whole dataset. Preserve its schema, manifest, source notice and checksums. Follow the dataset directory for each family’s dates, download scope and equivalent API/MCP example."
+            ],
+            "links": [
+              [
+                "Dataset directory",
+                "/datasets"
+              ]
+            ]
           }
         ]
       },
@@ -691,6 +704,19 @@
                 "/guides"
               ]
             ]
+          },
+          {
+            "heading": "歷史檔案、具日期觀察及下載",
+            "paragraphs": [
+              "公司註冊事件及地址觀察不證明現時註冊狀態或擁有權。證監會歷史牌照期間不證明目前牌照狀態，官方新觀察核實另受關卡約束。港交所摘要、事件及提交日期各有不同，披露並非現時持股。賽馬賽果及檔案觀察日期不證明完整馬季或生涯紀錄。",
+              "分頁 ZIP 包含所標示的選項及版本，未必是整個數據集。請保留欄位定義、清單、來源聲明及校驗碼。各類資料的日期、下載範圍及相應 API／MCP 範例，見數據總覽。"
+            ],
+            "links": [
+              [
+                "數據總覽",
+                "/datasets"
+              ]
+            ]
           }
         ]
       }
@@ -712,13 +738,13 @@
       "template": "sfc.html",
       "noindex": true,
       "en": {
-        "title": "SFC corporate verification status · mcp.hk",
-        "heading": "SFC corporate verification",
+        "title": "SFC licence archive and verification status · mcp.hk",
+        "heading": "SFC licence archive",
         "description": "Fresh official corporate licence observations are not available on mcp.hk yet."
       },
       "zh-Hant": {
-        "title": "證監會法團牌照核實功能狀態 · mcp.hk",
-        "heading": "證監會法團牌照核實",
+        "title": "證監會牌照歷史檔案及核實狀態 · mcp.hk",
+        "heading": "證監會牌照歷史檔案",
         "description": "mcp.hk 尚未提供最新官方法團牌照觀察紀錄。"
       }
     },
@@ -726,12 +752,12 @@
       "en": {
         "title": "HKEX disclosures · mcp.hk",
         "heading": "HKEX disclosures",
-        "description": "Latest published HKEX shareholder and director summary facts, automatic source checks, and the historical Webb Form 3A archive. Summary dates and event dates remain separate."
+        "description": "Explore retained HKEX daily summaries and the historical Webb Form 3A archive. Source holds and full-filing qualification are separate from access to accepted records."
       },
       "zh-Hant": {
         "title": "港交所權益披露 · mcp.hk",
         "heading": "港交所權益披露",
-        "description": "最新港交所股東及董事摘要、自動來源檢查，以及 Webb 表格 3A 歷史檔案。摘要日期與事件日期分開保留。"
+        "description": "查閱保留的港交所每日摘要及 Webb 表格 3A 歷史檔案。來源暫停更新及完整申報資格審核，與已接納紀錄的存取分開。"
       },
       "template": "hkex.html"
     },
@@ -783,6 +809,89 @@
         ]
       },
       "template": "racing.html"
+    },
+    "/datasets": {
+      "template": "article.html",
+      "en": {
+        "title": "Find Hong Kong data · mcp.hk",
+        "heading": "Find the right data",
+        "description": "Choose a question, check the available source and its limits, then explore records or use the same information through HTTP and MCP.",
+        "sections": [
+          {
+            "heading": "Explore records or browse source datasets",
+            "paragraphs": [
+              "Use the guided explorers below for supported records. For weather, schools, holidays, environment and other topics, search the government dataset catalogue. Each resource has its own format and access state."
+            ],
+            "links": [
+              [
+                "Search all data",
+                "/coverage?access=all"
+              ],
+              [
+                "Government source catalogue",
+                "/coverage?access=sources"
+              ]
+            ]
+          },
+          {
+            "heading": "Availability is specific to each view",
+            "paragraphs": [
+              "Historical archives retain dated source facts. Dated observations cover only the accepted subset. Partial coverage means some records, periods or fields are missing. Not activated means the view is unavailable; it does not mean there are no source records. Source holds preserve the last accepted data.",
+              "The company, SFC, racing and HKEX completion programme remains incomplete until its required gates pass. A working website or download does not qualify missing source access, coverage or recovery evidence."
+            ],
+            "links": [
+              [
+                "Understand dates and source states",
+                "/guides/data-sources-and-freshness"
+              ],
+              [
+                "Check runtime data status",
+                "/sources"
+              ]
+            ]
+          }
+        ]
+      },
+      "zh-Hant": {
+        "title": "尋找香港數據 · mcp.hk",
+        "heading": "尋找合適的數據",
+        "description": "先選擇問題，查看可用來源及限制，再查閱紀錄，或透過 HTTP 及 MCP 使用相同資料。",
+        "sections": [
+          {
+            "heading": "查閱紀錄或瀏覽來源目錄",
+            "paragraphs": [
+              "下方瀏覽器可查閱已支援的紀錄。天氣、學校、公眾假期、環境及其他主題，可在政府數據目錄搜尋；每項資源各有格式及存取狀態。"
+            ],
+            "links": [
+              [
+                "搜尋所有資料",
+                "/coverage?access=all"
+              ],
+              [
+                "政府來源目錄",
+                "/coverage?access=sources"
+              ]
+            ]
+          },
+          {
+            "heading": "各個資料檢視有其可用狀態",
+            "paragraphs": [
+              "歷史檔案保留具日期的來源資料；具日期的觀察紀錄僅涵蓋已接納子集；部分涵蓋表示仍缺少紀錄、時段或欄位；尚未啟用表示該檢視未可使用，並非來源沒有紀錄。來源暫停更新時，保留最後已接納資料。",
+              "公司、證監會、賽馬及港交所資料完成計劃，須待所有必要關卡通過才算完成。網站或下載可用，不代表尚缺的來源存取、涵蓋範圍或復原證據已獲確認。"
+            ],
+            "links": [
+              [
+                "了解日期及來源狀態",
+                "/guides/data-sources-and-freshness"
+              ],
+              [
+                "查看目前數據狀態",
+                "/sources"
+              ]
+            ]
+          }
+        ]
+      }
     }
   },
   "faq": {
