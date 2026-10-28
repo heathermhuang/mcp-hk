@@ -14,13 +14,16 @@ await mkdir(output,{recursive:true,mode:0o700});
 const browser=await chromium.launch({headless:false,...(process.env.MCP_HK_CHROME?{executablePath:process.env.MCP_HK_CHROME}:{})});
 const context=await browser.newContext({viewport:{width:1280,height:900},acceptDownloads:true});
 const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
-const admission=new Admission(join(output,'..','..','admission.json'));let tail=Promise.resolve();
+const admission=new Admission(join(output,'..','..','admission.json'));let tail=Promise.resolve(),admissionFailure=null;
 await context.route('**/*',async route=>{
  const u=new URL(route.request().url());
  if(u.protocol==='blob:'||u.origin==='https://mcp.hk'){
   if(u.pathname.startsWith('/api/')||u.pathname.startsWith('/downloads/')){
    const next=tail.then(async()=>{
-    await admission.before();const pending=page.waitForResponse(r=>r.request()===route.request(),{timeout:90000});await route.continue();const response=await pending;await admission.observe(response.status(),response.headers());
+    if(admissionFailure){await route.abort();return;}
+    try{await admission.before();}catch(e){admissionFailure={code:e.message};await writeFile(join(output,'admission-failure.json'),JSON.stringify(admissionFailure));await route.abort();return;}
+    const pending=page.waitForResponse(r=>r.request()===route.request(),{timeout:90000});await route.continue();const response=await pending;await admission.observe(response.status(),response.headers());
+    if(response.status()>=400){const headers=response.headers(),body=await response.body();admissionFailure={status:response.status(),headers:Object.fromEntries(Object.entries(headers).filter(([k])=>['retry-after','ratelimit-limit','ratelimit-remaining','ratelimit-reset','date','content-type'].includes(k))),body:body.subarray(0,16384).toString('utf8'),bodyBytes:body.length};await writeFile(join(output,'http-failure.json'),JSON.stringify(admissionFailure,null,2)+'\n');}
    });tail=next.catch(()=>{});return next;
   }
   return route.continue();
@@ -32,7 +35,6 @@ try{
  const detailResponse=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/v1/companies/'+encodeURIComponent(entity)||decodeURIComponent(new URL(r.url()).pathname)==='/api/v1/companies/'+entity,{timeout:90000});
  await page.goto('https://mcp.hk/companies?'+query,{timeout:90000});
  const response=await detailResponse;
- if(response.status()!==200){const headers=response.headers();const body=await response.body();await writeFile(join(output,'http-failure.json'),JSON.stringify({status:response.status(),headers:Object.fromEntries(Object.entries(headers).filter(([k])=>['retry-after','ratelimit-limit','ratelimit-remaining','ratelimit-reset','date','content-type'].includes(k))),body:body.subarray(0,16384).toString('utf8'),bodyBytes:body.length},null,2)+'\n');}
  assert.equal(response.status(),200);
  const envelope=await response.json();assert.equal(envelope.meta.version,task.version);assert.equal(envelope.meta.view,'latest_observed');
  assert.deepEqual(envelope.data.observations.find(r=>r.fact_id===expected.fact_id),expected);
@@ -53,7 +55,7 @@ try{
  await writeFile(join(output,'envelope.json'),JSON.stringify(packaged,null,2)+'\n');
  await writeFile(join(output,'selection.json'),JSON.stringify(selection,null,2)+'\n');
  if(task.screenshot)await page.screenshot({path:join(output,'visible.png'),fullPage:true});
- assert.deepEqual(errors,[]);
+ await tail;assert.equal(admissionFailure,null);assert.deepEqual(errors,[]);
  await writeFile(join(output,'receipt.json'),JSON.stringify({actualVisibleBrowser:true,downloadAction:'official-detail-download',language:task.language,version:task.version,entityId:entity,sourceKey:task.case.id,factId:expected.fact_id,downloadedAt:new Date().toISOString(),filename:download.suggestedFilename(),errors},null,2)+'\n');
 }catch(error){await page.screenshot({path:join(output,'failed.png'),fullPage:true}).catch(()=>{});throw error;}
-finally{await context.close();await browser.close();}
+finally{await tail.catch(()=>{});await context.close();await browser.close();}

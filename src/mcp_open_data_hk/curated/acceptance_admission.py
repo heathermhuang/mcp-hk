@@ -30,7 +30,7 @@ class Admission:
             )
             - now
         )
-        if delay > 61000:
+        if delay > 60000:
             raise ValueError("ACCEPTANCE_QUOTA_DEFERRED")
         if delay > 0:
             time.sleep(delay / 1000)
