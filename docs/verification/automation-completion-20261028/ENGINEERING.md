@@ -152,3 +152,15 @@ POSIX deadlines, beyond per-I/O timeouts, so a slow trickle cannot extend a batc
 indefinitely. Expiry preserves the journal/request reservation as failed/unknown;
 there is no automatic retry or hold clearing. These CLIs already require POSIX
 file locks and run on the existing macOS/Linux operator and host environments.
+
+## Company operator quota feedback repair
+
+Full-cohort verification encountered a real per-client minute admission failure.
+The operator helpers now share pacing state between Python REST/MCP and every
+visible browser process. Server-reported headroom of ten remaining requests or
+fewer defers the next request until the reported reset; HTTP 429 retains its
+Retry-After admission and original failure response without automatic retry.
+A day-long hold stops the bounded batch instead of blocking indefinitely. The
+service quotas and all 1,128 assertions are unchanged. Prior passing cells remain
+valid; failed cells require the existing explicit review/reopen procedure. This
+operator-only correction changes no serving source, Worker, container or timer.

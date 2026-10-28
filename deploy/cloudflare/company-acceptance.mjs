@@ -3,6 +3,7 @@ import {chromium} from 'playwright';
 import assert from 'node:assert/strict';
 import {readFile,mkdir,writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
+import {Admission} from './company-admission.mjs';
 const [input,output]=process.argv.slice(2);
 const task=JSON.parse(await readFile(input,'utf8'));
 assert.match(task.version,/^official-[a-f0-9]{32}$/);
@@ -13,12 +14,14 @@ await mkdir(output,{recursive:true,mode:0o700});
 const browser=await chromium.launch({headless:false,...(process.env.MCP_HK_CHROME?{executablePath:process.env.MCP_HK_CHROME}:{})});
 const context=await browser.newContext({viewport:{width:1280,height:900},acceptDownloads:true});
 const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
-let last=0,tail=Promise.resolve();
+const admission=new Admission(join(output,'..','..','admission.json'));let tail=Promise.resolve();
 await context.route('**/*',async route=>{
  const u=new URL(route.request().url());
  if(u.protocol==='blob:'||u.origin==='https://mcp.hk'){
   if(u.pathname.startsWith('/api/')||u.pathname.startsWith('/downloads/')){
-   const next=tail.then(async()=>{await new Promise(r=>setTimeout(r,Math.max(0,2100-(Date.now()-last))));last=Date.now();await route.continue();});tail=next.catch(()=>{});return next;
+   const next=tail.then(async()=>{
+    await admission.before();const pending=page.waitForResponse(r=>r.request()===route.request(),{timeout:90000});await route.continue();const response=await pending;await admission.observe(response.status(),response.headers());
+   });tail=next.catch(()=>{});return next;
   }
   return route.continue();
  }
@@ -28,7 +31,9 @@ try{
  const query=new URLSearchParams({companySource:'official',namespace:expected.identifier.namespace,value:expected.identifier.value,official_entity:entity,official_version:task.version,lang:task.language});
  const detailResponse=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/v1/companies/'+encodeURIComponent(entity)||decodeURIComponent(new URL(r.url()).pathname)==='/api/v1/companies/'+entity,{timeout:90000});
  await page.goto('https://mcp.hk/companies?'+query,{timeout:90000});
- const response=await detailResponse;assert.equal(response.status(),200);
+ const response=await detailResponse;
+ if(response.status()!==200){const headers=response.headers();const body=await response.body();await writeFile(join(output,'http-failure.json'),JSON.stringify({status:response.status(),headers:Object.fromEntries(Object.entries(headers).filter(([k])=>['retry-after','ratelimit-limit','ratelimit-remaining','ratelimit-reset','date','content-type'].includes(k))),body:body.subarray(0,16384).toString('utf8'),bodyBytes:body.length},null,2)+'\n');}
+ assert.equal(response.status(),200);
  const envelope=await response.json();assert.equal(envelope.meta.version,task.version);assert.equal(envelope.meta.view,'latest_observed');
  assert.deepEqual(envelope.data.observations.find(r=>r.fact_id===expected.fact_id),expected);
  await page.locator('#official-detail h3').waitFor({state:'visible',timeout:90000});
