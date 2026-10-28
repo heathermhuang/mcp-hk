@@ -1,0 +1,14 @@
+{
+  "selectionState": "selected",
+  "cohortSize": 10,
+  "archiveVersion": "enigma251227-hk-v1",
+  "technicalPurpose": "connector_development",
+  "productPurpose": "public_factual_reference",
+  "financialDealingsAsserted": false,
+  "policySha256": "78ff90b5b44f811ef94286c6685be2fa181b55e00b7d584d1f98b23d7adc2919",
+  "policyActivated": false,
+  "sourceModesQualified": false,
+  "allUnknownModesFailClosed": true,
+  "freshRegisterReads": 0,
+  "credentialsCreated": false
+}

@@ -1,42 +1,45 @@
 # Prepared SFC request — UNSENT
 
-Proposed recipient: enquiry@sfc.hk, the contact published on the SFC register's
-legal-information page. Ask for routing to the appropriate public-register/licensing
-and reuse-permission owner. Sender/account must be selected by the user before
-sending; no message or email draft has been created in an external service.
+Proposed recipient: enquiry@sfc.hk, published on the register legal-information
+page. Ask for the public-register/licensing and reuse-permission owner. The sender
+and any dispatch require separate approval. No email, external draft, agreement,
+subscription or paid feed is created by this document.
 
-Subject: Permission clarification — exact-CE corporate licence verification on mcp.hk
+Subject: Purpose and mode clarification — corporate reference connector for mcp.hk
 
-We operate mcp.hk, an independent Hong Kong data service. We would like to offer
-source-linked verification of a corporate institution a user intends to deal with,
-by exact CE reference. We understand the register's specified purposes and your
-website's separate restrictions on third-party redistribution/commercial use.
+We operate mcp.hk, an independent source-linked public factual reference service.
+We are qualifying a bounded corporate-register connector, initially for ten exact
+SFO corporate references: AZT137, BMU940, ADI249, AVD061, AAG460, ACC536, AFF275,
+ACJ591, ARN075 and ABN759. The identities and selection scope are in the attached
+selected-cohort packet. Archive evidence is not treated as fresh licence status.
 
-Please identify an authorised automated exact-CE corporate access route and
-session flow, or confirm whether only a user-initiated verification route is
-appropriate. We propose a pilot of at most 25 already tracked corporate references,
-with one concurrent session, at most 25 total reads/run and 100/day, including
-session, detail, failure and retry reads, subject to any stricter limit you specify.
-We will not mine the register to select the cohort.
+Our immediate purpose is connector qualification; the desired product supplies
+attributed dated corporate licence/activity facts through a public data interface.
+We do not assert that we or a particular user are undertaking financial dealings
+with these firms. Please clarify whether that actual public-reference purpose is
+within an authorised use of the register, whether only a narrower user-initiated
+licence verification is permitted, or whether another documented source is suitable.
 
-Please confirm separately which of these modes are permitted and their limits:
-short-term caching/coalescing and TTL; retained dated corporate licence/activity
-observations and correction history; raw source retention; backup/offsite copies
-and retention; public source-linked REST, MCP/AI-client and bilingual browser
-verification responses; corporate name-prefix/directory search; user page downloads
-and aggregate derived-data exports. Verification-only output with directory,
-history and downloads disabled is acceptable if that is the qualified route.
+Please identify a permitted exact-CE corporate route/session flow and any
+collection restrictions. Proposed engineering ceilings are one concurrent session,
+25 total reads/run, 100/UTC day, 8 MiB/run and 16 MiB/day, including session,
+detail, failure and retry reads. Lower provider limits would prevail. These
+ceilings do not assert source permission and would not be used for register mining.
 
-The initial scope is SFO licensed corporations. Please identify the permitted
-fields, any required licence/type distinctions, source cutoff/update markers,
-attribution, recheck/expiry, removal and backup-deletion obligations. We exclude
-contacts/marketing, individual representative/RO directories, former EO histories,
-inferred CE-to-BRN joins, and any safety/performance/creditworthiness judgment.
-Unknown interval ends stay unknown and missing/error responses do not mean revocation.
-An observation or end-of-day update will not be presented as real-time status or
-complete regulatory event history.
+Please address independently: automated exact-CE access; cache/coalescing and TTL;
+normalized dated-fact retention; correction/observation history; raw material;
+backup/offsite copies and expiry; public REST; MCP/AI-client access; bilingual
+browser presentation; corporate directory/search; page/cohort downloads and derived
+exports. Please specify permitted corporate fields, attribution, update/cutoff
+semantics, recheck dates and removal/deletion obligations, including failed copies.
+Unknown or unqualified modes will remain closed.
 
-We will not activate automated source access or public results until the precise
-purpose, route, retention and output modes have been qualified. If a different
-licensed service or commercial agreement is required, please identify it and its
-terms for a separate decision; this enquiry does not accept terms or order a feed.
+The intended scope excludes contacts/marketing, individual representative/RO
+lists, former executive-officer histories, inferred CE-to-BRN joins and any
+safety/performance/creditworthiness judgment. Unknown dates and unsuccessful reads
+will not imply revocation. Observations are not real-time or complete event history.
+
+We have not activated production collection or public fresh facts. This enquiry
+would accept no terms or fees and order no service; any new agreement or commercial
+proposal would require a separate decision. A narrower documented permitted outcome
+can be assessed without misdescribing our actual purpose.

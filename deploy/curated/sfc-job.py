@@ -74,16 +74,45 @@ def occurrence(trigger, uptime, now):
 class Backend:
     def __init__(self, config):
         self.config = config
+        self.image_id = None
         self.opener = urllib.request.build_opener(
             urllib.request.ProxyHandler({}), NoRedirect
         )
 
+    def check_image(self):
+        image, expected = self.config.get("image", ""), self.config.get("imageId", "")
+        if not re.fullmatch(
+            r"mcp-hk-(?:curated|company):[a-f0-9]{40}", image
+        ) or not re.fullmatch(r"sha256:[a-f0-9]{64}", expected):
+            raise JobError("SFC_SOURCE_IMAGE_UNQUALIFIED")
+        try:
+            result = execute(
+                ["docker", "image", "inspect", "--format", "{{.Id}}", image],
+                capture_output=True,
+                text=True,
+                timeout=20,
+            )
+        except subprocess.SubprocessError:
+            raise JobError("SFC_SOURCE_IMAGE_UNAVAILABLE") from None
+        if result.stdout.strip() != expected:
+            raise JobError("SFC_SOURCE_IMAGE_DIFFERS")
+        self.image_id = expected
+        return {"image": image, "imageId": expected, "verified": True, "sourceReads": 0}
+
     def runner(self, *args, restored=None, artifact=None):
+        if self.image_id is None:
+            raise JobError("SFC_SOURCE_IMAGE_NOT_VERIFIED")
         command = [
             "docker",
             "run",
             "--rm",
             "--read-only",
+            "--cap-drop",
+            "ALL",
+            "--security-opt",
+            "no-new-privileges",
+            "--user",
+            "65532:65532",
             "--memory",
             "512m",
             "--cpus",
@@ -107,7 +136,7 @@ class Backend:
         command += [
             "--entrypoint",
             "python",
-            self.config["image"],
+            self.image_id,
             "-m",
             "mcp_open_data_hk.curated.sfc",
             *args,
@@ -443,13 +472,34 @@ def main():
         action="store_true",
         help="Explicit operator qualification; never passed by the timer unit",
     )
+    parser.add_argument(
+        "--check-image",
+        action="store_true",
+        help="Read-only prepared-image qualification; reads no source config, credential, database or provider",
+    )
+    parser.add_argument("--image")
+    parser.add_argument("--image-id")
     args = parser.parse_args()
+    if args.check_image:
+        if args.manual or not args.image or not args.image_id:
+            parser.error("Image check requires only --image and --image-id")
+        print(
+            json.dumps(
+                Backend({"image": args.image, "imageId": args.image_id}).check_image()
+            )
+        )
+        return
+    if args.image or args.image_id:
+        parser.error("Image arguments require --check-image")
     os.umask(0o077)
     if CONFIG.is_symlink() or CONFIG.stat().st_mode & 0o077:
         raise JobError("SFC_PRIVATE_CONFIG_REQUIRED")
     config = json.loads(CONFIG.read_text())
     if (
-        not re.fullmatch(r"mcp-hk-curated:[a-f0-9]{40}", config.get("image", ""))
+        not re.fullmatch(
+            r"mcp-hk-(?:curated|company):[a-f0-9]{40}", config.get("image", "")
+        )
+        or not re.fullmatch(r"sha256:[a-f0-9]{64}", config.get("imageId", ""))
         or not re.fullmatch(r"[a-f0-9]{64}", config.get("policySha256", ""))
         or len(config.get("token", "")) < 32
         or not re.fullmatch(
@@ -475,6 +525,7 @@ def main():
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     backend = Backend(config)
+    backend.check_image()
     backend.check_storage()
     if args.manual:
         provenance, when = "manual", datetime.now(timezone.utc).isoformat()

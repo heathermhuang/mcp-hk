@@ -37,24 +37,42 @@ def test_collector_child_has_source_env_but_no_admin_uploader_or_docker_socket(
 
     def run(command, **kwargs):
         commands.append(command)
-        return SimpleNamespace(returncode=0, stdout="{}", stderr="")
+        return SimpleNamespace(
+            returncode=0,
+            stdout=(
+                "sha256:" + "c" * 64 if command[1:3] == ["image", "inspect"] else "{}"
+            ),
+            stderr="",
+        )
 
     monkeypatch.setattr(host.subprocess, "run", run)
     backend = host.Backend(
-        {"image": "mcp-hk-curated:" + "a" * 40, "token": "PRIVATE_UPLOADER_TOKEN"}
+        {
+            "image": "mcp-hk-curated:" + "a" * 40,
+            "imageId": "sha256:" + "c" * 64,
+            "token": "PRIVATE_UPLOADER_TOKEN",
+        }
     )
+    backend.check_image()
     backend.runner("job-state", "--policy-sha256", "b" * 64)
-    text = " ".join(commands[0])
+    children = [c for c in commands if c[:2] == ["docker", "run"]]
+    text = " ".join(children[0])
     assert "--read-only" in text and "--memory 512m" in text and "--cpus 1" in text
-    assert host.ENV in commands[0] and "PRIVATE_UPLOADER_TOKEN" not in text
+    assert host.ENV in children[0] and "PRIVATE_UPLOADER_TOKEN" not in text
+    assert (
+        backend.config["imageId"] in children[0]
+        and backend.config["image"] not in children[0]
+    )
+    assert "--cap-drop ALL" in text and "--user 65532:65532" in text
     assert "docker.sock" not in text and "pg-admin-password" not in text
     artifact = tmp_path / "retrieved.dump"
     artifact.write_bytes(b"proof")
     backend.runner(
         "qualify-restore", restored="sfc_restore_test12345", artifact=artifact
     )
-    assert "SFC_RESTORED_DATABASE=sfc_restore_test12345" in commands[1]
-    assert any("dst=/proof.dump,readonly" in word for word in commands[1])
+    children = [c for c in commands if c[:2] == ["docker", "run"]]
+    assert "SFC_RESTORED_DATABASE=sfc_restore_test12345" in children[1]
+    assert any("dst=/proof.dump,readonly" in word for word in children[1])
     with pytest.raises(host.JobError, match="RESTORE_DATABASE_INVALID"):
         backend.runner("status", restored="curated")
 
@@ -108,15 +126,72 @@ def test_storage_capability_must_match_policy_and_independent_retention_qualific
 
 
 def test_wrong_source_receipt_does_not_expose_child_stderr(host, monkeypatch):
+    image_id = "sha256:" + "c" * 64
+
+    def run(command, **kwargs):
+        if command[1:3] == ["image", "inspect"]:
+            return SimpleNamespace(returncode=0, stdout=image_id, stderr="")
+        return SimpleNamespace(
+            returncode=1, stdout="", stderr="postgresql://secret-password@host"
+        )
+
     monkeypatch.setattr(
         host.subprocess,
         "run",
-        lambda *a, **k: SimpleNamespace(
-            returncode=1, stdout="", stderr="postgresql://secret-password@host"
+        run,
+    )
+    backend = host.Backend({"image": "mcp-hk-curated:" + "a" * 40, "imageId": image_id})
+    backend.check_image()
+    with pytest.raises(host.JobError, match="^SFC_SOURCE_COMMAND_FAILED$"):
+        backend.runner("status")
+
+
+def test_image_identity_must_be_verified_before_any_source_child(host, monkeypatch):
+    config = {
+        "image": "mcp-hk-company:" + "a" * 40,
+        "imageId": "sha256:" + "c" * 64,
+        "policySha256": "f" * 64,
+    }
+    backend = host.Backend(config)
+    with pytest.raises(host.JobError, match="SOURCE_IMAGE_NOT_VERIFIED"):
+        backend.state()
+    monkeypatch.setattr(
+        host, "execute", lambda *a, **k: SimpleNamespace(stdout="sha256:" + "d" * 64)
+    )
+    with pytest.raises(host.JobError, match="SOURCE_IMAGE_DIFFERS"):
+        backend.check_image()
+    with pytest.raises(host.JobError, match="SOURCE_IMAGE_NOT_VERIFIED"):
+        backend.state()
+    with pytest.raises(host.JobError, match="SOURCE_IMAGE_UNQUALIFIED"):
+        host.Backend({"image": config["image"]}).check_image()
+
+
+def test_digest_binding_survives_a_mutable_tag_change(host, monkeypatch):
+    config = {
+        "image": "mcp-hk-company:" + "a" * 40,
+        "imageId": "sha256:" + "c" * 64,
+        "policySha256": "f" * 64,
+    }
+    monkeypatch.setattr(
+        host, "execute", lambda *a, **k: SimpleNamespace(stdout=config["imageId"])
+    )
+    backend = host.Backend(config)
+    assert backend.check_image()["sourceReads"] == 0
+    commands = []
+    monkeypatch.setattr(
+        host.subprocess,
+        "run",
+        lambda command, **k: (
+            commands.append(command)
+            or SimpleNamespace(returncode=0, stdout="{}", stderr="")
         ),
     )
-    with pytest.raises(host.JobError, match="^SFC_SOURCE_COMMAND_FAILED$"):
-        host.Backend({"image": "mcp-hk-curated:" + "a" * 40}).runner("status")
+    monkeypatch.setattr(
+        host, "execute", lambda *a, **k: SimpleNamespace(stdout="sha256:" + "d" * 64)
+    )
+    backend.state()
+    assert config["imageId"] in commands[0]
+    assert backend.config["image"] not in commands[0]
 
 
 def test_recovery_copy_cannot_reset_the_oldest_source_retention_clock(

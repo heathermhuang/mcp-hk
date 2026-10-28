@@ -1,0 +1,20 @@
+{
+  "image": "mcp-hk-company:e1ac206da3beccd10ab5ad926020352bf5d50602",
+  "imageId": "sha256:d86b51f602d1340ca185c31f66f6c2acd22fe9d58c1ea52121bf49d7c2272feb",
+  "policySha256": "78ff90b5b44f811ef94286c6685be2fa181b55e00b7d584d1f98b23d7adc2919",
+  "cohort": [
+    "AZT137",
+    "BMU940",
+    "ADI249",
+    "AVD061",
+    "AAG460",
+    "ACC536",
+    "AFF275",
+    "ACJ591",
+    "ARN075",
+    "ABN759"
+  ],
+  "token": "SEPARATE_SOURCE_ONLY_TOKEN_REQUIRES_APPROVAL",
+  "qualifiedStorageMaximumSeconds": 0,
+  "storageRetentionEvidenceSha256": "QUALIFIED_STORAGE_RETENTION_EVIDENCE_SHA256"
+}
