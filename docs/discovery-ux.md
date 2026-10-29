@@ -131,7 +131,8 @@ claim. Plate.hk and SeeHouse share an operator with mcp.hk; the homepage disclos
 that relationship and applies the same title ordering to every provider.
 
 Search, access, provider and page state survive refresh, history and language
-switching. Starting another request clears previous rows, cancels the earlier
+switching. Filtered homepage URLs are noindex in HTML and Markdown on both the
+Python server and static edge, retaining the canonical homepage. Starting another request clears previous rows, cancels the earlier
 request and ignores obsolete responses. A catalogue failure shows a retry action
 and the server-rendered family scope index. Without JavaScript, search submits
 to the existing coverage explorer and the subject/family links remain available.

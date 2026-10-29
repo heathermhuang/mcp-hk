@@ -13,7 +13,7 @@ no merge, deployment, source activation or new ingestion is included.
   overlapping catalogue/connected denominators stay explicit.
 - Native expandable source/scope details, available dates, terms, resource states
   and operations. Connected details reuse all thirteen shared family descriptions.
-- Query/filter/page URLs, locale switching, history, keyboard expansion,
+- Query/filter/page URLs with canonical/noindex parity, locale switching, history, keyboard expansion,
   empty/error/retry states and a complete server-rendered family fallback.
 - Existing company, SFC and HKEX interfaces keep related historical and dated
   observations under the same subject, preserving their original identities,

@@ -18,6 +18,8 @@ test('filtered discovery is noindex while tracking parameters retain canonical c
     const result = discoveryTarget(new URL('https://mcp.hk/coverage' + suffix));
     assert.equal(result.noindex, true); assert.match(result.asset, /-filtered\.html$/);
   }
+  for(const suffix of ['?q=private','?provider=independent','?access=sources&offset=10','?lang=zh-Hant&q=weather']){const selected=discoveryTarget(new URL('https://mcp.hk/'+suffix));assert.equal(selected.noindex,true);assert.match(selected.asset,/-filtered\.html$/);assert.match(discoveryTarget(new URL('https://mcp.hk/'+suffix),'text/markdown').asset,/-filtered\.md$/);}
+  assert.equal(discoveryTarget(new URL('https://mcp.hk/?utm_source=search')).noindex,false);
   assert.equal(discoveryTarget(new URL('https://mcp.hk/coverage?utm_source=search')).noindex, false);
   assert.equal(discoveryTarget(new URL('https://mcp.hk/terms')).noindex, true);
 });
