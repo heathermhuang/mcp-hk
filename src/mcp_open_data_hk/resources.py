@@ -7,6 +7,7 @@ import re
 import time
 import tempfile
 import os
+import threading
 from pathlib import Path
 from urllib.parse import parse_qs, quote, unquote, urlencode, urlsplit, urlunsplit
 
@@ -20,6 +21,11 @@ from .resource_fields import selected, MISSING, inspect_nested
 from .resource_fetch import fetch, fetch_file
 from .resource_stream import FileRows
 from .resource_formats import parse
+from .resource_codec import (
+    typed_filters as decode_filters,
+    presentation as present,
+    MAX_RESPONSE_BYTES,
+)
 
 SUPPORTED = {
     "CSV",
@@ -422,6 +428,9 @@ class Resources:
     def __init__(self, store):
         self.catalogue = CatalogueStore(store)
         self.slots = asyncio.Semaphore(2)
+        self.active_scans = 0
+        self.scan_limit = 2
+        self.scan_seconds = 5.0
         self.review_slots = asyncio.Semaphore(CONCURRENCY)
         self.locks = {}
         self.catalogue.refresh_transport_policies()
@@ -993,7 +1002,30 @@ class Resources:
             if isinstance(value["rows"], FileRows):
                 value["rows"].close()
 
-    async def query(
+    async def query(self, *args, **kwargs):
+        # No waiting queue. Hold admission until the actual worker has completed,
+        # even when the HTTP task is cancelled while to_thread is still running.
+        if self.active_scans >= self.scan_limit:
+            raise DomainError(
+                "RESOURCE_BUSY", "Resource readers are busy; retry shortly", 503, 2
+            )
+        self.active_scans += 1
+        stop = threading.Event()
+        task = asyncio.create_task(self._query(*args, **kwargs, stop=stop))
+
+        def completed(done):
+            self.active_scans -= 1
+            if not done.cancelled():
+                done.exception()  # Consume errors after an abandoned caller.
+
+        task.add_done_callback(completed)
+        try:
+            return await asyncio.shield(task)
+        except asyncio.CancelledError:
+            stop.set()
+            raise
+
+    async def _query(
         self,
         resource_id,
         filters=None,
@@ -1006,7 +1038,11 @@ class Resources:
         require_fresh=False,
         version=None,
         parameters=None,
+        typed_filters=None,
+        presentation=False,
+        stop=None,
     ):
+        filters = decode_filters(typed_filters or [], filters)
         if (
             not 1 <= limit <= 100
             or not 0 <= offset <= 100000
@@ -1028,6 +1064,18 @@ class Resources:
         )
 
         def build_result():
+            deadline = time.monotonic() + self.scan_seconds
+
+            def check_budget():
+                if stop.is_set() or time.monotonic() >= deadline:
+                    raise DomainError(
+                        "RESOURCE_SCAN_DEADLINE",
+                        "Scan stopped; narrow the selected source or retry",
+                        503,
+                        2,
+                    )
+
+            check_budget()
             if version and version != check.get("hash"):
                 raise DomainError(
                     "RESOURCE_VERSION_CHANGED",
@@ -1035,7 +1083,9 @@ class Resources:
                     409,
                 )
             if "queryFields" not in value["schema"]:
-                value["schema"]["queryFields"] = inspect_nested(value["rows"])
+                value["schema"]["queryFields"] = inspect_nested(
+                    value["rows"], check_budget
+                )
             names = {
                 f["name"]
                 for f in value["schema"]["fields"] + value["schema"]["queryFields"]
@@ -1044,16 +1094,24 @@ class Resources:
                 raise DomainError(
                     "UNKNOWN_FIELD", "Inspect schema for exact source field names", 400
                 )
-            total = 0
+            # Unfiltered previews already have an accepted exact row count.
+            # Do not rescan the full source merely to rediscover that count.
+            unfiltered = not filters
+            total = len(value["rows"]) if unfiltered else 0
             items = []
-            for r in value["rows"]:
-                if all(
-                    selected(r, k) is not MISSING
-                    and type(selected(r, k)) is type(v)
-                    and selected(r, k) == v
+            for index, r in enumerate(value["rows"]):
+                if index % 256 == 0:
+                    check_budget()
+                if unfiltered and index >= offset + limit:
+                    break
+                if unfiltered or all(
+                    (actual := selected(r, k)) is not MISSING
+                    and type(actual) is type(v)
+                    and actual == v
                     for k, v in (filters or {}).items()
                 ):
-                    if offset <= total < offset + limit:
+                    position = index if unfiltered else total
+                    if offset <= position < offset + limit:
                         items.append(
                             {
                                 k: selected(r, k)
@@ -1063,7 +1121,9 @@ class Resources:
                             if fields
                             else r
                         )
-                    total += 1
+                    if not unfiltered:
+                        total += 1
+            check_budget()
             if len(json.dumps(items, ensure_ascii=False).encode()) > 512_000:
                 raise DomainError(
                     "RESPONSE_TOO_LARGE",
@@ -1085,7 +1145,7 @@ class Resources:
                     )
                     for r in items
                 ]
-            return {
+            result = {
                 **self.envelope(resource, value, check, stale),
                 "data": {"items": items},
                 "meta": {
@@ -1097,12 +1157,25 @@ class Resources:
                     "structuredQueryable": not document,
                 },
             }
+            if presentation:
+                result["presentation"] = present(items, fields)
+            if (
+                len(json.dumps(result, ensure_ascii=False, allow_nan=False).encode())
+                > MAX_RESPONSE_BYTES
+            ):
+                raise DomainError(
+                    "RESPONSE_TOO_LARGE", "Choose fewer columns or a smaller page", 422
+                )
+            return result
 
-        try:
-            return await asyncio.to_thread(build_result)
-        finally:
-            if isinstance(value["rows"], FileRows):
-                value["rows"].close()
+        def work():
+            try:
+                return build_result()
+            finally:
+                if isinstance(value["rows"], FileRows):
+                    value["rows"].close()
+
+        return await asyncio.to_thread(work)
 
     async def audit(self, batch=BATCH_SIZE, max_seconds=RUN_SECONDS):
         from .refresh_queue import RefreshQueue

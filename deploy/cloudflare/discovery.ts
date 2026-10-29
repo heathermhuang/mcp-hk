@@ -38,6 +38,6 @@ export function discoveryTarget(url: URL, accept=''): {redirect?: string; asset?
   const lang = /^(zh|zh-hant|zh-hk)$/i.test(url.searchParams.get('lang') || '') ? 'zh-Hant' : 'en';
   if (alias && !page[lang+'-markdown']) return {};
   const markdown=Boolean(page[lang+'-markdown']) && (alias || prefersMarkdown(accept));
-  const filtered = ['/','/coverage','/companies','/hkex','/sfc'].includes(path) && [...url.searchParams.keys()].some(key => key !== 'lang' && !key.startsWith('utm_'));
+  const filtered = ['/playground','/','/coverage','/companies','/hkex','/sfc'].includes(path) && [...url.searchParams.keys()].some(key => key !== 'lang' && !key.startsWith('utm_'));
   return {asset: page[lang + (filtered ? '-filtered' : '') + (markdown ? '-markdown' : '')], noindex: alias || filtered || ['/terms', '/privacy'].includes(path), contentType:markdown ? 'text/markdown' : 'text/html',language:lang,page:true};
 }

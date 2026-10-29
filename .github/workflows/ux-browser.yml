@@ -32,6 +32,11 @@ jobs:
           node deploy/cloudflare/company-acceptance-browser.mjs
           node deploy/cloudflare/content-browser.mjs
           node deploy/cloudflare/home-browser.mjs
+          MCP_HK_TEST_ORIGIN=http://127.0.0.1:8765 node deploy/cloudflare/playground-browser.mjs
+          PYTHONPATH=src MCP_HK_DATABASE=/tmp/mcp-hk-playground-ux.sqlite3 python tests/prepare_playground_browser.py
+          PYTHONPATH=src MCP_HK_DATABASE=/tmp/mcp-hk-playground-ux.sqlite3 python -m uvicorn mcp_open_data_hk.api:create_app --factory --host 127.0.0.1 --port 8767 --no-access-log > /tmp/mcp-hk-playground-ux-server.log 2>&1 &
+          for attempt in $(seq 1 30); do curl -fsS http://127.0.0.1:8767/healthz && break; sleep 1; done
+          MCP_HK_TEST_ORIGIN=http://127.0.0.1:8767 node deploy/cloudflare/playground-real-api-browser.mjs
           node deploy/cloudflare/docs-browser.mjs
           MCP_HK_TEST_ORIGIN=http://127.0.0.1:8765 node deploy/cloudflare/unified-records-browser.mjs
 

@@ -1,0 +1,43 @@
+{
+  "scope": "static content, locale, navigation and responsive layout; empty local DB is not provider qualification",
+  "origin": "http://127.0.0.1:8773",
+  "caseCount": 168,
+  "paths": [
+    "/",
+    "/about",
+    "/companies",
+    "/connect",
+    "/coverage",
+    "/datasets",
+    "/demo",
+    "/docs",
+    "/guides",
+    "/guides/connect-ai-to-hong-kong-data",
+    "/guides/data-sources-and-freshness",
+    "/guides/hong-kong-open-data-api",
+    "/hkex",
+    "/plates",
+    "/playground",
+    "/privacy",
+    "/properties",
+    "/racing",
+    "/sfc",
+    "/sources",
+    "/terms"
+  ],
+  "locales": [
+    "en",
+    "zh-Hant"
+  ],
+  "widths": [
+    320,
+    390,
+    768,
+    1280
+  ],
+  "allCombinationsTested": true,
+  "overflowCases": 0,
+  "sharedNavigation": "passed",
+  "errors": [],
+  "fullLocalReceiptSha256": "80054d958e5af9cd17dcec8a94bdc62da74a5f49d346ee471e67ae2108c420d7"
+}

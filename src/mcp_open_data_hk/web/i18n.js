@@ -39,7 +39,7 @@
       // The canonical locale link is a no-JS fallback. With JS, the single
       // language button preserves the current same-origin discovery state.
       if (e.hasAttribute?.('hreflang')) { e.hidden = true; return; }
-      if (url.origin === location.origin && (['/', '/datasets', '/docs', '/racing', '/demo', '/connect', '/sources', '/plates', '/properties', '/companies', '/sfc','/hkex', '/coverage', '/data', '/terms', '/privacy', '/about', '/guides'].includes(url.pathname) || url.pathname.startsWith('/guides/'))) {
+      if (url.origin === location.origin && (['/playground', '/', '/datasets', '/docs', '/racing', '/demo', '/connect', '/sources', '/plates', '/properties', '/companies', '/sfc','/hkex', '/coverage', '/data', '/terms', '/privacy', '/about', '/guides'].includes(url.pathname) || url.pathname.startsWith('/guides/'))) {
         url.searchParams.set('lang', lang === 'en' ? 'en' : 'zh-Hant');
         e.setAttribute('href', url.pathname + url.search + url.hash);
       }

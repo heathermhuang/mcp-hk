@@ -1,0 +1,26 @@
+{
+  "receipts": [
+    "discovery to deliberate source selection, with restricted explanation",
+    "generic exact cells, safe text, draft/apply, pinned paging, chart, recipe, focus, download, 409",
+    "in-flight edits survive; Next uses applied filters; obsolete result ignored; busy cooldown",
+    "required workbook sheet waits for Apply",
+    "returned layer, path and parameter choices; explicit document extraction state",
+    "arrival TTL removes active records, details and charts and disables export",
+    "company partial source recovery and dated name history",
+    "archive company records",
+    "obsolete detail and export completions rejected",
+    "SFC archive independent of inactive official source",
+    "reused stock code requires exact issuer choice",
+    "retained summary read with source hold",
+    "address candidates, exact lookup, known WGS84 view",
+    "licensed premises, permission-disabled export and browser back/forward query restoration",
+    "district statistic retains year and persons unit",
+    "auction history and cohort semantics",
+    "exact building selection, qualified listings and price history",
+    "meeting, race, participant identity and scoped race export",
+    "EN / Traditional Chinese and 320/390/768 responsive layouts",
+    "dark theme and reduced motion"
+  ],
+  "requests": 73,
+  "errors": []
+}

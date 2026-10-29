@@ -5,7 +5,7 @@ from functools import lru_cache
 from html import escape
 from html.parser import HTMLParser
 from pathlib import Path
-from urllib.parse import urlsplit, urlunsplit
+from urllib.parse import urlsplit, urlunsplit, quote
 
 ORIGIN = "https://mcp.hk"
 WEB = Path(__file__).parent / "web"
@@ -215,7 +215,9 @@ def dataset_families():
     return json.loads((WEB / "datasets.json").read_text())
 
 
-def family_directory(lang, compact=False, keys=None, alphabetical=False):
+def family_directory(
+    lang, compact=False, keys=None, alphabetical=False, playground=True
+):
     zh = lang == "zh-Hant"
     parts = ['<div class="dataset-directory">']
     rows = dataset_families()
@@ -225,7 +227,25 @@ def family_directory(lang, compact=False, keys=None, alphabetical=False):
         if keys is not None and row["id"] not in keys:
             continue
         title = escape(row["title"][lang])
-        href = escape(row["path"], quote=True)
+        href = escape(
+            (
+                (
+                    "/playground?lang="
+                    + lang
+                    + "#p="
+                    + quote(
+                        json.dumps(
+                            {"v": 1, "family": row["id"], "lang": lang},
+                            separators=(",", ":"),
+                        ),
+                        safe="",
+                    )
+                )
+                if playground
+                else row["path"]
+            ),
+            quote=True,
+        )
         parts.append(
             f'<article class="dataset-family" id="dataset-{row["id"]}">'
             f'<h2><a href="{href}">{title}</a></h2>'
@@ -342,6 +362,27 @@ def schema(path, lang):
     return {"@context": "https://schema.org", "@graph": graph}
 
 
+def add_explore_navigation(doc, strings):
+    for nav in doc.elements():
+        if (
+            nav.tag != "nav"
+            or nav.attrs.get("data-i18n-aria-label") != "mainNavigation"
+        ):
+            continue
+        nav.children.insert(
+            0,
+            Element(
+                "a",
+                [
+                    ("class", "mhk-navbutton"),
+                    ("href", "/playground"),
+                    ("data-i18n", "pgExplore"),
+                ],
+                [strings["pgExplore"]],
+            ),
+        )
+
+
 @lru_cache(maxsize=64)
 def render_page(path, lang="en", filtered=False):
     lang = locale(lang)
@@ -353,6 +394,14 @@ def render_page(path, lang="en", filtered=False):
     nodes = list(doc.elements())
     html = next(n for n in nodes if n.tag == "html")
     html.attrs.update({"lang": lang, "data-discovery": "true"})
+    if path == "/playground":
+        fallback = next(
+            n for n in nodes if n.attrs.get("id") == "pg-noscript-directory"
+        )
+        fallback.children = Document(
+            family_directory(lang, playground=False)
+        ).root.children
+    add_explore_navigation(doc, strings)
     if template == "article.html":
         main = next(n for n in nodes if n.attrs.get("id") == "article")
         main.children = Document(editorial_body(path, lang)).root.children
@@ -617,6 +666,7 @@ def render_api_docs(lang="en", filtered=False):
     lang = locale(lang)
     strings = translations()["zh" if lang == "zh-Hant" else "en"]
     doc = Document((WEB / "api-docs.html").read_text())
+    add_explore_navigation(doc, strings)
     for node in doc.elements():
         if node.tag == "html":
             node.attrs.update({"lang": lang, "data-discovery": "true"})

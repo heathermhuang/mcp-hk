@@ -316,3 +316,41 @@ The source-scoped HKO current-weather contract also preserves UV-index objects
 and the observed empty-string representation, without
 rewriting source values. The official API dictionary defines the UV object/data
 structure; other inferred field changes remain held for review.
+
+## Exact browser presentation and typed equality
+
+The public `/playground` workspace uses this additive contract over the same HTTP
+and MCP resource engine. Legacy `filters` retain their exact Python-type equality
+and their default response envelope. New source schemas add `scalarKinds` alongside
+legacy `types` (which still groups integer and float as `number`). Existing cached
+schemas can lack the additive metadata; a client must offer explicit kinds rather
+than guess a numeric type. `missingCount` still combines absent and null values.
+
+```json
+{
+  "typedFilters": [{"field":"shares","kind":"integer","value":"9007199254740993"}],
+  "fields": ["shares", "name"],
+  "presentation": true,
+  "limit": 20
+}
+```
+
+Kinds are `integer`, `float`, `string`, `boolean` and `null`; values are textual.
+Integer values have at most 200 decimal digits. Floats must be finite JSON numeric
+literals of at most 200 characters. Boolean/null values use `true`, `false`, `null`.
+String values may be empty and have at most 1,000 characters. Duplicate fields and
+mixing nonempty legacy and typed filters are rejected. `hk_resource_query` accepts
+the same `typedFilters` and `presentation` arguments.
+
+Opt-in `presentation` contains `codec:1`, aligned `columns`/`rows`, scalar cells
+`{kind,text,json}`, and `recordsJson` containing exact serialized projected rows.
+A missing cell has kind `missing` and no JSON value; null has JSON text `null`.
+Source numbers never require a JavaScript Number round trip for display/evidence.
+Literal dotted source keys retain precedence over nested selectors. This preserves
+parsed source values, not precision already discarded by a reader or source FLOAT.
+
+All query envelopes, including the sidecar, have a 1,536,000-byte JSON budget.
+`RESPONSE_TOO_LARGE` asks for fewer columns or a smaller page; data is not silently
+truncated. Two admitted read/scan jobs share a cooperative five-second scan budget.
+`RESOURCE_BUSY` and `RESOURCE_SCAN_DEADLINE` return 503 with `Retry-After: 2`.
+Cancelling a caller does not prematurely free a running thread or delete its reader.

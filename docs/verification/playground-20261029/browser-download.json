@@ -1,0 +1,10 @@
+{
+  "scope": "actual local fixture API browser download",
+  "rowCount": 1,
+  "largeIntegerExact": true,
+  "leadingZeros": true,
+  "spreadsheetTextProtection": true,
+  "crc": "passed",
+  "memberHashes": "passed",
+  "archiveSha256": "04ddc6c92232d6c3bb13745b46f93b112f352fb37bbe7a524216555e6751b3b6"
+}

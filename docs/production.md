@@ -550,3 +550,34 @@ Run production health through `verify-official.sh` so this coordination is retai
 HKEX host jobs read typed systemd monotonic microseconds through `busctl` and bind
 timer work to the canonical scheduled UTC occurrence. Existing operator starts
 remain distinct and no old provenance receipt is overwritten.
+
+## Data playground candidate rollout
+
+The local playground candidate changes the resource query service and generated
+static assets together. Its contract and family qualification are documented in
+[data playground](data-playground.md) and its [candidate evidence](verification/playground-20261029/README.md).
+Local verification does not authorize publication or prove live headroom/usability.
+
+Before an authorized release, bind the exact committed candidate to green CI for
+Python 3.10/3.11/3.12, formatting/lint, Worker types/tests, distributable build and UX
+browser checks. Rebuild bilingual discovery assets; confirm `/playground`, directory
+recipes, no-JS links, canonical/filtered metadata and asset versions in both paths.
+
+Use the coordinated controller/container procedure above: pause **only** the resource
+cron, preserve the other four schedules, wait through propagation and any owning
+lease/checkpoint, and never clear a lease after an interrupted response. Keep the
+pause through adoption. Verify actual controller and Python backend adoption, then
+probe legacy and typed HTTP/MCP queries (including an unsafe integer), version drift,
+source holds, expired arrivals and the bounded download. A static release header is
+insufficient. Avoid treating the new static UI reaching an older backend as adoption.
+Restore all five configured schedules only after the matching backend/assets pass.
+
+Measure real read/maintenance headroom without raising quotas. Retain failed or
+unknown receipts and the last accepted checkpoint. Obtain a fresh accepted backup
+and perform the documented isolated checksum/SQLite/accepted-pack/source-registry
+restore. Rollback code and generated assets together; additive query fields preserve
+legacy clients. Never roll back accepted source facts to hide a UI failure.
+
+The five-person, nontechnical find/filter/share pilot remains separate: target four
+unaided completions, with source/current-vs-historical understanding for all five.
+Record real outcomes and small-sample limitations; do not infer them from automation.
