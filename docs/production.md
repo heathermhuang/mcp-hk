@@ -167,8 +167,9 @@ the page does not query source records or change source gates.
 
 The original Swagger UI 5.34.0 console remains available under progressive
 disclosure; its JavaScript/CSS load only when opened or following an existing
-Swagger deep link. `api-docs.js` initializes it with the same unmodified runtime
-schema. The API's `script-src 'self'` policy remains intact; all assets use the
+Swagger deep link. `api-docs-page.js` initializes it with the same unmodified runtime
+schema. The original `api-docs.js` launcher is retained for cached HTML and the
+Worker/container rollout handoff. The API's `script-src 'self'` policy remains intact; all assets use the
 same-origin `/assets` paths. No runtime CDN, inline-script allowance or external
 schema validator is needed. `/redoc` redirects to this reference. Vendored files originate from the npm
 `swagger-ui-dist@5.34.0` archive. Its Apache-2.0 license, NOTICE and bundled
