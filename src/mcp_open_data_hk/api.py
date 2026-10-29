@@ -464,8 +464,17 @@ def create_app(service=None):
             return RedirectResponse("/coverage" + suffix, status_code=308)
 
         @app.get("/docs", include_in_schema=False)
-        def api_docs():
-            return FileResponse(web / "api-docs.html", media_type="text/html")
+        def api_docs(request: Request):
+            lang = locale(request.query_params.get("lang"))
+            filtered = any(key in request.query_params for key in ("q", "group"))
+            return Response(
+                discovery.render_api_docs(lang, filtered),
+                media_type="text/html",
+                headers={
+                    "Content-Language": lang,
+                    "X-Robots-Tag": "noindex, follow" if filtered else INDEX,
+                },
+            )
 
         @app.get("/redoc", include_in_schema=False)
         def docs_alias():

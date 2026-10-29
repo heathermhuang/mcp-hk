@@ -1,0 +1,8 @@
+{
+  "url": "https://mcp.hk/api/v1/districts/central-western/statistics",
+  "status": 200,
+  "populationField": true,
+  "referencePeriodField": true,
+  "provenancePresent": true,
+  "scope": "Existing accepted district snapshot; no source collection"
+}

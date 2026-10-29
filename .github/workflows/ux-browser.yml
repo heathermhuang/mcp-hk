@@ -32,6 +32,7 @@ jobs:
           node deploy/cloudflare/company-acceptance-browser.mjs
           node deploy/cloudflare/content-browser.mjs
           node deploy/cloudflare/home-browser.mjs
+          node deploy/cloudflare/docs-browser.mjs
           MCP_HK_TEST_ORIGIN=http://127.0.0.1:8765 node deploy/cloudflare/unified-records-browser.mjs
 
           MCP_HK_TEST_ORIGIN=http://127.0.0.1:8765 node deploy/cloudflare/racing-browser.mjs

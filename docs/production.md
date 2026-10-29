@@ -159,10 +159,18 @@ newer selections. It never retries unchanged provider or schema failures.
 
 ### Public pages and language
 
-`/docs` serves Swagger UI 5.34.0 from the same-origin `/assets` paths, with its
-initializer in `api-docs.js`. The API's `script-src 'self'` policy remains intact;
-no runtime CDN, inline-script allowance or external schema validator is needed.
-`/redoc` redirects to this reference. Vendored files originate from the npm
+`/docs` serves a bilingual first-request guide and searchable API reference in the
+shared site shell. Its HTML is localized before JavaScript. Search uses the actual
+runtime OpenAPI paths/methods plus bilingual labels and shared family keywords;
+parameter and response definitions remain original schema data. Viewing/searching
+the page does not query source records or change source gates.
+
+The original Swagger UI 5.34.0 console remains available under progressive
+disclosure; its JavaScript/CSS load only when opened or following an existing
+Swagger deep link. `api-docs.js` initializes it with the same unmodified runtime
+schema. The API's `script-src 'self'` policy remains intact; all assets use the
+same-origin `/assets` paths. No runtime CDN, inline-script allowance or external
+schema validator is needed. `/redoc` redirects to this reference. Vendored files originate from the npm
 `swagger-ui-dist@5.34.0` archive. Its Apache-2.0 license, NOTICE and bundled
 third-party license notices are preserved alongside the assets.
 SHA-256: bundle `3f6abf70480db7e07914df4c98a77385f22ea585eaf457a3e6415ba0eae2d167`;
