@@ -104,3 +104,40 @@ public building IDs, view and filters; typed addresses remain current-tab state.
 `deploy/cloudflare/ux-browser.mjs` exercises actual browser history, focus, request
 fan-out, source failure, shareable selection, mobile reflow and both authored locales.
 The fixtures prove deterministic UI contracts, not live provider availability.
+
+## Directory homepage (29 October 2026)
+
+The homepage keeps broad topic discovery ahead of catalogue results, with the
+existing Find data / Connect AI / Guides / Data status navigation. Topic links
+search both connected queries and source datasets. They are navigation aids, not
+claims of complete subject coverage. Company/archive views continue through the
+same company explorer; source identities, dates and qualification gates remain
+separate.
+
+The homepage requests `order=title` from `/api/v1/catalogue/datasets`. HTTP and
+`hk_catalogue_search` accept the optional `order` (`relevance` or `title`) and
+`provider` (`all`, `government`, `independent`,
+`independent_or_public_corporation`, `unclassified`) arguments. The default search
+contract remains unchanged. Title order uses the original English title with
+ASCII case folded, then the original ID as a stable tie-breaker, for every
+provider. Provider filters run before counts and pagination; public-corporation
+and unresolved classifications are retained without relabelling.
+
+Expandable results use the shared `datasets.json` family copy for connected
+scope, dates and download limits. Native catalogue entries keep the provider's
+text, metadata modification date, reference period and terms where supplied,
+with links to resource inspection. Source catalogue access is not a record-read
+claim. Plate.hk and SeeHouse share an operator with mcp.hk; the homepage discloses
+that relationship and applies the same title ordering to every provider.
+
+Search, access, provider and page state survive refresh, history and language
+switching. Starting another request clears previous rows, cancels the earlier
+request and ignores obsolete responses. A catalogue failure shows a retry action
+and the server-rendered family scope index. Without JavaScript, search submits
+to the existing coverage explorer and the subject/family links remain available.
+
+`deploy/cloudflare/home-browser.mjs` verifies both languages at 320, 390, 768 and
+1280 pixels. Its deterministic fixtures establish UI behavior, not source
+qualification. The Python catalogue tests establish ordering, filtering and
+pagination against the real service. Release evidence lives in
+[the Directory verification receipt](verification/directory-home-20261029/README.md).

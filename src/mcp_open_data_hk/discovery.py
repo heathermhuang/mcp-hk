@@ -215,10 +215,13 @@ def dataset_families():
     return json.loads((WEB / "datasets.json").read_text())
 
 
-def family_directory(lang, compact=False, keys=None):
+def family_directory(lang, compact=False, keys=None, alphabetical=False):
     zh = lang == "zh-Hant"
     parts = ['<div class="dataset-directory">']
-    for row in dataset_families():
+    rows = dataset_families()
+    if alphabetical:
+        rows = sorted(rows, key=lambda row: row["title"]["en"].casefold())
+    for row in rows:
         if keys is not None and row["id"] not in keys:
             continue
         title = escape(row["title"][lang])
@@ -390,12 +393,38 @@ def render_page(path, lang="en", filtered=False):
             )
     if path == "/":
         home = next(n for n in nodes if n.attrs.get("data-page") == "home")
-        packs = next(n for n in nodes if "mhk-demos" in n.attrs.get("class", ""))
-        packs.attrs["class"] = "dataset-home"
-        packs.children = Document(family_directory(lang, compact=True)).root.children
+        results = next(n for n in nodes if n.attrs.get("id") == "directory-results")
+        results.children = [
+            Element(
+                "details",
+                [("class", "mhk-disclosure")],
+                [
+                    Element("summary", children=[strings["allFamilies"]]),
+                    *Document(family_directory(lang, alphabetical=True)).root.children,
+                ],
+            )
+        ]
+        topics = next(n for n in nodes if n.attrs.get("id") == "directory-topics")
+        topics.children = [
+            Element(
+                "a",
+                [
+                    (
+                        "href",
+                        "/coverage?access=all&q=" + row["query"].replace(" ", "%20"),
+                    ),
+                    ("data-topic-query", row["query"]),
+                ],
+                [row[lang] + " ↗"],
+            )
+            for row in json.loads((WEB / "topics.json").read_text())
+        ]
         questions = content()["faq"][lang]
-        faq = Element("section", [("aria-label", content()["faqLabel"][lang])])
-        faq.children = [Element("h2", children=[content()["faqLabel"][lang]])]
+        faq = Element(
+            "details",
+            [("class", "mhk-disclosure"), ("aria-label", content()["faqLabel"][lang])],
+        )
+        faq.children = [Element("summary", children=[content()["faqLabel"][lang]])]
         for question, answer in questions:
             faq.children.append(Element("h3", children=[question]))
             faq.children.append(Element("p", children=[answer]))

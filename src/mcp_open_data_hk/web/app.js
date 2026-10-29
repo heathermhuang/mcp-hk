@@ -9,10 +9,7 @@
   let plateGeneration = 0;
   const $ = selector => root.querySelector(selector);
   const label = value => value?.[state.lang === 'en' ? 'en' : 'zhHant'] || value?.en || value?.zhHant || '—';
-  $('#mhk-discovery-form').addEventListener('submit', e => {
-    e.preventDefault();
-    location.assign('/coverage?' + new URLSearchParams({q:$('#mhk-discovery-query').value.trim(),access:'all',lang:MhkI18n.locale}));
-  });
+
 
   function error(message) { $('#mhk-error').hidden = !message; $('#mhk-error').textContent = message || ''; }
   async function api(path, signal) {

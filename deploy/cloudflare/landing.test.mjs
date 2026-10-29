@@ -41,22 +41,13 @@ test('neighbourhood form submits the address API rather than the plate layout di
   }finally{globalThis.fetch=originalFetch;}
 });
 
-test('homepage search opens the shared catalogue with query and current locale',async()=>{
-  const originalFetch=globalThis.fetch,elements=new Map(),destinations=[];
-  const element=selector=>{if(!elements.has(selector))elements.set(selector,new Element());return elements.get(selector);};
-  globalThis.fetch=async()=>Response.json({datasets:{discovered:1},resources:{discovered:1,byStatus:{}}});
-  try{
-    const location=new URL('https://mcp.hk/?lang=zh-Hant');location.assign=value=>destinations.push(value);
-    const context={document:{getElementById:()=>({querySelector:element,querySelectorAll:()=>[]}),createElement:()=>new Element()},location,URLSearchParams,Event,history:{pushState(){}},window:{addEventListener(){},dispatchEvent(){}},translations:{zh:{}},MhkI18n:{lang:'zh',locale:'zh-Hant',t:k=>k,apply(){},coverageSummary(){}}};
-    const url=new URL('../../src/mcp_open_data_hk/web/app.js',import.meta.url);
-    vm.runInNewContext(readFileSync(url,'utf8'),context,{filename:fileURLToPath(url),importModuleDynamically:vm.constants.USE_MAIN_CONTEXT_DEFAULT_LOADER});
-    element('#mhk-discovery-query').value=' plate.hk ';let prevented=false;
-    element('#mhk-discovery-form').listeners.submit({preventDefault(){prevented=true;}});
-    assert.equal(prevented,true);assert.deepEqual(destinations,['/coverage?q=plate.hk&access=all&lang=zh-Hant']);
-    await new Promise(resolve=>setImmediate(resolve));
-  }finally{globalThis.fetch=originalFetch;}
+test('homepage search has a real catalogue fallback without JavaScript',()=>{
+  const html=readFileSync(new URL('../../src/mcp_open_data_hk/web/index.html',import.meta.url),'utf8');
+  assert.match(html,/<form id="mhk-discovery-form"[^>]*action="\/coverage"[^>]*method="get"/);
+  assert.match(html,/<input[^>]*name="q"/);
+  assert.match(html,/<input type="hidden" name="access" value="all"/);
+  assert.match(html,/<input type="hidden" name="lang"[^>]*data-language-value/);
 });
-
 
 test('browse-all links explicitly include the full source catalogue',()=>{
   const html=readFileSync(new URL('../../src/mcp_open_data_hk/web/index.html',import.meta.url),'utf8');

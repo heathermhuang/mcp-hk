@@ -97,8 +97,8 @@ test('data browser shares the same complete navigation and footer as the other p
   assert.equal(shell('legal.html','footer'),shell('coverage.html','footer'));
   const links=[...shell('coverage.html','header').matchAll(/class="mhk-navbutton"[^>]*href="([^"]+)"/g)].map(m=>m[1]);
   assert.deepEqual(links,['/datasets','/connect','/guides','/sources']);
-  const examples=read('index.html').match(/<div class="mhk-packs mhk-demos">([\s\S]*?)<\/div>/)[1];
-  for(const path of ['/demo','/plates']) assert.ok(examples.includes('href="'+path+'"'),path+' remains accessible as a homepage example');
+  const registry=JSON.parse(read('datasets.json'));
+  for(const path of ['/demo','/plates','/companies','/hkex']) assert.ok(registry.some(f=>f.path.split('#')[0]===path),path+' remains accessible through the shared homepage registry');
 });
 
 

@@ -225,53 +225,88 @@ class CatalogueStore:
             )
         return json.loads(row[0])
 
-    def search(self, q="", limit=20, offset=0, access="all"):
+    def search(
+        self, q="", limit=20, offset=0, access="all", provider="all", order="relevance"
+    ):
         if (
             len(q) > 200
             or not 1 <= limit <= 100
             or not 0 <= offset <= 100000
             or access not in {"all", "connected", "sources"}
+            or provider
+            not in {
+                "all",
+                "government",
+                "independent",
+                "independent_or_public_corporation",
+                "unclassified",
+            }
+            or order not in {"relevance", "title"}
         ):
             raise DomainError("INVALID_QUERY", "Invalid search or pagination", 400)
         self.refresh_transport_policies()
         generation = self.head()
         curated = connected.matching(q) if access != "sources" else []
+        if provider != "all":
+            curated = [
+                e for e in curated if e.get("providerType", "unclassified") == provider
+            ]
         terms = connected.normalise(q).split() or [""]
         patterns = [
             "%" + t.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%"
             for t in terms
         ]
         where = "generation=?" + " AND payload LIKE ? ESCAPE '\\'" * len(patterns)
+        args = (generation, *patterns)
+        if provider != "all":
+            where += (
+                " AND COALESCE(json_extract(payload,'$.providerType'),'unclassified')=?"
+            )
+            args += (provider,)
         with self.store.connect() as db:
             total_native = (
                 db.execute(
                     "SELECT count(*) FROM inventory_datasets WHERE " + where,
-                    (generation, *patterns),
+                    args,
                 ).fetchone()[0]
                 if access != "connected"
                 else 0
             )
             start_native = max(0, offset - len(curated))
             count_native = max(0, limit - len(curated[offset : offset + limit]))
-            rows = (
-                db.execute(
-                    "SELECT payload FROM inventory_datasets WHERE "
-                    + where
-                    + " ORDER BY CASE WHEN lower(json_extract(payload,'$.title'))=? THEN 0 WHEN json_extract(payload,'$.title') LIKE ? ESCAPE '\\' OR json_extract(payload,'$.titleZhHant') LIKE ? ESCAPE '\\' THEN 1 WHEN json_extract(payload,'$.provider') LIKE ? ESCAPE '\\' THEN 2 ELSE 3 END,id LIMIT ? OFFSET ?",
-                    (
-                        generation,
-                        *patterns,
-                        connected.normalise(q),
-                        patterns[0],
-                        patterns[0],
-                        patterns[0],
-                        count_native,
-                        start_native,
-                    ),
-                ).fetchall()
-                if total_native and count_native
-                else []
-            )
+            if order == "title":
+                # Merge a bounded native window with the small connected registry.
+                # Both interfaces receive the same title/id order, including ties.
+                count_native = limit + len(curated)
+                rows = (
+                    db.execute(
+                        "SELECT payload FROM inventory_datasets WHERE "
+                        + where
+                        + " ORDER BY lower(json_extract(payload,'$.title')),id LIMIT ? OFFSET ?",
+                        (*args, count_native, start_native),
+                    ).fetchall()
+                    if total_native
+                    else []
+                )
+            else:
+                rows = (
+                    db.execute(
+                        "SELECT payload FROM inventory_datasets WHERE "
+                        + where
+                        + " ORDER BY CASE WHEN lower(json_extract(payload,'$.title'))=? THEN 0 WHEN json_extract(payload,'$.title') LIKE ? ESCAPE '\\' OR json_extract(payload,'$.titleZhHant') LIKE ? ESCAPE '\\' THEN 1 WHEN json_extract(payload,'$.provider') LIKE ? ESCAPE '\\' THEN 2 ELSE 3 END,id LIMIT ? OFFSET ?",
+                        (
+                            *args,
+                            connected.normalise(q),
+                            patterns[0],
+                            patterns[0],
+                            patterns[0],
+                            count_native,
+                            start_native,
+                        ),
+                    ).fetchall()
+                    if total_native and count_native
+                    else []
+                )
             native = [json.loads(r[0]) for r in rows]
             for item in native:
                 states = {
@@ -287,8 +322,21 @@ class CatalogueStore:
                     "byStatus": states,
                 }
         total = len(curated) + total_native
+        if order == "title":
+            ascii_lower = str.maketrans(
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz"
+            )
+            items = sorted(
+                curated + native,
+                key=lambda item: (
+                    item.get("title", "").translate(ascii_lower),
+                    item["id"],
+                ),
+            )[offset - start_native : offset - start_native + limit]
+        else:
+            items = curated[offset : offset + limit] + native
         return {
-            "items": curated[offset : offset + limit] + native,
+            "items": items,
             "total": total,
             "connectedTotal": len(curated),
             "sourceTotal": total_native,
