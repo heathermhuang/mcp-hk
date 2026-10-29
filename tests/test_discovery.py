@@ -124,6 +124,12 @@ def test_query_urls_do_not_create_indexable_pages_or_echo_private_input(client):
         .headers["x-robots-tag"]
         .startswith("index")
     )
+    home = client.get("/?q=private-home-query&provider=independent&lang=zh-Hant")
+    assert home.headers["x-robots-tag"] == "noindex, follow"
+    assert '<meta name="robots" content="noindex, follow">' in home.text
+    assert "private-home-query" not in home.text
+    assert 'href="https://mcp.hk/?lang=zh-Hant"' in home.text
+    assert client.get("/?utm_source=test").headers["x-robots-tag"].startswith("index")
     alias = client.get("/data?lang=zh-Hant&q=weather", follow_redirects=False)
     assert (
         alias.status_code == 308

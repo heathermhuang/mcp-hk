@@ -1,0 +1,62 @@
+[
+  {
+    "en": "Addresses & places",
+    "zh-Hant": "地址與地方",
+    "query": "address"
+  },
+  {
+    "en": "Business & economy",
+    "zh-Hant": "商業與經濟",
+    "query": "economy"
+  },
+  {
+    "en": "Companies & organisations",
+    "zh-Hant": "公司與機構",
+    "query": "company"
+  },
+  {
+    "en": "Education",
+    "zh-Hant": "教育",
+    "query": "schools"
+  },
+  {
+    "en": "Environment",
+    "zh-Hant": "環境",
+    "query": "environment"
+  },
+  {
+    "en": "Food & premises",
+    "zh-Hant": "食肆與處所",
+    "query": "restaurants"
+  },
+  {
+    "en": "Housing & property",
+    "zh-Hant": "房屋與物業",
+    "query": "property"
+  },
+  {
+    "en": "Population & districts",
+    "zh-Hant": "人口與地區",
+    "query": "population"
+  },
+  {
+    "en": "Public holidays",
+    "zh-Hant": "公眾假期",
+    "query": "public holidays"
+  },
+  {
+    "en": "Racing & sport",
+    "zh-Hant": "賽馬與體育",
+    "query": "racing"
+  },
+  {
+    "en": "Transport & mobility",
+    "zh-Hant": "交通與出行",
+    "query": "transport"
+  },
+  {
+    "en": "Weather & climate",
+    "zh-Hant": "天氣與氣候",
+    "query": "weather"
+  }
+]

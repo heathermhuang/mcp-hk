@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-29",
+  "scope": "Local UI candidate and read-only public status observations. Not a deployment or source qualification.",
+  "base": "6a0fbc5dd08616a2a092faa6e449953fc47d1e0e",
+  "catalogueObservation": {
+    "generation": "02229d547c664c83a62a44210de98685",
+    "nativeTotal": 4991,
+    "connectedTotal": 11,
+    "sampleCount": 100,
+    "sampleSha256": "999b5acd33593cbcc61a7a1f9425b7a651b6a5e1f3902658cb93d6781cbc3d52",
+    "sampleAccess": "sources"
+  },
+  "sfc": {
+    "state": "not_activated",
+    "acceptedVersion": null,
+    "reasonCode": "SFC_POLICY_NOT_ACTIVATED",
+    "qualifiedLiveTransport": false
+  },
+  "hkex": {
+    "state": "available",
+    "version": "hkex-daily-2d654797ea0d194718c996e1e5f979a0",
+    "holdCode": "SOURCE_ACCESS_HOLD",
+    "holdUntil": null,
+    "lastSuccessfulRead": "2026-10-27T10:20:37.196401+00:00"
+  },
+  "screenshots": {
+    "origin": "http://127.0.0.1:8767",
+    "data": "100 public source metadata rows copied into an isolated local SQLite catalogue; source resource records were not imported. Local connected registry reflects its configured environment, not production readiness."
+  }
+}
