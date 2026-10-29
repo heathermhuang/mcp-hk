@@ -608,3 +608,57 @@ def render_page(path, lang="en", filtered=False):
                 ("", "", target.path, query, target.fragment)
             )
     return doc.html()
+
+
+def render_api_docs(lang="en", filtered=False):
+    """Localize the documentation shell without changing the OpenAPI contract."""
+    from urllib.parse import parse_qsl, urlencode
+
+    lang = locale(lang)
+    strings = translations()["zh" if lang == "zh-Hant" else "en"]
+    doc = Document((WEB / "api-docs.html").read_text())
+    for node in doc.elements():
+        if node.tag == "html":
+            node.attrs.update({"lang": lang, "data-discovery": "true"})
+        key = node.attrs.get("data-i18n")
+        if key in strings:
+            node.children = [strings[key]]
+        for attr in ("placeholder", "aria-label", "content"):
+            key = node.attrs.get("data-i18n-" + attr)
+            if key in strings:
+                node.attrs[attr] = strings[key]
+        if node.tag == "title":
+            node.children = [strings["apiReferenceTitle"] + " · mcp.hk"]
+        if "mhk-language" in node.attrs.get("class", "").split():
+            node.children = ["EN" if lang == "zh-Hant" else "繁"]
+            node.attrs["aria-label"] = (
+                "Switch to English" if lang == "zh-Hant" else "切換至繁體中文"
+            )
+        if node.attrs.get("rel") == "canonical" and lang == "zh-Hant":
+            node.attrs["href"] = "https://mcp.hk/docs?lang=zh-Hant"
+        href = node.attrs.get("href", "")
+        target = urlsplit(href)
+        if href.startswith("/") and target.path in {*public_paths(), "/docs"}:
+            query = dict(parse_qsl(target.query))
+            query["lang"] = lang
+            node.attrs["href"] = urlunsplit(
+                ("", "", target.path, urlencode(query), target.fragment)
+            )
+    nodes = list(doc.elements())
+    head = next(n for n in nodes if n.tag == "head")
+    head.children.append(
+        Element(
+            "meta",
+            [("name", "robots"), ("content", "noindex, follow" if filtered else INDEX)],
+        )
+    )
+    footer = next(n for n in nodes if n.tag == "footer")
+    other = "en" if lang == "zh-Hant" else "zh-Hant"
+    footer.children.append(
+        Element(
+            "a",
+            [("href", "/docs?lang=" + other), ("hreflang", other)],
+            ["English" if other == "en" else "繁體中文"],
+        )
+    )
+    return doc.html()

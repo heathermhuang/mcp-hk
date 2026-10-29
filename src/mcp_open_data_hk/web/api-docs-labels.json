@@ -1,0 +1,214 @@
+{
+  "GET /healthz": {
+    "en": "Process health",
+    "zh-Hant": "程序健康狀態"
+  },
+  "GET /readyz": {
+    "en": "Accepted-pack readiness",
+    "zh-Hant": "已接納數據包的就緒狀態"
+  },
+  "GET /api/v1/status": {
+    "en": "Source status and freshness",
+    "zh-Hant": "來源狀態及資料時效"
+  },
+  "GET /api/v1/packs": {
+    "en": "Connected data packs",
+    "zh-Hant": "已連接數據包"
+  },
+  "GET /api/v1/hkex/archive/status": {
+    "en": "Disclosure archive coverage",
+    "zh-Hant": "權益披露歷史檔案範圍"
+  },
+  "GET /api/v1/hkex/archive/notice": {
+    "en": "Disclosure archive source notice",
+    "zh-Hant": "權益披露歷史檔案來源說明"
+  },
+  "GET /api/v1/hkex/archive/issuers": {
+    "en": "Find historical issuers",
+    "zh-Hant": "尋找歷史發行人"
+  },
+  "GET /api/v1/hkex/archive/disclosures": {
+    "en": "Search historical disclosures",
+    "zh-Hant": "搜尋歷史權益披露"
+  },
+  "GET /api/v1/hkex/archive/disclosures/{filing_id}": {
+    "en": "Read a historical disclosure",
+    "zh-Hant": "讀取一項歷史權益披露"
+  },
+  "GET /api/v1/hkex/latest/status": {
+    "en": "Published-summary coverage and holds",
+    "zh-Hant": "已發布摘要範圍及來源暫停狀態"
+  },
+  "GET /api/v1/hkex/latest/notice": {
+    "en": "Published-summary source notice",
+    "zh-Hant": "已發布摘要的來源說明"
+  },
+  "GET /api/v1/hkex/latest/disclosures": {
+    "en": "Search retained published summaries",
+    "zh-Hant": "搜尋保留的已發布摘要"
+  },
+  "GET /api/v1/hkex/latest/disclosures/{record_id}": {
+    "en": "Read a published summary",
+    "zh-Hant": "讀取一項已發布摘要"
+  },
+  "GET /api/v1/hkex/status": {
+    "en": "Full-filing qualification status",
+    "zh-Hant": "完整申報資料資格審核狀態"
+  },
+  "GET /api/v1/racing/status": {
+    "en": "Racing coverage and source status",
+    "zh-Hant": "賽馬資料範圍及來源狀態"
+  },
+  "GET /api/v1/racing/meetings": {
+    "en": "Browse imported race meetings",
+    "zh-Hant": "瀏覽已匯入賽馬日"
+  },
+  "GET /api/v1/racing/races": {
+    "en": "Find imported races",
+    "zh-Hant": "尋找已匯入賽事"
+  },
+  "GET /api/v1/racing/races/{race_id}/results": {
+    "en": "Read accepted race results",
+    "zh-Hant": "讀取已接納賽果"
+  },
+  "GET /api/v1/racing/participants/{participant_id}": {
+    "en": "Read a participant profile",
+    "zh-Hant": "讀取參賽者檔案"
+  },
+  "GET /api/v1/racing/profiles/{kind}/{source_id}": {
+    "en": "Read a dated profile observation",
+    "zh-Hant": "讀取具日期的檔案觀察"
+  },
+  "GET /api/v1/racing/profiles/{kind}/{source_id}/history": {
+    "en": "Page through profile history",
+    "zh-Hant": "分頁查閱檔案往績"
+  },
+  "GET /api/v1/racing/profiles/{kind}/{source_id}/export": {
+    "en": "Export a profile and history page",
+    "zh-Hant": "匯出檔案及本頁往績"
+  },
+  "GET /api/v1/racing/exports": {
+    "en": "Export selected racing records",
+    "zh-Hant": "匯出所選賽馬紀錄"
+  },
+  "GET /api/v1/companies": {
+    "en": "Search company observations and archives",
+    "zh-Hant": "搜尋公司觀察資料及歷史檔案"
+  },
+  "GET /api/v1/companies/notice": {
+    "en": "Company archive source notice",
+    "zh-Hant": "公司歷史檔案來源說明"
+  },
+  "GET /api/v1/companies/updates/status": {
+    "en": "Official company coverage and updates",
+    "zh-Hant": "官方公司資料範圍及更新狀態"
+  },
+  "GET /api/v1/companies/{entity_id}": {
+    "en": "Read a source-linked company",
+    "zh-Hant": "讀取附來源的公司資料"
+  },
+  "GET /api/v1/companies/{entity_id}/{family}": {
+    "en": "Page through a company record family",
+    "zh-Hant": "分頁查閱公司紀錄類別"
+  },
+  "GET /api/v1/properties/search": {
+    "en": "Search buildings",
+    "zh-Hant": "搜尋大廈"
+  },
+  "GET /api/v1/properties/building": {
+    "en": "Read a building and observed listings",
+    "zh-Hant": "讀取大廈及已觀察放盤"
+  },
+  "GET /api/v1/properties/price-history": {
+    "en": "Read observed asking-price changes",
+    "zh-Hant": "讀取已觀察叫價變動"
+  },
+  "GET /api/v1/properties/coverage": {
+    "en": "Property source coverage",
+    "zh-Hant": "物業來源範圍"
+  },
+  "GET /api/v1/plates/search": {
+    "en": "Search plate auction history",
+    "zh-Hant": "搜尋車牌拍賣紀錄"
+  },
+  "GET /api/v1/plates/comparables": {
+    "en": "Compare historical plate results",
+    "zh-Hant": "比較車牌歷史拍賣結果"
+  },
+  "GET /api/v1/plates/datasets": {
+    "en": "Plate auction dataset coverage",
+    "zh-Hant": "車牌拍賣數據範圍"
+  },
+  "GET /api/v1/addresses/search": {
+    "en": "Find address candidates",
+    "zh-Hant": "尋找地址選項"
+  },
+  "GET /api/v1/addresses/{geoAddress}": {
+    "en": "Read a selected address",
+    "zh-Hant": "讀取所選地址"
+  },
+  "GET /api/v1/restaurants": {
+    "en": "Search recorded restaurant licences",
+    "zh-Hant": "搜尋食肆牌照紀錄"
+  },
+  "GET /api/v1/restaurants/{licenceId}": {
+    "en": "Read a restaurant licence",
+    "zh-Hant": "讀取食肆牌照"
+  },
+  "GET /api/v1/districts": {
+    "en": "List districts",
+    "zh-Hant": "列出地區"
+  },
+  "GET /api/v1/districts/{districtId}/statistics": {
+    "en": "Read published district statistics",
+    "zh-Hant": "讀取已公布地區統計"
+  },
+  "GET /api/v1/datasets": {
+    "en": "Search the upstream government catalogue",
+    "zh-Hant": "搜尋上游政府目錄"
+  },
+  "GET /api/v1/datasets/{datasetId}": {
+    "en": "Read upstream dataset metadata",
+    "zh-Hant": "讀取上游數據集中繼資料"
+  },
+  "GET /api/v1/sfc/status": {
+    "en": "SFC capability and activation status",
+    "zh-Hant": "證監會資料功能及啟用狀態"
+  },
+  "GET /api/v1/coverage": {
+    "en": "Catalogue coverage and validation",
+    "zh-Hant": "目錄範圍及驗證狀態"
+  },
+  "GET /api/v1/catalogue/datasets": {
+    "en": "Search connected and source datasets",
+    "zh-Hant": "搜尋已連接及來源數據集"
+  },
+  "GET /api/v1/catalogue/datasets/{datasetId}": {
+    "en": "Read catalogue dataset metadata",
+    "zh-Hant": "讀取目錄數據集中繼資料"
+  },
+  "GET /api/v1/catalogue/datasets/{datasetId}/resources": {
+    "en": "List a dataset’s resources",
+    "zh-Hant": "列出數據集資源"
+  },
+  "GET /api/v1/resources": {
+    "en": "Browse source resources",
+    "zh-Hant": "瀏覽來源資源"
+  },
+  "GET /api/v1/resources/{resourceId}/schema": {
+    "en": "Inspect resource fields",
+    "zh-Hant": "查閱資源欄位"
+  },
+  "POST /api/v1/resources/{resourceId}/schema": {
+    "en": "Inspect fields with source settings",
+    "zh-Hant": "按來源設定查閱欄位"
+  },
+  "POST /api/v1/resources/{resourceId}/query": {
+    "en": "Query supported resource records",
+    "zh-Hant": "查詢支援的資源紀錄"
+  },
+  "GET /api/v1/resources/{resourceId}/records": {
+    "en": "Read a bounded records page",
+    "zh-Hant": "讀取有界紀錄分頁"
+  }
+}
