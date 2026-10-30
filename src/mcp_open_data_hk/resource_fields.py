@@ -41,10 +41,27 @@ def value_type(value):
     return "string"
 
 
+SCALAR_KINDS = {
+    int: "integer",
+    float: "float",
+    bool: "boolean",
+    str: "string",
+    type(None): "null",
+    dict: "object",
+    list: "array",
+}
+
+
+def scalar_kind(value):
+    return SCALAR_KINDS.get(type(value), "string")
+
+
 def add_nested(stats, row):
     for name, value in nested_values(row):
-        entry = stats.setdefault(name, {"types": set(), "present": 0})
-        entry["types"].add(value_type(value))
+        entry = stats.setdefault(name, {"types": set(), "kinds": set(), "present": 0})
+        kind = scalar_kind(value)
+        entry["types"].add("number" if kind in {"integer", "float"} else kind)
+        entry["kinds"].add(kind)
         entry["present"] += value is not None
     if len(stats) > 1000:
         raise DomainError(
@@ -57,6 +74,7 @@ def nested_schema(stats, count):
         {
             "name": k,
             "types": sorted(v["types"] | ({"null"} if v["present"] < count else set())),
+            "scalarKinds": sorted(v["kinds"] - {"object", "array"}),
             "missingCount": count - v["present"],
             "unit": None,
         }
@@ -64,10 +82,12 @@ def nested_schema(stats, count):
     ]
 
 
-def inspect_nested(rows):
+def inspect_nested(rows, check_budget=None):
     stats = {}
     count = 0
     for row in rows:
+        if check_budget and count % 256 == 0:
+            check_budget()
         count += 1
         add_nested(stats, row)
     return nested_schema(stats, count)

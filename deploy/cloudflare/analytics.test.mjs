@@ -57,3 +57,7 @@ test('the asynchronous passive notice preserves an already focused search contro
  const b=await browser();assert.equal(b.document.activeElement,b.initialFocus);
  assert.equal(b.dialog.modal,false);assert.equal(b.head.children.length,0);
 });
+
+test('playground intent and identities never enter analytics, before or after consent',async()=>{
+ const b=await browser({url:'https://mcp.hk/playground?lang=en#p=private-address-record-identifier'});assert.equal(b.context.dataLayer,undefined);b.accept.listeners.click();const commands=b.context.dataLayer.map(args=>Array.from(args));assert.doesNotMatch(JSON.stringify(commands),/private-address|record-identifier|lang=en|#p=/);const event=commands.find(args=>args[0]==='event');assert.equal(event[2].page_location,'https://mcp.hk/playground');
+});

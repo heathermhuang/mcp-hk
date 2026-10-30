@@ -12,6 +12,7 @@ from datetime import date, datetime
 
 from defusedxml import ElementTree
 
+from .resource_fields import scalar_kind
 from .contracts import DomainError
 from .resource_fields import inspect_nested
 from .source_contracts import CSV_DATE_PREAMBLE, date_only_header
@@ -453,31 +454,29 @@ def parse(body, fmt, record_path="", sheet=""):
     if sum(len(r) for r in rows) > 2_000_000:
         invalid("Source exceeds cell budget", "SOURCE_TOO_COMPLEX")
     rows = safe_json(rows)
-    fields = sorted({k for r in rows for k in r})
-    if len(fields) > MAX_FIELDS:
+    stats = {}
+    for row in rows:
+        for key, value in row.items():
+            entry = stats.get(key)
+            if entry is None:
+                entry = stats[key] = [set(), 0, 0]
+            entry[0].add(scalar_kind(value))
+            entry[1] += 1
+            entry[2] += value is not None
+    if len(stats) > MAX_FIELDS:
         invalid("Source exceeds field budget", "SOURCE_TOO_COMPLEX")
-
-    def types(v):
-        if v is None:
-            return "null"
-        if isinstance(v, bool):
-            return "boolean"
-        if isinstance(v, (int, float)):
-            return "number"
-        if isinstance(v, dict):
-            return "object"
-        if isinstance(v, list):
-            return "array"
-        return "string"
-
     info["fields"] = [
         {
-            "name": k,
-            "types": sorted({types(r.get(k)) for r in rows}),
-            "missingCount": sum(k not in r or r[k] is None for r in rows),
+            "name": key,
+            "types": sorted(
+                {"number" if kind in {"integer", "float"} else kind for kind in kinds}
+                | ({"null"} if present < len(rows) else set())
+            ),
+            "scalarKinds": sorted(kinds - {"object", "array"}),
+            "missingCount": len(rows) - nonnull,
             "unit": None,
         }
-        for k in fields
+        for key, (kinds, present, nonnull) in sorted(stats.items())
     ]
     info["queryFields"] = inspect_nested(rows)
     return rows, info

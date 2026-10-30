@@ -4,12 +4,13 @@ import csv
 import hashlib
 import json
 import codecs
+import time
 
 import ijson
 from ijson.common import ObjectBuilder
 
 from .contracts import DomainError
-from .resource_fields import add_nested, nested_schema
+from .resource_fields import add_nested, nested_schema, scalar_kind
 from .resource_formats import table, safe_json
 
 
@@ -81,6 +82,10 @@ class FileRows:
         records_digest = hashlib.sha256()
         for row in self:
             self.count += 1
+            if self.count % 4096 == 0:
+                # Large-file validation runs in a worker. Yield the GIL so two
+                # concurrent readers leave the event loop/maintenance responsive.
+                time.sleep(0)
             add_nested(nested_stats, row)
             cells += len(row)
             records_digest.update(
@@ -94,25 +99,12 @@ class FileRows:
                     "SOURCE_TOO_LARGE", "Streamed row/cell budget exceeded", 422
                 )
             for k, v in row.items():
-                kind = (
-                    "null"
-                    if v is None
-                    else (
-                        "boolean"
-                        if isinstance(v, bool)
-                        else (
-                            "number"
-                            if isinstance(v, (int, float))
-                            else (
-                                "object"
-                                if isinstance(v, dict)
-                                else "array" if isinstance(v, list) else "string"
-                            )
-                        )
-                    )
+                kind = scalar_kind(v)
+                entry = stats.setdefault(
+                    k, {"types": set(), "kinds": set(), "present": 0}
                 )
-                entry = stats.setdefault(k, {"types": set(), "present": 0})
-                entry["types"].add(kind)
+                entry["types"].add("number" if kind in {"integer", "float"} else kind)
+                entry["kinds"].add(kind)
                 entry["present"] += v is not None
             if len(stats) > 1000:
                 raise DomainError(
@@ -124,6 +116,7 @@ class FileRows:
                 "types": sorted(
                     v["types"] | ({"null"} if v["present"] < self.count else set())
                 ),
+                "scalarKinds": sorted(v["kinds"] - {"object", "array"}),
                 "missingCount": self.count - v["present"],
                 "unit": None,
             }

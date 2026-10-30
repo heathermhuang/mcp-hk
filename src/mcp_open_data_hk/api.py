@@ -410,6 +410,7 @@ def create_app(service=None):
             path = markdown_pages.get(request.url.path, request.url.path)
             lang = locale(request.query_params.get("lang"))
             filtered = path in {
+                "/playground",
                 "/",
                 "/coverage",
                 "/companies",

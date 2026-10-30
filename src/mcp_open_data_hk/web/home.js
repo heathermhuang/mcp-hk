@@ -1,3 +1,4 @@
+import {encodeRecipe} from './playground-state.js';
 import {fetchPublicJson} from './http.js';
 /* The homepage uses the shared family copy and the real, paginated catalogue.
    Native source text is rendered verbatim as text, never as HTML. */
@@ -44,7 +45,7 @@ import {fetchPublicJson} from './http.js';
     if(d.licence?.termsUrl)detail.append(sourceLink(d.licence.termsUrl,t('directoryTerms')));
     detail.append(node('h3',t('directoryDownloads')),node('p',family?localized(family.download):t('directoryResourceAccess')));
     if(!connected){const states=d.resourceSummary?.byStatus||{};detail.append(node('p',t('sourceCount',{total:d.resourceSummary?.total??'—'})));for(const [status,count]of Object.entries(states))detail.append(node('p',`${t(status)} · ${count}`));}
-    const path=connected?d.action.url:'/coverage?'+new URLSearchParams({access:'sources',dataset:d.id,q:state.q});
+    const path='/playground'+encodeRecipe({v:1,family:connected?d.packId:'catalogue',...(connected?{}:{dataset:d.id}),lang:MhkI18n.locale});
     detail.append(internalLink(path,t('directoryOpen')+' →'));
     if(family)detail.append(document.createTextNode(' · '),internalLink(family.statusPage,t('directoryScopeLink')));
     if(connected&&d.access){detail.append(node('pre',[...(d.access.http||[]).map(p=>'GET '+p),...(d.access.tools||[]).map(tool=>'MCP: '+tool)].join('\n')));}

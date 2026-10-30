@@ -41,7 +41,7 @@ try{
   await search('company');assert.equal(await page.locator('.mhk-directory-row').count(),2);
   for(const summary of await page.locator('.mhk-directory-row summary').all())await summary.click();
   for(const id of ['company_registry','enigma'])assert.ok((await page.locator('#directory-results').innerText()).includes(families.find(f=>f.id===id).dates[lang]));
-  const localeLink=page.locator('#directory-results a[href^="/companies"]').first();assert.equal(new URL(await localeLink.getAttribute('href'),origin).searchParams.get('lang'),lang);
+  const localeLink=page.locator('#directory-results a[href^="/playground"]').first();assert.equal(new URL(await localeLink.getAttribute('href'),origin).searchParams.get('lang'),lang);
   await page.locator('.mhk-language').click();await ready();assert.equal(new URL(page.url()).searchParams.get('q'),'company');assert.equal(await page.locator('.mhk-directory-row').count(),2);
   await page.locator('.mhk-language').click();await ready();
   await search('unmatched-fixture');assert.equal(await page.locator('.mhk-directory-row').count(),0);assert.ok(await page.locator('#directory-reset').isVisible());

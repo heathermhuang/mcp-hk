@@ -3,7 +3,7 @@
 from typing import Literal
 
 from fastapi import Query
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class ResourceSchemaQuery(BaseModel):
@@ -21,7 +21,29 @@ class ResourceSchemaQuery(BaseModel):
         return data
 
 
+class TypedEquality(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    field: str = Field(min_length=1, max_length=300)
+    kind: Literal["integer", "float", "string", "boolean", "null"]
+    value: str = Field(max_length=1000)
+
+
 class ResourceQuery(ResourceSchemaQuery):
+    typedFilters: list[TypedEquality] = Field(default_factory=list, max_length=10)
+    presentation: bool = False
+
+    @model_validator(mode="after")
+    def validate_typed(self):
+        from .resource_codec import typed_filters
+
+        typed_filters([p.model_dump() for p in self.typedFilters], self.filters)
+        return self
+
+    def arguments(self):
+        data = super().arguments()
+        data["typed_filters"] = data.pop("typedFilters")
+        return data
+
     filters: dict[str, str | int | float | bool | None] = Field(
         default_factory=dict, max_length=10
     )
@@ -186,9 +208,13 @@ def register_mcp(server, current):
         requireFresh: bool = False,
         version: str | None = None,
         parameters: dict[str, str] | None = None,
+        typedFilters: list[TypedEquality] | None = None,
+        presentation: bool = False,
     ) -> dict:
         """Query actual resource records with bounded pages (1..100). For transport arrivals, provide parameters from hk_resource_schema; responses have 10/20-second caches, checked provider timestamps, and no expired fallback. requireFresh forces an arrival-source read. Preserve scheduled/predicted flags and service advisories. Pass version for later pages. PDF is unverified text. A source read does not prove all routes/operators are covered."""
         query = ResourceQuery(
+            typedFilters=typedFilters or [],
+            presentation=presentation,
             filters=filters or {},
             fields=fields or [],
             limit=limit,

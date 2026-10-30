@@ -4,6 +4,8 @@ Open-source Hong Kong public data over **MCP and HTTP**, extending
 [mcp-open-data-hk](https://github.com/mcp-open-data-hk/mcp-open-data-hk).
 The upstream MIT licence and author attribution are preserved.
 
+Public data exploration: [/playground](https://mcp.hk/playground) provides bilingual source choices, visual exact filters, page-scoped views and bounded evidence downloads. See [the workspace guide](docs/data-playground.md) for capabilities and source limits.
+
 ## Public interfaces
 
 - **Addresses:** bilingual DPO ALS lookup and candidate selection.

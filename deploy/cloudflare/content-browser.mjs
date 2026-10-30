@@ -17,13 +17,13 @@ try{
   for(const path of [...Object.keys(pages),'/docs']){
    await page.goto(origin+path+'?lang='+lang);await page.locator('html[lang="'+lang+'"]').waitFor();
    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,path+' '+lang+' '+width);
-   const nav=page.locator('.mhk-navbutton');assert.equal(await nav.first().getAttribute('href'),'/datasets?lang='+lang);
+   const nav=page.locator('.mhk-navbutton');assert.equal(await nav.first().getAttribute('href'),'/playground?lang='+lang);
    if(path==='/datasets'){
     assert.equal(await page.locator('.dataset-family').count(),families.length);
     for(const row of families)assert.equal(await page.locator('#dataset-'+row.id+' h2').innerText(),row.title[lang]);
     await page.locator('#dataset-racing summary').click();assert.match(await page.locator('#dataset-racing details').innerText(),/hk_racing_status/);
     const link=new URL(await page.locator('#dataset-hkex_daily h2 a').getAttribute('href'),origin);
-    assert.equal(link.searchParams.get('lang'),lang);assert.equal(link.hash,'#daily-feed');
+    assert.equal(link.searchParams.get('lang'),lang);assert.equal(link.pathname,'/playground');assert.equal(JSON.parse(decodeURIComponent(link.hash.slice(3))).family,'hkex_daily');
     await page.screenshot({path:new URL(`directory-${lang}-${width}.png`,out).pathname,fullPage:true});
    }
    if(path==='/sfc')assert.equal(await page.locator('#sfc-ce').isDisabled(),true);

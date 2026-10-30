@@ -1,0 +1,24 @@
+{
+  "backend": "actual local Python HTTP API with invented accepted fixture data",
+  "requests": 14,
+  "errors": [],
+  "clientMemory": {
+    "projectedColumns": 100,
+    "sourceRows": 80,
+    "pageRows": 20,
+    "retainedPageLimit": 3,
+    "initialHeapBytes": 2404180,
+    "afterFourPagesHeapBytes": 5661044,
+    "retainedDeltaBytes": 3256864
+  },
+  "checks": [
+    "two-request open",
+    "no draft read",
+    "big integer equality",
+    "int/float distinction",
+    "null/missing distinction",
+    "version-pinned paging",
+    "exact evidence download",
+    "wide/nested three-page retention and heap measurement"
+  ]
+}

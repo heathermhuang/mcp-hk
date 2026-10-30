@@ -892,6 +892,19 @@
           }
         ]
       }
+    },
+    "/playground": {
+      "template": "playground.html",
+      "en": {
+        "title": "Data playground · mcp.hk",
+        "heading": "Data playground",
+        "description": "Explore Hong Kong public records with source choices, exact filters, charts, query links and bounded evidence downloads. Source coverage and permissions vary."
+      },
+      "zh-Hant": {
+        "title": "數據探索工作台 · mcp.hk",
+        "heading": "數據探索工作台",
+        "description": "選擇香港公共數據來源，使用精確篩選、圖表、查詢連結及有限範圍證據下載。各來源的涵蓋範圍與權限有所不同。"
+      }
     }
   },
   "faq": {
