@@ -4,7 +4,7 @@ import {mkdtempSync,writeFileSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {spawnSync} from 'node:child_process';
-import {validateRecipe,encodeRecipe,decodeRecipe,RequestFlow,assertFields,fieldsOf,defaultColumns} from '../../src/mcp_open_data_hk/web/playground-state.js';
+import {validateRecipe,encodeRecipe,decodeRecipe,RequestFlow,assertFields,fieldsOf,defaultColumns,arrivalExpiry} from '../../src/mcp_open_data_hk/web/playground-state.js';
 import {parseExact,exactJson,wirePresentation} from '../../src/mcp_open_data_hk/web/playground-wire.js';
 import {exportPolicy,evidencePackage} from '../../src/mcp_open_data_hk/web/playground-export.js';
 import {cellText} from '../../src/mcp_open_data_hk/web/playground-views.js';
@@ -74,4 +74,9 @@ test('official SFC history stays behind its own capability and never uses compan
  const original=globalThis.fetch,calls=[];let historyAvailable=false;const version='sfc-'+'b'.repeat(32);
  globalThis.fetch=async(path)=>{const u=new URL(path,'https://mcp.hk');calls.push(u);let p;if(u.pathname==='/api/v1/sfc/status')p={data:{enabledModes:['rest','browser'],acceptedVersion:version,historyAvailable}};else if(u.pathname.endsWith('/history'))p={data:{items:[]},meta:{version,nextCursor:null}};else p={data:{ce:'AAB241',nameEn:'Exact source entity'},meta:{version}};return new Response(JSON.stringify(p));};
  try{const session=new DomainSession('sfc_archive'),signal=new AbortController().signal,recipe={query:{value:'AAB241',source:'official'}};await session.read(recipe,signal);let detail=await session.detail(session.current.actions[0],signal);assert.equal(detail.history,null);historyAvailable=true;await session.read(recipe,signal);detail=await session.detail(session.current.actions[0],signal);assert.deepEqual(detail.history.families,['history']);await session.history(detail.history,'history',null,signal);assert.equal(calls.at(-1).pathname,'/api/v1/sfc/corporations/AAB241/history');assert.equal(calls.at(-1).searchParams.get('version'),version);assert.equal(calls.some(c=>c.pathname.includes('/companies/')),false);}finally{globalThis.fetch=original;}
+});
+
+test('arrival expiry uses both provider freshness and cache deadlines and fails closed on malformed metadata',()=>{
+ const envelope={schema:{transport:{operation:'arrivals',cacheTTLSeconds:20,freshUntil:105}},provenance:[{lastCheckedAt:100}]};
+ assert.equal(arrivalExpiry(envelope),105000);envelope.schema.transport.freshUntil=130;assert.equal(arrivalExpiry(envelope),120000);delete envelope.schema.transport.freshUntil;assert.equal(arrivalExpiry(envelope),120000);envelope.schema.transport.freshUntil='unsafe';assert.equal(arrivalExpiry(envelope),0);assert.equal(arrivalExpiry({schema:{}}),null);
 });

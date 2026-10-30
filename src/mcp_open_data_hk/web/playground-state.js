@@ -51,3 +51,13 @@ export class RequestFlow {
 export function fieldsOf(schema){return [...new Map([...(schema?.queryFields||[]),...(schema?.fields||[])].map(f=>[f.name,f])).values()];}
 export function defaultColumns(schema){if(schema?.scope==='calendar_events')return ['dtstart','summary'].filter(name=>fieldsOf(schema).some(f=>f.name===name));return fieldsOf(schema).filter(f=>f.types?.length&&f.types.every(t=>!['object','array'].includes(t))&&!f.name.startsWith('geometry.')).slice(0,8).map(f=>f.name);}
 export function assertFields(recipe,schema){const names=new Set(fieldsOf(schema).map(f=>f.name));if([...recipe.columns,...recipe.filters.map(f=>f.field)].some(f=>!names.has(f)))throw Error('SAVED_FIELD_MISSING');}
+
+// Provider validity and cache reuse are independent deadlines, both in epoch seconds.
+export function arrivalExpiry(envelope){
+  const live=envelope.schema?.transport;
+  if(!live||(live.operation!=='arrivals'&&!live.sourceTimestamp))return null;
+  const checked=envelope.provenance?.[0]?.lastCheckedAt,ttl=live.cacheTTLSeconds??envelope.schema?.cacheTTLSeconds;
+  const cache=typeof checked==='number'&&Number.isFinite(checked)&&typeof ttl==='number'&&Number.isFinite(ttl)&&ttl>0?(checked+ttl)*1000:0;
+  const provider=live.freshUntil==null?cache:typeof live.freshUntil==='number'&&Number.isFinite(live.freshUntil)?live.freshUntil*1000:0;
+  return Math.min(cache,provider);
+}

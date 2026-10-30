@@ -1,6 +1,6 @@
 import {parseExact,isNumber,exactJson} from './playground-wire.js';
 import {fieldLabel} from './playground-labels.js';
-import {FAMILIES,validateRecipe,encodeRecipe,decodeRecipe,RequestFlow,fieldsOf,defaultColumns,assertFields} from './playground-state.js';
+import {FAMILIES,validateRecipe,encodeRecipe,decodeRecipe,RequestFlow,fieldsOf,defaultColumns,assertFields,arrivalExpiry} from './playground-state.js';
 import {genericFamily,DomainSession,request,url,mcpExample} from './playground-adapters.js';
 import {evidencePackage,exportPolicy} from './playground-export.js';
 import {node,button,safeLink,cellText,drawChart,drawLocations} from './playground-views.js';
@@ -12,7 +12,7 @@ function message(text){$('status').textContent=text||'';}
 function dirty(){exportFlow.cancel();$('draft').textContent=applied&&JSON.stringify(draft)!==JSON.stringify(applied)?t('Draft'):'';}
 function saveUrl(replace=false){if(!applied)return;const u=new URL(location.href);u.search='?lang='+locale();u.hash=encodeRecipe({...applied,lang:locale()});const target=u.pathname+u.search+u.hash;if(target!==location.pathname+location.search+location.hash)history[replace?'replaceState':'pushState'](null,'',target);}
 function controlsLoading(value){loading=value;$('output').setAttribute('aria-busy',String(value));$('apply').disabled=value||Date.now()<retryUntil;$('cancel').hidden=!value;for(const k of ['next','previous','download'])$(k).disabled=value||!result;if(value)$('download').disabled=true;}
-function cancel(){flow.cancel();detailFlow.cancel();exportFlow.cancel();session?.cancel();clearTimeout(expiryTimer);clearInterval(retryTimer);controlsLoading(false);}
+function cancel(){flow.cancel();detailFlow.cancel();exportFlow.cancel();session?.cancel();clearInterval(retryTimer);controlsLoading(false);}
 function clearResult(){result=null;pages=[];pageIndex=-1;$('output').hidden=true;$('detail').hidden=true;$('export-status').textContent='';$('share-fallback').hidden=true;clearTimeout(expiryTimer);}
 function renderFamilies(){const target=$('families');target.replaceChildren();for(const family of families){const b=button(family.title[locale()],()=>openFamily(family.id));b.className='pg-family';b.dataset.family=family.id;b.setAttribute('aria-pressed',String(draft?.family===family.id));b.append(node('small',family.availability[locale()]));target.append(b);}}
 function title(){const family=families.find(f=>f.id===draft?.family);$('heading').textContent=family?.title[locale()]||t('Choose');$('description').textContent=family?.question[locale()]||t('ChooseHelp');$('limits').textContent=family?.limits[locale()]||'';renderFamilies();}
@@ -187,9 +187,8 @@ function renderResult(){
     const coverage=envelope.coverage||envelope.data?.releaseScope||envelope.data?.listingQuality;if(coverage){const box=node('details');box.append(node('summary',MhkI18n.t('coverageDetail')),node('pre',JSON.stringify(coverage,null,2)));$('warnings').append(box);}
     const full=node('details');full.append(node('summary',t('Contract')),node('pre',envelope.wire||JSON.stringify(envelope,null,2)));$('provenance').append(full);
     if(envelope.request){const req=envelope.request;const code=req.body?'POST '+req.path+'\n'+JSON.stringify(req.body,null,2):'GET '+req.path;$('code').textContent+=code+'\n\n'+(mcpExample(req)?'MCP: '+mcpExample(req)+'\n\n':'');}
-    const live=envelope.schema?.transport;
-    if(live?.operation==='arrivals'||live?.sourceTimestamp){const checked=envelope.provenance?.[0]?.lastCheckedAt;const ttl=live.cacheTTLSeconds||envelope.schema?.cacheTTLSeconds;
-      const expiry=typeof checked==='number'&&ttl?checked*1000+ttl*1000:0;
+    const expiry=arrivalExpiry(envelope);
+    if(expiry!==null){
       if(expiry<=Date.now()){result.expired=true;exportFlow.cancel();detailFlow.cancel();$('detail').hidden=true;$('detail-content').replaceChildren();message(t('Expired'));$('table').replaceChildren(node('p',t('Expired')));}
       else expiryTimer=setTimeout(()=>{result.expired=true;exportFlow.cancel();detailFlow.cancel();$('detail').hidden=true;$('detail-content').replaceChildren();$('table').replaceChildren(node('p',t('Expired')));$('plot').replaceChildren();$('map').replaceChildren();message(t('Expired'));renderButtons();$('recovery').replaceChildren(button(t('Refresh'),()=>apply({refresh:true})));},expiry-Date.now()+1);
     }
