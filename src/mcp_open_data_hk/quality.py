@@ -96,9 +96,25 @@ def freshness(dataset, resource, validated, ttl=None, now=None):
 def semantic_quality(schema):
     fields = schema.get("fields", [])
     positional = any(re.match(r"^_column_\d+$", f.get("name", "")) for f in fields)
+    qualified = schema.get("observationQuality")
     return {
-        "level": "raw_source",
-        "semanticVerification": "not_performed",
+        "level": "source_contract_checked" if qualified else "raw_source",
+        "semanticVerification": (
+            "selected_observation_contract" if qualified else "not_performed"
+        ),
+        "qualification": qualified,
+        "completeness": (
+            {
+                "rowCount": schema["profileRowCount"],
+                "fieldsWithAbsentValues": sum(
+                    f.get("absentCount", 0) > 0 for f in fields
+                ),
+                "fieldsWithNullValues": sum(f.get("nullCount", 0) > 0 for f in fields),
+                "scope": "All parsed rows of the selected source representation, before query filters/projection; not dataset or entity completeness.",
+            }
+            if "profileRowCount" in schema
+            else None
+        ),
         "headerVerified": (
             False if schema.get("headerVerification") or positional else None
         ),

@@ -1,4 +1,5 @@
 import {recordSources} from './record-sources.js';
+import {SourceHealth} from './source-health.js';
 /* One browsing surface. Each adapter reads accepted data only; no source collection. */
 import { RecordFeed, feedRows, feedCheckpoint, readCheckpoint } from './record-feed.js';
 import { fetchPublicJson } from './http.js';
@@ -24,6 +25,9 @@ function array(p) { if (!Array.isArray(p?.data?.items) || typeof p?.meta?.versio
 // checks returned versions against saved checkpoints; only official search takes version.
 const sources = recordSources(read, () => MhkI18n.locale);
 const feed = new RecordFeed(sources[kind]);
+const healthBox=node('section',null,'mhk-source-health');healthBox.setAttribute('role','status');healthBox.setAttribute('aria-live','polite');$('record-search').after(healthBox);
+const sourceHealth=new SourceHealth(healthBox);sourceHealth.show({companies:'company_registry',hkex:'hkex_daily',sfc:'sfc_archive'}[kind]);
+window.addEventListener('mhk:language',()=>sourceHealth.render());
 let query = null, selected = null, detailRun = 0, loading = false, viewRun = 0, pageOffset = 0;
 function applyCopy() { document.querySelectorAll('[data-feed-copy][data-i18n]').forEach(e => e.textContent = MhkI18n.t(e.dataset.i18n)); document.title = root.querySelector('h1').textContent + ' · mcp.hk'; $('record-query').placeholder = kind === 'companies' ? (zh() ? '香港、HONG KONG…' : 'HONG KONG, 香港…') : kind === 'hkex' ? '00005' : 'AAB241'; $('record-query').minLength = kind === 'companies' ? 2 : 1; if (kind === 'hkex') {
     $('record-query').pattern = '[0-9]{1,5}';

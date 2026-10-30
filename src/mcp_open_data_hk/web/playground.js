@@ -4,8 +4,11 @@ import {FAMILIES,validateRecipe,encodeRecipe,decodeRecipe,RequestFlow,fieldsOf,d
 import {genericFamily,DomainSession,request,url,mcpExample} from './playground-adapters.js';
 import {evidencePackage,exportPolicy} from './playground-export.js';
 import {node,button,safeLink,cellText,drawChart,drawLocations} from './playground-views.js';
+import {SourceHealth} from './source-health.js';
+import {dateFacts,qualityText,weatherChoices} from './source-quality.js';
 const $=id=>document.getElementById('pg-'+id),t=(key,values)=>MhkI18n.t('pg'+key,values),locale=()=>MhkI18n.locale;
 const flow=new RequestFlow(),discoveryFlow=new RequestFlow(),detailFlow=new RequestFlow(),exportFlow=new RequestFlow();
+const sourceHealth=new SourceHealth($('health'));
 let families=[],draft=null,applied=null,result=null,schema=null,resource=null,session=null,pages=[],pageIndex=-1,loading=false,selectedFocus=null,expiryTimer,retryTimer,retryUntil=0,searchQuery='',choiceData={};
 function emptyRecipe(family){return validateRecipe({v:1,family,lang:locale()});}
 function message(text){$('status').textContent=text||'';}
@@ -21,6 +24,7 @@ function labelInput(target,label,key,value='',{type='text',options,max=200,requi
   input.addEventListener(options?'change':'input',()=>{if(change)change(input.value);else draft.query[key]=input.value;dirty();});box.append(span,input);target.append(box);return input;
 }
 async function openFamily(family,recipe=null,{restore=false}={}){
+  sourceHealth.show(family);
   cancel();discoveryFlow.cancel();clearResult();schema=null;resource=null;choiceData={};draft=recipe||emptyRecipe(family);applied=null;session=genericFamily(family)?null:new DomainSession(family,locale);
   $('source-choices').replaceChildren();$('selectors').replaceChildren();$('domain-controls').replaceChildren();$('filters-box').hidden=true;$('columns-box').hidden=true;$('controls').hidden=false;$('draft').textContent='';$('back').hidden=!searchQuery;title();message('');if(!restore){$('heading').focus({preventScroll:true});$('heading').scrollIntoView({block:'start'});}if(!restore)history.pushState(null,'','/playground?lang='+locale()+encodeRecipe(draft));
   if(genericFamily(family)){
@@ -62,7 +66,7 @@ function domainControls(){
 async function discover(query,offset=0){
   const run=discoveryFlow.start();searchQuery=query;$('discovery-results').textContent=t('Reading');
   try{const p=await request('/api/v1/catalogue/datasets',{q:query,limit:10,offset,access:draft?.family==='transport'?'sources':'all'},run.signal);if(!run.current())return;const target=$('discovery-results');target.replaceChildren();
-    for(const row of p.items){const pack=row.packId||row.id?.replace(/^mcp:/,'');const b=button(locale()==='zh-Hant'?row.titleZhHant||row.title:row.title,()=>FAMILIES.includes(pack)?openFamily(pack):selectDataset(row));b.className='pg-family';target.append(b);}
+    for(const row of p.items){const pack=row.packId||row.id?.replace(/^mcp:/,'');const b=button(locale()==='zh-Hant'?row.titleZhHant||row.title:row.title,()=>FAMILIES.includes(pack)?openFamily(pack):selectDataset(row));b.className='pg-family';b.append(node('small',[row.provider,row.catalogue,row.resourceSummary?`${row.resourceSummary.byStatus?.queryable||0} / ${row.resourceSummary.total} · ${t('Readable')}`:null].filter(Boolean).join(' · ')));target.append(b);}
     if(!p.items.length)target.append(node('p',t('Empty')));
     if(offset)target.append(button(t('Previous'),()=>discover(query,Math.max(0,offset-10))));if(p.nextOffset!=null)target.append(button(t('Next'),()=>discover(query,p.nextOffset)));
   }catch(e){if(run.current())$('discovery-results').textContent=t('Failed');}
@@ -73,11 +77,13 @@ async function selectDataset(row){
 async function showResources(dataset,offset=0){
   const run=flow.start();controlsLoading(true);message(t('Reading'));
   try{const p=await request('/api/v1/resources',{datasetId:dataset,limit:20,offset},run.signal);if(!run.current())return;const target=$('source-choices');target.replaceChildren(node('h3',t('SourcesChoice')));message(t('NoAuto'));
+    for(const choice of weatherChoices(dataset,locale())){const a=node('a',choice.label+' →','mhk-button mhk-secondary');a.href=choice.href;target.append(a);}
     for(const row of p.items){
       const box=node('article',null,'pg-source-choice'),status=row.validation?.status||'pending',alias=row.aliases?.[0],name=alias?.name||row.title||row.id;
       const blocked=['restricted','unsupported'].includes(status);box.append(button(name,()=>{draft.resource=row.id;resource=row;choiceData={};draft.filters=[];draft.columns=[];draft.view={type:'table'};draft.selectors={};inspect();}));
       if(blocked)box.querySelector('button').disabled=true;
-      box.append(node('p',[row.language, row.referencePeriod,alias?.language,row.format,MhkI18n.t(status),row.validation?.reason].filter(Boolean).join(' · ')),safeLink(row.url,t('Original')));
+      box.append(node('p',[row.language, row.referencePeriod,alias?.inLanguage||alias?.language,row.format,MhkI18n.t(status),row.validation?.reason].filter(Boolean).join(' · ')),safeLink(row.url,t('Original')));
+      if(row.validation?.freshness?.lastValidatedAt)box.append(node('p',t('Checked')+': '+MhkI18n.date(row.validation.freshness.lastValidatedAt)));
       if(blocked)box.append(node('p',t('Blocked')));else if(status!=='queryable'&&status!=='document')box.append(node('p',t('Pending')));
       target.append(box);
     }
@@ -179,8 +185,11 @@ function renderResult(){
   $('count').textContent=t('Records',{n:result.rows.length});$('scope').textContent=(result.total==null?t('Unknown'):t('Total',{n:result.total}))+' · '+t('Scope');
   message(result.errors?.length?t(result.rows.length?'Partial':'Failed'):!result.rows.length?t('Empty'):'');$('recovery').replaceChildren();if(result.errors?.length){for(const e of result.errors)$('recovery').append(node('p',e.source+' · '+e.message));$('recovery').append(button(t('Retry'),()=>apply({retry:true})));}
   for(const envelope of result.envelopes){
+    const qualified=qualityText(envelope,locale());if(qualified)$('warnings').append(node('p',qualified));
+    for(const [label,value]of dateFacts(envelope).filter(([label])=>['Observed','Retrieved','Checked','ReferencePeriod'].includes(label)))$('dates').append(node('p',t(label)+': '+(['Observed','Retrieved','Checked'].includes(label)?MhkI18n.date(value):value)));
     const dl=node('dl',null,'pg-source-facts');
-    for(const source of envelope.provenance||[]){const short=node('p');short.textContent=[source.attribution||source.sourceId,[t('ReferencePeriod'),source.referencePeriod].filter(Boolean).join(': '),[t('Observed'),(source.observedAt||source.observed||source.retrievedAt||source.retrieved||envelope.meta?.lastObservedAt)?MhkI18n.date(source.observedAt||source.observed||source.retrievedAt||source.retrieved||envelope.meta?.lastObservedAt):null].filter(Boolean).join(': '),[t('Checked'),source.lastCheckedAt?MhkI18n.date(source.lastCheckedAt):null].filter(Boolean).join(': ')].filter(Boolean).join(' · ');$('dates').append(short);for(const [label,value] of [['Source',source.attribution||source.sourceId],['ReferencePeriod',source.referencePeriod],['Observed',source.observedAt||source.observed||source.retrievedAt||source.retrieved||envelope.meta?.lastObservedAt],['Checked',source.lastCheckedAt],['Version',envelope.meta?.version]])if(value!=null){dl.append(node('dt',t(label)),node('dd',typeof value==='object'?JSON.stringify(value):String(value)));}if(source.sourceUrl||source.url)dl.append(node('dt',t('Original')),safeLink(source.sourceUrl||source.url,t('Original')));}
+    for(const [label,value]of [...dateFacts(envelope),['Version',envelope.meta?.version]])if(value!=null)dl.append(node('dt',t(label)),node('dd',typeof value==='object'?JSON.stringify(value):String(value)));
+    for(const source of envelope.provenance||[])if(source.sourceUrl||source.url)dl.append(node('dt',t('Original')),safeLink(source.sourceUrl||source.url,t('Original')));
     $('provenance').append(dl);
     for(const warning of envelope.warnings||[])$('warnings').append(node('p',warning.message||warning.code));
     if(envelope.data?.method)$('warnings').append(node('p',envelope.data.method));
@@ -237,7 +246,7 @@ function historyControls(context,target){
   for(const key of context.families){const copy={names:'Names',officers:'Officers',licences:'Licences',addresses:'Addresses',licence_relationships:'LicenceRelationships',history:'History'}[key];nav.append(button(t(copy),()=>{family=key;cursor=null;load();}));}target.append(node('h3',t('History')),nav,list,more);
   async function load(next=false){const run=detailFlow.start();more.disabled=true;list.replaceChildren(node('p',t('Reading')));try{const p=await session.history(context,family,next?cursor:null,run.signal);if(!run.current())return;const rows=Array.isArray(p.data)?p.data:p.data?.items;if(p.meta?.version!==context.version||!Array.isArray(rows))throw Error('SOURCE_IDENTITY_CHANGED');list.replaceChildren();showHistoryRows(list,p);cursor=p.meta?.nextCursor;more.hidden=!cursor;}catch(e){if(run.current())list.replaceChildren(node('p',t('Failed')),node('pre',e.message));}finally{if(run.current())more.disabled=false;}}
 }
-async function restore(){let recipe;try{recipe=decodeRecipe(location.hash);}catch{cancel();clearResult();message(t('InvalidRecipe'));return;}if(recipe){recipe.lang=locale();await openFamily(recipe.family,recipe,{restore:true});}else{cancel();clearResult();draft=null;applied=null;$('controls').hidden=true;title();message(t('ChooseHelp'));}}
+async function restore(){let recipe;try{recipe=decodeRecipe(location.hash);}catch{cancel();clearResult();message(t('InvalidRecipe'));return;}if(recipe){recipe.lang=locale();await openFamily(recipe.family,recipe,{restore:true});}else{sourceHealth.clear();cancel();clearResult();draft=null;applied=null;$('controls').hidden=true;title();message(t('ChooseHelp'));}}
 $('search').addEventListener('submit',e=>{e.preventDefault();discover($('topic').value.trim(),0);});
 $('controls').addEventListener('submit',e=>{e.preventDefault();apply();});
 $('add-filter').addEventListener('click',()=>{const field=fieldsOf(schema).find(f=>!draft.filters.some(p=>p.field===f.name)&&f.types.some(t=>!['object','array'].includes(t)));if(!field)return;const kind=(field.scalarKinds||[]).find(k=>['string','integer','float','boolean','null'].includes(k))||'string';draft.filters.push({field:field.name,kind,value:kind==='null'?'null':kind==='boolean'?'true':''});renderFilters();dirty();});
@@ -253,5 +262,5 @@ $('detail-close').addEventListener('click',closeDetail);$('detail').addEventList
 $('share').addEventListener('click',async()=>{if(!applied)return;const share=new URL(location.pathname,location.origin);share.searchParams.set('lang',locale());share.hash=encodeRecipe({...applied,lang:locale()});try{await navigator.clipboard.writeText(share.href);$('export-status').textContent=t('Copied');}catch{$('share-fallback').hidden=false;$('share-fallback').querySelector('input').value=share.href;$('share-fallback').querySelector('input').select();}});
 $('download').addEventListener('click',async()=>{if(!exportPolicy(result,applied))return;const run=exportFlow.start(),captured=structuredClone(result),recipe=structuredClone(applied);$('download').disabled=true;try{const pack=await evidencePackage(captured,recipe,run.signal);if(!run.current())return;const a=node('a'),href=URL.createObjectURL(pack.blob);a.href=href;a.download=pack.filename;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(href),5000);$('export-status').textContent=t('Downloaded',{hash:pack.sha256});}catch(e){if(run.current())$('export-status').textContent=t('Failed')+' '+e.message;}finally{if(run.current())renderButtons();}});
 window.addEventListener('hashchange',()=>{if(!applied||location.hash!==encodeRecipe({...applied,lang:locale()}))restore();});
-window.addEventListener('mhk:language',()=>{title();if(session)domainControls();if(result)renderResult();});
+window.addEventListener('mhk:language',()=>{sourceHealth.render();title();if(session)domainControls();if(result)renderResult();});
 try{families=await fetch('/assets/datasets.json').then(r=>{if(!r.ok)throw Error('DIRECTORY_UNAVAILABLE');return r.json();});renderFamilies();await restore();}catch{message(t('Failed'));}

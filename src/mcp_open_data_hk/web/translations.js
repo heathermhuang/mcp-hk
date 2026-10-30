@@ -931,6 +931,9 @@ const translations = {
     "pgContract": "Source contract and full response",
     "pgDownloadProfile": "Download selected profile and history page · source ZIP",
     "pgDownloadProfileScope": "Source package includes the selected dated profile and this history page; it is not a complete career.",
+    "pgReadable": "previously readable source resources",
+    "pgRetrieved": "Retrieved from source",
+    "pgDatasetPublished": "Dataset first published (not observation time)",
     "pgLicenceRelationships": "Licence relationships"
   },
   "zh": {
@@ -1865,6 +1868,9 @@ const translations = {
     "pgContract": "來源規約及完整回應",
     "pgDownloadProfile": "下載所選檔案及本頁往績 · 來源 ZIP",
     "pgDownloadProfileScope": "來源資料包包含所選具日期檔案及本頁往績，並非完整生涯紀錄。",
+    "pgReadable": "曾成功讀取的來源資源",
+    "pgRetrieved": "來源擷取時間",
+    "pgDatasetPublished": "數據集首次發布（並非觀察時間）",
     "pgLicenceRelationships": "牌照關係"
   }
 };

@@ -93,3 +93,25 @@ See [local candidate evidence](verification/playground-20261029/README.md) for t
 fixtures, measurements and explicit unverified boundaries. The preserved planning
 snapshot is [data-playground plan](plans/data-playground.md). Release operations
 follow [production](production.md); no release follows merely from passing local QA.
+
+## Visible quality and source updates
+
+The selected family's public status is shown beside its query controls; the idle
+workspace does not fetch every family's status. Status failure leaves freshness
+unknown and does not block record queries. Company counts distinguish published
+addresses from successful but possibly unpublished queue checks and show the
+capacity limit of a complete address cycle. HKEX source holds, incomplete racing
+seasons and property observation freshness remain visible. The integrated company,
+SFC and HKEX pages show the same summary outside their source disclosures.
+
+Directory and playground search results retain catalogue origin, making equal
+DATA.GOV.HK/CSDI titles distinguishable without merging their identities or changing
+neutral ordering. The current-weather entries offer explicit station-temperature
+and humidity shortcuts to the native HKO JSON in the selected language. A shortcut
+selects an exact resource and returned record path; it uses normal schema/query
+checks, source failure handling and the shared evidence export rules.
+
+Result dates never substitute retrieval time for observation time. Dataset first
+publication is labelled separately in source details, and generic source quality
+remains explicitly unverified beyond the checks actually reported. No source
+activation, collector quota, cron cadence or upstream access hold is changed.
