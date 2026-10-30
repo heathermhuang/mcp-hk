@@ -30,7 +30,7 @@ try{
   const company=await page.locator('#pg-health').innerText();assert.match(company,/1,410 \/ 414,954/);assert.match(company,lang==='en'?/not feasible/:/無法/);
   await page.goto(origin+weatherChoices('hk-hko-rss-current-weather-report',lang)[0].href);
   await page.waitForSelector('#pg-table tbody tr');assert.match(await page.locator('#pg-table').innerText(),/27/);
-  const dates=await page.locator('#pg-dates').innerText();assert.match(dates,lang==='en'?/Observed/:/觀察/);assert.match(dates,lang==='en'?/Retrieved/:/擷取/);assert.doesNotMatch(dates,/2019-06-27/);
+  const dates=await page.locator('#pg-dates').innerText();assert.match(dates,lang==='en'?/Source observation time/:/來源觀察時間/);assert.match(dates,lang==='en'?/Retrieved/:/擷取/);assert.doesNotMatch(dates,/2019-06-27|Observed \/ retrieved/);assert.equal(await page.locator('#pg-filter-options').getAttribute('open'),null);
   assert.match(await page.locator('#pg-warnings').innerText(),lang==='en'?/contract checked/:/規約/);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
   await page.screenshot({path:new URL('station-'+lang+'-'+width+'.png',out).pathname,fullPage:true});

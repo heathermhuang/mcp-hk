@@ -7,6 +7,9 @@ import {node,button,safeLink,cellText,drawChart,drawLocations} from './playgroun
 import {SourceHealth} from './source-health.js';
 import {dateFacts,qualityText,weatherChoices} from './source-quality.js';
 const $=id=>document.getElementById('pg-'+id),t=(key,values)=>MhkI18n.t('pg'+key,values),locale=()=>MhkI18n.locale;
+// Keep older cached HTML usable while the assets and container adopt a release.
+if(!$('health')){const box=node('section',null,'mhk-source-health');box.id='pg-health';box.hidden=true;box.setAttribute('role','status');box.setAttribute('aria-live','polite');$('limits').after(box);}
+if(!$('filter-options')){const box=node('details',null,'mhk-disclosure');box.id='pg-filter-options';box.hidden=true;const summary=node('summary',t('FilterOptions'));summary.dataset.i18n='pgFilterOptions';box.append(summary);const fields=$('filters-box');fields.before(box);box.append(fields);}
 const flow=new RequestFlow(),discoveryFlow=new RequestFlow(),detailFlow=new RequestFlow(),exportFlow=new RequestFlow();
 const sourceHealth=new SourceHealth($('health'));
 let families=[],draft=null,applied=null,result=null,schema=null,resource=null,session=null,pages=[],pageIndex=-1,loading=false,selectedFocus=null,expiryTimer,retryTimer,retryUntil=0,searchQuery='',choiceData={};
@@ -26,7 +29,7 @@ function labelInput(target,label,key,value='',{type='text',options,max=200,requi
 async function openFamily(family,recipe=null,{restore=false}={}){
   sourceHealth.show(family);
   cancel();discoveryFlow.cancel();clearResult();schema=null;resource=null;choiceData={};draft=recipe||emptyRecipe(family);applied=null;session=genericFamily(family)?null:new DomainSession(family,locale);
-  $('source-choices').replaceChildren();$('selectors').replaceChildren();$('domain-controls').replaceChildren();$('filters-box').hidden=true;$('columns-box').hidden=true;$('controls').hidden=false;$('draft').textContent='';$('back').hidden=!searchQuery;title();message('');if(!restore){$('heading').focus({preventScroll:true});$('heading').scrollIntoView({block:'start'});}if(!restore)history.pushState(null,'','/playground?lang='+locale()+encodeRecipe(draft));
+  $('source-choices').replaceChildren();$('selectors').replaceChildren();$('domain-controls').replaceChildren();$('filter-options').hidden=true;$('filter-options').open=false;$('filters-box').hidden=true;$('columns-box').hidden=true;$('controls').hidden=false;$('draft').textContent='';$('back').hidden=!searchQuery;title();message('');if(!restore){$('heading').focus({preventScroll:true});$('heading').scrollIntoView({block:'start'});}if(!restore)history.pushState(null,'','/playground?lang='+locale()+encodeRecipe(draft));
   if(genericFamily(family)){
     $('controls').hidden=!draft.resource;
     if(draft.resource)await inspect({saved:true,restore});
@@ -119,7 +122,7 @@ async function inspect({saved=false,restore=false}={}){
   }catch(e){if(run.current()){handleError(e);controlsLoading(false);}}
 }
 function renderFilters(){
-  const box=$('filters');box.replaceChildren();$('filters-box').hidden=!schema;
+  const box=$('filters');box.replaceChildren();$('filters-box').hidden=!schema;$('filter-options').hidden=!schema;if(draft.filters.length)$('filter-options').open=true;
   const fields=fieldsOf(schema).filter(f=>f.types?.some(type=>!['object','array'].includes(type)));
   draft.filters.forEach((filter,index)=>{
     const row=node('div',null,'pg-filter');
@@ -263,4 +266,4 @@ $('share').addEventListener('click',async()=>{if(!applied)return;const share=new
 $('download').addEventListener('click',async()=>{if(!exportPolicy(result,applied))return;const run=exportFlow.start(),captured=structuredClone(result),recipe=structuredClone(applied);$('download').disabled=true;try{const pack=await evidencePackage(captured,recipe,run.signal);if(!run.current())return;const a=node('a'),href=URL.createObjectURL(pack.blob);a.href=href;a.download=pack.filename;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(href),5000);$('export-status').textContent=t('Downloaded',{hash:pack.sha256});}catch(e){if(run.current())$('export-status').textContent=t('Failed')+' '+e.message;}finally{if(run.current())renderButtons();}});
 window.addEventListener('hashchange',()=>{if(!applied||location.hash!==encodeRecipe({...applied,lang:locale()}))restore();});
 window.addEventListener('mhk:language',()=>{sourceHealth.render();title();if(session)domainControls();if(result)renderResult();});
-try{families=await fetch('/assets/datasets.json').then(r=>{if(!r.ok)throw Error('DIRECTORY_UNAVAILABLE');return r.json();});renderFamilies();await restore();}catch{message(t('Failed'));}
+try{families=await fetch('/assets/datasets.json').then(r=>{if(!r.ok)throw Error('DIRECTORY_UNAVAILABLE');return r.json();});renderFamilies();await restore();if(location.hash&&draft)$('heading').scrollIntoView({block:'start'});}catch{message(t('Failed'));}

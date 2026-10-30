@@ -115,3 +115,6 @@ Result dates never substitute retrieval time for observation time. Dataset first
 publication is labelled separately in source details, and generic source quality
 remains explicitly unverified beyond the checks actually reported. No source
 activation, collector quota, cron cadence or upstream access hold is changed.
+
+Optional generic filters start collapsed; existing filters in a shared recipe are
+shown for inspection. Direct query links open at the selected dataset heading.
