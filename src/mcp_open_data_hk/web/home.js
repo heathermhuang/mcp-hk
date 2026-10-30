@@ -1,5 +1,6 @@
 import {encodeRecipe} from './playground-state.js';
 import {fetchPublicJson} from './http.js';
+import {weatherChoices} from './source-quality.js';
 /* The homepage uses the shared family copy and the real, paginated catalogue.
    Native source text is rendered verbatim as text, never as HTML. */
 (() => {
@@ -31,9 +32,10 @@ import {fetchPublicJson} from './http.js';
     const connected=d.entryKind==='connected_service',family=families.find(f=>f.id===d.packId);
     const row=node('details','');row.className='mhk-directory-row';
     const summary=node('summary',''),names=node('span','');
-    names.append(node('strong',MhkI18n.lang==='zh'?d.titleZhHant||d.title:d.title),node('small',`${d.provider} · ${t(d.providerType||'unclassified')}`));
+    names.append(node('strong',MhkI18n.lang==='zh'?d.titleZhHant||d.title:d.title),node('small',[d.provider,t(d.providerType||'unclassified'),d.catalogue].filter(Boolean).join(' · ')));
     const badge=node('span',t(connected?'directoryConnected':'sourceCatalogues'));badge.className='directory-access';summary.append(names,badge);
     const detail=node('div','');detail.className='mhk-directory-detail';
+    for(const choice of weatherChoices(d.id,MhkI18n.locale))detail.append(internalLink(choice.href,choice.label+' →'),document.createElement('br'));
     const description=MhkI18n.lang==='zh'?d.descriptionZhHant||d.description:d.description;
     if(description)detail.append(node('p',String(description).replace(/<[^>]*>/g,' ')));
     if(family)detail.append(node('p',localized(family.availability)),node('p',localized(family.limits)));

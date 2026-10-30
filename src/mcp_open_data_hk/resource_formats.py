@@ -474,9 +474,12 @@ def parse(body, fmt, record_path="", sheet=""):
             ),
             "scalarKinds": sorted(kinds - {"object", "array"}),
             "missingCount": len(rows) - nonnull,
+            "absentCount": len(rows) - present,
+            "nullCount": present - nonnull,
             "unit": None,
         }
         for key, (kinds, present, nonnull) in sorted(stats.items())
     ]
     info["queryFields"] = inspect_nested(rows)
+    info["profileRowCount"] = len(rows)
     return rows, info

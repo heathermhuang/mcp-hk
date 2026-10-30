@@ -15,6 +15,12 @@ from .catalogue_store import CatalogueStore, unpack
 from .contracts import DomainError
 from . import transport
 from .quality import freshness, semantic_quality
+from .observation_quality import (
+    REVISION as OBSERVATION_REVISION,
+    hko_current,
+    qualify as qualify_observations,
+    observation_freshness,
+)
 from .review_config import SOURCE_REVIEW, CONCURRENCY, BATCH_SIZE, RUN_SECONDS
 from .source_contracts import annotate as annotate_source_contract
 from .resource_fields import selected, MISSING, inspect_nested
@@ -465,6 +471,7 @@ class Resources:
         key = hashlib.sha256(
             json.dumps(
                 ["structured-reader-3", resource_id, record_path, sheet, layer]
+                + ([OBSERVATION_REVISION] if hko_current(resource) else [])
                 + (["rss-feed-root-1"] if resource.get("format") == "RSS" else [])
                 + ([transport.REVISION] if profile else [])
                 + ([parameters] if parameters else []),
@@ -684,6 +691,7 @@ class Resources:
                         )
 
                     annotate_source_contract(resource, rows, schema)
+                    qualify_observations(resource, rows, schema)
                     schema.update(extra)
                     schema["sourceTransport"] = headers.get(
                         "_mcp_source_transport", "direct"
@@ -789,6 +797,7 @@ class Resources:
                 ) from None
 
     def envelope(self, resource, value, check, stale=False):
+        observation = observation_freshness(value["schema"])
         live = value["schema"].get("transport")
         if live and live.get("sourceTimestamp"):
             live["sourceAgeSeconds"] = max(
@@ -803,6 +812,7 @@ class Resources:
             "dataset": dataset,
             "schema": value["schema"],
             "quality": semantic_quality(value["schema"]),
+            "observationFreshness": observation,
             "validationFreshness": freshness(
                 dataset,
                 resource,
@@ -823,6 +833,7 @@ class Resources:
                     ),
                     "termsUrl": resource["termsUrl"],
                     "retrievedAt": check.get("retrieved"),
+                    "observedAt": observation["observedAt"] if observation else None,
                     "lastCheckedAt": check.get("checked"),
                     "lastValidatedAt": check.get("validated"),
                     "publicationDate": resource.get("publicationDate"),
@@ -842,6 +853,14 @@ class Resources:
                 if stale
                 else []
             )
+            + [
+                {
+                    "code": "SOURCE_OBSERVATION_STALE",
+                    "message": "The source observations exceed the two-hour target. A successful download does not make these observations current.",
+                }
+                for _ in [observation]
+                if observation and observation["stale"]
+            ]
             + [
                 {"code": "TRANSPORT_SERVICE_ADVISORY", "message": message}
                 for message in value["schema"]
@@ -994,6 +1013,14 @@ class Resources:
             resource_id, record_path, sheet, layer, require_fresh, parameters
         )
         try:
+            if require_fresh and (observation_freshness(value["schema"]) or {}).get(
+                "stale"
+            ):
+                raise DomainError(
+                    "SOURCE_OBSERVATION_STALE",
+                    "Source observations exceed the freshness target",
+                    503,
+                )
             return {
                 **self.envelope(resource, value, check, stale),
                 "recordCount": len(value["rows"]),
@@ -1064,6 +1091,14 @@ class Resources:
         )
 
         def build_result():
+            if require_fresh and (observation_freshness(value["schema"]) or {}).get(
+                "stale"
+            ):
+                raise DomainError(
+                    "SOURCE_OBSERVATION_STALE",
+                    "Source observations exceed the freshness target",
+                    503,
+                )
             deadline = time.monotonic() + self.scan_seconds
 
             def check_budget():

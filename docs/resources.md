@@ -354,3 +354,28 @@ All query envelopes, including the sidecar, have a 1,536,000-byte JSON budget.
 truncated. Two admitted read/scan jobs share a cooperative five-second scan budget.
 `RESOURCE_BUSY` and `RESOURCE_SCAN_DEADLINE` return 503 with `Retry-After: 2`.
 Cancelling a caller does not prematurely free a running thread or delete its reader.
+
+## Observation contracts and field completeness
+
+Selected HKO current-weather `temperature/data` and `humidity/data` paths now
+validate every returned station: nonempty unique source names, finite numeric
+values, the source unit (`C` or `percent`), timezone-qualified record time, and
+humidity within 0–100. Empty series, changed units, missing values and timestamps
+over five minutes in the future fail before acceptance. Original values are
+preserved. The exact source and dataset scope prevent this contract from being
+applied to unrelated JSON. The contract has its own reader-cache revision.
+
+`quality.semanticVerification=selected_observation_contract` describes these
+checks only. It does not establish an exhaustive station inventory or complete
+weather coverage. `observationFreshness` uses the source record time and a stated
+two-hour operational target. A new download can contain old observations; those
+remain explicitly warned, and `requireFresh` rejects them. Retrieval, validation,
+observation and the dataset's first-publication date remain separate.
+
+Newly parsed small and streamed sources expose `absentCount` and `nullCount` per
+field, including nested fields. Empty strings remain values. The existing
+`missingCount` compatibility field continues to include both absent and null
+values. `quality.completeness` summarizes all parsed rows of the selected source
+representation, before query filtering/projection; it is not a dataset-wide or
+real-world entity completeness claim. Previously cached metadata without this
+profile reports no profile rather than inventing zero missing values.

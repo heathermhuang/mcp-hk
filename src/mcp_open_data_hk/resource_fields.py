@@ -58,11 +58,14 @@ def scalar_kind(value):
 
 def add_nested(stats, row):
     for name, value in nested_values(row):
-        entry = stats.setdefault(name, {"types": set(), "kinds": set(), "present": 0})
+        entry = stats.setdefault(
+            name, {"types": set(), "kinds": set(), "present": 0, "seen": 0}
+        )
         kind = scalar_kind(value)
         entry["types"].add("number" if kind in {"integer", "float"} else kind)
         entry["kinds"].add(kind)
         entry["present"] += value is not None
+        entry["seen"] += 1
     if len(stats) > 1000:
         raise DomainError(
             "SOURCE_TOO_COMPLEX", "Nested selector field budget exceeded", 422
@@ -76,6 +79,8 @@ def nested_schema(stats, count):
             "types": sorted(v["types"] | ({"null"} if v["present"] < count else set())),
             "scalarKinds": sorted(v["kinds"] - {"object", "array"}),
             "missingCount": count - v["present"],
+            "absentCount": count - v["seen"],
+            "nullCount": v["seen"] - v["present"],
             "unit": None,
         }
         for k, v in sorted(stats.items())

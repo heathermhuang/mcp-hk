@@ -101,3 +101,5 @@ body{margin:0;padding:20px;background:#f8f7f2;color-scheme:light dark}#mhk-previ
 #mhk-preview .mhk-quick-topics{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:14px}
 #mhk-preview .mhk-quick-topics a{min-height:44px;display:inline-flex;align-items:center}
 @media(max-width:520px){#mhk-preview .mhk-nav nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 12px}}
+
+.mhk-source-health{margin:20px 0;padding:16px;border:1px solid var(--mhk-line, #526056);border-radius:4px;overflow-wrap:anywhere}.mhk-source-health h3{font-size:1rem;margin:0 0 12px}.mhk-source-health dl{display:grid;grid-template-columns:minmax(140px,1fr) minmax(0,1fr);gap:8px 16px;font-size:.875rem;margin:0}.mhk-source-health dd{margin:0}.mhk-source-health p{margin:12px 0 0;font-size:.875rem}@media(max-width:600px){.mhk-source-health dl{grid-template-columns:1fr}.mhk-source-health dd{margin-bottom:8px}}

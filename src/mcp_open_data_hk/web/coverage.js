@@ -1,4 +1,5 @@
 import {fetchPublicJson} from './http.js';
+import {weatherChoices,dateFacts,qualityText} from './source-quality.js';
 /* Source data is always rendered as text and retains its original language. */
 (() => {
   const $ = id => document.getElementById(id), t = (...args) => MhkI18n.t(...args);
@@ -84,6 +85,7 @@ import {fetchPublicJson} from './http.js';
     if (!resourceList) { $('resources').textContent = resourceError ? failure(resourceError) : t('loadingResources'); return; }
     if(resourceList.connected){const d=resourceList.connected;$('resources').append(node('p',t('connectedAccessHint')),internalLink(d.action.url,MhkI18n.lang==='zh'?d.action.labelZhHant:d.action.label));return;}
     $('resources').append(node('p', t('pageRange',{start:resourceList.items.length?resourceOffset+1:0,end:resourceOffset+resourceList.items.length,total:resourceList.total})));
+    for(const choice of weatherChoices(datasetId,MhkI18n.locale))$('resources').append(internalLink(choice.href,choice.label+' →'),document.createElement('br'));
     if(datasetId==='csdi:hko_rcd_1634806665997_63899')$('resources').append(internalLink('/coverage?access=sources&dataset=hk-hko-rss-current-weather-report&resource=770e68f0676dcbf8e65e2b4e1c6f6e60',t('weatherAlternative')));
     const recommended=resourceList.items.find(r=>r.id==='770e68f0676dcbf8e65e2b4e1c6f6e60')||resourceList.items.find(r=>['JSON','CSV','GEOJSON','RSS','XML'].includes(r.format)&&r.validation?.status==='queryable'&&!r.transport?.requiredParameters?.length);
     const other=node('details','');other.append(node('summary',t('otherFormats')));
@@ -174,9 +176,11 @@ import {fetchPublicJson} from './http.js';
       $('query-message').textContent = t('matchedRecords',{total:result.meta.total,shown:items.length}) + (!items.length ? ' · '+t('noMatches') : '') + (result.meta.structuredQueryable ? '' : ' · '+t('unverifiedText')) + (lastQuery?.fields?.length?' · '+t('projectedFields',{fields:lastQuery.fields.join(', ')}):'') + (result.warnings.length ? ' · '+result.warnings.map(w=>w.code).join(', ') : '');
     } else { $('query-message').textContent = t('schemaSummary',{total:result.recordCount,scope:result.schema.scope,fields:result.schema.fields.map(f=>f.name).join(', ')}); }
     renderRecordPaths();
-    if (result.quality?.semanticVerification==='not_performed') $('resource-citations').append(node('p',t('rawSourceQualification')));
+
     if (result.schema?.transport?.sourceTimestamp) $('resource-citations').append(node('p',t('transportSnapshot',{time:result.schema.transport.sourceTimestamp})));
-    for (const p of result.provenance) $('resource-citations').append(link(p.sourceUrl,p.attribution+' ↗'),node('p',`${t('validated')}: ${new Date(p.lastValidatedAt*1000).toLocaleString(MhkI18n.locale,{timeZone:'Asia/Hong_Kong',hour12:false})+' HKT'} · ${t('publication')}: ${p.publicationDate || t('notSupplied')} · ${t('referencePeriod')}: ${p.referencePeriod || t('notSupplied')}`),link(p.termsUrl,t('sourceTerms')));
+    const checkedQuality=qualityText(result,MhkI18n.locale);if(checkedQuality)$('resource-citations').append(node('p',checkedQuality));
+    for(const [label,value]of dateFacts(result))$('resource-citations').append(node('p',t('pg'+label)+': '+(['Observed','Retrieved','Checked'].includes(label)?MhkI18n.date(value):value)));
+    for (const p of result.provenance) $('resource-citations').append(link(p.sourceUrl,p.attribution+' ↗'),link(p.termsUrl,t('sourceTerms')));
     $('records-next').hidden = !nextRecords;
   }
   function renderRequiredSelection(){const key=result.selectionRequired,values=result.layers||result.featureTypes||result.sheets||[];const box=$('record-path-choices');box.replaceChildren();if(!values.length){$('query-options').open=true;return;}const label=node('label',t(key)),select=node('select','');select.setAttribute('aria-label',t(key));const blank=node('option',t('chooseSourceOption'));blank.value='';select.append(blank);for(const item of values){const option=node('option',typeof item==='object'?item.name||String(item.id):item);option.value=typeof item==='object'?item.id:item;select.append(option);}select.addEventListener('change',()=>{if(select.value==='')return;$('record-query').elements[key].value=select.value;query('query');});label.append(select);box.append(label);}

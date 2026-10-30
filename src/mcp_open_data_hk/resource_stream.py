@@ -101,11 +101,12 @@ class FileRows:
             for k, v in row.items():
                 kind = scalar_kind(v)
                 entry = stats.setdefault(
-                    k, {"types": set(), "kinds": set(), "present": 0}
+                    k, {"types": set(), "kinds": set(), "present": 0, "seen": 0}
                 )
                 entry["types"].add("number" if kind in {"integer", "float"} else kind)
                 entry["kinds"].add(kind)
                 entry["present"] += v is not None
+                entry["seen"] += 1
             if len(stats) > 1000:
                 raise DomainError(
                     "SOURCE_TOO_COMPLEX", "Streamed field budget exceeded", 422
@@ -118,11 +119,14 @@ class FileRows:
                 ),
                 "scalarKinds": sorted(v["kinds"] - {"object", "array"}),
                 "missingCount": self.count - v["present"],
+                "absentCount": self.count - v["seen"],
+                "nullCount": v["seen"] - v["present"],
                 "unit": None,
             }
             for k, v in sorted(stats.items())
         ]
         self.schema["queryFields"] = nested_schema(nested_stats, self.count)
+        self.schema["profileRowCount"] = self.count
         digest = hashlib.sha256()
         with path.open("rb") as f:
             while chunk := f.read(1024 * 1024):

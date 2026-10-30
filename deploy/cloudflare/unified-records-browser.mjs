@@ -39,7 +39,7 @@ try{for(const width of [320,390,768,1280])for(const lang of ['en','zh-Hant']){
  else{status=503;body={error:{code:'PACK_UNAVAILABLE'}};}
  return route.fulfill({status,contentType:'application/json',body:JSON.stringify(body)});
  });
- await page.goto(origin+'/companies?lang='+lang);assert.equal(await page.locator('#record-sources').getAttribute('open'),null);assert.equal(calls.length,0,'no source reads before a query');
+ await page.goto(origin+'/companies?lang='+lang);assert.equal(await page.locator('#record-sources').getAttribute('open'),null);assert.equal(calls.filter(path=>!path.startsWith('/api/v1/companies/updates/status')).length,0,'only accepted-state metadata before a query');
  await page.locator('#record-query').fill('SAME');await page.locator('#record-search button').click();await page.locator('.mhk-record-row').nth(1).waitFor();assert.equal(await page.locator('.mhk-record-row').count(),2,'same names are separate identities');
  await page.locator('.mhk-record-title').first().click();await page.locator('#record-content details summary').first().waitFor();assert.equal(await page.locator('#record-detail-heading').evaluate(e=>e===document.activeElement),true);
  const download=page.waitForEvent('download');await page.locator('#record-content button').filter({hasText:lang==='en'?'Download selected':'下載所選'}).click();assert.ok(await (await download).path());

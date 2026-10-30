@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 import {test} from 'node:test';
+import {weatherChoices,dateFacts,qualityText} from '../../src/mcp_open_data_hk/web/source-quality.js';
 class Element {
   constructor(tag='div'){this.tag=tag;this.children=[];this.listeners={};this.dataset={};this.attrs={};this.value='';this.textContent='';this.hidden=false;}
   append(...els){this.children.push(...els);}replaceChildren(...els){this.children=[...els];this.textContent='';}setAttribute(k,v){this.attrs[k]=v;}addEventListener(k,fn){this.listeners[k]=fn;}focus(){}scrollIntoView(){}
@@ -31,7 +32,8 @@ async function browser(){
   const document={getElementById:el,querySelectorAll:s=>s==='[data-access]'?modes:[],createElement:t=>new Element(t),createTextNode:t=>t,title:''};
   const context=vm.createContext({document,location,URL,URLSearchParams,history:{pushState(a,b,path){location.href=new URL(path,location).href;},replaceState(a,b,path){location.href=new URL(path,location).href;}},fetchPublicJson:api,setTimeout,clearTimeout,FormData:class{constructor(f){this.f=f;}get(k){return this.f.elements[k]?.value||'';}},MhkI18n:{lang:'en',locale:'en',t:(key)=>key,apply(){},coverageSummary(){}}});
   context.window=context;context.matchMedia=()=>({matches:true});context.addEventListener=(name,fn)=>{listeners[name]=fn;};
-  vm.runInContext(readFileSync(new URL('../../src/mcp_open_data_hk/web/coverage.js',import.meta.url),'utf8').replace(/^import .*\n/,''),context);
+  Object.assign(context,{weatherChoices,dateFacts,qualityText});context.MhkI18n.date=String;
+  vm.runInContext(readFileSync(new URL('../../src/mcp_open_data_hk/web/coverage.js',import.meta.url),'utf8').replace(/^import .*\n/gm,''),context);
   await flush();await flush();
   const button=(id,text)=>el(id).querySelectorAll(id==='datasets'?'a':'button').find(b=>b.textContent===text);
   return {el,button,form,queryButton,listeners,location,first,second,resolve:value=>pendingResolve(value)};
