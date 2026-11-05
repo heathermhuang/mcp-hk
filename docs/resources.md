@@ -106,6 +106,13 @@ Department JSON responses retain response context and scope. Generic API respons
 access does not imply that pagination, arbitrary endpoint parameters or full history
 have been integrated. Inventoried URL templates accept only their exact named `parameters` (up to ten string values), URL-encoded into the fixed source endpoint; credentials and parameterised hosts are rejected. Other API specifications and pagination families still require adapters.
 
+CSDI's WFS 2 services advertise `GEOJSON`, while their JSON features omit matched
+counts. The reader negotiates only an advertised supported JSON format and requires
+exact native WFS hit counts before and after the complete response. Changing,
+unknown, conflicting or truncated counts fail closed. Stable counts are not an
+atomic publication snapshot or inferred feature identities. The existing 100,000
+row/small-response bounds remain internal capacity limits, not provider refusals.
+
 ZIP/GTFS/KMZ and ZIP responses labelled CSV/GeoJSON are read in memory, without
 filesystem extraction. Every supported member has `_sourceArchiveMember` provenance;
 unread binary members are listed. Nested archive expansion, member count, decoded

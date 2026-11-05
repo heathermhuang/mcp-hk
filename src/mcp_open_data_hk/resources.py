@@ -401,6 +401,83 @@ async def wfs(url, type_name):
     ):
         raise DomainError("INVALID_RECORD_PATH", "Invalid WFS type name", 400)
     endpoint = urlsplit(url)._replace(query="").geturl()
+    csdi = urlsplit(url).hostname == "portal.csdi.gov.hk" and urlsplit(
+        url
+    ).path.lower().endswith("/wfsserver")
+    output_format, before_count = "application/json", None
+    if csdi:
+        from defusedxml import ElementTree as ET
+
+        metadata, _, _, _ = await fetch(
+            params_url(
+                endpoint,
+                {"service": "WFS", "version": "2.0.0", "request": "GetCapabilities"},
+            )
+        )
+        root = ET.fromstring(metadata)
+        formats = [
+            v.text
+            for operation in root.iter("{http://www.opengis.net/ows/1.1}Operation")
+            if operation.get("name") == "GetFeature"
+            for parameter in operation
+            if parameter.tag == "{http://www.opengis.net/ows/1.1}Parameter"
+            and parameter.get("name") == "outputFormat"
+            for v in parameter.iter()
+            if v.tag == "{http://www.opengis.net/ows/1.1}Value"
+        ]
+        output_format = next(
+            (
+                value
+                for wanted in ("application/geo+json", "geojson", "application/json")
+                for value in formats
+                if value and value.lower() == wanted
+            ),
+            None,
+        )
+        if (
+            root.tag != "{http://www.opengis.net/wfs/2.0}WFS_Capabilities"
+            or not output_format
+        ):
+            raise DomainError(
+                "UNSUPPORTED_API",
+                "CSDI WFS does not advertise a supported WFS 2 JSON format",
+                422,
+            )
+
+        async def hit_count():
+            body, _, _, _ = await fetch(
+                params_url(
+                    endpoint,
+                    {
+                        "service": "WFS",
+                        "version": "2.0.0",
+                        "request": "GetFeature",
+                        "typeNames": type_name,
+                        "resultType": "hits",
+                    },
+                )
+            )
+            collection = ET.fromstring(body)
+            value = collection.get("numberMatched", "")
+            if (
+                collection.tag != "{http://www.opengis.net/wfs/2.0}FeatureCollection"
+                or collection.get("numberReturned") != "0"
+                or re.fullmatch(r"[0-9]{1,10}", value) is None
+            ):
+                raise DomainError(
+                    "INCOMPLETE_SOURCE",
+                    "WFS hits did not prove an exact feature count",
+                    422,
+                )
+            return int(value)
+
+        before_count = await hit_count()
+        if before_count > 100000:
+            raise DomainError(
+                "SOURCE_TOO_LARGE",
+                "WFS feature type exceeds the existing complete-response row bound",
+                422,
+            )
     value, body, headers, final = await read_json(
         endpoint,
         {
@@ -408,12 +485,40 @@ async def wfs(url, type_name):
             "version": "2.0.0",
             "request": "GetFeature",
             "typeNames": type_name,
-            "outputFormat": "application/json",
+            "outputFormat": output_format,
             "count": 100000,
         },
     )
     features = value.get("features")
     matched = value.get("numberMatched", value.get("totalFeatures"))
+    count_evidence = {}
+    if csdi:
+        after_count = await hit_count()
+        if before_count != after_count:
+            raise DomainError(
+                "SOURCE_CHANGED", "WFS matched count changed during reading", 409
+            )
+        if matched not in (None, "unknown") and (
+            type(matched) not in {int, str}
+            or re.fullmatch(r"[0-9]{1,10}", str(matched)) is None
+            or int(matched) != before_count
+        ):
+            raise DomainError(
+                "INCOMPLETE_SOURCE", "WFS JSON count conflicts with native hits", 422
+            )
+        count_evidence = {
+            "wfsContract": "csdi-wfs-count-1",
+            "outputFormat": output_format,
+            "countEvidence": {
+                "basis": "WFS_2_hits_before_and_after",
+                "beforeMatched": before_count,
+                "afterMatched": after_count,
+                "jsonDeclaredMatched": matched,
+                "snapshot": "count_reconciled_not_atomic_publication",
+                "featureIdentity": "not_inferred_when_geojson_omits_native_feature_ids",
+            },
+        }
+        matched = before_count
     if (
         not isinstance(features, list)
         or type(matched) not in {int, str}
@@ -433,6 +538,7 @@ async def wfs(url, type_name):
             "apiFamily": "WFS",
             "scope": "complete_feature_type",
             "sourceMatched": int(matched),
+            **count_evidence,
         },
     )
 
@@ -535,6 +641,13 @@ class Resources:
         key = hashlib.sha256(
             json.dumps(
                 ["structured-reader-3", resource_id, record_path, sheet, layer]
+                + (
+                    ["csdi-wfs-count-1"]
+                    if access_protocol == "WFS"
+                    and urlsplit(resource["url"]).hostname == "portal.csdi.gov.hk"
+                    and urlsplit(resource["url"]).path.lower().endswith("/wfsserver")
+                    else []
+                )
                 + ([OBSERVATION_REVISION] if hko_current(resource) else [])
                 + (["rss-feed-root-1"] if resource.get("format") == "RSS" else [])
                 + ([transport.REVISION] if profile else [])

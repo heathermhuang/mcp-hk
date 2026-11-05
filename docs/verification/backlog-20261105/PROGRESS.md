@@ -74,3 +74,13 @@ The initial point drift test reused a fresh cache; it now invokes the existing
 source-review context to exercise a real changed-file read. A rehearsal harness's
 internal/public argument mismatch and non-JSON response handling were corrected;
 these were local verification defects, not production source clearances.
+
+Release preflight source correction: CSDI rejected `application/json` and advertised
+`GEOJSON`; its JSON omitted native counts. The follow-up repair negotiates the exact
+advertised format, reconciles WFS 2 native hits before/after, invalidates old family
+variants and preserves the existing row/byte limits. Actual original-source local
+HTTP/native MCP returned 22 count-reconciled RVD028 features in four source requests.
+No feature identity or atomic publication snapshot is inferred. Seven regressions
+cover unsupported formats, changing/unknown/conflicting counts, truncation and the
+unchanged row bound. Receipt: `wfs-source-qualification.json`. Deployment was held;
+the earlier production release remained active with only resource cron paused.
