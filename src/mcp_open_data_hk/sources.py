@@ -34,6 +34,12 @@ SOURCES = {
         "attribution": "DATA.GOV.HK and the respective data providers",
         "freshnessSeconds": 172800,
     },
+    "transport": {
+        "sourceUrl": "https://data.gov.hk/en-data/dataset/hk-td-tis_11-pt-headway-en",
+        "attribution": "Transport Department / DATA.GOV.HK; live arrivals attributed separately to each operator",
+        "providerType": "government",
+        "freshnessSeconds": 86400,
+    },
     "seehouse": {
         "sourceUrl": "https://see.house/",
         "attribution": "SeeHouse / 睇樓; original listing providers retain their rights and attribution",
@@ -63,6 +69,38 @@ SOURCES = {
 }
 
 PACKS = [
+    {
+        "id": "transport",
+        "provider": "Transport Department / public transport operators",
+        "providerType": "unclassified",
+        "http": [
+            "/api/v1/transport/stops",
+            "/api/v1/transport/stops/{stopId}/routes",
+            "/api/v1/transport/journeys",
+        ],
+        "tools": [
+            "hk_transport_stop_search",
+            "hk_transport_stop_routes",
+            "hk_transport_journey",
+            "hk_catalogue_search",
+            "hk_resource_schema",
+            "hk_resource_query",
+        ],
+    },
+    {
+        "id": "catalogue",
+        "capability": "discovery_and_resource_queries",
+        "provider": "DATA.GOV.HK / CSDI and original providers",
+        "providerType": "unclassified",
+        "http": ["/api/v1/catalogue/datasets", "/api/v1/resources", "/api/v1/coverage"],
+        "tools": [
+            "hk_catalogue_search",
+            "hk_dataset_resources",
+            "hk_resource_schema",
+            "hk_resource_query",
+            "hk_coverage",
+        ],
+    },
     {
         "id": "addresses",
         "title": "Hong Kong addresses",

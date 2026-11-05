@@ -149,6 +149,98 @@ def test_source_url_boundary(url):
         validate_url(url)
 
 
+@pytest.mark.asyncio
+async def test_partial_text_filters_preserve_types_and_combine_with_exact(
+    resource_service, monkeypatch
+):
+    async def fake(url, headers=None, **kwargs):
+        return (
+            (
+                "id,name,type\n001,Lan Kwai Fong,bus\n002,LAN KWAI FONG,school\n003,蘭桂坊,bus\n004,ＬＡＮ ＫＷＡＩ,bus\n"
+            ).encode(),
+            {},
+            url,
+            200,
+        )
+
+    monkeypatch.setattr("mcp_open_data_hk.resources.fetch", fake)
+    resources = resource_service.resources
+    result = await resources.query(
+        "r1", contains={"name": "lan kwai"}, filters={"type": "bus"}, limit=1
+    )
+    assert result["meta"]["total"] == 2
+    assert result["data"]["items"][0]["id"] == "001"
+    page = await resources.query(
+        "r1",
+        contains={"name": "lan kwai"},
+        filters={"type": "bus"},
+        limit=1,
+        offset=1,
+        version=result["meta"]["version"],
+    )
+    assert page["data"]["items"][0]["id"] == "004"
+    assert (await resources.query("r1", contains={"name": "蘭桂"}))["meta"][
+        "total"
+    ] == 1
+    with pytest.raises(DomainError, match="UNKNOWN_FIELD"):
+        await resources.query("r1", contains={"unknown": "Lan"})
+    with pytest.raises(DomainError, match="INVALID_FILTER"):
+        await resources.query("r1", contains={"name": " "})
+    with TestClient(create_app(resource_service)) as client:
+        http = client.post(
+            "/api/v1/resources/r1/query",
+            json={"contains": {"name": "lan kwai"}, "filters": {"type": "bus"}},
+        )
+    assert http.status_code == 200
+    assert http.json()["meta"]["total"] == 2
+
+
+@pytest.mark.asyncio
+async def test_partial_text_nested_paths_do_not_coerce_nontext(
+    resource_service, monkeypatch
+):
+    async def fake(url, headers=None, **kwargs):
+        body = {
+            "data": [
+                {"label": {"name": "Central School"}, "number": 123},
+                {"label": {"name": "North School"}, "number": None},
+            ]
+        }
+        return json.dumps(body).encode(), {}, url, 200
+
+    with resource_service.store.connect() as db:
+        from mcp_open_data_hk.catalogue_store import unpack
+
+        row = db.execute(
+            "SELECT generation,payload FROM inventory_resources WHERE id='r1'"
+        ).fetchone()
+        resource = unpack(row["payload"])
+        resource["format"] = "JSON"
+        db.execute(
+            "UPDATE inventory_resources SET format='JSON',payload=? WHERE id='r1'",
+            (json.dumps(resource),),
+        )
+    monkeypatch.setattr("mcp_open_data_hk.resources.fetch", fake)
+    resources = resource_service.resources
+    result = await resources.query(
+        "r1", record_path="data", contains={"label.name": "central"}
+    )
+    assert result["meta"]["total"] == 1
+    assert (
+        await resources.query("r1", record_path="data", contains={"number": "123"})
+    )["meta"]["total"] == 0
+    async with Client(create_app(resource_service).state.mcp) as client:
+        payload = await client.call_tool(
+            "hk_resource_query",
+            {
+                "resourceId": "r1",
+                "recordPath": "data",
+                "contains": {"label.name": "SCHOOL"},
+            },
+        )
+        assert json.loads(payload.content[0].text)["meta"]["total"] == 2
+
+
 def test_dns_guard_rejects_mixed_private_answer(monkeypatch):
     monkeypatch.setattr(
         socket,
@@ -980,10 +1072,10 @@ def test_connected_views_keep_native_denominators_and_pagination(resource_servic
     before = c.coverage()
     assert {e["packId"] for e in entries()} == {p["id"] for p in PACKS}
     assert c.search(access="sources")["total"] == 1
-    assert c.search(access="connected")["total"] == 6
-    pages = [c.search(limit=1, offset=i) for i in range(7)]
-    assert len({p["items"][0]["id"] for p in pages}) == 7
-    assert pages[-1]["nextOffset"] is None and pages[0]["total"] == 7
+    assert c.search(access="connected")["total"] == 8
+    pages = [c.search(limit=1, offset=i) for i in range(9)]
+    assert len({p["items"][0]["id"] for p in pages}) == 9
+    assert pages[-1]["nextOffset"] is None and pages[0]["total"] == 9
     assert c.coverage()["datasets"] == before["datasets"]
     assert c.search(q="%")["total"] == 0
     assert c.search(q="_")["total"] == 0

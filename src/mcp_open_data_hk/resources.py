@@ -8,6 +8,7 @@ import time
 import tempfile
 import os
 import threading
+import unicodedata
 from pathlib import Path
 from urllib.parse import parse_qs, quote, unquote, urlencode, urlsplit, urlunsplit
 
@@ -597,6 +598,7 @@ class Resources:
                                 "JSON",
                                 "GEOJSON",
                                 "API",
+                                "GTFS",
                             }:
                                 raise
                             body, headers, final, status = await fetch_file(url)
@@ -1067,9 +1069,31 @@ class Resources:
         parameters=None,
         typed_filters=None,
         presentation=False,
+        contains=None,
         stop=None,
     ):
         filters = decode_filters(typed_filters or [], filters)
+        if (
+            (contains is not None and not isinstance(contains, dict))
+            or len(contains or {}) > 10
+            or any(
+                not isinstance(k, str)
+                or len(k) > 300
+                or not isinstance(v, str)
+                or not v.strip()
+                or len(v) > 1000
+                for k, v in (contains or {}).items()
+            )
+        ):
+            raise DomainError(
+                "INVALID_FILTER",
+                "contains requires up to 10 nonempty partial-text filters",
+                400,
+            )
+        text_filters = {
+            k: unicodedata.normalize("NFKC", v).casefold()
+            for k, v in (contains or {}).items()
+        }
         if (
             not 1 <= limit <= 100
             or not 0 <= offset <= 100000
@@ -1125,13 +1149,13 @@ class Resources:
                 f["name"]
                 for f in value["schema"]["fields"] + value["schema"]["queryFields"]
             }
-            if (set(filters or {}) | set(fields or [])) - names:
+            if (set(filters or {}) | set(fields or []) | set(text_filters)) - names:
                 raise DomainError(
                     "UNKNOWN_FIELD", "Inspect schema for exact source field names", 400
                 )
             # Unfiltered previews already have an accepted exact row count.
             # Do not rescan the full source merely to rediscover that count.
-            unfiltered = not filters
+            unfiltered = not filters and not text_filters
             total = len(value["rows"]) if unfiltered else 0
             items = []
             for index, r in enumerate(value["rows"]):
@@ -1139,11 +1163,18 @@ class Resources:
                     check_budget()
                 if unfiltered and index >= offset + limit:
                     break
-                if unfiltered or all(
-                    (actual := selected(r, k)) is not MISSING
-                    and type(actual) is type(v)
-                    and actual == v
-                    for k, v in (filters or {}).items()
+                if unfiltered or (
+                    all(
+                        (actual := selected(r, k)) is not MISSING
+                        and type(actual) is type(v)
+                        and actual == v
+                        for k, v in (filters or {}).items()
+                    )
+                    and all(
+                        isinstance((actual := selected(r, k)), str)
+                        and needle in unicodedata.normalize("NFKC", actual).casefold()
+                        for k, needle in text_filters.items()
+                    )
                 ):
                     position = index if unfiltered else total
                     if offset <= position < offset + limit:

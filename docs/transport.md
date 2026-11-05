@@ -1,5 +1,66 @@
 # Live public transport arrivals
 
+## Bus stops and direct journeys
+
+Transport and the shared catalogue/resource interface appear in `hk_data_packs`
+and connected catalogue search. Other transport feeds still use the resource
+workflow below; absence of a dedicated tool never proves a source is absent.
+
+- `hk_transport_stop_search(q="Lan Kwai Fong")` matches partial English or Chinese
+  bus stop names without case sensitivity. Optional `lat`, `lon`, `radiusM`
+  search nearby WGS84 locations; distances are straight-line, not walking routes.
+- `hk_transport_stop_routes(stopId="261")` returns directional route memberships
+  and original regular/special-service and pickup/dropoff flags.
+- `hk_transport_journey(origin="Lan Kwai Fong", destination="Seymour Road")`
+  finds direct bus routes and independently attaches verified Citybus live ETAs.
+  Names, exact returned TD stop IDs, or `originLat`/`originLon` and
+  `destinationLat`/`destinationLon` are accepted. Use ALS address search first for
+  arbitrary landmarks; choose ambiguous addresses rather than guessing.
+
+HTTP equivalents are `GET /api/v1/transport/stops`,
+`GET /api/v1/transport/stops/{stopId}/routes`, and
+`POST /api/v1/transport/journeys` with the same argument names. `operator="CTB"`
+restricts discovery to Citybus; an empty operator searches all indexed buses.
+`includeArrivals=false` requests reference routes without operator reads.
+
+The index joins official bilingual GTFS `stops.txt` files with full
+`ROUTE_BUS.xml` and `RSTOP_BUS.xml` files. The similarly named CSV route/fare
+files are **delta changes**, not full stop inventories. Output preserves source
+URLs, hashes, retrieval times and source update dates. No route, stop, location or
+ETA is seeded. Complete validated generations publish atomically in the existing
+SQLite store and are included in its backup. This optional index does not change
+accepted-pack readiness.
+
+Refresh is on demand, once daily after success, with at most six refresh batches
+per UTC day and a five-minute failure cooldown. A batch reads four fixed public
+files with byte/row limits. Failed refreshes retain the last accepted index with
+a stale warning. Unknown pickup/dropoff code `0` is retained but never permits
+boarding or alighting. Provider clocks and live arrival freshness are independent.
+
+TD stop IDs are **not** Citybus IDs. Live joins check the current Citybus route,
+direction and operator stop name/location against selected TD stops. Sequence
+numbers are lookup hints only; actual operator order determines live queries and
+stop counts. Changed identity, source errors or request bounds leave a reference
+candidate with an explicit `arrivalStatus`/`arrivalError`, never a successful empty
+ETA. Each journey has at most 64 operator-resource lookups in a shared 45-second
+window; the persisted daily budget is 5,000, including cache hits.
+
+Joined ETAs currently support Citybus. Other buses have reference route discovery
+and separate generic arrival resources. Rail, ferries, transfers, service-day
+calendars, diversions, walking times and fastest-trip ranking are not inferred.
+A dated route alone does not establish current operation.
+
+Rehearse real HTTP/MCP source reads without changing production:
+
+```sh
+PYTHONPATH=src .venv/bin/python scripts/verify_transport_search.py --local \
+  --out /tmp/mcp-hk-bus-rehearsal.json
+```
+
+After release omit `--local` to test the actual public endpoints.
+
+## Other operator arrival resources
+
 Transport feeds use the existing `hk_catalogue_search` → `hk_dataset_resources` →
 `hk_resource_schema` → `hk_resource_query` workflow. HTTP uses the same service.
 A catalogue entry is not evidence that every route, stop or operator works.

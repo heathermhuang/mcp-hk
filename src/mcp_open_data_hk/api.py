@@ -383,6 +383,9 @@ def create_app(service=None):
     from .resource_api import register_http
 
     register_http(app, service.resources)
+    from .transport_api import register_http as register_transport_http
+
+    register_transport_http(app, service.transport)
     from .operations import register_operations
 
     register_operations(app, service)

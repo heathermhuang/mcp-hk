@@ -18,6 +18,9 @@ class FileRows:
     def __init__(self, path, fmt, record_path=""):
         self.path = path
         self.fmt = fmt.upper()
+        gtfs = self.fmt == "GTFS"
+        if gtfs:
+            self.fmt = "CSV"
         self.record_path = record_path
         self.count = 0
         with path.open("rb") as f:
@@ -46,11 +49,17 @@ class FileRows:
                 if sample.startswith((b"\xff\xfe", b"\xfe\xff"))
                 else "utf-8-sig"
             )
+            if gtfs:
+                self.encoding = "utf-8-sig"
             try:
                 with path.open("r", encoding=self.encoding) as source:
                     while source.read(65536):
                         pass
             except UnicodeError:
+                if gtfs:
+                    raise DomainError(
+                        "UNSUPPORTED_ENCODING", "GTFS tables require UTF-8 text", 422
+                    )
                 self.encoding = "big5hkscs"
             decoded = codecs.getincrementaldecoder(self.encoding)().decode(
                 sample, final=False
@@ -74,6 +83,11 @@ class FileRows:
             "scope": "complete_streamed_file",
             "normalization": "Original source values and explicit positional header mappings; no inferred units/reference periods.",
         }
+        if gtfs:
+            self.schema.update(
+                sourceFormat="GTFS",
+                transportReference={"kind": "published_timetable", "realtime": False},
+            )
         if self.fmt == "CSV":
             self.schema["encoding"] = self.encoding
         stats = {}

@@ -1,0 +1,192 @@
+{
+  "scope": "official_file_replay_and_live_public_resource_gateway",
+  "directPinnedSourceReadVerified": false,
+  "limitation": "Local DNS resolves provider hosts to non-public proxy addresses; production fetch guards were unchanged.",
+  "bilingualSearchParity": true,
+  "httpMcpReferenceParity": true,
+  "provenance": [
+    {
+      "sourceId": "transport",
+      "sourceUrl": "https://data.gov.hk/en-data/dataset/hk-td-tis_11-pt-headway-en",
+      "attribution": "Transport Department / DATA.GOV.HK; live arrivals attributed separately to each operator",
+      "retrievedAt": "2026-11-05T10:10:26.918151+00:00",
+      "lastCheckedAt": "2026-11-05T10:10:26.918151+00:00",
+      "referencePeriod": null,
+      "stale": false,
+      "freshnessBasis": "last_successful_source_check"
+    },
+    {
+      "sourceUrl": "https://static.data.gov.hk/td/pt-headway-en/stops.txt",
+      "contentHash": "8b1cb7e18365201e5640f10fc6bc79b9549820240109ce0f1f2898755cffb696",
+      "replay": true,
+      "downloadedAt": 1793872055.3131104
+    },
+    {
+      "sourceUrl": "https://static.data.gov.hk/td/pt-headway-tc/stops.txt",
+      "contentHash": "d1a9bff99808bf6d55e2c4b48163295cb5520ce23e092262397baa4d23cb8ced",
+      "replay": true,
+      "downloadedAt": 1793872055.6169224
+    },
+    {
+      "sourceUrl": "https://static.data.gov.hk/td/routes-fares-xml/ROUTE_BUS.xml",
+      "contentHash": "7366f0516c6da6619b18c108680826726aff0f04faf01f17e83db33f37e83ee1",
+      "replay": true,
+      "downloadedAt": 1793872146.3275354
+    },
+    {
+      "sourceUrl": "https://static.data.gov.hk/td/routes-fares-xml/RSTOP_BUS.xml",
+      "contentHash": "eeac29b41622cef00d45b0944d317c5b905cb2e66d549842abbf85d48be201cd",
+      "replay": true,
+      "downloadedAt": 1793872055.1501443
+    }
+  ],
+  "candidates": [
+    {
+      "route": "13",
+      "arrivalStatus": "live",
+      "board": "001042",
+      "alight": "001021",
+      "operatorStopCount": 7,
+      "arrivalSource": [
+        {
+          "sourceUrl": "https://rt.data.gov.hk/v2/transport/citybus/eta/CTB/001042/13",
+          "originalResourceUrl": "https://rt.data.gov.hk/v1/transport/citybus-nwfb/eta/ctb",
+          "catalogueUrl": "https://data.gov.hk/en-data/dataset/ctb-eta-transport-realtime-eta",
+          "attribution": "Citybus Limited / DATA.GOV.HK",
+          "termsUrl": "https://data.gov.hk/en/terms-and-conditions",
+          "retrievedAt": 1793873429.5781186,
+          "observedAt": null,
+          "lastCheckedAt": 1793873429.5781186,
+          "lastValidatedAt": 1793873429.5781186,
+          "publicationDate": "2019-08-01",
+          "referencePeriod": null,
+          "contentHash": "489bc19384db4a73307e39db5bb572792a2f3af95549b56259012eeaeb2900d2",
+          "stale": false
+        }
+      ],
+      "arrivalTransport": {
+        "operator": "Citybus",
+        "mode": "bus",
+        "operation": "arrivals",
+        "requiredParameters": [
+          "stop_id",
+          "route"
+        ],
+        "optionalParameters": {},
+        "parameterExamples": {
+          "stop_id": "001145",
+          "route": "11"
+        },
+        "cacheTTLSeconds": 20,
+        "maxSourceAgeSeconds": 150,
+        "validationScope": "last_selected_route_or_stop",
+        "policyVersion": "transport-2",
+        "omittedStaleRecords": 0,
+        "arrivalState": "arrivals",
+        "sourceTimestamp": "2026-11-05T18:10:30+08:00",
+        "sourceAgeSeconds": 0,
+        "freshnessBasis": "provider_timestamp",
+        "freshUntil": 1793873580.0,
+        "cacheAgeSeconds": 0.01955270767211914
+      }
+    },
+    {
+      "route": "12",
+      "arrivalStatus": "live",
+      "board": "001042",
+      "alight": "001021",
+      "operatorStopCount": 7,
+      "arrivalSource": [
+        {
+          "sourceUrl": "https://rt.data.gov.hk/v2/transport/citybus/eta/CTB/001042/12",
+          "originalResourceUrl": "https://rt.data.gov.hk/v1/transport/citybus-nwfb/eta/ctb",
+          "catalogueUrl": "https://data.gov.hk/en-data/dataset/ctb-eta-transport-realtime-eta",
+          "attribution": "Citybus Limited / DATA.GOV.HK",
+          "termsUrl": "https://data.gov.hk/en/terms-and-conditions",
+          "retrievedAt": 1793873432.1955457,
+          "observedAt": null,
+          "lastCheckedAt": 1793873432.1955457,
+          "lastValidatedAt": 1793873432.1955457,
+          "publicationDate": "2019-08-01",
+          "referencePeriod": null,
+          "contentHash": "088f41bb43e67043caec594ae819478ef5b833facb37e8601bc4e5a1fd1d38d5",
+          "stale": false
+        }
+      ],
+      "arrivalTransport": {
+        "operator": "Citybus",
+        "mode": "bus",
+        "operation": "arrivals",
+        "requiredParameters": [
+          "stop_id",
+          "route"
+        ],
+        "optionalParameters": {},
+        "parameterExamples": {
+          "stop_id": "001145",
+          "route": "11"
+        },
+        "cacheTTLSeconds": 20,
+        "maxSourceAgeSeconds": 150,
+        "validationScope": "last_selected_route_or_stop",
+        "policyVersion": "transport-2",
+        "omittedStaleRecords": 0,
+        "arrivalState": "arrivals",
+        "sourceTimestamp": "2026-11-05T18:10:33+08:00",
+        "sourceAgeSeconds": 0,
+        "freshnessBasis": "provider_timestamp",
+        "freshUntil": 1793873583.0,
+        "cacheAgeSeconds": 0.00992727279663086
+      }
+    },
+    {
+      "route": "12",
+      "arrivalStatus": "live",
+      "board": "001042",
+      "alight": "001156",
+      "operatorStopCount": 16,
+      "arrivalSource": [
+        {
+          "sourceUrl": "https://rt.data.gov.hk/v2/transport/citybus/eta/CTB/001042/12",
+          "originalResourceUrl": "https://rt.data.gov.hk/v1/transport/citybus-nwfb/eta/ctb",
+          "catalogueUrl": "https://data.gov.hk/en-data/dataset/ctb-eta-transport-realtime-eta",
+          "attribution": "Citybus Limited / DATA.GOV.HK",
+          "termsUrl": "https://data.gov.hk/en/terms-and-conditions",
+          "retrievedAt": 1793873432.1955457,
+          "observedAt": null,
+          "lastCheckedAt": 1793873436.0986392,
+          "lastValidatedAt": 1793873436.0986392,
+          "publicationDate": "2019-08-01",
+          "referencePeriod": null,
+          "contentHash": "088f41bb43e67043caec594ae819478ef5b833facb37e8601bc4e5a1fd1d38d5",
+          "stale": false
+        }
+      ],
+      "arrivalTransport": {
+        "operator": "Citybus",
+        "mode": "bus",
+        "operation": "arrivals",
+        "requiredParameters": [
+          "stop_id",
+          "route"
+        ],
+        "optionalParameters": {},
+        "parameterExamples": {
+          "stop_id": "001145",
+          "route": "11"
+        },
+        "cacheTTLSeconds": 20,
+        "maxSourceAgeSeconds": 150,
+        "validationScope": "last_selected_route_or_stop",
+        "policyVersion": "transport-2",
+        "omittedStaleRecords": 0,
+        "arrivalState": "arrivals",
+        "sourceTimestamp": "2026-11-05T18:10:33+08:00",
+        "sourceAgeSeconds": 3.108898162841797,
+        "freshnessBasis": "provider_timestamp",
+        "freshUntil": 1793873583.0,
+        "cacheAgeSeconds": 0.010288238525390625
+      }
+    }
+  ]
+}

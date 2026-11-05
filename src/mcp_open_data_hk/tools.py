@@ -21,6 +21,9 @@ def register_data_tools(server, service=None):
     from .resource_api import register_mcp
 
     register_mcp(server, current)
+    from .transport_api import register_mcp as register_transport_mcp
+
+    register_transport_mcp(server, current)
 
     from .sfc import register_mcp as register_sfc_mcp
 
