@@ -270,7 +270,17 @@ class CatalogueStore:
             or order not in {"relevance", "title"}
             or capability
             not in {"all", "records", "nearby", "requires_selection", "unqualified"}
-            or entity_kind not in {"all", "school", "clinic", "unqualified"}
+            or entity_kind
+            not in {
+                "all",
+                "school",
+                "clinic",
+                "library",
+                "museum",
+                "fire_station",
+                "ambulance_depot",
+                "unqualified",
+            }
         ):
             raise DomainError("INVALID_QUERY", "Invalid search or pagination", 400)
         self.refresh_transport_policies()

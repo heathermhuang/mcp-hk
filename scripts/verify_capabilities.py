@@ -26,7 +26,9 @@ async def run(args, folder):
     if replay:
         service = Service(Store(str(Path(folder) / "cohort.sqlite3")))
         datasets, resources, bodies = [], [], {}
-        for profile in profiles():
+        for profile in (
+            p for p in profiles() if p["entityKind"] in {"school", "clinic"}
+        ):
             url = "https://" + profile["host"] + profile["path"]
             if profile["query"]:
                 url += "?" + urlencode({k: v[0] for k, v in profile["query"].items()})
@@ -83,7 +85,9 @@ async def run(args, folder):
     receipts = []
     try:
         async with http, mcp:
-            for profile in profiles():
+            for profile in (
+                p for p in profiles() if p["entityKind"] in {"school", "clinic"}
+            ):
                 key = profile["resourceId"]
                 started = time.perf_counter()
                 response = await http.get("/api/v1/resources/" + key + "/schema")

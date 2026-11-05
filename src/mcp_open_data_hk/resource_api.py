@@ -9,7 +9,16 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 CatalogueCapability = Literal[
     "all", "records", "nearby", "requires_selection", "unqualified"
 ]
-EntityKind = Literal["all", "school", "clinic", "unqualified"]
+EntityKind = Literal[
+    "all",
+    "school",
+    "clinic",
+    "library",
+    "museum",
+    "fire_station",
+    "ambulance_depot",
+    "unqualified",
+]
 
 
 class ResourceSchemaQuery(BaseModel):

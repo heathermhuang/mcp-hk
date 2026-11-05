@@ -1,0 +1,170 @@
+{
+  "scope": "local HTTP/native FastMCP over checksum-matching original official files; not deployed source proof",
+  "providerRequests": 0,
+  "results": [
+    {
+      "resourceId": "2c5d0afb1ffb7ec9b27de104cd7e3767",
+      "binding": {
+        "profileId": "ambulance-depot-feature-points-1",
+        "profileFingerprint": "2c46fabf80af8cc3a3d0393686a235d06912d5e189e2d773b6cf71771aae3fc8",
+        "entityKind": "ambulance_depot",
+        "state": "available",
+        "crs": "EPSG:4326",
+        "axisOrder": "longitude_latitude_for_geometry",
+        "grain": "Published ambulance-depot location features; this is not emergency dispatch, operational readiness or a service-availability directory.",
+        "identity": {
+          "field": "properties.OBJECTID",
+          "kind": "integer",
+          "namespace": "csdi:hkfsd_rcd_1634799003993_7633:AmbDepots:OBJECTID",
+          "scope": "feature_identifier_within_accepted_version"
+        },
+        "evidence": [
+          "https://portal.csdi.gov.hk/geoportal/rest/metadata/item/hkfsd_rcd_1634799003993_7633/html",
+          "https://portal.csdi.gov.hk/csdi-webpage/info/WhatsNew",
+          "docs/verification/backlog-20261105/point-qualification.json"
+        ],
+        "coordinateQualification": "CSDI's 5 December 2025 notice establishes WGS84 longitude/latitude decimal degrees for these GeoJSON exports. Full export geometry, source context and version-scoped identity are independently checked in the qualification receipt. Geometry drives distance; property coordinates stay raw, including disagreements.",
+        "qualificationDate": "2026-11-05",
+        "observationTime": null,
+        "uniqueFacilityCount": null,
+        "coverage": {
+          "sourceRows": 45,
+          "validCoordinates": 45,
+          "missingCoordinates": 0,
+          "invalidCoordinates": 0,
+          "missingSourceIdentifiers": 0,
+          "invalidSourceIdentifiers": 0,
+          "geometryPropertyDisagreementsOver5M": 1,
+          "distinctSourceIdentifiers": 45,
+          "duplicateSourceIdentifierRows": 0,
+          "scope": "source_records_not_unique_facilities"
+        }
+      },
+      "matches": 1,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "395d43bfacb4461f6774f7d14e22c7db",
+      "binding": {
+        "profileId": "fire-station-feature-points-1",
+        "profileFingerprint": "abfc4aa277d11dcb73d7eef77ab5233abab1e8ab310cde70451eedc2915928e1",
+        "entityKind": "fire_station",
+        "state": "available",
+        "crs": "EPSG:4326",
+        "axisOrder": "longitude_latitude_for_geometry",
+        "grain": "Published fire-station and fireboat-station location features; this is not emergency dispatch, operational readiness or a service-availability directory.",
+        "identity": {
+          "field": "properties.OBJECTID",
+          "kind": "integer",
+          "namespace": "csdi:hkfsd_rcd_1634798867463_89696:FireStations:OBJECTID",
+          "scope": "feature_identifier_within_accepted_version"
+        },
+        "evidence": [
+          "https://portal.csdi.gov.hk/geoportal/rest/metadata/item/hkfsd_rcd_1634798867463_89696/html",
+          "https://portal.csdi.gov.hk/csdi-webpage/info/WhatsNew",
+          "docs/verification/backlog-20261105/point-qualification.json"
+        ],
+        "coordinateQualification": "CSDI's 5 December 2025 notice establishes WGS84 longitude/latitude decimal degrees for these GeoJSON exports. Full export geometry, source context and version-scoped identity are independently checked in the qualification receipt. Geometry drives distance; property coordinates stay raw, including disagreements.",
+        "qualificationDate": "2026-11-05",
+        "observationTime": null,
+        "uniqueFacilityCount": null,
+        "coverage": {
+          "sourceRows": 95,
+          "validCoordinates": 95,
+          "missingCoordinates": 0,
+          "invalidCoordinates": 0,
+          "missingSourceIdentifiers": 0,
+          "invalidSourceIdentifiers": 0,
+          "geometryPropertyDisagreementsOver5M": 0,
+          "distinctSourceIdentifiers": 95,
+          "duplicateSourceIdentifierRows": 0,
+          "scope": "source_records_not_unique_facilities"
+        }
+      },
+      "matches": 1,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "368c1b639641cbdb729b8ec9ea4ad865",
+      "binding": {
+        "profileId": "library-feature-points-1",
+        "profileFingerprint": "e75d4ced7e1654371ee3c563964d03d60bed7184a606b548e736b29c9caabc40",
+        "entityKind": "library",
+        "state": "available",
+        "crs": "EPSG:4326",
+        "axisOrder": "longitude_latitude_for_geometry",
+        "grain": "Published library features include mobile-library stops; records do not establish unique buildings or current opening schedules.",
+        "identity": {
+          "field": "properties.OBJECTID",
+          "kind": "integer",
+          "namespace": "csdi:lcsd_rcd_1629267205214_44807:LIBRARY:OBJECTID",
+          "scope": "feature_identifier_within_accepted_version"
+        },
+        "evidence": [
+          "https://portal.csdi.gov.hk/geoportal/rest/metadata/item/lcsd_rcd_1629267205214_44807/html",
+          "https://portal.csdi.gov.hk/csdi-webpage/info/WhatsNew",
+          "docs/verification/backlog-20261105/point-qualification.json"
+        ],
+        "coordinateQualification": "CSDI's 5 December 2025 notice establishes WGS84 longitude/latitude decimal degrees for these GeoJSON exports. Full export geometry, source context and version-scoped identity are independently checked in the qualification receipt. Geometry drives distance; property coordinates stay raw, including disagreements.",
+        "qualificationDate": "2026-11-05",
+        "observationTime": null,
+        "uniqueFacilityCount": null,
+        "coverage": {
+          "sourceRows": 184,
+          "validCoordinates": 184,
+          "missingCoordinates": 0,
+          "invalidCoordinates": 0,
+          "missingSourceIdentifiers": 0,
+          "invalidSourceIdentifiers": 0,
+          "geometryPropertyDisagreementsOver5M": 0,
+          "distinctSourceIdentifiers": 184,
+          "duplicateSourceIdentifierRows": 0,
+          "scope": "source_records_not_unique_facilities"
+        }
+      },
+      "matches": 1,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "b6c922aee8773b1418f41cdaa9d31987",
+      "binding": {
+        "profileId": "museum-feature-points-1",
+        "profileFingerprint": "33282724e064947f6af7a4706ee355b7bcbafd6a900b18d31aa3b26fe408a524",
+        "entityKind": "museum",
+        "state": "available",
+        "crs": "EPSG:4326",
+        "axisOrder": "longitude_latitude_for_geometry",
+        "grain": "Published museum location features; records do not establish current exhibitions, opening schedules or unique buildings.",
+        "identity": {
+          "field": "properties.OBJECTID",
+          "kind": "integer",
+          "namespace": "csdi:lcsd_rcd_1629267205214_78787:MUSEUM:OBJECTID",
+          "scope": "feature_identifier_within_accepted_version"
+        },
+        "evidence": [
+          "https://portal.csdi.gov.hk/geoportal/rest/metadata/item/lcsd_rcd_1629267205214_78787/html",
+          "https://portal.csdi.gov.hk/csdi-webpage/info/WhatsNew",
+          "docs/verification/backlog-20261105/point-qualification.json"
+        ],
+        "coordinateQualification": "CSDI's 5 December 2025 notice establishes WGS84 longitude/latitude decimal degrees for these GeoJSON exports. Full export geometry, source context and version-scoped identity are independently checked in the qualification receipt. Geometry drives distance; property coordinates stay raw, including disagreements.",
+        "qualificationDate": "2026-11-05",
+        "observationTime": null,
+        "uniqueFacilityCount": null,
+        "coverage": {
+          "sourceRows": 18,
+          "validCoordinates": 18,
+          "missingCoordinates": 0,
+          "invalidCoordinates": 0,
+          "missingSourceIdentifiers": 0,
+          "invalidSourceIdentifiers": 0,
+          "geometryPropertyDisagreementsOver5M": 0,
+          "distinctSourceIdentifiers": 18,
+          "duplicateSourceIdentifierRows": 0,
+          "scope": "source_records_not_unique_facilities"
+        }
+      },
+      "matches": 1,
+      "httpMcpParity": true
+    }
+  ]
+}

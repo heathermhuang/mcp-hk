@@ -136,8 +136,17 @@ def qualify(resource, rows, schema):
                 except (ValueError, TypeError):
                     hold("bilingual_coordinate_conflict")
             else:
-                lat, lon = selected(row, "properties.Latitude"), selected(
-                    row, "properties.Longitude"
+                lat = selected(
+                    row,
+                    profile["coordinates"].get(
+                        "propertyLatitude", "properties.Latitude"
+                    ),
+                )
+                lon = selected(
+                    row,
+                    profile["coordinates"].get(
+                        "propertyLongitude", "properties.Longitude"
+                    ),
                 )
                 if (
                     type(lat) in {int, float}

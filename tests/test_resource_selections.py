@@ -168,3 +168,81 @@ async def test_null_prior_check_time_does_not_hide_a_real_capabilities_source_fa
     with pytest.raises(DomainError, match="SOURCE_UNAVAILABLE"):
         await service.resources.schema("WFS")
     assert service.resources.catalogue.check("WFS")["status"] == "unavailable"
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("csv_feature_request", [False, True])
+async def test_arcgis_hosted_wfs_selected_read_uses_wfs_not_rest_layer(
+    service, monkeypatch, csv_feature_request
+):
+    import json
+
+    catalogue = service.resources.catalogue
+    original = catalogue.resource
+    monkeypatch.setattr(
+        catalogue,
+        "resource",
+        lambda rid: {
+            **original(rid),
+            "format": "CSV" if csv_feature_request else "WFS",
+            "url": "https://example.gov.hk/server/services/common/clinics/MapServer/WFSServer?service=wfs&"
+            + (
+                "request=GetFeature&typename=csdi:clinics&outputFormat=CSV"
+                if csv_feature_request
+                else "request=GetCapabilities"
+            ),
+        },
+    )
+    calls = []
+
+    async def read_json(url, params=None):
+        calls.append(params)
+        assert params["service"] == "WFS"
+        assert params["typeNames"] == "csdi:clinics"
+        value = {"type": "FeatureCollection", "numberMatched": 0, "features": []}
+        return value, json.dumps(value).encode(), {}, url
+
+    monkeypatch.setattr("mcp_open_data_hk.resources.read_json", read_json)
+    result = await service.resources.schema(
+        "WFS", record_path="" if csv_feature_request else "csdi:clinics"
+    )
+    assert result["recordCount"] == 0
+    assert result["schema"]["apiFamily"] == "WFS"
+    assert result["schema"]["sourceSelection"]["recordPath"] == "csdi:clinics"
+    assert len(calls) == 1
+    from mcp_open_data_hk.capabilities import family
+
+    assert family(catalogue.resource("WFS")) == "wfs"
+    if csv_feature_request:
+        from mcp_open_data_hk.contracts import DomainError
+
+        with pytest.raises(DomainError, match="INVALID_RECORD_PATH"):
+            await service.resources.query("WFS", record_path="other:clinics")
+
+
+@pytest.mark.asyncio
+async def test_ogc_scope_is_not_silently_broadened_or_treated_as_rest(
+    service, monkeypatch
+):
+    from mcp_open_data_hk.contracts import DomainError
+    from mcp_open_data_hk.capabilities import family
+    from mcp_open_data_hk.resource_protocols import pinned_feature_type
+
+    original = service.resources.catalogue.resource("WFS")
+    scoped = {
+        **original,
+        "format": "CSV",
+        "url": "https://example.gov.hk/MapServer/WFSServer?service=WFS&request=GetFeature&typename=ns:clinic&bbox=1,2,3,4",
+    }
+    with pytest.raises(DomainError, match="UNSUPPORTED_API"):
+        pinned_feature_type(scoped)
+    imagery = {
+        **original,
+        "format": "PNG",
+        "url": "https://example.gov.hk/MapServer/WMSServer?service=WMS&request=GetMap",
+    }
+    assert family(imagery) == "map_imagery"
+    monkeypatch.setattr(service.resources.catalogue, "resource", lambda rid: imagery)
+    with pytest.raises(DomainError, match="INVALID_QUERY"):
+        await service.resources.schema("WFS")
+    assert service.resources.catalogue.check("WFS") == {}

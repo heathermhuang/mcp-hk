@@ -121,8 +121,9 @@ def test_pruning_keeps_recently_retired_generations(operational):
         operational.snapshot("restaurants", original)
 
 
+@pytest.mark.parametrize("legacy_text", [False, True])
 def test_transport_checkpoint_preserves_metadata_and_record_cache(
-    operational, tmp_path
+    operational, tmp_path, legacy_text
 ):
     from mcp_open_data_hk.catalogue_store import CatalogueStore
 
@@ -142,6 +143,20 @@ def test_transport_checkpoint_preserves_metadata_and_record_cache(
             db.execute("SELECT typeof(payload) FROM inventory_resources").fetchone()[0]
             == "blob"
         )
+        if legacy_text:
+            import zlib
+
+            for table, column in [
+                ("inventory_resources", "payload"),
+                ("resource_variants", "schema_json"),
+            ]:
+                for rowid, payload in db.execute(
+                    f"SELECT rowid,{column} FROM {table}"
+                ).fetchall():
+                    db.execute(
+                        f"UPDATE {table} SET {column}=? WHERE rowid=?",
+                        (zlib.decompress(payload).decode(), rowid),
+                    )
     path, digest = checkpoint(operational.path)
     target = tmp_path / "transport-restored" / "app.sqlite3"
     restore(path.read_bytes(), digest, str(target))
@@ -158,14 +173,13 @@ def test_transport_checkpoint_preserves_metadata_and_record_cache(
             db.execute("SELECT typeof(schema_json) FROM resource_variants").fetchone()[
                 0
             ]
-            == "text"
+            == "blob"
         )
         assert (
             db.execute("SELECT typeof(payload) FROM resource_cache").fetchone()[0]
             == "blob"
         )
     with operational.connect() as db:
-        assert (
-            db.execute("SELECT typeof(payload) FROM inventory_resources").fetchone()[0]
-            == "blob"
-        )
+        assert db.execute("SELECT typeof(payload) FROM inventory_resources").fetchone()[
+            0
+        ] == ("text" if legacy_text else "blob")

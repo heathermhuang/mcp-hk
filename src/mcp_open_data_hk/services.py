@@ -453,7 +453,7 @@ class Service:
                             if r["kind"] == "route_stop"
                         }
                     ),
-                    "joinedArrivalOperators": ["Citybus"],
+                    "joinedArrivalOperators": ["Citybus", "KMB/LWB", "NLB"],
                     "currentServiceVerified": False,
                 }
             sources.append(item)

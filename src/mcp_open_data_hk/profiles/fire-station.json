@@ -1,0 +1,68 @@
+{
+  "id": "fire-station-feature-points-1",
+  "resourceId": "395d43bfacb4461f6774f7d14e22c7db",
+  "datasetId": "csdi:hkfsd_rcd_1634798867463_89696",
+  "entityKind": "fire_station",
+  "format": "GEOJSON",
+  "host": "portal.csdi.gov.hk",
+  "path": "/csdi-webpage/file-api",
+  "query": {
+    "dataset_id": [
+      "hkfsd_rcd_1634798867463_89696"
+    ],
+    "format": [
+      "geojson"
+    ],
+    "layer_name": [
+      "FireStations"
+    ]
+  },
+  "coordinates": {
+    "kind": "geojson_point",
+    "field": "geometry",
+    "crs": "EPSG:4326",
+    "propertyLatitude": "properties.Latitude",
+    "propertyLongitude": "properties.Longitude"
+  },
+  "identity": {
+    "field": "properties.OBJECTID",
+    "kind": "integer",
+    "namespace": "csdi:hkfsd_rcd_1634798867463_89696:FireStations:OBJECTID",
+    "scope": "feature_identifier_within_accepted_version"
+  },
+  "requiredFields": {
+    "geometry": [
+      "object"
+    ],
+    "properties.OBJECTID": [
+      "number"
+    ],
+    "properties.Name_ENG": [
+      "string"
+    ],
+    "properties.Name_TC": [
+      "string"
+    ],
+    "properties.FSDID": [
+      "string"
+    ]
+  },
+  "sourceContext": {
+    "type": "FeatureCollection",
+    "name": "FireStations"
+  },
+  "rowContext": {},
+  "grain": "Published fire-station and fireboat-station location features; this is not emergency dispatch, operational readiness or a service-availability directory.",
+  "evidence": [
+    "https://portal.csdi.gov.hk/geoportal/rest/metadata/item/hkfsd_rcd_1634798867463_89696/html",
+    "https://portal.csdi.gov.hk/csdi-webpage/info/WhatsNew",
+    "docs/verification/backlog-20261105/point-qualification.json"
+  ],
+  "coordinateQualification": "CSDI's 5 December 2025 notice establishes WGS84 longitude/latitude decimal degrees for these GeoJSON exports. Full export geometry, source context and version-scoped identity are independently checked in the qualification receipt. Geometry drives distance; property coordinates stay raw, including disagreements.",
+  "qualifiedDate": "2026-11-05",
+  "aliases": [
+    "fire station",
+    "fire stations",
+    "消防局"
+  ]
+}

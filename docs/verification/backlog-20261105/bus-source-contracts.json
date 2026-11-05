@@ -1,0 +1,25 @@
+{
+  "kmb": {
+    "url": "https://data.etabus.gov.hk/datagovhk/kmb_eta_api_specification.pdf",
+    "sha256": "85fd1bb78e43492f5743df5dda9f5a429e6e29c8dcb27204414f5c0c56b52bab",
+    "qualifiedRules": [
+      "directions use inbound/outbound",
+      "route list supplies actual service types",
+      "case-sensitive 16-character stop identity",
+      "ETA can repeat across service types sharing a stop",
+      "route-stop and ETA sequence identify the boarding visit"
+    ]
+  },
+  "nlb": {
+    "url": "https://www.nlb.com.hk/datagovhk/BusServiceOpenAPIDocumentation2.0.pdf",
+    "sha256": "626537fda5d2b4d11792630bd074dcacd37794d3ecf151a33c51f6a3f8b682dc",
+    "qualifiedRules": [
+      "API Version 2.0, last update 2022-07-05",
+      "stops are ordered by route stop sequence (page 6)",
+      "route IDs independently select directional paths",
+      "departed/noGPS/wheelChair and variant fields remain raw",
+      "ETA omits occurrence sequence: repeated boarding stop IDs remain held"
+    ]
+  },
+  "scope": "Official specifications independently retrieved with normal TLS; documentation does not prove current route service or permission to invent calendar defaults."
+}

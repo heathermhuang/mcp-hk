@@ -12,7 +12,8 @@ workflow below; absence of a dedicated tool never proves a source is absent.
 - `hk_transport_stop_routes(stopId="261")` returns directional route memberships
   and original regular/special-service and pickup/dropoff flags.
 - `hk_transport_journey(origin="Lan Kwai Fong", destination="Seymour Road")`
-  finds direct bus routes and independently attaches verified Citybus live ETAs.
+  finds direct bus routes and independently attaches verified Citybus, KMB/LWB
+  and NLB live ETAs.
   Names, exact returned TD stop IDs, or `originLat`/`originLon` and
   `destinationLat`/`destinationLon` are accepted. Use ALS address search first for
   arbitrary landmarks; choose ambiguous addresses rather than guessing.
@@ -45,10 +46,32 @@ candidate with an explicit `arrivalStatus`/`arrivalError`, never a successful em
 ETA. Each journey has at most 64 operator-resource lookups in a shared 45-second
 window; the persisted daily budget is 5,000, including cache hits.
 
-Joined ETAs currently support Citybus. Other buses have reference route discovery
+Joined ETAs support Citybus, KMB/LWB and NLB. Other buses have reference route discovery
 and separate generic arrival resources. Rail, ferries, transfers, service-day
 calendars, diversions, walking times and fastest-trip ranking are not inferred.
 A dated route alone does not establish current operation.
+
+KMB service types come from the published route list; no service type is assumed.
+Current KMB stop names append a pole code such as `(WT916)`. The reviewed name
+binding removes only an identical final `(AA999)` annotation in both English and
+Traditional Chinese before exact comparison. This is an explicit inference from
+nine official stop records, not a whole-network identity crosswalk. Full original
+names remain in the operator detail, and the 35 m location/current-order/occurrence
+checks remain mandatory. Unmatched names or more distant TD points stay unknown.
+Its ETA can include predictions in other service types sharing the stop, so source
+variant warnings remain visible and the result never counts independently identified
+buses. KMB's case-sensitive stop IDs retain all 16 characters. NLB route IDs select
+their own ordered stop arrays, independently of the TD direction label. Verified
+reverse order is `ineligible`, separately counted as `verifiedNotServingOrder`;
+missing identities, unknown service calendars and source failures remain unknown.
+NLB ETA does not identify repeated boarding visits, which stay unverified. Native
+`estimatedArrivalTime`, `departed`, `noGPS`, route variants and stop flags remain raw.
+
+`referenceCandidateCount` counts TD references; `coverage.candidate` counts their
+expanded operator variants, including unknown references whose expansion failed.
+Namespace/service-type/route-ID boundaries prevent cross-operator merging. The
+same 64 lookups, 45-second comparison, daily budget, freshness and presentation
+limits apply. A partial result is earliest among checked candidates, not the network.
 
 Rehearse real HTTP/MCP source reads without changing production:
 

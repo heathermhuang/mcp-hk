@@ -1,0 +1,39 @@
+{
+  "scope": "Actual new-code acceptance of five original-source representations in an isolated full production-checkpoint clone, followed by checkpoint and isolated restore. Zero provider calls during replay; production was not mutated by this experiment.",
+  "beforeDatabaseBytes": 447975424,
+  "afterDatabaseBytes": 448106496,
+  "marginalDatabaseBytes": 131072,
+  "remainingDatabaseBytes": 51893504,
+  "archiveBytes": 145156202,
+  "archiveSha256": "9dd4c7165a80286fb594079b9482734e35b62756881213c684c9ed722b1402d6",
+  "restoredDatabaseBytes": 272465920,
+  "schemaBytes": 34228655,
+  "integrity": "ok",
+  "accepted": [
+    {
+      "resourceId": "368c1b639641cbdb729b8ec9ea4ad865",
+      "rows": 184
+    },
+    {
+      "resourceId": "b6c922aee8773b1418f41cdaa9d31987",
+      "rows": 18
+    },
+    {
+      "resourceId": "395d43bfacb4461f6774f7d14e22c7db",
+      "rows": 95
+    },
+    {
+      "resourceId": "2c5d0afb1ffb7ec9b27de104cd7e3767",
+      "rows": 45
+    },
+    {
+      "resourceId": "9029de2e8cc6895c67902c44b1296d32",
+      "rows": 56
+    }
+  ],
+  "boundsUnchanged": {
+    "archive": 150000000,
+    "database": 500000000,
+    "totalRestored": 750000000
+  }
+}

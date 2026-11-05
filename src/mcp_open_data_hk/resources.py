@@ -15,6 +15,8 @@ from urllib.parse import parse_qs, quote, unquote, urlencode, urlsplit, urlunspl
 
 from .catalogue_store import CatalogueStore, unpack
 from .contracts import DomainError
+from . import census_reports
+from .resource_protocols import protocol, pinned_feature_type
 from . import transport, capabilities, resource_selections
 from .quality import freshness, semantic_quality
 from .observation_quality import (
@@ -414,8 +416,8 @@ async def wfs(url, type_name):
     matched = value.get("numberMatched", value.get("totalFeatures"))
     if (
         not isinstance(features, list)
-        or not isinstance(matched, (int, str))
-        or str(matched) == "unknown"
+        or type(matched) not in {int, str}
+        or re.fullmatch(r"[0-9]{1,10}", str(matched)) is None
         or int(matched) != len(features)
     ):
         raise DomainError(
@@ -468,7 +470,34 @@ class Resources:
             "parameterNames": sorted(parameters or {}),
         }
         resource = self.catalogue.resource(resource_id)
+        access_protocol = protocol(resource)
+        pinned_type = pinned_feature_type(resource)
+        if pinned_type:
+            if record_path and record_path != pinned_type:
+                raise DomainError(
+                    "INVALID_RECORD_PATH",
+                    "This source URL pins a different feature type",
+                    400,
+                )
+            record_path = pinned_type
+            source_selection["recordPath"] = pinned_type
+        if access_protocol in {"WFS", "WMS"} and layer is not None:
+            raise DomainError(
+                "INVALID_QUERY",
+                "An OGC source does not accept a REST layer selector",
+                400,
+            )
+        if access_protocol == "WMS":
+            raise DomainError(
+                "INVALID_QUERY", "WMS imagery is not a record reader", 422
+            )
         profile = transport.profile(resource)
+        if census_reports.location(resource["url"]) and (sheet or layer is not None):
+            raise DomainError(
+                "INVALID_QUERY",
+                "Reports require an explicit recordPath, not a workbook sheet or map layer",
+                400,
+            )
         if profile and profile.arrivals and (record_path or sheet or layer is not None):
             raise DomainError(
                 "INVALID_QUERY",
@@ -482,7 +511,12 @@ class Resources:
                 and resource["format"]
                 not in {"XLS", "XLSX", "XLSM", "ZIP", "GTFS", "KMZ"}
             )
-            or (record_path and resource["format"] == "CSV")
+            or (
+                record_path
+                and resource["format"] == "CSV"
+                and not census_reports.location(resource["url"])
+                and access_protocol != "WFS"
+            )
             or (
                 layer is not None
                 and resource["format"] != "ARCGIS"
@@ -578,13 +612,25 @@ class Resources:
                     url = template_url(url, parameters or {})
                 extra = {}
                 async with self.review_slots if SOURCE_REVIEW.get() else self.slots:
-                    if (
+                    if access_protocol not in {"WFS", "WMS"} and (
                         "featureserver" in url.lower()
                         or "mapserver" in url.lower()
                         or fmt == "ARCGIS"
                     ):
                         body, headers, final, extra = await arcgis(url, layer)
                         fmt = "JSON"
+                    elif census_reports.location(url):
+                        result = await census_reports.report(url, record_path, fetch)
+                        if isinstance(result, dict):
+                            raise DomainError(
+                                "RECORD_PATH_REQUIRED",
+                                "Inspect the report schema and select one table/variable/presentation",
+                                400,
+                            )
+                        body, headers, final, extra = result
+                        fmt = "JSON"
+                        record_path = "records"
+                        sheet = ""
                     elif urlsplit(url).hostname == "api.hkma.gov.hk":
                         body, headers, final, extra = await hkma_records(url)
                         fmt = "JSON"
@@ -597,8 +643,13 @@ class Resources:
                         body, headers, final, extra = await census_table(url)
                         fmt = "JSON"
                         record_path = record_path or "dataSet"
-                    elif fmt == "WFS":
+                    elif access_protocol == "WFS":
                         body, headers, final, extra = await wfs(url, record_path)
+                        if resource["format"] != "WFS":
+                            extra["accessMethod"] = (
+                                "complete_wfs_json_for_inventoried_feature_type"
+                            )
+                            extra["originalResourceUrl"] = resource["url"]
                         fmt = "GEOJSON"
                         record_path = ""
                     else:
@@ -976,6 +1027,20 @@ class Resources:
         parameters=None,
     ):
         resource = self.catalogue.resource(resource_id)
+        if census_reports.location(resource["url"]) and (sheet or layer is not None):
+            raise DomainError(
+                "INVALID_QUERY",
+                "Reports require an explicit recordPath, not a workbook sheet or map layer",
+                400,
+            )
+        if census_reports.location(resource["url"]) and (
+            not record_path or len(record_path.split("/")) == 1
+        ):
+            async with self.slots:
+                discovered = await census_reports.report(
+                    resource["url"], record_path, fetch
+                )
+            return {"resource": resource, **discovered}
         profile = transport.profile(resource)
         required = profile.required if profile else source_parameters(resource["url"])
         if required and not parameters:
@@ -1005,7 +1070,11 @@ class Resources:
                 "recordCount": None,
                 "structuredQueryable": False,
             }
-        if resource["format"] == "WFS" and not record_path:
+        if (
+            protocol(resource) == "WFS"
+            and not record_path
+            and not pinned_feature_type(resource)
+        ):
             from defusedxml import ElementTree as ET
 
             body, _, _, _ = await fetch(
@@ -1039,7 +1108,7 @@ class Resources:
                 "structuredQueryable": False,
                 "recordCount": None,
             }
-        if (
+        if protocol(resource) not in {"WFS", "WMS"} and (
             (
                 "featureserver" in resource["url"].lower()
                 or "mapserver" in resource["url"].lower()
