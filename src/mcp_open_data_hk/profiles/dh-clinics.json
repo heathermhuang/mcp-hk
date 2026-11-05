@@ -1,0 +1,76 @@
+{
+  "id": "dh-clinic-feature-points-1",
+  "resourceId": "02aa721718d7dae1098ec3aa4688e9ef",
+  "datasetId": "csdi:dh_rcd_1629267205213_98466",
+  "entityKind": "clinic",
+  "format": "GEOJSON",
+  "host": "portal.csdi.gov.hk",
+  "path": "/csdi-webpage/file-api",
+  "query": {
+    "dataset_id": [
+      "dh_rcd_1629267205213_98466"
+    ],
+    "format": [
+      "geojson"
+    ],
+    "layer_name": [
+      "CLINIC_HEALTH"
+    ]
+  },
+  "coordinates": {
+    "kind": "geojson_point",
+    "field": "geometry",
+    "crs": "EPSG:4326"
+  },
+  "identity": {
+    "field": "properties.OBJECTID",
+    "kind": "integer",
+    "namespace": "csdi:dh:CLINIC_HEALTH:OBJECTID",
+    "scope": "feature_identifier_within_accepted_version"
+  },
+  "requiredFields": {
+    "geometry": [
+      "object"
+    ],
+    "properties.OBJECTID": [
+      "number"
+    ],
+    "properties.NameEN": [
+      "string"
+    ],
+    "properties.NameTC": [
+      "string"
+    ],
+    "properties.CategoryEN": [
+      "string"
+    ],
+    "properties.DatasetEN": [
+      "string"
+    ]
+  },
+  "sourceContext": {
+    "type": "FeatureCollection",
+    "name": "CLINIC_HEALTH"
+  },
+  "rowContext": {
+    "properties.DatasetEN": "Clinics / Health Centres under the Department of Health"
+  },
+  "grain": "Published clinic/health-centre service features; feature IDs are version-scoped and do not establish unique physical facilities or service availability.",
+  "evidence": [
+    "https://portal.csdi.gov.hk/geoportal/rest/metadata/item/dh_rcd_1629267205213_98466/html",
+    "https://portal.csdi.gov.hk/csdi-webpage/info/WhatsNew",
+    "https://www.rfc-editor.org/rfc/rfc7946",
+    "docs/verification/capabilities-20261105/spatial-qualification.json"
+  ],
+  "coordinateQualification": "CSDI's 5 December 2025 notice establishes WGS84 lon/lat decimal degrees for GeoJSON exports from 8 December 2025. The source metadata's EPSG:2326 describes underlying storage, not this export. Geometry is authoritative for distance; raw property coordinates can disagree and are not substituted.",
+  "qualifiedDate": "2026-11-05",
+  "aliases": [
+    "clinic",
+    "clinics",
+    "health centre",
+    "health centres",
+    "診所",
+    "健康中心",
+    "衞生署"
+  ]
+}

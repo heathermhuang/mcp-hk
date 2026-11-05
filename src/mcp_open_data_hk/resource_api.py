@@ -6,6 +6,12 @@ from fastapi import Query
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
+CatalogueCapability = Literal[
+    "all", "records", "nearby", "requires_selection", "unqualified"
+]
+EntityKind = Literal["all", "school", "clinic", "unqualified"]
+
+
 class ResourceSchemaQuery(BaseModel):
     model_config = ConfigDict(extra="forbid", allow_inf_nan=False)
     parameters: dict[str, str] = Field(default_factory=dict, max_length=10)
@@ -44,12 +50,20 @@ class OrderBy(BaseModel):
     direction: Literal["asc", "desc"] = "asc"
 
 
+class NearbyQuery(BaseModel):
+    model_config = ConfigDict(extra="forbid", allow_inf_nan=False)
+    lat: float = Field(ge=22, le=23)
+    lon: float = Field(ge=113, le=115)
+    radiusM: float = Field(ge=1, le=2000)
+
+
 class ResourceQuery(ResourceSchemaQuery):
     contains: dict[str, str] = Field(default_factory=dict, max_length=10)
     typedFilters: list[TypedEquality] = Field(default_factory=list, max_length=10)
     presentation: bool = False
     predicates: list[Predicate] = Field(default_factory=list, max_length=10)
     orderBy: list[OrderBy] = Field(default_factory=list, max_length=3)
+    nearby: NearbyQuery | None = None
 
     @model_validator(mode="after")
     def validate_typed(self):
@@ -93,10 +107,8 @@ def register_http(app, resources):
             "unclassified",
         ] = "all",
         order: Literal["relevance", "title"] = "relevance",
-        capability: Literal[
-            "all", "records", "requires_selection", "unqualified"
-        ] = "all",
-        entityKind: Literal["all", "unqualified"] = "all",
+        capability: CatalogueCapability = "all",
+        entityKind: EntityKind = "all",
     ):
         """Search connected services and the reconciled native catalogue inventory, independent of the incomplete CKAN search index."""
         return resources.catalogue.search(
@@ -188,10 +200,8 @@ def register_mcp(server, current):
             "unclassified",
         ] = "all",
         order: Literal["relevance", "title"] = "relevance",
-        capability: Literal[
-            "all", "records", "requires_selection", "unqualified"
-        ] = "all",
-        entityKind: Literal["all", "unqualified"] = "all",
+        capability: CatalogueCapability = "all",
+        entityKind: EntityKind = "all",
     ) -> dict:
         """Search connected query services (including independent Plate.hk and SeeHouse) and harvested DATA.GOV.HK/CSDI sources. Connected entries include direct HTTP/MCP actions; source entries require resource inspection. Discovery is not record validation."""
         return current().resources.catalogue.search(
@@ -244,12 +254,14 @@ def register_mcp(server, current):
         contains: dict[str, str] | None = None,
         predicates: list[Predicate] | None = None,
         orderBy: list[OrderBy] | None = None,
+        nearby: NearbyQuery | None = None,
     ) -> dict:
         """Query actual records with bounded pages (1..100). filters is typed exact equality; contains maps source field names to case-insensitive partial text (AND across fields, including nested scalar paths). For transport arrivals, provide parameters from hk_resource_schema; caches are 10/20 seconds with checked provider timestamps and no expired fallback. requireFresh forces an arrival-source read. Preserve source flags/advisories. Pin version for later pages. PDF is unverified text. A source read does not prove full coverage."""
         query = ResourceQuery(
             typedFilters=typedFilters or [],
             predicates=predicates or [],
             orderBy=orderBy or [],
+            nearby=nearby,
             presentation=presentation,
             contains=contains or {},
             filters=filters or {},

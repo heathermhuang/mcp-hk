@@ -1,0 +1,71 @@
+{
+  "id": "edb-school-record-points-1",
+  "resourceId": "f16c9373b666f84412e61839dfb220b8",
+  "datasetId": "hk-edb-schinfo-school-location-and-information",
+  "entityKind": "school",
+  "format": "CSV",
+  "host": "www.edb.gov.hk",
+  "path": "/attachment/en/student-parents/sch-info/sch-search/sch-location-info/SCH_LOC_EDB.csv",
+  "query": {},
+  "coordinates": {
+    "kind": "decimal_text",
+    "latitude": "LATITUDE",
+    "longitude": "LONGITUDE",
+    "mirrorLatitude": "緯度",
+    "mirrorLongitude": "經度",
+    "crs": "EPSG:4326"
+  },
+  "identity": {
+    "field": "SCHOOL NO.",
+    "kind": "string",
+    "pattern": "[0-9]{12}",
+    "namespace": "edb:school-number",
+    "scope": "published_school_number_not_unique"
+  },
+  "requiredFields": {
+    "SCHOOL NO.": [
+      "string"
+    ],
+    "ENGLISH NAME": [
+      "string"
+    ],
+    "中文名稱": [
+      "string"
+    ],
+    "SESSION": [
+      "string"
+    ],
+    "SCHOOL LEVEL": [
+      "string"
+    ],
+    "LATITUDE": [
+      "string"
+    ],
+    "LONGITUDE": [
+      "string"
+    ],
+    "緯度": [
+      "string"
+    ],
+    "經度": [
+      "string"
+    ]
+  },
+  "grain": "Published source rows, including session/level records and exact duplicates; never a unique physical-school count.",
+  "evidence": [
+    "https://www.edb.gov.hk/attachment/en/student-parents/sch-info/datagovhk/DataSpec_School_Location_and_Information_en.pdf",
+    "https://data.gov.hk/en/help/api-spec",
+    "docs/verification/capabilities-20261105/spatial-qualification.json"
+  ],
+  "coordinateQualification": "WGS84 decimal-field convention is inferred from the official dataset-linked WGS84 nearest-school API and 19 exact coordinate matches, plus complete-file bilingual coordinate/range checks. The resource-page DMS remark conflicts with actual decimal data; no DMS conversion is applied.",
+  "qualifiedDate": "2026-11-05",
+  "aliases": [
+    "school",
+    "schools",
+    "school location",
+    "school locations",
+    "學校",
+    "學校位置",
+    "校舍位置"
+  ]
+}

@@ -26,6 +26,8 @@ from .observation_quality import (
 from .review_config import SOURCE_REVIEW, CONCURRENCY, BATCH_SIZE, RUN_SECONDS
 from .source_contracts import annotate as annotate_source_contract
 from .resource_predicates import Predicates
+from .spatial_query import qualify as qualify_spatial, Nearby
+from .spatial_profiles import profile_for, fingerprint as profile_fingerprint
 from .resource_fields import selected, MISSING, inspect_nested
 from .resource_fetch import fetch, fetch_file
 from .resource_stream import FileRows
@@ -473,6 +475,25 @@ class Resources:
                 "Arrival feeds expose fixed rows; omit recordPath, sheet and layer",
                 400,
             )
+        point_profile = profile_for(resource)
+        if (
+            (
+                sheet
+                and resource["format"]
+                not in {"XLS", "XLSX", "XLSM", "ZIP", "GTFS", "KMZ"}
+            )
+            or (record_path and resource["format"] == "CSV")
+            or (
+                layer is not None
+                and resource["format"] != "ARCGIS"
+                and not any(
+                    x in resource["url"].lower() for x in ("featureserver", "mapserver")
+                )
+            )
+        ):
+            raise DomainError(
+                "INVALID_QUERY", "Selector does not apply to this representation", 400
+            )
         ttl = profile.ttl if profile else (300 if resource.get("isApi") else 86400)
         force_transport_read = bool(profile and profile.arrivals and require_fresh)
         if profile:
@@ -483,6 +504,7 @@ class Resources:
                 + ([OBSERVATION_REVISION] if hko_current(resource) else [])
                 + (["rss-feed-root-1"] if resource.get("format") == "RSS" else [])
                 + ([transport.REVISION] if profile else [])
+                + ([profile_fingerprint(point_profile)] if point_profile else [])
                 + ([parameters] if parameters else []),
                 sort_keys=True,
             ).encode()
@@ -717,6 +739,7 @@ class Resources:
                         "datasetCompleteness",
                         ("Not inferred from a file or a single API response."),
                     )
+                    await asyncio.to_thread(qualify_spatial, resource, rows, schema)
                     schema["resolvedSourceUrl"] = final
                     digest = (
                         rows.records_digest
@@ -1107,6 +1130,7 @@ class Resources:
         contains=None,
         predicates=None,
         order_by=None,
+        nearby=None,
         stop=None,
     ):
         filters = decode_filters(typed_filters or [], filters)
@@ -1193,7 +1217,25 @@ class Resources:
             typed = Predicates(
                 predicates or [], order_by or [], value["schema"], names, offset, limit
             )
-            if order_by and offset and not version:
+            if nearby is not None and (stale or check.get("status") != "queryable"):
+                raise DomainError(
+                    check.get("reason") or "STALE_SOURCE",
+                    "Nearby binding is held after a source failure; previous records remain available separately",
+                    503,
+                )
+            spatial = (
+                Nearby(resource, value["schema"], nearby, offset, limit)
+                if nearby is not None
+                else None
+            )
+            if spatial and order_by:
+                raise DomainError(
+                    "INVALID_QUERY",
+                    "Nearby results already order by distance; omit orderBy",
+                    400,
+                )
+            ordered = bool(order_by or spatial)
+            if ordered and offset and not version:
                 raise DomainError(
                     "RESOURCE_VERSION_REQUIRED",
                     "Pin the accepted version for later ordered pages",
@@ -1202,7 +1244,11 @@ class Resources:
             # Unfiltered previews already have an accepted exact row count.
             # Do not rescan the full source merely to rediscover that count.
             unfiltered = (
-                not filters and not text_filters and not predicates and not order_by
+                not filters
+                and not text_filters
+                and not predicates
+                and not order_by
+                and not spatial
             )
             total = len(value["rows"]) if unfiltered else 0
             items = []
@@ -1221,6 +1267,7 @@ class Resources:
                         for k, needle in text_filters.items()
                     )
                     and typed.matches(row)
+                    and (not spatial or spatial.includes(row))
                 )
 
             def projected(row):
@@ -1234,7 +1281,8 @@ class Resources:
                     else row
                 )
 
-            if order_by:
+            spatial_page = []
+            if ordered:
 
                 def matching_keys():
                     nonlocal total
@@ -1243,10 +1291,21 @@ class Resources:
                             check_budget()
                         if matches(row):
                             total += 1
-                            yield typed.key(row, index)
+                            yield (
+                                (spatial.distance(row), index)
+                                if spatial
+                                else typed.key(row, index)
+                            )
 
                 ranked = heapq.nsmallest(offset + limit, matching_keys())[offset:]
-                indices = {key.index: position for position, key in enumerate(ranked)}
+                indices = {
+                    (key[1] if spatial else key.index): position
+                    for position, key in enumerate(ranked)
+                }
+                if spatial:
+                    spatial_page = [
+                        {"sourceOrdinal": key[1], "distanceM": key[0]} for key in ranked
+                    ]
                 page = {}
                 for index, row in enumerate(value["rows"]):
                     if index % 256 == 0:
@@ -1308,6 +1367,22 @@ class Resources:
                     },
                 },
             }
+            if spatial:
+                result["meta"]["nearby"] = {
+                    "matches": spatial_page,
+                    "distanceMethod": "great_circle_straight_line_metres",
+                    "boundary": "distance <= radiusM",
+                    "coverage": spatial.binding["coverage"],
+                    "profileId": spatial.binding["profileId"],
+                    "profileFingerprint": spatial.binding["profileFingerprint"],
+                    "countsAre": "source_rows_not_unique_facilities",
+                    "uniqueFacilityCount": None,
+                    "allSourceRowsLocatable": not (
+                        spatial.binding["coverage"]["missingCoordinates"]
+                        or spatial.binding["coverage"]["invalidCoordinates"]
+                    ),
+                    "matchingTotalScope": "Matching source rows with valid coordinates; excluded rows may fall inside the radius.",
+                }
             if presentation:
                 result["presentation"] = present(items, fields)
             if (
