@@ -1,0 +1,171 @@
+{
+  "releasedCommit": "ad69dc0324f4ac3f4c243e57d98e4eb7f6f8e143",
+  "codePrs": [
+    144
+  ],
+  "cloudflareVersionId": "304883ef-737d-4dd3-aa96-8c6c81c771f7",
+  "containerImageDigest": "sha256:6f315bda1f2dc42d506f8e0539e98c67b90c173881eb47591030edb681c3f90a",
+  "containerApplicationVersion": 74,
+  "verifiedAtUtc": "2026-11-05T20:42:06.643308+00:00",
+  "allFiveSchedulesVerified": true,
+  "actualHttpMcpRegressionPassed": true,
+  "repairedWfsAcceptedSelections": [
+    {
+      "resourceId": "f517af5f1721b0896cca46a0dec103f3",
+      "selection": {
+        "recordPath": "APP_AMEND_CSDI:AMEND_CRT"
+      },
+      "rows": 16,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "f517af5f1721b0896cca46a0dec103f3",
+      "selection": {
+        "recordPath": "APP_AMEND_CSDI:APP_CRT"
+      },
+      "rows": 2179,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "f517af5f1721b0896cca46a0dec103f3",
+      "selection": {
+        "recordPath": "APP_AMEND_CSDI:AMEND_PAST"
+      },
+      "rows": 1324,
+      "httpMcpParity": true
+    }
+  ],
+  "repairedWfsHolds": [
+    {
+      "resourceId": "f517af5f1721b0896cca46a0dec103f3",
+      "selection": {
+        "recordPath": "APP_AMEND_CSDI:APP_PAST"
+      },
+      "error": {
+        "code": "SOURCE_TOO_LARGE",
+        "message": "WFS paging exceeded its bounded request/deadline window",
+        "requestId": "66ca07e6ac534433ae618a3a25808cd9"
+      }
+    },
+    {
+      "resourceId": "a22c14e0bc0175bda096fd8dc064fe39",
+      "selection": {
+        "recordPath": "OZP_PLAN_CSDI:TPIS_ADM.OD_OZP_PLAN_CSDI"
+      },
+      "error": {
+        "code": "SOURCE_TOO_LARGE",
+        "message": "Individual streamed record exceeds budget",
+        "requestId": "f34e8fb602ea48049d2e373c2a15cbbf"
+      }
+    }
+  ],
+  "freshAcceptedRestore": {
+    "freshAcceptedArchiveSha256": "45ad2c6839db6c2bf8d507e5deb0b8d1fba7e8cc76c909afb7441f605e905d90",
+    "archiveBytes": 107632509,
+    "databaseBytes": 312782848,
+    "captureBytes": 31144445,
+    "totalRestoredBytes": 343927293,
+    "integrity": "ok",
+    "baseAndTransportPacks": {
+      "population": 18,
+      "restaurants": 17289,
+      "transport": 62147
+    },
+    "sourceRegistryRecovered": true,
+    "nativeDatasetCount": 5048,
+    "activePreviousInventoryGenerations": 2,
+    "typedWorkbookOptions": 84,
+    "restoredPointBindings": [
+      {
+        "profileId": "ambulance-depot-feature-points-1",
+        "profileFingerprint": "2c46fabf80af8cc3a3d0393686a235d06912d5e189e2d773b6cf71771aae3fc8",
+        "sourceRows": 45
+      },
+      {
+        "profileId": "dh-clinic-feature-points-1",
+        "profileFingerprint": "d716d17e076adb0b4ee07a65c5ad00ea528ef66e0d4e03fb7b3d7f980b16ad26",
+        "sourceRows": 200
+      },
+      {
+        "profileId": "edb-school-record-points-1",
+        "profileFingerprint": "3263fce4baca106524b171f54228a7a425ea6e41232178ced42020ac063df2f9",
+        "sourceRows": 3496
+      },
+      {
+        "profileId": "fire-station-feature-points-1",
+        "profileFingerprint": "abfc4aa277d11dcb73d7eef77ab5233abab1e8ab310cde70451eedc2915928e1",
+        "sourceRows": 95
+      },
+      {
+        "profileId": "library-feature-points-1",
+        "profileFingerprint": "e75d4ced7e1654371ee3c563964d03d60bed7184a606b548e736b29c9caabc40",
+        "sourceRows": 184
+      },
+      {
+        "profileId": "museum-feature-points-1",
+        "profileFingerprint": "33282724e064947f6af7a4706ee355b7bcbafd6a900b18d31aa3b26fe408a524",
+        "sourceRows": 18
+      }
+    ],
+    "boundsUnchanged": {
+      "archive": 150000000,
+      "database": 500000000,
+      "totalRestored": 750000000
+    },
+    "restoredRepairedWfsSelections": [
+      {
+        "resourceId": "f517af5f1721b0896cca46a0dec103f3",
+        "selection": {
+          "recordPath": "APP_AMEND_CSDI:AMEND_CRT"
+        },
+        "rows": 16,
+        "version": "a319b26570ac108c88c30d35e383beafecb7bb6d9289574d9589828cb093e95e",
+        "countEvidence": {
+          "basis": "WFS_2_hits_before_and_after",
+          "beforeMatched": 16,
+          "afterMatched": 16,
+          "jsonDeclaredMatched": null,
+          "snapshot": "count_reconciled_not_atomic_publication",
+          "featureIdentity": "not_inferred_when_geojson_omits_native_feature_ids"
+        }
+      },
+      {
+        "resourceId": "f517af5f1721b0896cca46a0dec103f3",
+        "selection": {
+          "recordPath": "APP_AMEND_CSDI:APP_CRT"
+        },
+        "rows": 2179,
+        "version": "a1ad694683ffd139806bbde2d25ce013451ba32af21b872eba97cbc2abb92a7f",
+        "countEvidence": {
+          "basis": "WFS_2_hits_before_and_after",
+          "beforeMatched": 2179,
+          "afterMatched": 2179,
+          "jsonDeclaredMatched": null,
+          "snapshot": "count_reconciled_not_atomic_publication",
+          "featureIdentity": "not_inferred_when_geojson_omits_native_feature_ids"
+        }
+      },
+      {
+        "resourceId": "f517af5f1721b0896cca46a0dec103f3",
+        "selection": {
+          "recordPath": "APP_AMEND_CSDI:AMEND_PAST"
+        },
+        "rows": 1324,
+        "version": "b2405c33276b1778f811e6d2061553caaa1d75d5866605111fe7ba5ca569d534",
+        "countEvidence": {
+          "basis": "WFS_2_hits_before_and_after",
+          "beforeMatched": 1324,
+          "afterMatched": 1324,
+          "jsonDeclaredMatched": null,
+          "snapshot": "count_reconciled_not_atomic_publication",
+          "featureIdentity": "not_inferred_when_geojson_omits_native_feature_ids"
+        }
+      }
+    ]
+  },
+  "restoredOldAndNewClientsProviderRequests": 0,
+  "restoredRepairedWfsClientProviderRequests": 0,
+  "newDistinctDatasetGainClaimed": false,
+  "wholeRemainingBacklogComplete": false,
+  "firstUnfinished": "Remaining frozen selected-read graph/report series; candidate exact source/capacity/task dispositions and publication of newer qualification evidence"
+}

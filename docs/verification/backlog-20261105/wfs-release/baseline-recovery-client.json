@@ -1,0 +1,26 @@
+[
+  {
+    "resourceId": "5ab93d9a957390f887364456f799eb79",
+    "selection": {
+      "sheet": "E101e",
+      "limit": 1
+    },
+    "rows": 22,
+    "version": "15812647c547d5ad60e111ad5d1bb228e54cd096c0f0d9f9143bb95c8e70285e",
+    "httpMcpParity": true,
+    "lastValidatedAt": 1793911142.399351,
+    "cacheTTLSeconds": 86400
+  },
+  {
+    "resourceId": "f517af5f1721b0896cca46a0dec103f3",
+    "selection": {
+      "recordPath": "APP_AMEND_CSDI:AMEND_CRT",
+      "limit": 1
+    },
+    "rows": 16,
+    "version": "a319b26570ac108c88c30d35e383beafecb7bb6d9289574d9589828cb093e95e",
+    "httpMcpParity": true,
+    "lastValidatedAt": 1793911176.19307,
+    "cacheTTLSeconds": 300
+  }
+]

@@ -77,10 +77,12 @@ dataset/task acceptance. Maintain original source fields and missing-evidence ho
 - [ ] B6: PR/CI/merge/deployment/HTTP/MCP/fresh restore/schedules complete.
 
 **First unfinished package: remaining B1 selected reads over the complete
-271-resource discovery ledger and the report/raw-workbook cohorts, plus exact
-WFS parsing and KMB 11C mapping investigation.** The integration releases at
-`a687580` and `ced4b81` passed actual clients and fresh isolated recovery; see
-`RELEASED.md` and `repair-release/`. This does not finish the wider B1–B5 scope.
+271-resource discovery ledger and the report/raw-workbook cohorts, plus any newly
+demonstrated shared reader gaps.** Releases at `a687580`, `ced4b81` and `ad69dc0`
+passed actual clients and fresh isolated recovery; see `RELEASED.md`,
+`repair-release/` and `wfs-release/`. The exact WFS format and KMB 11C investigations
+are resolved as accepted selections or evidenced capacity/mapping holds. This
+does not finish the wider B1–B5 scope.
 This checklist remains open until every unblocked work package is finished. One
 cohort, a PR or a successful deployment does not complete the full backlog.
 
@@ -106,3 +108,17 @@ selections, not promised dataset gains or simultaneous retained variants. Retain
 the existing 50-variant/1 MB-options bounds and re-read the baseline E101e selection
 before final recovery proof. Additional report series and binary tasks require
 their own explicit choices/evidence; unknown alternative equivalence is retained.
+
+The subsequent `ad69dc0` WFS release repaired the demonstrated generic-format
+failure and passed three exact planning selections plus fresh recovery. Two
+related selections retain explicit paging/record capacity holds. KMB 11C's
+remaining mapping failure has exact native pole/distance evidence and is held by
+the unchanged 35 m gate. See `wfs-release/` for these individual outcomes.
+
+A bounded read-only audit reconciles the 1,770 frozen Census `web_table.html`
+workbook-page candidates against the fresh accepted checkpoint: 1,623 have dated
+accepted alternatives for the same exact API-table task, while all 147 unresolved
+candidates received one terminal check and hit the existing 8 MB decoded-response
+ceiling. This establishes neither original-workbook equivalence nor newly current
+upstream availability. The separate issue-scoped `wbr.html` report graph and other
+unvisited/unknown selections remain open. See `census-task-audit.md`.

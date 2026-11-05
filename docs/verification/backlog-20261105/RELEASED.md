@@ -1,5 +1,43 @@
 # Remaining-backlog implementation releases — 6 November 2026
 
+PR #144 is deployed at `ad69dc0324f4ac3f4c243e57d98e4eb7f6f8e143`, with all five
+exact-main CI groups passed. Cloudflare version
+`304883ef-737d-4dd3-aa96-8c6c81c771f7` adopted application version 74 and image
+`sha256:6f315bda1f2dc42d506f8e0539e98c67b90c173881eb47591030edb681c3f90a`.
+The first application observation described the old image; a later authoritative
+read confirmed adoption. The rollout was not repeated to resolve the observation.
+
+Actual HTTP and native MCP now accept three exact planning WFS selections: 16
+current-amendment, 2,179 current-application and 1,324 historical-amendment features,
+with native before/after counts and matching client data. Historical applications
+remain limited by the existing paging window; the separate outline-plan view
+remains limited by the existing individual-record bound. These are selected views,
+not new distinct datasets, unique applications or an atomic publication snapshot.
+The existing point/Census/RVD/bus regression cohort passed. E101e still returns 22
+rows. KMB 11C's exact-name boarding pole is 44.55 m from TD stop 4001, outside the
+unchanged 35 m gate; its mapping remains unverified rather than relaxing that gate.
+
+The fresh immutable R2 checkpoint
+`45ad2c6839db6c2bf8d507e5deb0b8d1fba7e8cc76c909afb7441f605e905d90`
+restored 312,782,848 SQLite bytes / 343,927,293 total bytes from a 107,632,509-byte
+archive. Full integrity, captures/registry, accepted packs, inventory generations,
+six bindings, 84 workbook choices and all three repaired WFS selections' accepted
+metadata/hashes passed. Old/new local HTTP and native MCP reads, including the
+small repaired WFS view, made zero provider requests. Larger views still require
+live providers for their records; metadata recovery is not an offline-data claim.
+All five original schedules were restored and independently read back, final
+controller/backend readiness passed, and the owned slot was released. Receipts
+are in `wfs-release/`.
+
+PR #145 subsequently merged an operator-only qualification ordering improvement.
+Its five CI groups passed; it does not change the released Worker/container.
+Queries now follow their accepted schema before sibling selections can evict it.
+The regression crosses the 50-variant boundary and proves that a fully saved
+resumed graph makes zero requests. Remaining qualification continues under the
+existing bounds; this release does not complete the wider programme.
+
+## Previous repair release
+
 PRs #141–#143 are merged and deployed at
 `ced4b819f2c534c8c6440bf3d328476184b5b681`. All five exact-main CI groups passed.
 Cloudflare version `158cca65-ebb8-4397-8eaf-912ef2551c75` adopted immutable image
