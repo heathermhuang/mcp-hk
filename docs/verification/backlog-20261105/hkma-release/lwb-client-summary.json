@@ -1,0 +1,68 @@
+{
+  "selection": {
+    "origin": "6080",
+    "destination": "873",
+    "operator": "LWB",
+    "limit": 5
+  },
+  "scope": "actual HTTP/native MCP reference-cohort comparison; service calendars and globally earliest departure remain unverified",
+  "http": {
+    "seconds": 5.937,
+    "coverage": {
+      "candidate": 6,
+      "eligible": 6,
+      "eligibilityUnknown": 0,
+      "verifiedNotServingOrder": 0,
+      "acceptedArrivalChecks": 6,
+      "checked": 6,
+      "failed": 0,
+      "unchecked": 0,
+      "uncheckedReasons": {},
+      "sourceRequests": 13,
+      "requestLimit": 64,
+      "deadlineSeconds": 45,
+      "referenceIndexStale": false,
+      "complete": true,
+      "eligibilityMeaning": "Verified current operator boarding/alighting occurrence; service calendars remain unknown."
+    },
+    "departureComparison": {
+      "scope": "earliest_reported_departure_among_checked_candidates",
+      "earliestPredictedAt": "2026-11-06T06:32:02+08:00",
+      "allReferenceCandidatesChecked": true,
+      "globallyEarliest": false,
+      "serviceCalendarsVerified": false,
+      "walkingFeasibilityVerified": false,
+      "fastestArrivalVerified": false
+    }
+  },
+  "mcp": {
+    "seconds": 1.723,
+    "coverage": {
+      "candidate": 6,
+      "eligible": 6,
+      "eligibilityUnknown": 0,
+      "verifiedNotServingOrder": 0,
+      "acceptedArrivalChecks": 6,
+      "checked": 6,
+      "failed": 0,
+      "unchecked": 0,
+      "uncheckedReasons": {},
+      "sourceRequests": 13,
+      "requestLimit": 64,
+      "deadlineSeconds": 45,
+      "referenceIndexStale": false,
+      "complete": true,
+      "eligibilityMeaning": "Verified current operator boarding/alighting occurrence; service calendars remain unknown."
+    },
+    "departureComparison": {
+      "scope": "earliest_reported_departure_among_checked_candidates",
+      "earliestPredictedAt": "2026-11-06T06:34:20+08:00",
+      "allReferenceCandidatesChecked": true,
+      "globallyEarliest": false,
+      "serviceCalendarsVerified": false,
+      "walkingFeasibilityVerified": false,
+      "fastestArrivalVerified": false
+    }
+  },
+  "coverageParity": true
+}

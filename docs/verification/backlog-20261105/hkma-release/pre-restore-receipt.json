@@ -1,0 +1,8 @@
+{
+  "scope": "Fresh accepted pre-rollout checkpoint retrieved immutably from native R2 and restored in isolation",
+  "archiveSha256": "cc5812a5ca2379316307ad74c39171a697ba8791672d9e05e16475d39d55d952",
+  "archiveBytes": 109103057,
+  "restoredDatabaseBytes": 315289600,
+  "totalRestoredBytes": 346434045,
+  "integrity": "ok"
+}

@@ -1,0 +1,34 @@
+{
+  "reason": "The gateway recovery completed; fresh actual health/readiness and the deployed contract now pass. Prior responses did not establish source availability.",
+  "verifiedAtUtc": "2026-11-05T23:11:54.518445+00:00",
+  "nativeSourceDenialsRetried": 0,
+  "requeued": [
+    {
+      "resourceId": "0e8ca94d2dcad7675c0ed89eeed97454",
+      "operation": "schema",
+      "selection": {
+        "recordPath": "GDPE_R_3_11/CON/YoY_1dp_%_s"
+      },
+      "oldReceiptSha256": "8f5358b9b1524222a8b43f9cce6b4ec332b75188e21c79e0d273e57d4c6ce8e6",
+      "historyFile": "history/8f5358b9b1524222a8b43f9cce6b4ec332b75188e21c79e0d273e57d4c6ce8e6-0e8ca94d2dcad7675c0ed89eeed97454-a07dd53bc3d63ecb-schema.json.gz"
+    },
+    {
+      "resourceId": "5ab7c92ae1ff92c48c5611ecea3e9272",
+      "operation": "schema",
+      "selection": {
+        "recordPath": "TIS_R_4_01/MS/YoY_1dp_%_s"
+      },
+      "oldReceiptSha256": "32ab2e3ed33d156c40037022100aeda49413fe4bf93beabd8942e14aaa2a8fde",
+      "historyFile": "history/32ab2e3ed33d156c40037022100aeda49413fe4bf93beabd8942e14aaa2a8fde-5ab7c92ae1ff92c48c5611ecea3e9272-9a8b1d7cf8ed3087-schema.json.gz"
+    },
+    {
+      "resourceId": "1815d4c24bea9a566391abf435a8ee8c",
+      "operation": "schema",
+      "selection": {
+        "recordPath": "GDPE_R_3_01/DEF/YoY_1dp_%_s"
+      },
+      "oldReceiptSha256": "55c1a9526cd883011e46188d426a2bb445c91b23cf35e3b25169f38c65eee23b",
+      "historyFile": "history/55c1a9526cd883011e46188d426a2bb445c91b23cf35e3b25169f38c65eee23b-1815d4c24bea9a566391abf435a8ee8c-18534150804925c1-schema.json.gz"
+    }
+  ]
+}
