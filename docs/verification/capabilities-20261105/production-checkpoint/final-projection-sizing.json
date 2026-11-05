@@ -1,0 +1,19 @@
+{
+  "resource": {
+    "samples": 64,
+    "p50Ms": 2.664,
+    "p95Ms": 3.548,
+    "maxMs": 7.787,
+    "maxSerializedBytes": 3821
+  },
+  "dataset": {
+    "samples": 62,
+    "p50Ms": 2.347,
+    "p95Ms": 29.509,
+    "maxMs": 148.366,
+    "maxSerializedBytes": 2202
+  },
+  "scope": "Final code, local isolated accepted-checkpoint copy; metadata only, no provider calls. Not production CPU/latency.",
+  "generation": "e10744696ea04c6fad6e96d13c0199d4",
+  "providerRequests": 0
+}

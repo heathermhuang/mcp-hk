@@ -96,3 +96,10 @@ def inspect_nested(rows, check_budget=None):
         count += 1
         add_nested(stats, row)
     return nested_schema(stats, count)
+
+
+def field_catalogue(schema):
+    """Source top-level dotted keys have precedence over nested selectors."""
+    fields = {f["name"]: f for f in schema.get("queryFields", [])}
+    fields.update({f["name"]: f for f in schema.get("fields", [])})
+    return fields

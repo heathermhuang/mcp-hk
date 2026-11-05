@@ -8,7 +8,8 @@ from datetime import date, datetime, timezone
 from decimal import Decimal, InvalidOperation
 
 from .contracts import DomainError
-from .resource_fields import MISSING, selected
+from .resource_fields import MISSING, selected, field_catalogue
+from .source_contracts import typed_bindings
 
 OPS = {"lt", "lte", "gt", "gte", "between"}
 KINDS = {"number", "date", "datetime"}
@@ -62,15 +63,12 @@ class Predicates:
             invalid("At most ten comparisons and three order fields are allowed")
         if ordering and offset + limit > 1000:
             invalid("Ordered pages are bounded to the first 1000 matching records")
-        fields = {
-            f["name"]: f
-            for f in schema.get("fields", []) + schema.get("queryFields", [])
-        }
+        fields = field_catalogue(schema)
         temporal = {
             **schema.get("nativeTemporalFields", {}),
             **{
                 name: binding["kind"]
-                for name, binding in schema.get("typedFieldBindings", {}).items()
+                for name, binding in typed_bindings(schema).items()
                 if binding.get("conversion") == "iso8601_timezone_required"
             },
         }
@@ -98,7 +96,9 @@ class Predicates:
                 invalid(
                     "Numeric comparisons require native numeric fields; string conversion needs a reviewed binding"
                 )
-            if kind in {"date", "datetime"} and temporal.get(field) != kind:
+            if kind in {"date", "datetime"} and (
+                temporal.get(field) != kind or not types <= {"string"}
+            ):
                 invalid(
                     "Temporal comparisons require a reader-declared native date/datetime field"
                 )

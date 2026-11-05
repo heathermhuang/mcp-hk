@@ -201,11 +201,11 @@ class CatalogueStore:
         self.refresh_transport_policies()
         return generation
 
-    def resource(self, resource_id):
+    def resource(self, resource_id, generation=None):
         with self.store.connect() as db:
             row = db.execute(
                 "SELECT payload FROM inventory_resources WHERE generation=? AND id=?",
-                (self.head(), resource_id),
+                (generation or self.head(), resource_id),
             ).fetchone()
         if not row:
             raise DomainError(
@@ -217,13 +217,14 @@ class CatalogueStore:
             result["transport"] = p.describe()
         return result
 
-    def dataset(self, dataset_id):
+    def dataset(self, dataset_id, generation=None):
         if entry := connected.get(dataset_id):
             return entry
+        generation = generation or self.head()
         with self.store.connect() as db:
             row = db.execute(
                 "SELECT payload FROM inventory_datasets WHERE generation=? AND id=?",
-                (self.head(), dataset_id),
+                (generation, dataset_id),
             ).fetchone()
         if not row:
             raise DomainError(
@@ -234,10 +235,12 @@ class CatalogueStore:
             counts = dict(
                 db.execute(
                     "SELECT COALESCE(c.status,'pending'),count(*) FROM inventory_resources r LEFT JOIN resource_checks c ON c.id=r.id WHERE r.generation=? AND r.dataset=? GROUP BY 1",
-                    (self.head(), dataset_id),
+                    (generation, dataset_id),
                 ).fetchall()
             )
-        result["capabilities"] = self.dataset_capabilities(dataset_id, counts)
+        result["capabilities"] = self.dataset_capabilities(
+            dataset_id, counts, generation
+        )
         return result
 
     def search(
@@ -346,7 +349,7 @@ class CatalogueStore:
             accepted = []
             for profile in profiles():
                 try:
-                    cap = self.capability(profile["resourceId"])
+                    cap = self.capability(profile["resourceId"], generation)
                 except DomainError:
                     continue
                 if cap["operations"]["nearby"]["state"] == "available":
@@ -415,7 +418,9 @@ class CatalogueStore:
                         (generation, item["id"]),
                     )
                 }
-                item["capabilities"] = self.dataset_capabilities(item["id"], states)
+                item["capabilities"] = self.dataset_capabilities(
+                    item["id"], states, generation
+                )
                 item["entryKind"] = "source_dataset"
                 item["resourceSummary"] = {
                     "total": sum(states.values()),
@@ -463,8 +468,9 @@ class CatalogueStore:
         self.refresh_transport_policies()
         if not 1 <= limit <= 100 or not 0 <= offset <= 100000:
             raise DomainError("INVALID_QUERY", "Invalid pagination", 400)
+        generation = self.head()
         where = "r.generation=?"
-        args = [self.head()]
+        args = [generation]
         for expression, value in [
             ("r.dataset", dataset),
             ("COALESCE(c.status,'pending')", status),
@@ -497,10 +503,10 @@ class CatalogueStore:
                 }
             )
         for item in items:
-            item["capabilities"] = self.capability(item["id"])
+            item["capabilities"] = self.capability(item["id"], generation)
             p = transport.profile(item)
             item["validation"]["freshness"] = freshness(
-                self.dataset(item["datasetId"]),
+                self.dataset(item["datasetId"], generation),
                 item,
                 item["validation"]["lastValidatedAt"],
                 p.ttl if p else None,
@@ -514,26 +520,26 @@ class CatalogueStore:
             "total": total,
             "offset": offset,
             "nextOffset": offset + limit if offset + limit < total else None,
-            "generation": self.head(),
+            "generation": generation,
         }
 
-    def dataset_capabilities(self, dataset_id, counts):
+    def dataset_capabilities(self, dataset_id, counts, generation=None):
         result = capabilities.summary(counts, dataset_id)
         for profile in profiles():
             if profile["datasetId"] != dataset_id:
                 continue
             try:
-                result["nearby"] = self.capability(profile["resourceId"])["operations"][
-                    "nearby"
-                ]
+                result["nearby"] = self.capability(profile["resourceId"], generation)[
+                    "operations"
+                ]["nearby"]
             except DomainError:
                 result["nearby"] = capabilities.operation(
                     "held", "reviewed_representation_absent"
                 )
         return result
 
-    def capability(self, resource_id):
-        resource = self.resource(resource_id)
+    def capability(self, resource_id, generation=None):
+        resource = self.resource(resource_id, generation)
         with self.store.connect() as db:
             receipts = [
                 dict(r)

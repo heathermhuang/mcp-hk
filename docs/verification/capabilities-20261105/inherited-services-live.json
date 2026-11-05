@@ -1,0 +1,59 @@
+{
+  "scope": "production_inherited_services_only_not_new_code_adoption",
+  "noModelCalls": true,
+  "collectionStarted": false,
+  "cases": [
+    {
+      "task": "station_temperature",
+      "state": "accepted",
+      "httpMcpParity": true,
+      "unit": "C",
+      "observationTime": "2026-11-05T20:00:00+08:00",
+      "version": "d482ebbd1654ad3b8947e38cb2c5bbe4047086a25b3b492cc63594633aa7a07b",
+      "spatialCoverage": "stations_are_not_a_radius_weather_surface"
+    },
+    {
+      "task": "district_statistics",
+      "state": "accepted",
+      "httpMcpParity": true,
+      "districtId": "central-western",
+      "referencePeriod": 2024,
+      "scope": "whole_district_not_radius_population"
+    },
+    {
+      "task": "official_company_identity",
+      "state": "accepted",
+      "httpMcpParity": true,
+      "entityId": "cr:foreign:19704461",
+      "identifier": {
+        "value": "19704461",
+        "namespace": "cr:foreign:brn"
+      },
+      "version": "official-f4b062ce5a099868375bf57c76cc2e12",
+      "currentVerification": false,
+      "leadingZeroInput": "00000001",
+      "leadingZeroMatchCount": 0,
+      "emptySubsetDoesNotEstablishNonexistence": true
+    },
+    {
+      "task": "company_archive_separation",
+      "state": "accepted",
+      "view": "archive",
+      "version": "enigma251227-hk-v1",
+      "officialVersion": "official-f4b062ce5a099868375bf57c76cc2e12",
+      "identityJoinByNamePerformed": false
+    },
+    {
+      "task": "explicit_historical_workbook_sheet",
+      "state": "accepted",
+      "httpMcpParity": true,
+      "resourceId": "5ab93d9a957390f887364456f799eb79",
+      "sheet": "E101e",
+      "version": "15812647c547d5ad60e111ad5d1bb228e54cd096c0f0d9f9143bb95c8e70285e",
+      "sourceRows": 22,
+      "scope": "Selected raw historical grid includes published 2006/2011/2016 columns; no normalized housing-series or all-sheet qualification.",
+      "units": "unknown_unconverted",
+      "totalWorkbookSheets": 84
+    }
+  ]
+}

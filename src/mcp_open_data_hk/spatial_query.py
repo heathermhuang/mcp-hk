@@ -96,6 +96,7 @@ def qualify(resource, rows, schema):
         selection.get("sheet")
         or selection.get("layer") is not None
         or selection.get("parameters")
+        or selection.get("parameterNames")
         or selection.get("recordPath") not in {"", "features", None}
     ):
         hold("binding_selection_not_qualified")

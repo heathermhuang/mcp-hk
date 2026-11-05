@@ -74,6 +74,15 @@ async def test_sheet_options_are_typed_persisted_and_failure_is_preserved(
     accepted = await service.resources.schema("XLSX", sheet="2025")
     assert accepted["recordCount"] == 1
     assert catalogue.check("XLSX")["status"] == "queryable"
+    from mcp_open_data_hk.contracts import DomainError
+
+    with pytest.raises(DomainError, match="INVALID_SHEET"):
+        await service.resources.schema("XLSX", sheet="invalid-default")
+    assert catalogue.check("XLSX")["status"] == "queryable"
+    catalogue.failure("XLSX", "SOURCE_UNAVAILABLE")
+    with pytest.raises(DomainError, match="INVALID_SHEET"):
+        await service.resources.schema("XLSX", sheet="another-invalid-default")
+    assert catalogue.check("XLSX")["reason"] == "SOURCE_UNAVAILABLE"
 
 
 @pytest.mark.asyncio
@@ -141,3 +150,21 @@ def test_option_metadata_has_an_independent_global_byte_bound(service, monkeypat
         )
     assert catalogue.selection_options("0") == []
     assert catalogue.check("XLSX") == {}
+
+
+@pytest.mark.asyncio
+async def test_null_prior_check_time_does_not_hide_a_real_capabilities_source_failure(
+    service, monkeypatch
+):
+    from mcp_open_data_hk.contracts import DomainError
+
+    with service.store.connect() as db:
+        db.execute("INSERT INTO resource_checks(id,status) VALUES ('WFS','pending')")
+
+    async def fail(*args, **kwargs):
+        raise DomainError("SOURCE_UNAVAILABLE", "Provider unavailable", 502)
+
+    monkeypatch.setattr("mcp_open_data_hk.resources.fetch", fail)
+    with pytest.raises(DomainError, match="SOURCE_UNAVAILABLE"):
+        await service.resources.schema("WFS")
+    assert service.resources.catalogue.check("WFS")["status"] == "unavailable"

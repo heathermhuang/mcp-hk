@@ -6,20 +6,20 @@ No source-policy activation, credentials, new services, schedules or paid evals.
 
 ## Checklist
 
-- [x] Recheck clean isolated checkout and PR #128 at 199435c: open, mergeable,
-  required Python versions, PostgreSQL restore, Worker and browser CI green.
-- [x] Implement P0 read-only SQLite report without Store initialization or requests.
-- [x] Implement P1 resource/selection receipt projections and existing tool discovery.
-- [x] Focused report/scope/failure/discovery and HTTP/MCP regressions: 55 passed.
-- [ ] First unfinished package: P0/P1 real checkpoint reconciliation, performance,
-  final review, required checks and reviewable PR.
-- [ ] P2 persist typed options without replacing source failure; typed predicates.
-- [ ] P3 independent EDB and DH source dictionaries, grain/CRS checks and nearby.
-- [ ] P4 all reference candidates before ETA ranking, occurrence identity, coverage.
-- [ ] P5 measured first-cohort and unchanged-checkpoint onboarding acceptance.
-- [ ] Required CI, merge dependency #128 and implementation increments.
-- [ ] Coordinated release, actual HTTP/MCP clients, fresh backup/isolated restore,
-  read-back of five schedules. A PR or header alone is not deployment proof.
+- [x] Preserve dirty primary; use isolated checkout and mandatory exact-head hook.
+- [x] PR #128 transport/shared-text/GTFS dependency merged after green CI.
+- [x] P0/P1 implemented and merged (#129); current 5,048-entry checkpoint reconciled.
+- [x] P2 typed selections and predicates merged (#130/#131), including streamed totals.
+- [x] P4 complete candidate comparison and source coverage merged (#132).
+- [x] P3 shared nearby and independently reviewed school/clinic overlays merged (#134).
+- [x] P5 first inherited-service HTTP/MCP cohort and one measured workbook onboarding.
+- [x] Fresh accepted pre-release R2 checkpoint independently restored and sized.
+- [ ] First unfinished package: final P5 integration checks/PR/CI and merge.
+- [ ] Coordinated release: pause only resource cron, propagation/owning lease, actual
+  controller/container adoption, live new HTTP/MCP flows, fresh accepted post-release
+  backup/isolated restore and read-back of the five configured schedules.
+- [ ] Later family batches remain a bounded ongoing backlog, not a promise that every
+  representation or all 5,048 entries are semantically qualified.
 
 Projections add no tables or stored index: current/previous inventory, existing
 50-per-resource receipts and existing checkpoint limits remain authoritative.
@@ -100,3 +100,48 @@ DEBUG REPORT: the real replay initially found HTTP 400 on capability=nearby.
 Root cause: the transport enum omitted the new value while the store supported it.
 Fix: one shared HTTP/MCP capability alias and an explicit parity regression.
 Evidence: the same replay and 14 spatial tests now pass. Status: DONE.
+
+P0 current-generation proof now uses the configured native Cloudflare/R2 login.
+Accepted archive: 92,302,122 bytes, producer checksum
+00250013b5f436ac2bcd0436800473973a13bdd6772596a7a6e0a2a3ff2c0c56,
+accepted 2026-11-05T11:59:30.084Z. Independent restore validated archive/captures,
+SQLite integrity and accepted base packs: database 420,438,016 bytes, total restored
+451,582,461 bytes. All 150/500/750 MB bounds are unchanged. The read-only report
+left the restored database checksum unchanged, with zero government-provider requests.
+
+Generation e10744696ea04c6fad6e96d13c0199d4 reconciles 5,048 datasets/64,012 resources,
+41,169 native queryable resources and 4,034 datasets with an accepted representation;
+1,014 lack one. These are dated native access counts, not semantic task coverage.
+The final report adds an exact unchanged-checkpoint comparison: full matrix 3.32 s,
+unchanged comparison 1.08 s locally. WMS/WFS retain their actual protocols even when
+hosted by ArcGIS. Candidate uncovered selector cohorts are 99 ArcGIS-layer datasets,
+75 WFS datasets and 14 workbook datasets; these groups overlap and are not unlock
+promises. Full metadata projection coverage is checked separately from provider reads.
+
+The live inherited-service cohort passed real HTTP and FastMCP calls: declared-C
+station temperature with source observation time, 2024 whole-district statistics,
+version-pinned official company identities/BRN namespaces including literal leading
+zeros, and explicit Enigma archive separation without name-based identity joins.
+No collection or model call was started. The historical Census workbook had zero
+accepted representations before the cohort; E101e now has a 22-row accepted raw grid,
+with 2006/2011/2016 columns preserved. Its other 83 sheets and analytical units remain
+unqualified. This is one observed selected-representation gain, not a whole-catalogue
+acceptance claim. See inherited-services-live.json.
+
+Final integration preserves failures after invalid defaults and nullable prior check
+times, honours literal dotted-key types, hides prior callers' source parameters and
+internal cache hashes, pins metadata generations during publication, and terminates
+ordered pagination at its declared window. Existing qualified HKO receipts inherit
+the documented timezone-aware updateTime comparison without a new provider read.
+Backend health exposes resource-capabilities-2 and the immutable point manifest.
+Physical checkpoint fixtures restore new options/bindings, active/previous generations,
+and old and new client reads. No new index, infrastructure, source policy, quota or
+schedule is introduced.
+
+Operator access provenance: initial use of an alternate worktree file was rejected
+by automatic review. Read-only inspection then proved the deployed a36e7d9 checkout
+already uses that exact file through its configured symlink, with the same repository
+remote. Automatic re-review accepted one direct diagnostic request using that intended
+configuration; it succeeded with source-review-11, no maintenance lease and no seed
+lease. No credential was printed, copied, rotated or introduced. The initial file-source
+question is superseded by verified current-release configuration, not inferred consent.
