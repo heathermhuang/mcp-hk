@@ -14,8 +14,8 @@ No source-policy activation, credentials, new services, schedules or paid evals.
 - [x] P3 shared nearby and independently reviewed school/clinic overlays merged (#134).
 - [x] P5 first inherited-service HTTP/MCP cohort and one measured workbook onboarding.
 - [x] Fresh accepted pre-release R2 checkpoint independently restored and sized.
-- [ ] First unfinished package: final P5 integration checks/PR/CI and merge.
-- [ ] Coordinated release: pause only resource cron, propagation/owning lease, actual
+- [x] Final P5 integration checks/PR/CI and merge (#136), plus browser lifecycle repair (#137).
+- [x] Coordinated release: pause only resource cron, propagation/owning lease, actual
   controller/container adoption, live new HTTP/MCP flows, fresh accepted post-release
   backup/isolated restore and read-back of the five configured schedules.
 - [ ] Later family batches remain a bounded ongoing backlog, not a promise that every
@@ -157,3 +157,8 @@ Final focused regression set: 124 passed, including transport scalar identity gu
 which reject boolean stop sequences, unknown ETA directions and an explicit wrong
 operator. These malformed feeds cannot be reinterpreted as an empty directional feed.
 The full exact-head Python/Worker/format/lint/type hook and final integration CI follow.
+
+Released 5 November 2026 at 0444e8c. All source/CI/adoption/HTTP/MCP/recovery/schedule
+gates for the finite programme passed; see RELEASED.md and released/. The first
+unfinished work is the later measured family backlog, not an outstanding release
+step. No claim is made that all 5,048 entries or every representation are qualified.
