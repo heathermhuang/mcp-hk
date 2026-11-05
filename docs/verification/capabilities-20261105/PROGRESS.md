@@ -25,3 +25,14 @@ Projections add no tables or stored index: current/previous inventory, existing
 50-per-resource receipts and existing checkpoint limits remain authoritative.
 P0 alternatives mean accepted representations under the same dataset identity;
 language, period, scope equivalence and task benefits remain unqualified.
+
+P2 selector increment: typed metadata options, bounded to 1 MB globally and 100 per
+kind; real SQLite backup retains them. WFS discovery restricts names to FeatureType
+children. Selection discovery preserves existing unavailable/restricted receipts.
+Requested selectors are retained before adapters rewrite their internal record path.
+
+DEBUG REPORT: selector fixture failure. Symptom: workbook test returned parse error.
+Root cause: the fake fetch omitted the positional headers argument used by load.
+Fix: match the fetch signature in the fixture. Evidence/regression: four selector
+regressions pass, including the workbook failure-retention and physical restore test.
+Status: DONE. No application error was hidden or source guard relaxed.

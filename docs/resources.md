@@ -430,3 +430,11 @@ provider. Output groups provider, access family, format, reason and schema finge
 reconciles native status totals, and ranks distinct uncovered dataset-record pairs.
 Family counts overlap and cannot be summed; alternative language/period equivalence,
 real task benefit and cost remain explicit unknowns.
+
+Schema inspection persists typed sheet/layer/feature-type/record-path options in
+a separate bounded metadata table (100 options per kind, 1 MB compressed globally,
+oldest options evicted). Every option is `unverified` with a schema next action;
+there is no inferred default. Options retain observation times and truncation counts,
+survive normal SQLite backup/restore and expire with retired inventory resources.
+Successful option discovery and invalid user selections cannot replace a prior
+source failure or accepted record receipt. Only an actual accepted read upgrades it.
