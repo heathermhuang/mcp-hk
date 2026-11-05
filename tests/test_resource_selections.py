@@ -195,13 +195,23 @@ async def test_arcgis_hosted_wfs_selected_read_uses_wfs_not_rest_layer(
     )
     calls = []
 
+    async def fetch(url, **kwargs):
+        if "request=GetCapabilities" in url:
+            body = '<wfs:WFS_Capabilities xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:ows="http://www.opengis.net/ows/1.1"><ows:OperationsMetadata><ows:Operation name="GetFeature"><ows:Parameter name="outputFormat"><ows:AllowedValues><ows:Value>GEOJSON</ows:Value></ows:AllowedValues></ows:Parameter></ows:Operation></ows:OperationsMetadata></wfs:WFS_Capabilities>'
+        else:
+            assert "resultType=hits" in url
+            body = '<wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs/2.0" numberMatched="0" numberReturned="0"/>'
+        return body.encode(), {}, url, 200
+
     async def read_json(url, params=None):
         calls.append(params)
         assert params["service"] == "WFS"
         assert params["typeNames"] == "csdi:clinics"
+        assert params["outputFormat"] == "GEOJSON"
         value = {"type": "FeatureCollection", "numberMatched": 0, "features": []}
         return value, json.dumps(value).encode(), {}, url
 
+    monkeypatch.setattr("mcp_open_data_hk.resources.fetch", fetch)
     monkeypatch.setattr("mcp_open_data_hk.resources.read_json", read_json)
     result = await service.resources.schema(
         "WFS", record_path="" if csv_feature_request else "csdi:clinics"

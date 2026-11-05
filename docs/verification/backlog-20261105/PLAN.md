@@ -76,9 +76,11 @@ dataset/task acceptance. Maintain original source fields and missing-evidence ho
 - [ ] B5: NLB complete joined comparison and source/client proof.
 - [ ] B6: PR/CI/merge/deployment/HTTP/MCP/fresh restore/schedules complete.
 
-**First unfinished package: first integration PR/CI/release of the demonstrated
-reader, point, bus and recovery repairs, then B1 selected reads over the complete
-271-resource discovery ledger and the report/raw-workbook cohorts.**
+**First unfinished package: remaining B1 selected reads over the complete
+271-resource discovery ledger and the report/raw-workbook cohorts, plus exact
+WFS parsing and KMB 11C mapping investigation.** The integration releases at
+`a687580` and `ced4b81` passed actual clients and fresh isolated recovery; see
+`RELEASED.md` and `repair-release/`. This does not finish the wider B1–B5 scope.
 This checklist remains open until every unblocked work package is finished. One
 cohort, a PR or a successful deployment does not complete the full backlog.
 
@@ -92,10 +94,9 @@ inventoried type name, requests complete matched-count JSON and rejects scope
 parameters it cannot safely retain. This is routing correction, not 24 accepted
 dataset gains. Native resource/dataset denominators are unchanged.
 
-Implementation status: new code and local source replay exist for four point
-bindings, report/table/series discovery and raw Census reads, KMB/NLB variant
-comparison and hybrid recovery. Production still runs the earlier release until
-the integration gates below pass. KMB's identical bilingual pole-code suffix is a
+Implementation status: four point bindings, report/table/series discovery and raw
+Census reads, KMB/NLB variant comparison and hybrid recovery are deployed and have
+actual HTTP/native MCP and fresh restore proof. KMB's identical bilingual pole-code suffix is a
 documented inference from nine official records; full names and strict 35 m/order
 checks stay visible. More distant/changed names remain unverified.
 

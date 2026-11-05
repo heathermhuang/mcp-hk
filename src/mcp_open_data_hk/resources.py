@@ -473,8 +473,12 @@ async def wfs(url, type_name):
     csdi = urlsplit(url).hostname == "portal.csdi.gov.hk" and urlsplit(
         url
     ).path.lower().endswith("/wfsserver")
+    # ArcGIS WFS endpoints advertise GEOJSON rather than application/json.
+    # Negotiate their published format and prove the complete native count.
+    negotiated = urlsplit(url).path.lower().endswith("/wfsserver")
+    count_contract = "csdi-wfs-count-1" if csdi else "wfs-2-count-1"
     output_format, before_count = "application/json", None
-    if csdi:
+    if negotiated:
         from defusedxml import ElementTree as ET
 
         metadata, _, _, _ = await fetch(
@@ -509,7 +513,7 @@ async def wfs(url, type_name):
         ):
             raise DomainError(
                 "UNSUPPORTED_API",
-                "CSDI WFS does not advertise a supported WFS 2 JSON format",
+                "WFS endpoint does not advertise a supported WFS 2 JSON format",
                 422,
             )
 
@@ -568,7 +572,7 @@ async def wfs(url, type_name):
     try:
         value, body, headers, final = await read_json(endpoint, feature_params)
     except DomainError as exc:
-        if not csdi or exc.code != "SOURCE_TOO_LARGE":
+        if not negotiated or exc.code != "SOURCE_TOO_LARGE":
             raise
         path, headers, final, _ = await fetch_file(
             params_url(endpoint, feature_params), maximum=128_000_000
@@ -588,7 +592,7 @@ async def wfs(url, type_name):
                     "scope": "complete_streamed_feature_type",
                     "sourceMatched": before_count,
                     "streamExpectedMatched": before_count,
-                    "wfsContract": "csdi-wfs-count-1",
+                    "wfsContract": count_contract,
                     "outputFormat": output_format,
                     "countEvidence": {
                         "basis": "WFS_2_hits_before_and_after",
@@ -606,7 +610,7 @@ async def wfs(url, type_name):
     features = value.get("features")
     matched = value.get("numberMatched", value.get("totalFeatures"))
     count_evidence = {}
-    if csdi:
+    if negotiated:
         after_count = await hit_count()
         if before_count != after_count:
             raise DomainError(
@@ -621,7 +625,7 @@ async def wfs(url, type_name):
                 "INCOMPLETE_SOURCE", "WFS JSON count conflicts with native hits", 422
             )
         count_evidence = {
-            "wfsContract": "csdi-wfs-count-1",
+            "wfsContract": count_contract,
             "outputFormat": output_format,
             "countEvidence": {
                 "basis": "WFS_2_hits_before_and_after",
@@ -783,9 +787,15 @@ class Resources:
             json.dumps(
                 ["structured-reader-3", resource_id, record_path, sheet, layer]
                 + (
-                    ["csdi-wfs-count-1"]
+                    [
+                        (
+                            "csdi-wfs-count-1"
+                            if urlsplit(resource["url"]).hostname
+                            == "portal.csdi.gov.hk"
+                            else "wfs-2-count-1"
+                        )
+                    ]
                     if access_protocol == "WFS"
-                    and urlsplit(resource["url"]).hostname == "portal.csdi.gov.hk"
                     and urlsplit(resource["url"]).path.lower().endswith("/wfsserver")
                     else []
                 )

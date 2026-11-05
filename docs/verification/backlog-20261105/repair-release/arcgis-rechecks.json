@@ -1,0 +1,28 @@
+{
+  "checkedAt": "2026-11-05T19:56:14.230211+00:00",
+  "scope": "actual production HTTP and native MCP on repaired ArcGIS selections",
+  "selections": [
+    {
+      "resourceId": "d0d031bf88e843e97855e31576402825",
+      "layer": 2,
+      "httpStatus": 422,
+      "seconds": 57.721,
+      "error": {
+        "code": "SOURCE_TOO_LARGE",
+        "message": "ArcGIS layer exceeds the streamed file budget",
+        "requestId": "86d72e6e11cf47d497073d7afa952c09"
+      }
+    },
+    {
+      "resourceId": "35119286a04b53cf9efb9d33e4d5b2e1",
+      "layer": 0,
+      "httpStatus": 422,
+      "seconds": 104.321,
+      "error": {
+        "code": "SOURCE_TOO_LARGE",
+        "message": "ArcGIS layer exceeds the streamed file budget",
+        "requestId": "d78862548ce64ffd9f57b09fa3d39e27"
+      }
+    }
+  ]
+}

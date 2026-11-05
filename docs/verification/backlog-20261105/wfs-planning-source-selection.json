@@ -1,0 +1,23 @@
+[
+  {
+    "name": "hits-before",
+    "status": 200,
+    "bytes": 886,
+    "sha256": "93aab19edcc362abede0241b37184ab37771de783307ba3356bf2c2fe623c32f",
+    "numberMatched": "16"
+  },
+  {
+    "name": "geojson",
+    "status": 200,
+    "bytes": 271153,
+    "sha256": "a319b26570ac108c88c30d35e383beafecb7bb6d9289574d9589828cb093e95e",
+    "features": 16
+  },
+  {
+    "name": "hits-after",
+    "status": 200,
+    "bytes": 886,
+    "sha256": "2920c60ddc95ce6ac4bf41ea40473aa0acb0e6800021fdb37515d465b2b20946",
+    "numberMatched": "16"
+  }
+]
