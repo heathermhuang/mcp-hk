@@ -32,6 +32,66 @@ def test_kmb_name_annotation_is_bilingual_exact_and_preserves_source_values():
     assert kmb_names(ordinary_name)["en"] == ordinary_name["name_en"]
 
 
+@pytest.mark.asyncio
+@pytest.mark.parametrize("broken", [None, "wrong_company", "unlabelled", "far"])
+async def test_published_same_stop_operator_alias_keeps_location_and_namespace_checks(
+    broken,
+):
+    from mcp_open_data_hk.transport_joins import verified_stops
+    from mcp_open_data_hk.transport_search import name_key
+
+    board = {
+        "name": {"en": "BOARD/<br>other company", "zhHant": "登車/<br>另一公司"},
+        "sourceStopNames": {
+            "en": "[CTB] OTHER|[KMB] BOARD",
+            "zhHant": "[CTB] 其他|[KMB] 登車",
+        },
+        "latitude": 22.28,
+        "longitude": 114.15,
+        "sequence": 1,
+    }
+    alight = {
+        "name": {"en": "ALIGHT", "zhHant": "落車"},
+        "latitude": 22.281,
+        "longitude": 114.15,
+        "sequence": 2,
+    }
+    if broken == "wrong_company":
+        board["sourceStopNames"] = {
+            k: v.replace("[KMB]", "[CTB]") for k, v in board["sourceStopNames"].items()
+        }
+    if broken == "unlabelled":
+        board["sourceStopNames"] = {"en": "BOARD", "zhHant": "登車"}
+    path = [{"stopId": "0001", "sequence": 1}, {"stopId": "0002", "sequence": 2}]
+
+    async def detail(row):
+        first = row["sequence"] == 1
+        return row["stopId"], {
+            "names": {
+                "en": "BOARD" if first else "ALIGHT",
+                "zhHant": "登車" if first else "落車",
+            },
+            "coordinates": (
+                22.3 if broken == "far" and first else 22.28 if first else 22.281,
+                114.15,
+            ),
+        }
+
+    candidate = {
+        "operatorNamespace": "kmb",
+        "route": {"operator": "KMB+CTB"},
+        "board": board,
+        "alight": alight,
+    }
+    if broken:
+        with pytest.raises(DomainError, match="TRANSPORT_MAPPING_UNVERIFIED"):
+            await verified_stops(candidate, path, detail, name_key)
+    else:
+        selected = await verified_stops(candidate, path, detail, name_key)
+        assert [r["stopId"] for r in selected] == ["0001", "0002"]
+        assert board["name"]["en"] == "BOARD/<br>other company"
+
+
 def xml(tag, rows):
     root = ET.Element("dataroot")
     for row in rows:

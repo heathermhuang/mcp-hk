@@ -398,12 +398,14 @@ class TransportSearch:
                                 "board": {
                                     **orig[board["stopId"]],
                                     **board,
+                                    "sourceStopNames": orig[board["stopId"]]["name"],
                                     "occurrence": occurrences[board["sequence"]],
                                     "occurrenceCount": counts[board["stopId"]],
                                 },
                                 "alight": {
                                     **dest[alight["stopId"]],
                                     **alight,
+                                    "sourceStopNames": dest[alight["stopId"]]["name"],
                                     "occurrence": occurrences[alight["sequence"]],
                                     "occurrenceCount": counts[alight["stopId"]],
                                 },
