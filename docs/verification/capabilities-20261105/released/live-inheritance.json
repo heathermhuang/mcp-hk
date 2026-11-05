@@ -1,0 +1,66 @@
+{
+  "scope": "production_current_contract_and_inherited_services",
+  "noModelCalls": true,
+  "collectionStarted": false,
+  "cases": [
+    {
+      "task": "station_temperature",
+      "state": "accepted",
+      "httpMcpParity": true,
+      "unit": "C",
+      "observationTime": "2026-11-05T22:00:00+08:00",
+      "version": "182c552931730d010b7da15b6f1ca0323908abf5f990fe570055972c0a8a74dc",
+      "spatialCoverage": "stations_are_not_a_radius_weather_surface"
+    },
+    {
+      "task": "qualified_datetime_comparison",
+      "state": "accepted",
+      "httpMcpParity": true,
+      "version": "182c552931730d010b7da15b6f1ca0323908abf5f990fe570055972c0a8a74dc",
+      "sourceTimestampPreserved": "2026-11-05T22:02:00+08:00"
+    },
+    {
+      "task": "district_statistics",
+      "state": "accepted",
+      "httpMcpParity": true,
+      "districtId": "central-western",
+      "referencePeriod": 2024,
+      "scope": "whole_district_not_radius_population"
+    },
+    {
+      "task": "official_company_identity",
+      "state": "accepted",
+      "httpMcpParity": true,
+      "entityId": "cr:foreign:19704461",
+      "identifier": {
+        "value": "19704461",
+        "namespace": "cr:foreign:brn"
+      },
+      "version": "official-f4b062ce5a099868375bf57c76cc2e12",
+      "currentVerification": false,
+      "leadingZeroInput": "00000001",
+      "leadingZeroMatchCount": 0,
+      "emptySubsetDoesNotEstablishNonexistence": true
+    },
+    {
+      "task": "company_archive_separation",
+      "state": "accepted",
+      "view": "archive",
+      "version": "enigma251227-hk-v1",
+      "officialVersion": "official-f4b062ce5a099868375bf57c76cc2e12",
+      "identityJoinByNamePerformed": false
+    },
+    {
+      "task": "explicit_historical_workbook_sheet",
+      "state": "accepted",
+      "httpMcpParity": true,
+      "resourceId": "5ab93d9a957390f887364456f799eb79",
+      "sheet": "E101e",
+      "version": "15812647c547d5ad60e111ad5d1bb228e54cd096c0f0d9f9143bb95c8e70285e",
+      "sourceRows": 22,
+      "scope": "Selected raw historical grid includes published 2006/2011/2016 columns; no normalized housing-series or all-sheet qualification.",
+      "units": "unknown_unconverted",
+      "totalWorkbookSheets": 84
+    }
+  ]
+}

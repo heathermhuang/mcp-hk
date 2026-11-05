@@ -1,0 +1,97 @@
+{
+  "releasedCommit": "0444e8c4b2e82652303f5e19f58c0db2c1d9a935",
+  "cloudflareVersionId": "6b2bec7b-df36-49c6-9ece-45f48c871273",
+  "containerImageDigest": "sha256:24eefa0e7893fac47f55bb86d6b9e20450bea403ee6abd5487a7c438ac966a8a",
+  "verifiedAtUtc": "2026-11-05T14:26:57.394642+00:00",
+  "controller": {
+    "workerRelease": "0444e8c4b2e82652303f5e19f58c0db2c1d9a935",
+    "controllerContract": "source-aware-ux-1",
+    "credentialBoundary": "edge-and-controller-v1",
+    "maintenancePolicy": "source-review-11",
+    "leaseUntilAtFinalCheck": null,
+    "seedLeaseAtFinalCheck": false
+  },
+  "backend": {
+    "status": "ok",
+    "resourceCapabilities": "resource-capabilities-2",
+    "pointBindings": "4b18d8bba56f058f3cb47b11d4a462af5633d6dcc686902ff5a492964773b019",
+    "sourceReviewPolicy": "source-review-11",
+    "racingPipeline": "results-r2-v1",
+    "racingProfilesPipeline": "profile-observations-r2-v1"
+  },
+  "ready": true,
+  "ci": {
+    "exactMainCommit": "0444e8c4b2e82652303f5e19f58c0db2c1d9a935",
+    "allFiveWorkflowGroups": "success",
+    "runIds": {
+      "python": 42040621241,
+      "quality": 42040621157,
+      "worker": 42040621172,
+      "postgres": 42040621160,
+      "browser": 42040621238
+    }
+  },
+  "programmePrs": [
+    128,
+    129,
+    130,
+    131,
+    132,
+    134,
+    136,
+    137
+  ],
+  "schedules": {
+    "phase": "restored",
+    "readAt": "2026-11-05T14:22:48.298972+00:00",
+    "crons": [
+      "0 1 * * *",
+      "0 2 * * *",
+      "0 3 * * SUN",
+      "0 4 * * SUN",
+      "2-59/5 * * * *"
+    ],
+    "count": 5,
+    "matchesExpected": true
+  },
+  "freshRestore": {
+    "freshAcceptedArchiveSha256": "175b8342726dce8f9ae47a32bc64584966506f08868e994305dcf92a916b2875",
+    "archiveBytes": 82846528,
+    "databaseBytes": 447926272,
+    "captureBytes": 31144445,
+    "totalRestoredBytes": 479070717,
+    "integrity": "ok",
+    "baseAndTransportPacks": {
+      "population": 18,
+      "restaurants": 17289,
+      "transport": 62147
+    },
+    "sourceRegistryRecovered": true,
+    "nativeDatasetCount": 5048,
+    "activePreviousInventoryGenerations": 2,
+    "typedWorkbookOptions": 84,
+    "restoredPointBindings": [
+      {
+        "profileId": "dh-clinic-feature-points-1",
+        "profileFingerprint": "d716d17e076adb0b4ee07a65c5ad00ea528ef66e0d4e03fb7b3d7f980b16ad26",
+        "sourceRows": 200
+      },
+      {
+        "profileId": "edb-school-record-points-1",
+        "profileFingerprint": "3263fce4baca106524b171f54228a7a425ea6e41232178ced42020ac063df2f9",
+        "sourceRows": 3496
+      }
+    ],
+    "boundsUnchanged": {
+      "archive": 150000000,
+      "database": 500000000,
+      "totalRestored": 750000000
+    }
+  },
+  "sourcePolicyChanges": [],
+  "newSchedules": [],
+  "newServices": [],
+  "newCredentials": [],
+  "modelEvaluations": [],
+  "laterFamilyExpansion": "ongoing_bounded_backlog_not_whole_catalogue_semantic_acceptance"
+}

@@ -1,0 +1,1047 @@
+{
+  "scope": "production",
+  "httpMcpReferenceParity": true,
+  "bilingualSearchParity": true,
+  "indexVersion": "6744b7fe22ac451580a879f4a359631e",
+  "provenance": [
+    {
+      "sourceId": "transport",
+      "sourceUrl": "https://data.gov.hk/en-data/dataset/hk-td-tis_11-pt-headway-en",
+      "attribution": "Transport Department / DATA.GOV.HK; live arrivals attributed separately to each operator",
+      "retrievedAt": "2026-11-05T14:14:39.937663+00:00",
+      "lastCheckedAt": "2026-11-05T14:14:39.937663+00:00",
+      "referencePeriod": null,
+      "stale": false,
+      "freshnessBasis": "last_successful_source_check"
+    },
+    {
+      "sourceUrl": "https://static.data.gov.hk/td/pt-headway-en/stops.txt",
+      "originalSourceUrl": "https://static.data.gov.hk/td/pt-headway-en/stops.txt",
+      "retrievedAt": 1793888058.4559512,
+      "sourceModified": "Mon, 02 Nov 2026 07:04:16 GMT",
+      "contentHash": "8b1cb7e18365201e5640f10fc6bc79b9549820240109ce0f1f2898755cffb696"
+    },
+    {
+      "sourceUrl": "https://static.data.gov.hk/td/pt-headway-tc/stops.txt",
+      "originalSourceUrl": "https://static.data.gov.hk/td/pt-headway-tc/stops.txt",
+      "retrievedAt": 1793888058.789509,
+      "sourceModified": "Mon, 02 Nov 2026 07:04:25 GMT",
+      "contentHash": "d1a9bff99808bf6d55e2c4b48163295cb5520ce23e092262397baa4d23cb8ced"
+    },
+    {
+      "sourceUrl": "https://static.data.gov.hk/td/routes-fares-xml/ROUTE_BUS.xml",
+      "originalSourceUrl": "https://static.data.gov.hk/td/routes-fares-xml/ROUTE_BUS.xml",
+      "retrievedAt": 1793888058.8455741,
+      "sourceModified": "Mon, 02 Nov 2026 07:04:42 GMT",
+      "contentHash": "7366f0516c6da6619b18c108680826726aff0f04faf01f17e83db33f37e83ee1"
+    },
+    {
+      "sourceUrl": "https://static.data.gov.hk/td/routes-fares-xml/RSTOP_BUS.xml",
+      "originalSourceUrl": "https://static.data.gov.hk/td/routes-fares-xml/RSTOP_BUS.xml",
+      "retrievedAt": 1793888060.7374184,
+      "sourceModified": "Mon, 02 Nov 2026 07:04:43 GMT",
+      "contentHash": "eeac29b41622cef00d45b0944d317c5b905cb2e66d549842abbf85d48be201cd"
+    }
+  ],
+  "candidates": [
+    {
+      "route": {
+        "id": "route:1509",
+        "kind": "route",
+        "routeId": "1509",
+        "operator": "CTB",
+        "route": "13",
+        "origin": {
+          "en": "Admiralty (Tamar Street)",
+          "zhHant": "金鐘 (添馬街)"
+        },
+        "destination": {
+          "en": "Kotewall Road",
+          "zhHant": "旭龢道"
+        },
+        "serviceMode": "R",
+        "specialType": "0",
+        "sourceUpdatedAt": "2025-01-05T00:00:00"
+      },
+      "direction": "outbound",
+      "board": {
+        "id": "path:1509:1:3",
+        "kind": "route_stop",
+        "stopId": "261",
+        "namespace": "td:stop",
+        "name": {
+          "en": "Lan Kwai Fong, D'Aguilar Street",
+          "zhHant": "蘭桂坊, 德己立街"
+        },
+        "latitude": 22.28144,
+        "longitude": 114.15608,
+        "distanceM": null,
+        "operators": [
+          "CTB"
+        ],
+        "routeId": "1509",
+        "direction": "outbound",
+        "sequence": 3,
+        "pickup": true,
+        "dropoff": true,
+        "sourcePickupDrop": "3",
+        "sourceUpdatedAt": "2025-02-14T00:00:00",
+        "occurrence": 1,
+        "occurrenceCount": 1
+      },
+      "alight": {
+        "id": "path:1509:1:10",
+        "kind": "route_stop",
+        "stopId": "249",
+        "namespace": "td:stop",
+        "name": {
+          "en": "Seymour Road, Caine Road",
+          "zhHant": "西摩道, 堅道"
+        },
+        "latitude": 22.28312,
+        "longitude": 114.14793,
+        "distanceM": null,
+        "operators": [
+          "CTB",
+          "KMB"
+        ],
+        "routeId": "1509",
+        "direction": "outbound",
+        "sequence": 10,
+        "pickup": true,
+        "dropoff": true,
+        "sourcePickupDrop": "3",
+        "sourceUpdatedAt": "2025-02-14T00:00:00",
+        "occurrence": 1,
+        "occurrenceCount": 1
+      },
+      "referenceStopCount": 7,
+      "arrivalStatus": "live",
+      "operatorEligibilityVerified": true,
+      "operatorBoardStopId": "001042",
+      "operatorAlightStopId": "001021",
+      "operatorStopCount": 7,
+      "operatorBoardSequence": 3,
+      "operatorAlightSequence": 10,
+      "arrivalCheckedAt": 1793888095.3448982,
+      "arrivals": {
+        "items": [
+          {
+            "co": "CTB",
+            "route": "13",
+            "dir": "O",
+            "seq": 3,
+            "stop": "001042",
+            "dest_tc": "旭龢道",
+            "dest_en": "Kotewall Road",
+            "eta": "2026-11-05T22:24:25+08:00",
+            "rmk_tc": "",
+            "eta_seq": 1,
+            "dest_sc": "旭龢道",
+            "rmk_en": "",
+            "rmk_sc": "",
+            "data_timestamp": "2026-11-05T22:14:02+08:00"
+          },
+          {
+            "co": "CTB",
+            "route": "13",
+            "dir": "O",
+            "seq": 3,
+            "stop": "001042",
+            "dest_tc": "旭龢道",
+            "dest_en": "Kotewall Road",
+            "eta": "2026-11-05T22:49:25+08:00",
+            "rmk_tc": "",
+            "eta_seq": 2,
+            "dest_sc": "旭龢道",
+            "rmk_en": "",
+            "rmk_sc": "",
+            "data_timestamp": "2026-11-05T22:14:02+08:00"
+          },
+          {
+            "co": "CTB",
+            "route": "13",
+            "dir": "O",
+            "seq": 3,
+            "stop": "001042",
+            "dest_tc": "旭龢道",
+            "dest_en": "Kotewall Road",
+            "eta": "2026-11-05T23:13:34+08:00",
+            "rmk_tc": "",
+            "eta_seq": 3,
+            "dest_sc": "旭龢道",
+            "rmk_en": "",
+            "rmk_sc": "",
+            "data_timestamp": "2026-11-05T22:14:02+08:00"
+          }
+        ],
+        "transport": {
+          "operator": "Citybus",
+          "mode": "bus",
+          "operation": "arrivals",
+          "requiredParameters": [
+            "stop_id",
+            "route"
+          ],
+          "optionalParameters": {},
+          "parameterExamples": {
+            "stop_id": "001145",
+            "route": "11"
+          },
+          "cacheTTLSeconds": 20,
+          "maxSourceAgeSeconds": 150,
+          "validationScope": "last_selected_route_or_stop",
+          "policyVersion": "transport-2",
+          "omittedStaleRecords": 0,
+          "arrivalState": "arrivals",
+          "sourceTimestamp": "2026-11-05T22:14:55+08:00",
+          "sourceAgeSeconds": 0.33951520919799805,
+          "freshnessBasis": "provider_timestamp",
+          "freshUntil": 1793888245.0,
+          "cacheAgeSeconds": 0.008512020111083984
+        },
+        "warnings": [],
+        "provenance": [
+          {
+            "sourceUrl": "https://rt.data.gov.hk/v2/transport/citybus/eta/CTB/001042/13",
+            "originalResourceUrl": "https://rt.data.gov.hk/v1/transport/citybus-nwfb/eta/ctb",
+            "catalogueUrl": "https://data.gov.hk/en-data/dataset/ctb-eta-transport-realtime-eta",
+            "attribution": "Citybus Limited / DATA.GOV.HK",
+            "termsUrl": "https://data.gov.hk/en/terms-and-conditions",
+            "retrievedAt": 1793888095.3310366,
+            "observedAt": null,
+            "lastCheckedAt": 1793888095.3310366,
+            "lastValidatedAt": 1793888095.3310366,
+            "publicationDate": "2019-08-01",
+            "referencePeriod": null,
+            "contentHash": "151fcf31782c1a9fa34fec144e178a044d135fb37ca27f4706ba9b4aad414e3b",
+            "stale": false
+          }
+        ]
+      },
+      "operatorVerification": {
+        "method": "route_membership_name_and_location",
+        "provenance": [
+          {
+            "sourceUrl": "https://rt.data.gov.hk/v2/transport/citybus/route-stop/CTB/13/outbound",
+            "originalResourceUrl": "https://rt.data.gov.hk/v1/transport/citybus-nwfb/route-stop/ctb",
+            "catalogueUrl": "https://data.gov.hk/en-data/dataset/ctb-eta-transport-realtime-eta",
+            "attribution": "Citybus Limited / DATA.GOV.HK",
+            "termsUrl": "https://data.gov.hk/en/terms-and-conditions",
+            "retrievedAt": 1793888094.3162458,
+            "observedAt": null,
+            "lastCheckedAt": 1793888094.3162458,
+            "lastValidatedAt": 1793888094.3162458,
+            "publicationDate": "2019-08-01",
+            "referencePeriod": null,
+            "contentHash": "0d43b39b55e78286c41b0426fc52e826cce4478e680025fd9ff45afcd50f5bad",
+            "stale": false
+          },
+          {
+            "sourceUrl": "https://rt.data.gov.hk/v2/transport/citybus/stop/001042",
+            "originalResourceUrl": "https://rt.data.gov.hk/v1/transport/citybus-nwfb/stop",
+            "catalogueUrl": "https://data.gov.hk/en-data/dataset/ctb-eta-transport-realtime-eta",
+            "attribution": "Citybus Limited / DATA.GOV.HK",
+            "termsUrl": "https://data.gov.hk/en/terms-and-conditions",
+            "retrievedAt": 1793888094.7868319,
+            "observedAt": null,
+            "lastCheckedAt": 1793888094.7868319,
+            "lastValidatedAt": 1793888094.7868319,
+            "publicationDate": "2019-08-01",
+            "referencePeriod": null,
+            "contentHash": "b94ade82a0a3be76c8d20ce852c8aadd1630fe7f4aabf31299a1260988bef24f",
+            "stale": false
+          },
+          {
+            "sourceUrl": "https://rt.data.gov.hk/v2/transport/citybus/stop/001021",
+            "originalResourceUrl": "https://rt.data.gov.hk/v1/transport/citybus-nwfb/stop",
+            "catalogueUrl": "https://data.gov.hk/en-data/dataset/ctb-eta-transport-realtime-eta",
+            "attribution": "Citybus Limited / DATA.GOV.HK",
+            "termsUrl": "https://data.gov.hk/en/terms-and-conditions",
+            "retrievedAt": 1793888095.0524023,
+            "observedAt": null,
+            "lastCheckedAt": 1793888095.0524023,
+            "lastValidatedAt": 1793888095.0524023,
+            "publicationDate": "2019-08-01",
+            "referencePeriod": null,
+            "contentHash": "fd8a7add98659c0e9eaf422fecefbace628b32cdb52e740a850743ef82b97445",
+            "stale": false
+          }
+        ]
+      },
+      "earliestPredictedDeparture": "2026-11-05T22:24:25+08:00",
+      "predictionCoverage": {
+        "future": 3,
+        "expired": 0,
+        "unknown": 0,
+        "emptyFeedDoesNotProveNoService": true
+      },
+      "referenceVariants": [
+        {
+          "id": "route:1509",
+          "kind": "route",
+          "routeId": "1509",
+          "operator": "CTB",
+          "route": "13",
+          "origin": {
+            "en": "Admiralty (Tamar Street)",
+            "zhHant": "金鐘 (添馬街)"
+          },
+          "destination": {
+            "en": "Kotewall Road",
+            "zhHant": "旭龢道"
+          },
+          "serviceMode": "R",
+          "specialType": "0",
+          "sourceUpdatedAt": "2025-01-05T00:00:00"
+        }
+      ],
+      "alightingAlternatives": [
+        {
+          "referenceStop": {
+            "id": "path:1509:1:10",
+            "kind": "route_stop",
+            "stopId": "249",
+            "namespace": "td:stop",
+            "name": {
+              "en": "Seymour Road, Caine Road",
+              "zhHant": "西摩道, 堅道"
+            },
+            "latitude": 22.28312,
+            "longitude": 114.14793,
+            "distanceM": null,
+            "operators": [
+              "CTB",
+              "KMB"
+            ],
+            "routeId": "1509",
+            "direction": "outbound",
+            "sequence": 10,
+            "pickup": true,
+            "dropoff": true,
+            "sourcePickupDrop": "3",
+            "sourceUpdatedAt": "2025-02-14T00:00:00",
+            "occurrence": 1,
+            "occurrenceCount": 1
+          },
+          "operatorStopId": "001021",
+          "operatorSequence": 10
+        }
+      ],
+      "alightingAlternativeCount": 1
+    },
+    {
+      "route": {
+        "id": "route:1750",
+        "kind": "route",
+        "routeId": "1750",
+        "operator": "CTB",
+        "route": "12",
+        "origin": {
+          "en": "Central (Central Ferry Piers, PIER 3)",
+          "zhHant": "中環(中環渡輪碼頭3號)"
+        },
+        "destination": {
+          "en": "Robinson Road/ Park Road (Circular)",
+          "zhHant": "羅便臣道/柏道(循環線)"
+        },
+        "serviceMode": "R",
+        "specialType": "0",
+        "sourceUpdatedAt": "2025-06-05T00:00:00"
+      },
+      "direction": "outbound",
+      "board": {
+        "id": "path:1750:1:8",
+        "kind": "route_stop",
+        "stopId": "261",
+        "namespace": "td:stop",
+        "name": {
+          "en": "Lan Kwai Fong, D'Aguilar Street",
+          "zhHant": "蘭桂坊, 德己立街"
+        },
+        "latitude": 22.28144,
+        "longitude": 114.15608,
+        "distanceM": null,
+        "operators": [
+          "CTB"
+        ],
+        "routeId": "1750",
+        "direction": "outbound",
+        "sequence": 8,
+        "pickup": true,
+        "dropoff": true,
+        "sourcePickupDrop": "3",
+        "sourceUpdatedAt": "2025-03-10T00:00:00",
+        "occurrence": 1,
+        "occurrenceCount": 1
+      },
+      "alight": {
+        "id": "path:1750:1:15",
+        "kind": "route_stop",
+        "stopId": "249",
+        "namespace": "td:stop",
+        "name": {
+          "en": "Seymour Road, Caine Road",
+          "zhHant": "西摩道, 堅道"
+        },
+        "latitude": 22.28312,
+        "longitude": 114.14793,
+        "distanceM": null,
+        "operators": [
+          "CTB",
+          "KMB"
+        ],
+        "routeId": "1750",
+        "direction": "outbound",
+        "sequence": 15,
+        "pickup": true,
+        "dropoff": true,
+        "sourcePickupDrop": "3",
+        "sourceUpdatedAt": "2025-03-10T00:00:00",
+        "occurrence": 1,
+        "occurrenceCount": 1
+      },
+      "referenceStopCount": 7,
+      "arrivalStatus": "live",
+      "operatorEligibilityVerified": true,
+      "operatorBoardStopId": "001042",
+      "operatorAlightStopId": "001021",
+      "operatorStopCount": 7,
+      "operatorBoardSequence": 8,
+      "operatorAlightSequence": 15,
+      "arrivalCheckedAt": 1793888096.7629445,
+      "arrivals": {
+        "items": [
+          {
+            "co": "CTB",
+            "route": "12",
+            "dir": "O",
+            "seq": 8,
+            "stop": "001042",
+            "dest_tc": "羅便臣道",
+            "dest_en": "Robinson Road",
+            "eta": "2026-11-05T22:38:13+08:00",
+            "rmk_tc": "",
+            "eta_seq": 1,
+            "dest_sc": "罗便臣道",
+            "rmk_en": "",
+            "rmk_sc": "",
+            "data_timestamp": "2026-11-05T22:14:02+08:00"
+          },
+          {
+            "co": "CTB",
+            "route": "12",
+            "dir": "O",
+            "seq": 8,
+            "stop": "001042",
+            "dest_tc": "羅便臣道",
+            "dest_en": "Robinson Road",
+            "eta": "2026-11-05T23:03:13+08:00",
+            "rmk_tc": "",
+            "eta_seq": 2,
+            "dest_sc": "罗便臣道",
+            "rmk_en": "",
+            "rmk_sc": "",
+            "data_timestamp": "2026-11-05T22:14:02+08:00"
+          }
+        ],
+        "transport": {
+          "operator": "Citybus",
+          "mode": "bus",
+          "operation": "arrivals",
+          "requiredParameters": [
+            "stop_id",
+            "route"
+          ],
+          "optionalParameters": {},
+          "parameterExamples": {
+            "stop_id": "001145",
+            "route": "11"
+          },
+          "cacheTTLSeconds": 20,
+          "maxSourceAgeSeconds": 150,
+          "validationScope": "last_selected_route_or_stop",
+          "policyVersion": "transport-2",
+          "omittedStaleRecords": 0,
+          "arrivalState": "arrivals",
+          "sourceTimestamp": "2026-11-05T22:14:56+08:00",
+          "sourceAgeSeconds": 0.7558400630950928,
+          "freshnessBasis": "provider_timestamp",
+          "freshUntil": 1793888246.0,
+          "cacheAgeSeconds": 0.03266453742980957
+        },
+        "warnings": [],
+        "provenance": [
+          {
+            "sourceUrl": "https://rt.data.gov.hk/v2/transport/citybus/eta/CTB/001042/12",
+            "originalResourceUrl": "https://rt.data.gov.hk/v1/transport/citybus-nwfb/eta/ctb",
+            "catalogueUrl": "https://data.gov.hk/en-data/dataset/ctb-eta-transport-realtime-eta",
+            "attribution": "Citybus Limited / DATA.GOV.HK",
+            "termsUrl": "https://data.gov.hk/en/terms-and-conditions",
+            "retrievedAt": 1793888096.7232156,
+            "observedAt": null,
+            "lastCheckedAt": 1793888096.7232156,
+            "lastValidatedAt": 1793888096.7232156,
+            "publicationDate": "2019-08-01",
+            "referencePeriod": null,
+            "contentHash": "1492ded1ac35d4ec6c68e3f6cce59a74491aee91c103591822526117b960e199",
+            "stale": false
+          }
+        ]
+      },
+      "operatorVerification": {
+        "method": "route_membership_name_and_location",
+        "provenance": [
+          {
+            "sourceUrl": "https://rt.data.gov.hk/v2/transport/citybus/route-stop/CTB/12/outbound",
+            "originalResourceUrl": "https://rt.data.gov.hk/v1/transport/citybus-nwfb/route-stop/ctb",
+            "catalogueUrl": "https://data.gov.hk/en-data/dataset/ctb-eta-transport-realtime-eta",
+            "attribution": "Citybus Limited / DATA.GOV.HK",
+            "termsUrl": "https://data.gov.hk/en/terms-and-conditions",
+            "retrievedAt": 1793888096.3990028,
+            "observedAt": null,
+            "lastCheckedAt": 1793888096.3990028,
+            "lastValidatedAt": 1793888096.3990028,
+            "publicationDate": "2019-08-01",
+            "referencePeriod": null,
+            "contentHash": "30eb65dc5760d4302c27f80ec602d8b5376b846255382bacf61091c95aa87d7b",
+            "stale": false
+          },
+          {
+            "sourceUrl": "https://rt.data.gov.hk/v2/transport/citybus/stop/001042",
+            "originalResourceUrl": "https://rt.data.gov.hk/v1/transport/citybus-nwfb/stop",
+            "catalogueUrl": "https://data.gov.hk/en-data/dataset/ctb-eta-transport-realtime-eta",
+            "attribution": "Citybus Limited / DATA.GOV.HK",
+            "termsUrl": "https://data.gov.hk/en/terms-and-conditions",
+            "retrievedAt": 1793888094.7868319,
+            "observedAt": null,
+            "lastCheckedAt": 1793888094.7868319,
+            "lastValidatedAt": 1793888094.7868319,
+            "publicationDate": "2019-08-01",
+            "referencePeriod": null,
+            "contentHash": "b94ade82a0a3be76c8d20ce852c8aadd1630fe7f4aabf31299a1260988bef24f",
+            "stale": false
+          },
+          {
+            "sourceUrl": "https://rt.data.gov.hk/v2/transport/citybus/stop/001021",
+            "originalResourceUrl": "https://rt.data.gov.hk/v1/transport/citybus-nwfb/stop",
+            "catalogueUrl": "https://data.gov.hk/en-data/dataset/ctb-eta-transport-realtime-eta",
+            "attribution": "Citybus Limited / DATA.GOV.HK",
+            "termsUrl": "https://data.gov.hk/en/terms-and-conditions",
+            "retrievedAt": 1793888095.0524023,
+            "observedAt": null,
+            "lastCheckedAt": 1793888095.0524023,
+            "lastValidatedAt": 1793888095.0524023,
+            "publicationDate": "2019-08-01",
+            "referencePeriod": null,
+            "contentHash": "fd8a7add98659c0e9eaf422fecefbace628b32cdb52e740a850743ef82b97445",
+            "stale": false
+          }
+        ]
+      },
+      "earliestPredictedDeparture": "2026-11-05T22:38:13+08:00",
+      "predictionCoverage": {
+        "future": 2,
+        "expired": 0,
+        "unknown": 0,
+        "emptyFeedDoesNotProveNoService": true
+      },
+      "referenceVariants": [
+        {
+          "id": "route:1750",
+          "kind": "route",
+          "routeId": "1750",
+          "operator": "CTB",
+          "route": "12",
+          "origin": {
+            "en": "Central (Central Ferry Piers, PIER 3)",
+            "zhHant": "中環(中環渡輪碼頭3號)"
+          },
+          "destination": {
+            "en": "Robinson Road/ Park Road (Circular)",
+            "zhHant": "羅便臣道/柏道(循環線)"
+          },
+          "serviceMode": "R",
+          "specialType": "0",
+          "sourceUpdatedAt": "2025-06-05T00:00:00"
+        },
+        {
+          "id": "route:1749",
+          "kind": "route",
+          "routeId": "1749",
+          "operator": "CTB",
+          "route": "12",
+          "origin": {
+            "en": "Central (Central Ferry Piers, PIER 3 )",
+            "zhHant": "中環(中環渡輪碼頭3號)"
+          },
+          "destination": {
+            "en": "Robinson Road/ Park Road (Circular) (omit Admiralty, Park Road)",
+            "zhHant": "羅便臣道/柏道(循環線)(不經金鐘、柏道)"
+          },
+          "serviceMode": "T",
+          "specialType": "1",
+          "sourceUpdatedAt": "2025-06-04T00:00:00"
+        }
+      ],
+      "alightingAlternatives": [
+        {
+          "referenceStop": {
+            "id": "path:1750:1:15",
+            "kind": "route_stop",
+            "stopId": "249",
+            "namespace": "td:stop",
+            "name": {
+              "en": "Seymour Road, Caine Road",
+              "zhHant": "西摩道, 堅道"
+            },
+            "latitude": 22.28312,
+            "longitude": 114.14793,
+            "distanceM": null,
+            "operators": [
+              "CTB",
+              "KMB"
+            ],
+            "routeId": "1750",
+            "direction": "outbound",
+            "sequence": 15,
+            "pickup": true,
+            "dropoff": true,
+            "sourcePickupDrop": "3",
+            "sourceUpdatedAt": "2025-03-10T00:00:00",
+            "occurrence": 1,
+            "occurrenceCount": 1
+          },
+          "operatorStopId": "001021",
+          "operatorSequence": 15
+        },
+        {
+          "referenceStop": {
+            "id": "path:1750:1:23",
+            "kind": "route_stop",
+            "stopId": "252",
+            "namespace": "td:stop",
+            "name": {
+              "en": "Robinson Road, Seymour Road",
+              "zhHant": "羅便臣道, 西摩道"
+            },
+            "latitude": 22.28088,
+            "longitude": 114.15071,
+            "distanceM": null,
+            "operators": [
+              "CTB"
+            ],
+            "routeId": "1750",
+            "direction": "outbound",
+            "sequence": 23,
+            "pickup": true,
+            "dropoff": true,
+            "sourcePickupDrop": "3",
+            "sourceUpdatedAt": "2025-03-10T00:00:00",
+            "occurrence": 1,
+            "occurrenceCount": 1
+          },
+          "operatorStopId": "001156",
+          "operatorSequence": 24
+        },
+        {
+          "referenceStop": {
+            "id": "path:1749:1:14",
+            "kind": "route_stop",
+            "stopId": "249",
+            "namespace": "td:stop",
+            "name": {
+              "en": "Seymour Road, Caine Road",
+              "zhHant": "西摩道, 堅道"
+            },
+            "latitude": 22.28312,
+            "longitude": 114.14793,
+            "distanceM": null,
+            "operators": [
+              "CTB",
+              "KMB"
+            ],
+            "routeId": "1749",
+            "direction": "outbound",
+            "sequence": 14,
+            "pickup": true,
+            "dropoff": true,
+            "sourcePickupDrop": "3",
+            "sourceUpdatedAt": "2025-03-10T00:00:00",
+            "occurrence": 1,
+            "occurrenceCount": 1
+          },
+          "operatorStopId": "001021",
+          "operatorSequence": 15
+        },
+        {
+          "referenceStop": {
+            "id": "path:1749:1:15",
+            "kind": "route_stop",
+            "stopId": "250",
+            "namespace": "td:stop",
+            "name": {
+              "en": "Jadestone Court, Seymour Road",
+              "zhHant": "寶玉閣, 西摩道"
+            },
+            "latitude": 22.28285,
+            "longitude": 114.14887,
+            "distanceM": null,
+            "operators": [
+              "CTB"
+            ],
+            "routeId": "1749",
+            "direction": "outbound",
+            "sequence": 15,
+            "pickup": true,
+            "dropoff": true,
+            "sourcePickupDrop": "3",
+            "sourceUpdatedAt": "2025-03-10T00:00:00",
+            "occurrence": 1,
+            "occurrenceCount": 1
+          },
+          "operatorStopId": "001154",
+          "operatorSequence": 23
+        },
+        {
+          "referenceStop": {
+            "id": "path:1749:1:16",
+            "kind": "route_stop",
+            "stopId": "252",
+            "namespace": "td:stop",
+            "name": {
+              "en": "Robinson Road, Seymour Road",
+              "zhHant": "羅便臣道, 西摩道"
+            },
+            "latitude": 22.28088,
+            "longitude": 114.15071,
+            "distanceM": null,
+            "operators": [
+              "CTB"
+            ],
+            "routeId": "1749",
+            "direction": "outbound",
+            "sequence": 16,
+            "pickup": true,
+            "dropoff": true,
+            "sourcePickupDrop": "3",
+            "sourceUpdatedAt": "2025-03-10T00:00:00",
+            "occurrence": 1,
+            "occurrenceCount": 1
+          },
+          "operatorStopId": "001156",
+          "operatorSequence": 24
+        }
+      ],
+      "alightingAlternativeCount": 5
+    },
+    {
+      "route": {
+        "id": "route:1508",
+        "kind": "route",
+        "routeId": "1508",
+        "operator": "CTB",
+        "route": "12M",
+        "origin": {
+          "en": "Admiralty (Tamar Street)",
+          "zhHant": "金鐘(添馬街)"
+        },
+        "destination": {
+          "en": "Park Road (Circular)",
+          "zhHant": "柏道(循環線)"
+        },
+        "serviceMode": "T",
+        "specialType": "1",
+        "sourceUpdatedAt": "2025-06-06T00:00:00"
+      },
+      "direction": "outbound",
+      "board": {
+        "id": "path:1508:1:3",
+        "kind": "route_stop",
+        "stopId": "261",
+        "namespace": "td:stop",
+        "name": {
+          "en": "Lan Kwai Fong, D'Aguilar Street",
+          "zhHant": "蘭桂坊, 德己立街"
+        },
+        "latitude": 22.28144,
+        "longitude": 114.15608,
+        "distanceM": null,
+        "operators": [
+          "CTB"
+        ],
+        "routeId": "1508",
+        "direction": "outbound",
+        "sequence": 3,
+        "pickup": true,
+        "dropoff": true,
+        "sourcePickupDrop": "3",
+        "sourceUpdatedAt": "2025-02-14T00:00:00",
+        "occurrence": 1,
+        "occurrenceCount": 1
+      },
+      "alight": {
+        "id": "path:1508:1:10",
+        "kind": "route_stop",
+        "stopId": "249",
+        "namespace": "td:stop",
+        "name": {
+          "en": "Seymour Road, Caine Road",
+          "zhHant": "西摩道, 堅道"
+        },
+        "latitude": 22.28312,
+        "longitude": 114.14793,
+        "distanceM": null,
+        "operators": [
+          "CTB",
+          "KMB"
+        ],
+        "routeId": "1508",
+        "direction": "outbound",
+        "sequence": 10,
+        "pickup": true,
+        "dropoff": true,
+        "sourcePickupDrop": "3",
+        "sourceUpdatedAt": "2025-02-14T00:00:00",
+        "occurrence": 1,
+        "occurrenceCount": 1
+      },
+      "referenceStopCount": 7,
+      "arrivalStatus": "live",
+      "operatorEligibilityVerified": true,
+      "operatorBoardStopId": "001042",
+      "operatorAlightStopId": "001021",
+      "operatorStopCount": 7,
+      "operatorBoardSequence": 3,
+      "operatorAlightSequence": 10,
+      "arrivalCheckedAt": 1793888099.0132525,
+      "arrivals": {
+        "items": [],
+        "transport": {
+          "operator": "Citybus",
+          "mode": "bus",
+          "operation": "arrivals",
+          "requiredParameters": [
+            "stop_id",
+            "route"
+          ],
+          "optionalParameters": {},
+          "parameterExamples": {
+            "stop_id": "001145",
+            "route": "11"
+          },
+          "cacheTTLSeconds": 20,
+          "maxSourceAgeSeconds": 150,
+          "validationScope": "last_selected_route_or_stop",
+          "policyVersion": "transport-2",
+          "omittedStaleRecords": 0,
+          "arrivalState": "no_arrivals_for_selected_direction",
+          "sourceTimestamp": "2026-11-05T22:14:58+08:00",
+          "sourceAgeSeconds": 1.0091352462768555,
+          "freshnessBasis": "provider_timestamp",
+          "freshUntil": 1793888248.0,
+          "cacheAgeSeconds": 0.009966135025024414
+        },
+        "warnings": [],
+        "provenance": [
+          {
+            "sourceUrl": "https://rt.data.gov.hk/v2/transport/citybus/eta/CTB/001042/12M",
+            "originalResourceUrl": "https://rt.data.gov.hk/v1/transport/citybus-nwfb/eta/ctb",
+            "catalogueUrl": "https://data.gov.hk/en-data/dataset/ctb-eta-transport-realtime-eta",
+            "attribution": "Citybus Limited / DATA.GOV.HK",
+            "termsUrl": "https://data.gov.hk/en/terms-and-conditions",
+            "retrievedAt": 1793888098.999191,
+            "observedAt": null,
+            "lastCheckedAt": 1793888098.999191,
+            "lastValidatedAt": 1793888098.999191,
+            "publicationDate": "2019-08-01",
+            "referencePeriod": null,
+            "contentHash": "19ffb173d0063563e504f2c46536239060dbc853a1bbcac7ced37b5d44326090",
+            "stale": false
+          }
+        ]
+      },
+      "operatorVerification": {
+        "method": "route_membership_name_and_location",
+        "provenance": [
+          {
+            "sourceUrl": "https://rt.data.gov.hk/v2/transport/citybus/route-stop/CTB/12M/outbound",
+            "originalResourceUrl": "https://rt.data.gov.hk/v1/transport/citybus-nwfb/route-stop/ctb",
+            "catalogueUrl": "https://data.gov.hk/en-data/dataset/ctb-eta-transport-realtime-eta",
+            "attribution": "Citybus Limited / DATA.GOV.HK",
+            "termsUrl": "https://data.gov.hk/en/terms-and-conditions",
+            "retrievedAt": 1793888098.6557777,
+            "observedAt": null,
+            "lastCheckedAt": 1793888098.6557777,
+            "lastValidatedAt": 1793888098.6557777,
+            "publicationDate": "2019-08-01",
+            "referencePeriod": null,
+            "contentHash": "ab4305c476e8c9ac2f34c0209f57dae3d19745af7cbc8ca20a3df4489f5e88b3",
+            "stale": false
+          },
+          {
+            "sourceUrl": "https://rt.data.gov.hk/v2/transport/citybus/stop/001042",
+            "originalResourceUrl": "https://rt.data.gov.hk/v1/transport/citybus-nwfb/stop",
+            "catalogueUrl": "https://data.gov.hk/en-data/dataset/ctb-eta-transport-realtime-eta",
+            "attribution": "Citybus Limited / DATA.GOV.HK",
+            "termsUrl": "https://data.gov.hk/en/terms-and-conditions",
+            "retrievedAt": 1793888094.7868319,
+            "observedAt": null,
+            "lastCheckedAt": 1793888094.7868319,
+            "lastValidatedAt": 1793888094.7868319,
+            "publicationDate": "2019-08-01",
+            "referencePeriod": null,
+            "contentHash": "b94ade82a0a3be76c8d20ce852c8aadd1630fe7f4aabf31299a1260988bef24f",
+            "stale": false
+          },
+          {
+            "sourceUrl": "https://rt.data.gov.hk/v2/transport/citybus/stop/001021",
+            "originalResourceUrl": "https://rt.data.gov.hk/v1/transport/citybus-nwfb/stop",
+            "catalogueUrl": "https://data.gov.hk/en-data/dataset/ctb-eta-transport-realtime-eta",
+            "attribution": "Citybus Limited / DATA.GOV.HK",
+            "termsUrl": "https://data.gov.hk/en/terms-and-conditions",
+            "retrievedAt": 1793888095.0524023,
+            "observedAt": null,
+            "lastCheckedAt": 1793888095.0524023,
+            "lastValidatedAt": 1793888095.0524023,
+            "publicationDate": "2019-08-01",
+            "referencePeriod": null,
+            "contentHash": "fd8a7add98659c0e9eaf422fecefbace628b32cdb52e740a850743ef82b97445",
+            "stale": false
+          }
+        ]
+      },
+      "earliestPredictedDeparture": null,
+      "predictionCoverage": {
+        "future": 0,
+        "expired": 0,
+        "unknown": 0,
+        "emptyFeedDoesNotProveNoService": true
+      },
+      "referenceVariants": [
+        {
+          "id": "route:1508",
+          "kind": "route",
+          "routeId": "1508",
+          "operator": "CTB",
+          "route": "12M",
+          "origin": {
+            "en": "Admiralty (Tamar Street)",
+            "zhHant": "金鐘(添馬街)"
+          },
+          "destination": {
+            "en": "Park Road (Circular)",
+            "zhHant": "柏道(循環線)"
+          },
+          "serviceMode": "T",
+          "specialType": "1",
+          "sourceUpdatedAt": "2025-06-06T00:00:00"
+        }
+      ],
+      "alightingAlternatives": [
+        {
+          "referenceStop": {
+            "id": "path:1508:1:10",
+            "kind": "route_stop",
+            "stopId": "249",
+            "namespace": "td:stop",
+            "name": {
+              "en": "Seymour Road, Caine Road",
+              "zhHant": "西摩道, 堅道"
+            },
+            "latitude": 22.28312,
+            "longitude": 114.14793,
+            "distanceM": null,
+            "operators": [
+              "CTB",
+              "KMB"
+            ],
+            "routeId": "1508",
+            "direction": "outbound",
+            "sequence": 10,
+            "pickup": true,
+            "dropoff": true,
+            "sourcePickupDrop": "3",
+            "sourceUpdatedAt": "2025-02-14T00:00:00",
+            "occurrence": 1,
+            "occurrenceCount": 1
+          },
+          "operatorStopId": "001021",
+          "operatorSequence": 10
+        },
+        {
+          "referenceStop": {
+            "id": "path:1508:1:17",
+            "kind": "route_stop",
+            "stopId": "271",
+            "namespace": "td:stop",
+            "name": {
+              "en": "Seymour Road, Robinson Road",
+              "zhHant": "西摩道, 羅便臣道"
+            },
+            "latitude": 22.28056,
+            "longitude": 114.15057,
+            "distanceM": null,
+            "operators": [
+              "CTB"
+            ],
+            "routeId": "1508",
+            "direction": "outbound",
+            "sequence": 17,
+            "pickup": true,
+            "dropoff": true,
+            "sourcePickupDrop": "3",
+            "sourceUpdatedAt": "2025-02-14T00:00:00",
+            "occurrence": 1,
+            "occurrenceCount": 1
+          },
+          "operatorStopId": "001148",
+          "operatorSequence": 17
+        }
+      ],
+      "alightingAlternativeCount": 2
+    }
+  ],
+  "httpCoverage": {
+    "candidate": 8,
+    "eligible": 8,
+    "eligibilityUnknown": 0,
+    "acceptedArrivalChecks": 8,
+    "checked": 8,
+    "failed": 0,
+    "unchecked": 0,
+    "uncheckedReasons": {},
+    "sourceRequests": 26,
+    "requestLimit": 64,
+    "deadlineSeconds": 45,
+    "referenceIndexStale": false,
+    "complete": true,
+    "eligibilityMeaning": "Verified current operator boarding/alighting occurrence; service calendars remain unknown."
+  },
+  "mcpCoverage": {
+    "candidate": 8,
+    "eligible": 8,
+    "eligibilityUnknown": 0,
+    "acceptedArrivalChecks": 8,
+    "checked": 8,
+    "failed": 0,
+    "unchecked": 0,
+    "uncheckedReasons": {},
+    "sourceRequests": 26,
+    "requestLimit": 64,
+    "deadlineSeconds": 45,
+    "referenceIndexStale": false,
+    "complete": true,
+    "eligibilityMeaning": "Verified current operator boarding/alighting occurrence; service calendars remain unknown."
+  },
+  "departureComparison": {
+    "scope": "earliest_reported_departure_among_checked_candidates",
+    "earliestPredictedAt": "2026-11-05T22:24:25+08:00",
+    "allReferenceCandidatesChecked": true,
+    "globallyEarliest": false,
+    "serviceCalendarsVerified": false,
+    "walkingFeasibilityVerified": false,
+    "fastestArrivalVerified": false
+  },
+  "verifiedRoute12": true
+}

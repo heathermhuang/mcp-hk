@@ -1,0 +1,28 @@
+{
+  "sourceRegistryIds": [
+    "addresses",
+    "restaurants",
+    "population",
+    "catalogue",
+    "transport",
+    "seehouse",
+    "platehk",
+    "racing"
+  ],
+  "acceptedPacksReady": true,
+  "checks": [
+    {
+      "resourceId": "02aa721718d7dae1098ec3aa4688e9ef",
+      "legacySourceTotal": 200,
+      "nearbyMatchingSourceTotal": 3,
+      "providerRequests": 0
+    },
+    {
+      "resourceId": "f16c9373b666f84412e61839dfb220b8",
+      "legacySourceTotal": 3496,
+      "nearbyMatchingSourceTotal": 24,
+      "providerRequests": 0
+    }
+  ],
+  "scope": "actual fresh restored checkpoint, old and new query interfaces, no provider requests"
+}
