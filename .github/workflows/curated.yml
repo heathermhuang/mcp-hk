@@ -5,7 +5,9 @@ on:
     branches: [main]
 jobs:
   postgres-contracts:
-    runs-on: ubuntu-latest
+    # Match pg_dump/pg_restore to the PostgreSQL 16 service. Ubuntu 26's newer
+    # client emits transaction_timeout, which PostgreSQL 16 cannot restore.
+    runs-on: ubuntu-24.04
     services:
       postgres:
         image: postgres:16-alpine
@@ -21,6 +23,11 @@ jobs:
       CURATED_REQUIRE_DB: '1'
     steps:
       - uses: actions/checkout@v4
+      - name: Select PostgreSQL 16 backup and restore tools
+        run: |
+          echo '/usr/lib/postgresql/16/bin' >> "$GITHUB_PATH"
+          /usr/lib/postgresql/16/bin/pg_dump --version
+          /usr/lib/postgresql/16/bin/pg_restore --version
       - uses: actions/setup-python@v4
         with:
           python-version: '3.12'

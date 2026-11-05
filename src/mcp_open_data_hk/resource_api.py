@@ -29,6 +29,7 @@ class TypedEquality(BaseModel):
 
 
 class ResourceQuery(ResourceSchemaQuery):
+    contains: dict[str, str] = Field(default_factory=dict, max_length=10)
     typedFilters: list[TypedEquality] = Field(default_factory=list, max_length=10)
     presentation: bool = False
 
@@ -120,7 +121,7 @@ def register_http(app, resources):
 
     @app.post("/api/v1/resources/{resourceId}/query")
     async def query(resourceId: str, query: ResourceQuery):
-        """Read-only scalar equality filters and field selection. Source values keep their original types."""
+        """Read-only scalar equality and case-insensitive partial-text filters. Source values retain their original types."""
         return await resources.query(resourceId, **query.arguments())
 
     @app.get("/api/v1/resources/{resourceId}/records")
@@ -210,11 +211,13 @@ def register_mcp(server, current):
         parameters: dict[str, str] | None = None,
         typedFilters: list[TypedEquality] | None = None,
         presentation: bool = False,
+        contains: dict[str, str] | None = None,
     ) -> dict:
-        """Query actual resource records with bounded pages (1..100). For transport arrivals, provide parameters from hk_resource_schema; responses have 10/20-second caches, checked provider timestamps, and no expired fallback. requireFresh forces an arrival-source read. Preserve scheduled/predicted flags and service advisories. Pass version for later pages. PDF is unverified text. A source read does not prove all routes/operators are covered."""
+        """Query actual records with bounded pages (1..100). filters is typed exact equality; contains maps source field names to case-insensitive partial text (AND across fields, including nested scalar paths). For transport arrivals, provide parameters from hk_resource_schema; caches are 10/20 seconds with checked provider timestamps and no expired fallback. requireFresh forces an arrival-source read. Preserve source flags/advisories. Pin version for later pages. PDF is unverified text. A source read does not prove full coverage."""
         query = ResourceQuery(
             typedFilters=typedFilters or [],
             presentation=presentation,
+            contains=contains or {},
             filters=filters or {},
             fields=fields or [],
             limit=limit,

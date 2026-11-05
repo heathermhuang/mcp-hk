@@ -210,5 +210,17 @@
   "GET /api/v1/resources/{resourceId}/records": {
     "en": "Read a bounded records page",
     "zh-Hant": "讀取有界紀錄分頁"
+  },
+  "GET /api/v1/transport/stops": {
+    "en": "Find bus stops by name or location",
+    "zh-Hant": "按名稱或位置尋找巴士站"
+  },
+  "GET /api/v1/transport/stops/{stopId}/routes": {
+    "en": "Read directional bus routes at a stop",
+    "zh-Hant": "查看車站各方向的巴士路線"
+  },
+  "POST /api/v1/transport/journeys": {
+    "en": "Find direct bus routes and verified Citybus arrivals",
+    "zh-Hant": "尋找直達巴士路線及已核實的城巴到站預測"
   }
 }

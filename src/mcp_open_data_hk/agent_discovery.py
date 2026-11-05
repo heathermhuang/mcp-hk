@@ -150,7 +150,15 @@ Your AI client or model provider may charge separately. Request limits apply.
    resource is queryable or semantically qualified. Do not turn source failure
    into an empty dataset. Source-read time is not observation time.
 
-Use hk_data_packs for the supported packs. Plate.hk historical auction results
+Use hk_data_packs for supported packs and the shared catalogue/resource interface.
+For buses use hk_transport_stop_search for partial names or nearby coordinates,
+hk_transport_stop_routes for directional memberships, and hk_transport_journey
+for direct routes with independently verified Citybus live ETAs. Select ambiguous
+stops and inspect each arrivalStatus/error. Other transport arrival feeds use the
+resource tools; absence from a dedicated pack never establishes source absence.
+For other datasets, hk_resource_query accepts contains={sourceField: partialText}
+for case-insensitive partial matching alongside exact typed filters.
+Plate.hk historical auction results
 are not current valuations, ownership or availability. SeeHouse asking prices
 are not completed transactions. District statistics apply to the whole district.
 Do not request or expose operator credentials. Public read tools cannot modify

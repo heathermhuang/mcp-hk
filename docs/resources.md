@@ -1,5 +1,30 @@
 # Reconciled catalogue and resource queries
 
+## Partial-text search across datasets
+
+`hk_resource_query` and `POST /api/v1/resources/{resourceId}/query` accept
+`contains`, mapping exact source fields to partial strings, for example
+`{"contains":{"name_en":"lan kwai"},"limit":20}`. Matching uses Unicode NFKC
+normalization and case folding; returned source strings remain unchanged.
+Nested scalar paths are supported. Conditions are ANDed with one another and
+with typed exact `filters`. Numeric/null/object values are never coerced into
+text, unknown fields fail, and blank or excessive filters are rejected. Normal
+scan deadlines, complete matching totals, byte limits and version-pinned paging
+still apply, including disk-backed sources. Inspect each schema first; this does
+not guess field names, entity identities, units or reference periods.
+
+The shared catalogue/resource interface appears in `hk_data_packs`, alongside
+dedicated packs. Its capability is `discovery_and_resource_queries`, because a
+catalogue entry alone does not prove that a resource is queryable.
+
+Plain GTFS `.txt` tables are read as UTF-8 CSV, preserving IDs and schedule strings
+such as `25:01:00`. Recognised GTFS TXT members in a GTFS-labelled ZIP retain member
+provenance; unrecognised members remain listed as unread. Streamed plain tables
+use the same reader. Normal archive, download, row and cell limits remain in force,
+so large archives can still be capacity-limited. `transportReference.realtime=false`
+distinguishes published schedules from live predictions. Previous unsupported
+validation receipts require a new successful source read before being upgraded.
+
 `/api/v1/datasets` and the eight inherited tools remain live CKAN metadata
 interfaces for compatibility. CKAN **search is incomplete**: the observed search
 index returned 773 entries, while native `package_list` enumerated 3,830. Use the

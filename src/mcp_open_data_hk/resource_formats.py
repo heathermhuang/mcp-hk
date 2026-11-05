@@ -19,6 +19,23 @@ from .source_contracts import CSV_DATE_PREAMBLE, date_only_header
 
 MAX_ROWS = 100_000
 MAX_FIELDS = 1000
+GTFS_FILES = {
+    "agency.txt",
+    "stops.txt",
+    "routes.txt",
+    "trips.txt",
+    "stop_times.txt",
+    "calendar.txt",
+    "calendar_dates.txt",
+    "frequencies.txt",
+    "fare_attributes.txt",
+    "fare_rules.txt",
+    "shapes.txt",
+    "transfers.txt",
+    "feed_info.txt",
+    "translations.txt",
+    "attributions.txt",
+}
 
 
 def document_limits():
@@ -170,7 +187,13 @@ def parse(body, fmt, record_path="", sheet=""):
                 "PDF",
             }
             selected = [
-                m for m in members if m.filename.rsplit(".", 1)[-1].upper() in allowed
+                m
+                for m in members
+                if m.filename.rsplit(".", 1)[-1].upper() in allowed
+                or (
+                    fmt == "GTFS"
+                    and m.filename.rsplit("/", 1)[-1].lower() in GTFS_FILES
+                )
             ]
             if not selected:
                 invalid(
@@ -182,6 +205,8 @@ def parse(body, fmt, record_path="", sheet=""):
             member_info = []
             for m in selected:
                 child_format = m.filename.rsplit(".", 1)[-1].upper()
+                if child_format == "TXT" and fmt == "GTFS":
+                    child_format = "GTFS"
                 child_rows, child_schema = parse(
                     archive.read(m), child_format, record_path, sheet
                 )
@@ -209,13 +234,30 @@ def parse(body, fmt, record_path="", sheet=""):
                 datasetCompleteness="Only the listed supported archive members; binary/other members remain unqueried.",
             )
             info["queryFields"] = inspect_nested(rows)
+            if fmt == "GTFS":
+                info["transportReference"] = {
+                    "kind": "published_timetable",
+                    "realtime": False,
+                }
             return rows, info
+    source_format = fmt
+    if fmt == "GTFS":
+        try:
+            body.decode("utf-8-sig")
+        except UnicodeError:
+            invalid("GTFS tables require UTF-8 text", "UNSUPPORTED_ENCODING")
+        fmt = "CSV"
     info = {
         "format": fmt,
         "recordPath": record_path or None,
         "sheet": sheet or None,
         "normalization": "Source values retained; no inferred units or reference periods.",
     }
+    if source_format == "GTFS":
+        info.update(
+            sourceFormat="GTFS",
+            transportReference={"kind": "published_timetable", "realtime": False},
+        )
     if fmt == "CSV":
         decoded, encoding = text(body)
         info["encoding"] = encoding

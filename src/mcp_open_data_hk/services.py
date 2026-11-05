@@ -74,6 +74,9 @@ class Service:
         self.plates = PlateHK(self)
         self.properties = SeeHouse(self)
         self.resources = Resources(store)
+        from .transport_search import TransportSearch
+
+        self.transport = TransportSearch(self)
         from .racing_service import Racing
 
         self.racing = Racing(store)
@@ -288,7 +291,7 @@ class Service:
                     "catalogueId": "mcp:" + pack["id"],
                     "sourceUrl": SOURCES[pack["id"]]["sourceUrl"],
                     "attribution": SOURCES[pack["id"]]["attribution"],
-                    "capability": "queryable",
+                    "capability": pack.get("capability", "queryable"),
                 }
                 for pack in available_packs()
             ]
@@ -438,6 +441,21 @@ class Service:
                         "locatedCount": sum(r["latitude"] is not None for r in rows),
                         "totalCount": len(rows),
                     }
+            if pack == "transport" and sid:
+                item["refreshMode"] = "on_demand_daily"
+                item["indexCoverage"] = {
+                    "busStops": sum(r["kind"] == "stop" for r in rows),
+                    "routeRecords": sum(r["kind"] == "route" for r in rows),
+                    "directionalPaths": len(
+                        {
+                            (r["routeId"], r["direction"])
+                            for r in rows
+                            if r["kind"] == "route_stop"
+                        }
+                    ),
+                    "joinedArrivalOperators": ["Citybus"],
+                    "currentServiceVerified": False,
+                }
             sources.append(item)
         return {
             "sources": sources,

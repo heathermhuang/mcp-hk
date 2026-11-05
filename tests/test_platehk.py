@@ -47,7 +47,7 @@ async def test_http_mcp_parity_and_independent_discovery(service, monkeypatch):
     with TestClient(app) as http:
         rest = http.get("/api/v1/plates/search?q=AA88&pageSize=2").json()
         packs = http.get("/api/v1/packs").json()["items"]
-        assert len(packs) == 6 and [
+        assert len(packs) == 8 and [
             p["id"] for p in packs if p["providerType"] == "independent"
         ] == ["platehk", "seehouse", "racing"]
         coverage = http.get("/api/v1/plates/datasets").json()
@@ -58,7 +58,7 @@ async def test_http_mcp_parity_and_independent_discovery(service, monkeypatch):
         assert compared["data"]["statistics"]["median"] == 50000
     async with Client(app.state.mcp) as client:
         tools = {t.name: t for t in await client.list_tools()}
-        assert len(tools) == 36
+        assert len(tools) == 39
         assert tools["hk_sfc_status"].annotations.readOnlyHint
 
         assert tools["hk_plate_search"].annotations.readOnlyHint
@@ -66,7 +66,7 @@ async def test_http_mcp_parity_and_independent_discovery(service, monkeypatch):
             await client.call_tool("hk_plate_search", {"q": "AA88", "pageSize": 2})
         ).data
         assert result["data"] == rest["data"]
-        assert len((await client.call_tool("hk_data_packs", {})).data["items"]) == 6
+        assert len((await client.call_tool("hk_data_packs", {})).data["items"]) == 8
         assert (await client.call_tool("hk_plate_datasets", {})).data[
             "data"
         ] == coverage["data"]
