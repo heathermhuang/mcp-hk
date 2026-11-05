@@ -66,7 +66,12 @@ async def test_actual_page_counts_require_terminal_page_and_boundary_validation(
             broken == "last_changed" and calls.count(1000) == 2
         ):
             value["result"]["records"][0]["fixtureChanged"] = True
-        return value, json.dumps(value).encode(), {}, url
+        return (
+            value,
+            json.dumps(value).encode(),
+            {"etag": "page-only", "last-modified": "page-date"},
+            url,
+        )
 
     monkeypatch.setattr("mcp_open_data_hk.resources.read_json", read)
     if broken:

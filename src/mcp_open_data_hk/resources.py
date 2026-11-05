@@ -215,6 +215,7 @@ async def hkma_records(url):
         return batch, signature, headers, final
 
     first, last, terminal = None, None, None
+    first_headers, first_source = None, None
     while True:
         offset = len(records)
         batch, signature, headers, final = await page(offset)
@@ -223,6 +224,7 @@ async def hkma_records(url):
         page_hashes.add(signature)
         if first is None:
             first = signature
+            first_headers, first_source = headers, final
         page_counts.append(len(batch))
         if not batch:
             terminal = offset
@@ -244,10 +246,16 @@ async def hkma_records(url):
             raise DomainError(
                 "SOURCE_CHANGED", "HKMA boundary page changed during reading", 409
             )
+    # Validators from one response cannot validate the compiled live view.
+    composite_headers = {"content-type": "application/json"}
+    if first_headers.get("_mcp_source_transport"):
+        composite_headers["_mcp_source_transport"] = first_headers[
+            "_mcp_source_transport"
+        ]
     return (
         json.dumps(records, ensure_ascii=False).encode(),
-        headers,
-        final,
+        composite_headers,
+        first_source,
         {
             "apiFamily": "HKMA",
             "hkmaPaginationContract": HKMA_PAGING_CONTRACT,
@@ -260,6 +268,9 @@ async def hkma_records(url):
                 "terminalOffset": terminal,
                 "terminalRows": 0,
                 "boundaryPagesRevalidated": True,
+                "boundaryOffsets": sorted(
+                    dict([(0, first)] + ([last] if last else []))
+                ),
                 "independentGlobalTotal": None,
                 "providerRequests": requests,
             },
