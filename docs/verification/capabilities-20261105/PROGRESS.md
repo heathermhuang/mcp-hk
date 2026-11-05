@@ -145,3 +145,15 @@ remote. Automatic re-review accepted one direct diagnostic request using that in
 configuration; it succeeded with source-review-11, no maintenance lease and no seed
 lease. No credential was printed, copied, rotated or introduced. The initial file-source
 question is superseded by verified current-release configuration, not inferred consent.
+
+The one metadata-only coverage pass enumerated 5,048 unique current native entries
+across 51 pages in 4.25 s; every entry has explicit capabilities or unknown/held
+semantics, with zero provider requests and no new per-dataset tools. Final metadata
+lookup samples measured resource p95 3.55 ms (64 samples) and single-dataset p95
+29.51 ms (62 samples), with a 148.37 ms maximum dataset lookup. These are local
+isolated-copy results; production CPU/latency remains a release check.
+
+Final focused regression set: 124 passed, including transport scalar identity guards
+which reject boolean stop sequences, unknown ETA directions and an explicit wrong
+operator. These malformed feeds cannot be reinterpreted as an empty directional feed.
+The full exact-head Python/Worker/format/lint/type hook and final integration CI follow.

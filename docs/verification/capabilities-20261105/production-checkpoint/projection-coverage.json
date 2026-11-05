@@ -1,0 +1,11 @@
+{
+  "scope": "one bounded metadata-only pass over the current accepted checkpoint copy; not provider or semantic acceptance",
+  "generation": "e10744696ea04c6fad6e96d13c0199d4",
+  "nativeEntries": 5048,
+  "uniqueEntries": 5048,
+  "allHaveExplicitCapabilityOrUnknownState": true,
+  "pages": 51,
+  "seconds": 4.245,
+  "providerRequests": 0,
+  "newPerDatasetTools": 0
+}
