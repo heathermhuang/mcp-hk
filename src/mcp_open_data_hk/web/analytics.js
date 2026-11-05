@@ -1,4 +1,4 @@
-/* Basic consent: no Google request, cookie or ping before an affirmative choice. */
+/* Public analytics starts automatically; explicit opt-outs remain effective. */
 (() => {
   const key = 'mhk-analytics-choice', maxAge = 180 * 86400000;
   const production = location.hostname === 'mcp.hk' && location.protocol === 'https:';
@@ -16,7 +16,7 @@
     title.textContent=t('analyticsChoiceTitle'); copy.textContent=t('analyticsChoiceCopy'); privacy.textContent=t('privacyTitle');
     reject.textContent=t('analyticsReject'); accept.textContent=t('analyticsAllow'); close.textContent=t('close');
     accept.disabled=!id || !production || respectsOptOut();
-    status.textContent=t(respectsOptOut() ? 'analyticsOptOut' : !id || !production ? 'analyticsNotConfigured' : choice?.allowed ? 'analyticsEnabled' : 'analyticsDisabled');
+    status.textContent=t(respectsOptOut() ? 'analyticsOptOut' : !id || !production ? 'analyticsNotConfigured' : choice?.allowed !== false ? 'analyticsEnabled' : 'analyticsDisabled');
   }
   function removeCookies() {
     for (const part of document.cookie.split(';')) {
@@ -26,7 +26,7 @@
     }
   }
   function start() {
-    if (loaded || !production || !id || !choice?.allowed || respectsOptOut()) return;
+    if (loaded || !production || !id || choice?.allowed === false || respectsOptOut()) return;
     loaded=true; window['ga-disable-'+id]=false; window.dataLayer=window.dataLayer || [];
     window.gtag=function(){window.dataLayer.push(arguments);};
     window.gtag('consent','default',denied);
@@ -39,7 +39,7 @@
     const script=document.createElement('script'); script.async=true; script.src='https://www.googletagmanager.com/gtag/js?id='+id; document.head.append(script);
   }
   function pageView() {
-    if (!loaded || !choice?.allowed || respectsOptOut() || lastPath === location.pathname) return;
+    if (!loaded || choice?.allowed === false || respectsOptOut() || lastPath === location.pathname) return;
     lastPath=location.pathname;
     window.gtag('event','page_view',{send_to:id,page_location:location.origin+location.pathname,page_referrer:'',page_title:'mcp.hk'});
   }
@@ -60,13 +60,6 @@
     id=/^G-[A-Z0-9]{4,20}$/.test(config.googleAnalyticsId || '') ? config.googleAnalyticsId : '';
     render();
     if (respectsOptOut()) { if(id)window['ga-disable-'+id]=true;removeCookies();return; }
-    if (choice?.allowed) start(); else if (id && !choice && !dialog.open) {
-      const previousFocus=document.activeElement;
-      // The initial body is not normally focusable, unlike an active search input.
-      const temporaryBodyFocus=previousFocus===document.body&&!previousFocus.hasAttribute('tabindex');
-      if(temporaryBodyFocus)previousFocus.setAttribute('tabindex','-1');
-      try { dialog.show(); previousFocus?.focus?.({preventScroll:true}); }
-      finally { if(temporaryBodyFocus)previousFocus.removeAttribute('tabindex'); }
-    }
+    if (choice?.allowed !== false) start();
   }).catch(()=>{/* Optional analytics never prevents use of the service. */});
 })();

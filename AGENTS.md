@@ -23,3 +23,7 @@
   qualification and upstream availability; never turn source failures into empty data.
 - Offload blocking SQLite work from async reader/review paths, including cache LRU
   touches and failure writes. Preserve the real-lock event-loop regression tests.
+
+- Public website analytics starts automatically without an opt-in prompt. Preserve
+  explicit opt-outs, DNT/GPC, production-host isolation and query/data redaction.
+  A first visit must collect without creating a fabricated consent record.

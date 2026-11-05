@@ -107,3 +107,11 @@ References: [Google consent implementation](https://developers.google.com/tag-pl
 [GA4 configuration](https://developers.google.com/analytics/devguides/collection/ga4/reference/config),
 [Cloudflare Durable Object SQL](https://developers.cloudflare.com/durable-objects/api/sqlite-storage-api/),
 [PCPD policy guidance](https://www.pcpd.org.hk/misc/dpoc/files/pics_and_pps.pdf).
+
+## Automatic website analytics — 5 November 2026
+
+The production browser starts GA4 on a fresh public visit without an opt-in
+prompt or a stored affirmative choice. Existing explicit refusals and DNT/GPC
+remain effective. Settings open only on request. Page paths exclude queries and
+fragments; API arguments and records never enter GA4. API usage accounting
+continues independently. No historic traffic is reconstructed.
