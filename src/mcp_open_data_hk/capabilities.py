@@ -6,6 +6,7 @@ No source requests, semantic inference, status writes or second receipt cache.
 import json
 import zlib
 from urllib.parse import urlsplit
+from .spatial_profiles import accepted_binding, profile_for, dataset_kind
 
 REVISION = "resource-capabilities-1"
 OPERATIONS = ("records", "text_search", "typed_comparison", "nearby")
@@ -53,10 +54,18 @@ def project(resource, check=None, receipts=(), schema=None):
     status = check.get("status") or "pending"
     access = family(resource)
     accepted = []
+    spatial_binding = accepted_binding(resource, schema) if schema else None
     for receipt in receipts:
         if not receipt.get("schema_json") or not receipt.get("schema_hash"):
             continue
         observed = unpack(receipt["schema_json"])
+        scoped_binding = accepted_binding(resource, observed)
+        if (
+            spatial_binding is None
+            and scoped_binding
+            and receipt.get("status") == "queryable"
+        ):
+            spatial_binding = scoped_binding
         accepted.append(
             {
                 "receiptKey": receipt.get("key"),
@@ -74,6 +83,7 @@ def project(resource, check=None, receipts=(), schema=None):
                 "readerRevision": observed.get("readerContract"),
                 "sourceContract": observed.get("sourceContract"),
                 "sourceResponseComplete": observed.get("sourceResponseComplete"),
+                "semanticBinding": scoped_binding,
             }
         )
     if status in {"restricted", "unavailable", "schema_drift", "stale"}:
@@ -102,6 +112,11 @@ def project(resource, check=None, receipts=(), schema=None):
         ),
         "nearby": operation("requires_binding", "no_qualified_point_binding"),
     }
+    if spatial_binding:
+        operations["nearby"] = operation(
+            state if spatial_binding.get("state") == "available" else "held",
+            spatial_binding.get("reason") or "accepted_reviewed_point_binding",
+        )
     fields = []
     if schema is not None:
         for field in schema.get("fields", []) + schema.get("queryFields", []):
@@ -129,8 +144,8 @@ def project(resource, check=None, receipts=(), schema=None):
         "operations": operations,
         "acceptedSelections": accepted,
         "fields": fields,
-        "semanticBinding": None,
-        "entityKind": None,
+        "semanticBinding": spatial_binding,
+        "entityKind": (profile_for(resource) or {}).get("entityKind"),
         "access": {
             "status": status,
             "reason": check.get("reason"),
@@ -145,7 +160,7 @@ def project(resource, check=None, receipts=(), schema=None):
     }
 
 
-def summary(counts):
+def summary(counts, dataset_id=None):
     return {
         "revision": REVISION,
         "records": operation(
@@ -157,5 +172,5 @@ def summary(counts):
             ),
         ),
         "semanticBinding": None,
-        "entityKind": None,
+        "entityKind": dataset_kind(dataset_id),
     }

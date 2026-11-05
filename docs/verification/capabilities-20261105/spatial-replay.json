@@ -1,0 +1,55 @@
+{
+  "scope": "local_candidate_official_file_replay_not_deployed_source_path",
+  "cohort": [
+    {
+      "entityKind": "clinic",
+      "resourceId": "02aa721718d7dae1098ec3aa4688e9ef",
+      "version": "ccd1dfc2f77453cf51fb475d339454f0610fb297fb75ac6fb8d685158b74b43b",
+      "profileFingerprint": "d716d17e076adb0b4ee07a65c5ad00ea528ef66e0d4e03fb7b3d7f980b16ad26",
+      "coldSchemaMs": 59.56,
+      "warmNearbyMs": 13.31,
+      "matchingSourceRows": 3,
+      "coverage": {
+        "sourceRows": 200,
+        "validCoordinates": 200,
+        "missingCoordinates": 0,
+        "invalidCoordinates": 0,
+        "missingSourceIdentifiers": 0,
+        "invalidSourceIdentifiers": 0,
+        "geometryPropertyDisagreementsOver5M": 33,
+        "distinctSourceIdentifiers": 200,
+        "duplicateSourceIdentifierRows": 0,
+        "scope": "source_records_not_unique_facilities"
+      },
+      "httpMcpParity": true,
+      "nativeFieldKindsPreserved": true,
+      "uniqueFacilityCount": null
+    },
+    {
+      "entityKind": "school",
+      "resourceId": "f16c9373b666f84412e61839dfb220b8",
+      "version": "231d5d215cedd98b033b2bf04a0a49c1741588b6d0a36aa27e160db67ff20b16",
+      "profileFingerprint": "3263fce4baca106524b171f54228a7a425ea6e41232178ced42020ac063df2f9",
+      "coldSchemaMs": 176.51,
+      "warmNearbyMs": 41.29,
+      "matchingSourceRows": 24,
+      "coverage": {
+        "sourceRows": 3496,
+        "validCoordinates": 3496,
+        "missingCoordinates": 0,
+        "invalidCoordinates": 0,
+        "missingSourceIdentifiers": 0,
+        "invalidSourceIdentifiers": 0,
+        "geometryPropertyDisagreementsOver5M": 0,
+        "distinctSourceIdentifiers": 3481,
+        "duplicateSourceIdentifierRows": 15,
+        "scope": "source_records_not_unique_facilities"
+      },
+      "httpMcpParity": true,
+      "nativeFieldKindsPreserved": true,
+      "uniqueFacilityCount": null
+    }
+  ],
+  "noModelCalls": true,
+  "noCatalogueReimport": true
+}

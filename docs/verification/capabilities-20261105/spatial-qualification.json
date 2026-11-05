@@ -1,0 +1,46 @@
+{
+  "checkedDate": "2026-11-05",
+  "scope": "source-field/coordinate/grain qualification; not service availability or production new-code proof",
+  "schools": {
+    "csvRows": 3496,
+    "sourceSha256": "20ab87814ed55a8931c3ee5b95bbf08acb7e7025ecf4141498de5ee0759d8455",
+    "sourceBytes": 1909575,
+    "distinctSourceSchoolNumbers": 3481,
+    "exactDuplicateRows": 15,
+    "englishChineseCoordinateMismatches": 0,
+    "officialNearestApiSamples": 20,
+    "exactCoordinateMatches": 19,
+    "changedCoordinates": 0,
+    "missingCurrentCsvIdentity": 1,
+    "coordinateInference": "WGS84 decimal field convention supported by the official dataset-linked WGS84 API and exact returned coordinate matches; resource-page DMS text conflicts with numeric data. API subsets are not current CSV completeness evidence."
+  },
+  "clinics": {
+    "features": 200,
+    "total": 200,
+    "version": "ccd1dfc2f77453cf51fb475d339454f0610fb297fb75ac6fb8d685158b74b43b",
+    "sourceContentHash": "ccd1dfc2f77453cf51fb475d339454f0610fb297fb75ac6fb8d685158b74b43b",
+    "distinctObjectIds": 200,
+    "duplicateObjectIds": 0,
+    "maxGeometryPropertyDistanceM": 53.90832071321701,
+    "datasetLabels": [
+      "Clinics / Health Centres under the Department of Health"
+    ],
+    "sourceContext": {
+      "type": "FeatureCollection",
+      "name": "CLINIC_HEALTH",
+      "features": {
+        "sourceArrayLength": 200
+      }
+    },
+    "geometryCrsEvidence": "CSDI portal notice 5 December 2025, effective 8 December 2025: GeoJSON WGS84 lon/lat decimal degrees. Underlying metadata EPSG:2326 is not the export CRS.",
+    "sourceBytes": 289205,
+    "independentSourceByteSha256": "ccd1dfc2f77453cf51fb475d339454f0610fb297fb75ac6fb8d685158b74b43b",
+    "geometryPropertyDisagreementsOver5M": 33
+  },
+  "sourceReferences": [
+    "https://www.edb.gov.hk/attachment/en/student-parents/sch-info/datagovhk/DataSpec_School_Location_and_Information_en.pdf",
+    "https://data.gov.hk/en/help/api-spec",
+    "https://portal.csdi.gov.hk/csdi-webpage/info/WhatsNew",
+    "https://portal.csdi.gov.hk/geoportal/rest/metadata/item/dh_rcd_1629267205213_98466/html"
+  ]
+}

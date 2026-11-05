@@ -407,8 +407,8 @@ profile reports no profile rather than inventing zero missing values.
 
 ## Receipt-backed capability discovery
 
-Catalogue search accepts `capability=records|requires_selection|unqualified` and
-`entityKind=unqualified` (omit either for all entries). `records` selects datasets
+Catalogue search accepts `capability=records|nearby|requires_selection|unqualified` and
+`entityKind=school|clinic|unqualified` (omit either for all entries). `records` selects datasets
 with an accepted resource selection; it does not qualify all representations,
 periods or semantic questions. Entity kinds remain unknown until a reviewed binding
 exists. Search matches bilingual titles, descriptions, providers and keywords;
@@ -481,3 +481,41 @@ explicitly the earliest reported departure among checked candidates, with comple
 reference coverage reported separately. It guarantees neither walking feasibility,
 current service calendars nor fastest arrival. Ten alighting alternatives are shown
 with the complete alternative count; this limit never reduces the search.
+
+## Reviewed point queries
+
+`hk_resource_query` and its HTTP POST accept `nearby: {lat,lon,radiusM}` only for
+a source with an accepted reviewed point binding. Radius is 1..2,000 metres; the
+first 1,000 ordered matches are addressable and later pages require `version`.
+Nearby results order by straight-line great-circle distance, including the radius
+boundary, with source ordinal ties; omit `orderBy`. Equality, contains and qualified
+predicates can be combined. Original records and field projection stay in `data.items`;
+`meta.nearby.matches` supplies aligned `{sourceOrdinal,distanceM}` entries. Ordinals
+identify rows only within that accepted version. Coordinates and query filters are
+not persisted in profiles or an onboarding log.
+
+Two independent profiles currently cover the exact EDB school CSV and DH clinic
+GeoJSON resource IDs. Profile fingerprints join existing schema receipts, and an
+identity/selection/schema/context/CRS/revision mismatch holds nearby without erasing
+raw record access. Source failures hold nearby instead of becoming an empty result.
+Profiles compile off the event loop during ordinary accepted source reads and reuse
+existing variants, review queues and checkpoints; there is no new index or scheduler.
+Catalogue capability/entity filters and bilingual reviewed aliases discover these
+representations without promoting school-net polygons or scheme participants.
+
+Coverage reports valid/missing/invalid coordinates and source identifiers. Excluded
+rows might lie inside the radius; matching totals describe locatable source rows.
+No unique-facility count is returned. School numbers are strings and are not unique:
+the first cohort has 3,496 rows, 3,481 numbers and 15 exact duplicate rows. The EDB
+field convention is an explicit WGS84 inference from its documented linked API and
+19 exact coordinate matches, despite conflicting DMS text on the resource page.
+The dictionary supplies school/session/level meanings; no DMS conversion is guessed.
+
+DH's 200 exported features use CSDI's documented WGS84 longitude/latitude GeoJSON
+policy. Underlying EPSG:2326 metadata is preserved and is not applied to the export.
+Geometry determines distance; 33 feature coordinate attributes differ by over 5 m
+(up to 54 m) and remain unchanged. OBJECTID is scoped to the source feature/version,
+not a canonical physical facility. Opening hours, accepting patients, school places,
+walking routes and service availability are not inferred. Observation age remains
+separate from source validation. See the first-cohort receipts in
+`docs/verification/capabilities-20261105/`.

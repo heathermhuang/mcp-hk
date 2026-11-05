@@ -69,3 +69,34 @@ Local isolated-copy sizing: 60 warm resource projections, p50 6.71 ms/p95 17.11 
 max 32.99 ms; initialization/index installation 0.76 s. Four before/after lexical
 queries are retained under local-checkpoint/. No FTS index is justified by these
 measurements. Production performance and fresh accepted recovery remain pending.
+
+P3 source/replay qualification completed for two independently reviewed overlays.
+The original 289,205-byte DH export hash matches the version-pinned 200-feature
+public gateway response exactly. CSDI's current GeoJSON policy establishes WGS84,
+while underlying metadata retains EPSG:2326. Geometry, not inconsistent property
+coordinates, drives distance: 33 differences exceed 5 m; maximum 53.91 m.
+
+EDB's dictionary and its documented dataset-linked WGS84 nearest API support the
+explicit decimal-coordinate inference. Two bounded API samples yielded 19 exact
+coordinate matches and one identity absent from the current CSV. This is convention
+evidence, not equivalent API/CSV coverage. Full CSV checks found 3,496 valid coordinate
+rows, 3,481 source IDs, 15 exact duplicates, no missing/invalid IDs and matching
+bilingual coordinates. Neither profile claims unique physical facilities or service
+availability.
+
+Actual local HTTP and native FastMCP clients agree over both original source-file
+replays. Cold schema/qualification: DH 59.56 ms, EDB 176.51 ms; warm nearby queries:
+13.31/41.29 ms. These include source parsing/query work and are not the warmed
+single-resource metadata lookup target. This remains local replay, not new-code
+production source-path proof. A built wheel contained both profile JSON files.
+
+14 spatial regressions pass, including exact source identity, bilingual filters,
+original types, duplicate/missing IDs, malformed coordinates, totals-before-limit,
+version-pinned pages, explicit wrong CRS, profile/context drift, source failure holds
+and HTTP/MCP discovery parity. Full compatibility subset: 78 tests passed before
+final documentation. Full exact-head checks and CI remain gates.
+
+DEBUG REPORT: the real replay initially found HTTP 400 on capability=nearby.
+Root cause: the transport enum omitted the new value while the store supported it.
+Fix: one shared HTTP/MCP capability alias and an explicit parity regression.
+Evidence: the same replay and 14 spatial tests now pass. Status: DONE.

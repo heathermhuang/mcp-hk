@@ -103,6 +103,7 @@ def semantic_quality(schema):
             "selected_observation_contract" if qualified else "not_performed"
         ),
         "qualification": qualified,
+        "spatialQualification": schema.get("semanticBinding"),
         "completeness": (
             {
                 "rowCount": schema["profileRowCount"],

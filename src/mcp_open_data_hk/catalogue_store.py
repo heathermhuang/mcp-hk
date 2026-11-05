@@ -8,6 +8,7 @@ import zlib
 
 from .contracts import DomainError
 from . import capabilities, resource_selections
+from .spatial_profiles import profiles
 from . import transport, connected
 from .quality import REVISION as REVIEW_REVISION, freshness
 from .review_config import capacity
@@ -236,7 +237,7 @@ class CatalogueStore:
                     (self.head(), dataset_id),
                 ).fetchall()
             )
-        result["capabilities"] = capabilities.summary(counts)
+        result["capabilities"] = self.dataset_capabilities(dataset_id, counts)
         return result
 
     def search(
@@ -264,8 +265,9 @@ class CatalogueStore:
                 "unclassified",
             }
             or order not in {"relevance", "title"}
-            or capability not in {"all", "records", "requires_selection", "unqualified"}
-            or entity_kind not in {"all", "unqualified"}
+            or capability
+            not in {"all", "records", "nearby", "requires_selection", "unqualified"}
+            or entity_kind not in {"all", "school", "clinic", "unqualified"}
         ):
             raise DomainError("INVALID_QUERY", "Invalid search or pagination", 400)
         self.refresh_transport_policies()
@@ -295,15 +297,62 @@ class CatalogueStore:
                 "keywords",
             )
         )
-        where = "generation=?" + (
-            " AND lower(" + lexical + ") LIKE ? ESCAPE '\\'"
-        ) * len(patterns)
-        args = (generation, *patterns)
+        where, args = "generation=?", (generation,)
+        alias_ids = []
+        for profile in profiles():
+            aliases = connected.normalise(" ".join(profile.get("aliases", [])))
+            if q.strip() and all(term in aliases for term in terms):
+                alias_ids.append(profile["datasetId"])
+        for term, pattern in zip(terms, patterns):
+            matching_aliases = [
+                p["datasetId"]
+                for p in profiles()
+                if term and term in connected.normalise(" ".join(p.get("aliases", [])))
+            ]
+            expression = "lower(" + lexical + ") LIKE ? ESCAPE '\\'"
+            args += (pattern,)
+            if matching_aliases:
+                expression += (
+                    " OR id IN (" + ",".join("?" for _ in matching_aliases) + ")"
+                )
+                args += tuple(matching_aliases)
+            where += " AND (" + expression + ")"
+        alias_rank = (
+            " WHEN id IN (" + ",".join("?" for _ in alias_ids) + ") THEN 1"
+            if alias_ids
+            else ""
+        )
         if provider != "all":
             where += (
                 " AND COALESCE(json_extract(payload,'$.providerType'),'unclassified')=?"
             )
             args += (provider,)
+        if entity_kind != "all":
+            known = [
+                p["datasetId"]
+                for p in profiles()
+                if entity_kind == "unqualified" or p["entityKind"] == entity_kind
+            ]
+            marks = ",".join("?" for _ in known)
+            where += (
+                " AND id "
+                + ("NOT IN" if entity_kind == "unqualified" else "IN")
+                + " ("
+                + marks
+                + ")"
+            )
+            args += tuple(known)
+        if capability == "nearby":
+            accepted = []
+            for profile in profiles():
+                try:
+                    cap = self.capability(profile["resourceId"])
+                except DomainError:
+                    continue
+                if cap["operations"]["nearby"]["state"] == "available":
+                    accepted.append(profile["datasetId"])
+            where += " AND id IN (" + ",".join("?" for _ in accepted) + ")"
+            args += tuple(accepted)
         if capability == "records":
             where += " AND EXISTS (SELECT 1 FROM inventory_resources r JOIN resource_checks c ON c.id=r.id WHERE r.generation=inventory_datasets.generation AND r.dataset=inventory_datasets.id AND c.status='queryable' AND EXISTS (SELECT 1 FROM resource_variants v WHERE v.resource=r.id AND v.status='queryable' AND v.schema_hash IS NOT NULL))"
         elif capability == "requires_selection":
@@ -340,10 +389,13 @@ class CatalogueStore:
                     db.execute(
                         "SELECT payload FROM inventory_datasets WHERE "
                         + where
-                        + " ORDER BY CASE WHEN lower(json_extract(payload,'$.title'))=? THEN 0 WHEN json_extract(payload,'$.title') LIKE ? ESCAPE '\\' OR json_extract(payload,'$.titleZhHant') LIKE ? ESCAPE '\\' THEN 1 WHEN json_extract(payload,'$.provider') LIKE ? ESCAPE '\\' THEN 2 ELSE 3 END,id LIMIT ? OFFSET ?",
+                        + " ORDER BY CASE WHEN lower(json_extract(payload,'$.title'))=? THEN 0"
+                        + alias_rank
+                        + " WHEN json_extract(payload,'$.title') LIKE ? ESCAPE '\\' OR json_extract(payload,'$.titleZhHant') LIKE ? ESCAPE '\\' THEN 2 WHEN json_extract(payload,'$.provider') LIKE ? ESCAPE '\\' THEN 3 ELSE 4 END,id LIMIT ? OFFSET ?",
                         (
                             *args,
                             connected.normalise(q),
+                            *alias_ids,
                             patterns[0],
                             patterns[0],
                             patterns[0],
@@ -363,7 +415,7 @@ class CatalogueStore:
                         (generation, item["id"]),
                     )
                 }
-                item["capabilities"] = capabilities.summary(states)
+                item["capabilities"] = self.dataset_capabilities(item["id"], states)
                 item["entryKind"] = "source_dataset"
                 item["resourceSummary"] = {
                     "total": sum(states.values()),
@@ -464,6 +516,21 @@ class CatalogueStore:
             "nextOffset": offset + limit if offset + limit < total else None,
             "generation": self.head(),
         }
+
+    def dataset_capabilities(self, dataset_id, counts):
+        result = capabilities.summary(counts, dataset_id)
+        for profile in profiles():
+            if profile["datasetId"] != dataset_id:
+                continue
+            try:
+                result["nearby"] = self.capability(profile["resourceId"])["operations"][
+                    "nearby"
+                ]
+            except DomainError:
+                result["nearby"] = capabilities.operation(
+                    "held", "reviewed_representation_absent"
+                )
+        return result
 
     def capability(self, resource_id):
         resource = self.resource(resource_id)
