@@ -61,3 +61,8 @@ test('the asynchronous passive notice preserves an already focused search contro
 test('playground intent and identities never enter analytics, before or after consent',async()=>{
  const b=await browser({url:'https://mcp.hk/playground?lang=en#p=private-address-record-identifier'});assert.ok(b.context.dataLayer);assert.equal(b.saved(),null);const commands=b.context.dataLayer.map(args=>Array.from(args));assert.doesNotMatch(JSON.stringify(commands),/private-address|record-identifier|lang=en|#p=/);const event=commands.find(args=>args[0]==='event');assert.equal(event[2].page_location,'https://mcp.hk/playground');
 });
+
+test('expired explicit opt-outs remain off after the automatic default change',async()=>{
+ const b=await browser({stored:JSON.stringify({version:1,allowed:false,at:Date.now()-181*86400000})});
+ assert.equal(b.head.children.length,0);assert.equal(b.dialog.open,false);
+});

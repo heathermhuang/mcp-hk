@@ -5,7 +5,7 @@
   let id = '', loaded = false, choice = null, lastPath = null;
   const denied = {analytics_storage:'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied'};
   const respectsOptOut = () => navigator.globalPrivacyControl === true || navigator.doNotTrack === '1';
-  try { const stored = JSON.parse(localStorage.getItem(key)); if (stored?.version === 1 && typeof stored.allowed === 'boolean' && Date.now()-stored.at >= 0 && Date.now()-stored.at < maxAge) choice = stored; } catch { /* Storage is optional. */ }
+  try { const stored = JSON.parse(localStorage.getItem(key)); if (stored?.version === 1 && typeof stored.allowed === 'boolean' && (stored.allowed === false || Date.now()-stored.at >= 0 && Date.now()-stored.at < maxAge)) choice = stored; } catch { /* Storage is optional. */ }
   const t = name => window.MhkI18n?.t(name) || name;
   const dialog = document.createElement('dialog'); dialog.id = 'mhk-privacy-choice'; dialog.setAttribute('aria-labelledby','mhk-consent-title');
   const title = document.createElement('h2'); title.id='mhk-consent-title';
