@@ -150,6 +150,8 @@ tables, which eventually left only 52 MB of restored-database headroom. The boun
 backlog pilot restored 311,255,040 bytes of SQLite from a 106,745,164-byte archive,
 with all 36 tables' logical values and multiplicities unchanged. Compressing both
 tables was rejected because its 145 MB archive left too little transfer headroom.
+The actual hosted fast-compression setting produced a 116,289,086-byte archive of
+the same 311,255,040-byte database, leaving 33,710,914 archive bytes of headroom.
 Only the isolated backup copy changes; live rows and the 4 MB record cache remain.
 Readers retain compatibility with both older expanded and compressed metadata.
 The 150/500/750 MB limits remain unchanged. See the measured recovery receipts in

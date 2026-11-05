@@ -700,6 +700,8 @@ async def test_new_operator_variants_preserve_ids_native_eta_and_complete_compar
         assert not any(c["arrivalStatus"] == "live" for c in data["items"])
     else:
         assert data["referenceCandidateCount"] == 1
+        assert data["totalMatched"] == 1
+        assert data["expandedCandidateCount"] == 2
         assert coverage["candidate"] == coverage["checked"] == 2
         assert coverage["complete"]
         assert data["items"][0]["earliestPredictedDeparture"] == early

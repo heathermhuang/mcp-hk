@@ -67,7 +67,8 @@ missing identities, unknown service calendars and source failures remain unknown
 NLB ETA does not identify repeated boarding visits, which stay unverified. Native
 `estimatedArrivalTime`, `departed`, `noGPS`, route variants and stop flags remain raw.
 
-`referenceCandidateCount` counts TD references; `coverage.candidate` counts their
+`totalMatched` retains its original TD-reference count, also exposed as
+`referenceCandidateCount`; `expandedCandidateCount` and `coverage.candidate` count their
 expanded operator variants, including unknown references whose expansion failed.
 Namespace/service-type/route-ID boundaries prevent cross-operator merging. The
 same 64 lookups, 45-second comparison, daily budget, freshness and presentation

@@ -855,7 +855,8 @@ class TransportSearch:
             cached,
             {
                 "items": presented[: query.limit],
-                "totalMatched": len(candidates),
+                "totalMatched": reference_count,
+                "expandedCandidateCount": len(candidates),
                 "referenceCandidateCount": reference_count,
                 "candidateMeaning": "Reference routes expanded into discovered operator service/route variants where joined; failed expansion retains one unknown reference.",
                 "totalDepartureChoices": len(presented),
