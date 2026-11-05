@@ -107,16 +107,18 @@ def project(resource, check=None, receipts=(), schema=None):
         for field in schema.get("fields", []) + schema.get("queryFields", []):
             if field.get("name") in {f["name"] for f in fields}:
                 continue
-            fields.append(
-                {
-                    **field,
-                    "operators": (
-                        ["eq", "contains"]
-                        if "string" in field.get("types", [])
-                        else ["eq"]
-                    ),
-                }
-            )
+            operators = ["eq"]
+            types = set(field.get("types", [])) - {"null"}
+            if "string" in types:
+                operators.append("contains")
+            if (
+                types == {"number"}
+                or field["name"] in schema.get("nativeTemporalFields", {})
+                or field["name"] in schema.get("typedFieldBindings", {})
+            ):
+                operators += ["lt", "lte", "gt", "gte", "between", "order"]
+                operations["typed_comparison"] = operation(state, reason)
+            fields.append({**field, "operators": operators})
     return {
         "revision": REVISION,
         "resourceId": resource["id"],

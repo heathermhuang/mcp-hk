@@ -495,6 +495,24 @@ def parse(body, fmt, record_path="", sheet=""):
         invalid("Source exceeds row budget", "SOURCE_TOO_LARGE")
     if sum(len(r) for r in rows) > 2_000_000:
         invalid("Source exceeds cell budget", "SOURCE_TOO_COMPLEX")
+    temporal = {}
+    for row in rows:
+        for field, value in row.items():
+            if value is not None:
+                temporal.setdefault(field, set()).add(
+                    "date"
+                    if type(value) is date
+                    else (
+                        "datetime"
+                        if isinstance(value, datetime) and value.tzinfo is not None
+                        else "other"
+                    )
+                )
+    info["nativeTemporalFields"] = {
+        field: next(iter(kinds))
+        for field, kinds in temporal.items()
+        if len(kinds) == 1 and "other" not in kinds
+    }
     rows = safe_json(rows)
     stats = {}
     for row in rows:

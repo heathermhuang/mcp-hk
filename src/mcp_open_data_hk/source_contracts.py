@@ -55,6 +55,15 @@ def annotate(resource, rows, schema):
                 "HKO uvindex violates its object-or-empty-string contract",
                 409,
             )
+    if any(f["name"] == "updateTime" for f in schema.get("fields", [])):
+        schema["typedFieldBindings"] = {
+            "updateTime": {
+                "kind": "datetime",
+                "conversion": "iso8601_timezone_required",
+                "evidence": HKO_DICTIONARY,
+                "revision": HKO_CURRENT,
+            }
+        }
     schema["sourceContract"] = {
         "id": HKO_CURRENT,
         "dictionaryUrl": HKO_DICTIONARY,
