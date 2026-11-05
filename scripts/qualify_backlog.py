@@ -155,7 +155,10 @@ def main(args):
                 and args.read_options
                 and receipt["httpStatus"] == 200
             ):
-                if value.get("structuredQueryable"):
+                if value.get("structuredQueryable") or (
+                    value.get("recordCount") is not None
+                    and value.get("schema", {}).get("sourceResponseComplete") is True
+                ):
                     schedule("query", selection)
                     continue
                 for group in value.get("selections", []):
