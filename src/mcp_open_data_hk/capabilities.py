@@ -9,8 +9,9 @@ from urllib.parse import urlsplit
 from .resource_fields import field_catalogue
 from .source_contracts import typed_bindings
 from .spatial_profiles import accepted_binding, profile_for, dataset_kind
+from .resource_protocols import protocol
 
-REVISION = "resource-capabilities-2"
+REVISION = "resource-capabilities-3"
 OPERATIONS = ("records", "text_search", "typed_comparison", "nearby")
 READERS = {
     "CSV": "table",
@@ -41,9 +42,8 @@ def unpack(value):
 
 def family(resource):
     # An access family is a routing hint, never evidence that the URL returns it.
-    fmt = resource.get("format", "").upper()
-    if fmt in {"WMS", "WFS"}:
-        return READERS[fmt]
+    if protocol(resource):
+        return READERS[protocol(resource)]
     path = urlsplit(resource.get("url", "")).path.lower()
     if "featureserver" in path or "mapserver" in path:
         return "arcgis"

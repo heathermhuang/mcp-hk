@@ -46,32 +46,41 @@ def checkpoint(database: str, compresslevel=6) -> tuple[Path, str]:
                 closing(sqlite3.connect(raw)) as destination,
             ):
                 source.backup(destination)
-                # Shared archive compression is much smaller than independently
-                # compressed metadata rows. Change only the isolated backup copy;
-                # record-cache blobs retain their bounded cache encoding.
+                # Keep schema JSON compressed for restored-DB headroom while
+                # inventory JSON uses shared archive compression. Both encodings
+                # are already supported; only the isolated copy is transformed.
                 tables = {
                     row[0]
                     for row in destination.execute(
                         "SELECT name FROM sqlite_master WHERE type='table'"
                     )
                 }
-                expanded = False
-                for table, column in (
-                    ("inventory_resources", "payload"),
-                    ("resource_variants", "schema_json"),
+                metadata_present = False
+                for table, column, compressed in (
+                    ("inventory_resources", "payload", False),
+                    ("resource_variants", "schema_json", True),
                 ):
                     if table not in tables:
                         continue
                     rows = destination.execute(
-                        f"SELECT rowid,{column} FROM {table} WHERE typeof({column})='blob'"
+                        f"SELECT rowid,{column} FROM {table} WHERE {column} IS NOT NULL"
                     ).fetchall()
                     for rowid, payload in rows:
-                        destination.execute(
-                            f"UPDATE {table} SET {column}=? WHERE rowid=?",
-                            (zlib.decompress(payload).decode("utf-8"), rowid),
-                        )
-                    expanded = expanded or bool(rows)
-                if expanded:
+                        if isinstance(payload, bytes):
+                            # Preserve the prior corruption/UTF-8 rejection.
+                            decoded = zlib.decompress(payload).decode("utf-8")
+                            if not compressed:
+                                destination.execute(
+                                    f"UPDATE {table} SET {column}=? WHERE rowid=?",
+                                    (decoded, rowid),
+                                )
+                        elif compressed:
+                            destination.execute(
+                                f"UPDATE {table} SET {column}=? WHERE rowid=?",
+                                (zlib.compress(payload.encode("utf-8")), rowid),
+                            )
+                    metadata_present = metadata_present or bool(rows)
+                if metadata_present:
                     destination.commit()
                     destination.execute("VACUUM")
                 if destination.execute("PRAGMA quick_check").fetchone()[0] != "ok":

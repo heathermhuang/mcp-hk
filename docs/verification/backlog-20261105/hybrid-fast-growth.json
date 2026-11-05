@@ -1,0 +1,10 @@
+{
+  "scope": "Actual hosted fast-compression setting on the same fully qualified five-source checkpoint clone; unchanged recovery ceilings",
+  "compressionLevel": 1,
+  "archiveBytes": 116289086,
+  "sha256": "f672f563841dd09c70077ab354649df8a0c051adf0166ef0da6a206c0cfe743e",
+  "restoredDatabaseBytes": 311255040,
+  "archiveHeadroomBytes": 33710914,
+  "databaseHeadroomBytes": 188744960,
+  "seconds": 10.22721383300086
+}

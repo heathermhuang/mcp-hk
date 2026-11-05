@@ -1,0 +1,164 @@
+{
+  "scope": "Nine official route-1 stop details; identical bilingual pole-code suffix convention is explicitly inferred, not a source ID crosswalk or whole-network verification. Location/order/occurrence checks still execute per request.",
+  "results": [
+    {
+      "operatorStopId": "C8203D267CECF949",
+      "originalNames": {
+        "en": "CARPENTER ROAD (KC631)",
+        "zhHant": "賈炳達道 (KC631)"
+      },
+      "comparisonNames": {
+        "en": "CARPENTER ROAD",
+        "zhHant": "賈炳達道"
+      },
+      "sourceSha256": "dc07511fc3834cac5c08535622e40039f505194ed5bad63160c2177f0bf75bcb",
+      "matches": [
+        {
+          "tdStopId": "4009",
+          "tdSequence": 9,
+          "distanceM": 13.90088803741548,
+          "verifiedWithin35m": true
+        }
+      ]
+    },
+    {
+      "operatorStopId": "D360B3EBF155C15A",
+      "originalNames": {
+        "en": "MORSE PARK (WT105)",
+        "zhHant": "摩士公園 (WT105)"
+      },
+      "comparisonNames": {
+        "en": "MORSE PARK",
+        "zhHant": "摩士公園"
+      },
+      "sourceSha256": "e1f1870408431bda0e2290c2b89eaf921217207a0962909edb2d0b90a7eccac5",
+      "matches": [
+        {
+          "tdStopId": "4004",
+          "tdSequence": 4,
+          "distanceM": 22.55320271819039,
+          "verifiedWithin35m": true
+        }
+      ]
+    },
+    {
+      "operatorStopId": "18492910339410B1",
+      "originalNames": {
+        "en": "CHUK YUEN ESTATE BUS TERMINUS (WT916)",
+        "zhHant": "竹園邨總站 (WT916)"
+      },
+      "comparisonNames": {
+        "en": "CHUK YUEN ESTATE BUS TERMINUS",
+        "zhHant": "竹園邨總站"
+      },
+      "sourceSha256": "5a334273d0ffa96e6cc7aff465b73a2ed66d56f9ca8d9a466c800f84eee74eb2",
+      "matches": [
+        {
+          "tdStopId": "4001",
+          "tdSequence": 1,
+          "distanceM": 21.80193592099751,
+          "verifiedWithin35m": true
+        }
+      ]
+    },
+    {
+      "operatorStopId": "713BF17AF24FE4DA",
+      "originalNames": {
+        "en": "MORSE PARK SPORTS CENTRE (WT106)",
+        "zhHant": "摩士公園體育館 (WT106)"
+      },
+      "comparisonNames": {
+        "en": "MORSE PARK SPORTS CENTRE",
+        "zhHant": "摩士公園體育館"
+      },
+      "sourceSha256": "c1d17e0b7af8b7936dc1cee392a6cbd2073aa141eea1cca6331eb112b2d3649b",
+      "matches": [
+        {
+          "tdStopId": "4005",
+          "tdSequence": 5,
+          "distanceM": 64.07719539720851,
+          "verifiedWithin35m": false
+        }
+      ]
+    },
+    {
+      "operatorStopId": "7C4E16F4A138B142",
+      "originalNames": {
+        "en": "WAI TUNG HOUSE, TUNG TAU ESTATE (WT572)",
+        "zhHant": "東頭邨偉東樓 (WT572)"
+      },
+      "comparisonNames": {
+        "en": "WAI TUNG HOUSE, TUNG TAU ESTATE",
+        "zhHant": "東頭邨偉東樓"
+      },
+      "sourceSha256": "2b151154cae749ad4d59b576177ea949655190b35334d0ea30cf8167b4eb055d",
+      "matches": []
+    },
+    {
+      "operatorStopId": "9583BCF159B682BA",
+      "originalNames": {
+        "en": "MA CHAI HANG RECREATION GROUND (WT426)",
+        "zhHant": "馬仔坑遊樂場 (WT426)"
+      },
+      "comparisonNames": {
+        "en": "MA CHAI HANG RECREATION GROUND",
+        "zhHant": "馬仔坑遊樂場"
+      },
+      "sourceSha256": "a4cdc13892f6d8d26c50e28ee057c895f3f5ce3dcf1c789c62fd14da53e04ae6",
+      "matches": [
+        {
+          "tdStopId": "4003",
+          "tdSequence": 3,
+          "distanceM": 8.481423946990875,
+          "verifiedWithin35m": true
+        }
+      ]
+    },
+    {
+      "operatorStopId": "A47333D8B495F77D",
+      "originalNames": {
+        "en": "YING TUNG HOUSE, TUNG TAU ESTATE (WT573)",
+        "zhHant": "東頭邨盈東樓 (WT573)"
+      },
+      "comparisonNames": {
+        "en": "YING TUNG HOUSE, TUNG TAU ESTATE",
+        "zhHant": "東頭邨盈東樓"
+      },
+      "sourceSha256": "461a811dd54571292b4f37c0235ad84e1fd3d5ae82058d6b517caad074874049",
+      "matches": []
+    },
+    {
+      "operatorStopId": "9ED7E93749ABAE67",
+      "originalNames": {
+        "en": "WING YUEN HOUSE, CHUK YUEN SOUTH ESTATE (WT418)",
+        "zhHant": "竹園南邨榮園樓 (WT418)"
+      },
+      "comparisonNames": {
+        "en": "WING YUEN HOUSE, CHUK YUEN SOUTH ESTATE",
+        "zhHant": "竹園南邨榮園樓"
+      },
+      "sourceSha256": "1f1af582cdf9cddfe019c53fc524e96b575b12b9eb08fabe78c9b58d11fd6391",
+      "matches": []
+    },
+    {
+      "operatorStopId": "946C74E30100FE80",
+      "originalNames": {
+        "en": "KOWLOON WALLED CITY PARK (WT575)",
+        "zhHant": "九龍寨城公園 (WT575)"
+      },
+      "comparisonNames": {
+        "en": "KOWLOON WALLED CITY PARK",
+        "zhHant": "九龍寨城公園"
+      },
+      "sourceSha256": "eceac6939021ec8efb4fbdb45367aa3197ac84231ee0ee5e001404ec1ae1d50d",
+      "matches": [
+        {
+          "tdStopId": "4008",
+          "tdSequence": 8,
+          "distanceM": 17.237673003524733,
+          "verifiedWithin35m": true
+        }
+      ]
+    }
+  ]
+}

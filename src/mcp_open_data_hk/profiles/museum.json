@@ -1,0 +1,70 @@
+{
+  "id": "museum-feature-points-1",
+  "resourceId": "b6c922aee8773b1418f41cdaa9d31987",
+  "datasetId": "csdi:lcsd_rcd_1629267205214_78787",
+  "entityKind": "museum",
+  "format": "GEOJSON",
+  "host": "portal.csdi.gov.hk",
+  "path": "/csdi-webpage/file-api",
+  "query": {
+    "dataset_id": [
+      "lcsd_rcd_1629267205214_78787"
+    ],
+    "format": [
+      "geojson"
+    ],
+    "layer_name": [
+      "MUSEUM"
+    ]
+  },
+  "coordinates": {
+    "kind": "geojson_point",
+    "field": "geometry",
+    "crs": "EPSG:4326",
+    "propertyLatitude": "properties.LATITUDE",
+    "propertyLongitude": "properties.LONGITUDE"
+  },
+  "identity": {
+    "field": "properties.OBJECTID",
+    "kind": "integer",
+    "namespace": "csdi:lcsd_rcd_1629267205214_78787:MUSEUM:OBJECTID",
+    "scope": "feature_identifier_within_accepted_version"
+  },
+  "requiredFields": {
+    "geometry": [
+      "object"
+    ],
+    "properties.OBJECTID": [
+      "number"
+    ],
+    "properties.NameEN": [
+      "string"
+    ],
+    "properties.NameTC": [
+      "string"
+    ],
+    "properties.DATASET_EN": [
+      "string"
+    ]
+  },
+  "sourceContext": {
+    "type": "FeatureCollection",
+    "name": "MUSEUM"
+  },
+  "rowContext": {
+    "properties.DATASET_EN": "Museums"
+  },
+  "grain": "Published museum location features; records do not establish current exhibitions, opening schedules or unique buildings.",
+  "evidence": [
+    "https://portal.csdi.gov.hk/geoportal/rest/metadata/item/lcsd_rcd_1629267205214_78787/html",
+    "https://portal.csdi.gov.hk/csdi-webpage/info/WhatsNew",
+    "docs/verification/backlog-20261105/point-qualification.json"
+  ],
+  "coordinateQualification": "CSDI's 5 December 2025 notice establishes WGS84 longitude/latitude decimal degrees for these GeoJSON exports. Full export geometry, source context and version-scoped identity are independently checked in the qualification receipt. Geometry drives distance; property coordinates stay raw, including disagreements.",
+  "qualifiedDate": "2026-11-05",
+  "aliases": [
+    "museum",
+    "museums",
+    "博物館"
+  ]
+}

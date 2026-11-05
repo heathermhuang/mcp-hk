@@ -17,6 +17,7 @@ from .contracts import DomainError
 from .resource_fetch import fetch, fetch_file
 from .services import distance
 from .transport import timestamp
+from .transport_joins import ARRIVAL_RESOURCES, expand_join, verify_join
 
 TD = "https://static.data.gov.hk/td/"
 FILES = {
@@ -33,7 +34,7 @@ CITYBUS = {
 TTL = 86400
 WARNING = {
     "code": "BUS_DISCOVERY_SCOPE",
-    "message": "Direct bus routes from dated Transport Department files, not a fastest-trip planner or proof of current operation. Distances are straight-line. Joined live ETAs currently support Citybus; other arrival feeds remain available through resource queries. Temporary diversions and service calendars are not inferred.",
+    "message": "Direct bus routes from dated Transport Department files, not a fastest-trip planner or proof of current operation. Distances are straight-line. Joined live ETAs verify Citybus, KMB/LWB and NLB operator references; other arrival feeds remain available through resource queries. Temporary diversions and service calendars are not inferred.",
 }
 
 
@@ -427,50 +428,61 @@ class TransportSearch:
         )
         return candidates, origins, destinations
 
+    async def operator_query(
+        self, resource, parameters, remaining, cache, filters=None
+    ):
+        resources = self.service.resources
+        key = (
+            resource,
+            tuple(sorted(parameters.items())),
+            tuple(sorted((filters or {}).items())),
+        )
+        if key in cache:
+            until, prior = cache[key]
+            if until > time.monotonic():
+                if isinstance(prior, DomainError):
+                    raise prior
+                return prior
+        if remaining[0] <= 0:
+            raise DomainError(
+                "TRANSPORT_LOOKUP_LIMIT",
+                "Live stop verification reached its request bound",
+                503,
+            )
+        remaining[0] -= 1
+        await asyncio.to_thread(
+            self.service.store.consume_budget, "transport_lookup", 5000
+        )
+        try:
+            result = await resources.query(
+                resource,
+                parameters=parameters,
+                filters=filters,
+                limit=100,
+                require_fresh=True,
+            )
+        except DomainError as exc:
+            cache[key] = (float("inf"), exc)
+            raise
+        ttl = 20 if resource in ARRIVAL_RESOURCES else 45
+        fresh_until = result.get("schema", {}).get("transport", {}).get("freshUntil")
+        if resource in ARRIVAL_RESOURCES and isinstance(fresh_until, (float, int)):
+            ttl = min(ttl, max(0, fresh_until - time.time()))
+        if ttl <= 0 or any(p.get("stale") for p in result.get("provenance", [])):
+            error = DomainError(
+                "STALE_SOURCE", "Fresh operator reference data is required", 503
+            )
+            cache[key] = (float("inf"), error)
+            raise error
+        cache[key] = (time.monotonic() + ttl, result)
+        return result
+
     async def citybus(self, candidate, remaining, cache=None):
         cache = cache if cache is not None else {}
         route = candidate["route"]["route"]
-        resources = self.service.resources
 
         async def query(resource, parameters):
-            key = resource, tuple(sorted(parameters.items()))
-            if key in cache:
-                until, prior = cache[key]
-                if until > time.monotonic():
-                    if isinstance(prior, DomainError):
-                        raise prior
-                    return prior
-            if remaining[0] <= 0:
-                raise DomainError(
-                    "TRANSPORT_LOOKUP_LIMIT",
-                    "Live stop verification reached its request bound",
-                    503,
-                )
-            remaining[0] -= 1
-            await asyncio.to_thread(
-                self.service.store.consume_budget, "transport_lookup", 5000
-            )
-            try:
-                result = await resources.query(
-                    resource, parameters=parameters, limit=100, require_fresh=True
-                )
-            except DomainError as exc:
-                cache[key] = (float("inf"), exc)
-                raise
-            ttl = 20 if resource == CITYBUS["eta"] else 45
-            fresh_until = (
-                result.get("schema", {}).get("transport", {}).get("freshUntil")
-            )
-            if resource == CITYBUS["eta"] and isinstance(fresh_until, (float, int)):
-                ttl = min(ttl, max(0, fresh_until - time.time()))
-            if ttl <= 0 or any(p.get("stale") for p in result.get("provenance", [])):
-                error = DomainError(
-                    "STALE_SOURCE", "Fresh operator reference data is required", 503
-                )
-                cache[key] = (float("inf"), error)
-                raise error
-            cache[key] = (time.monotonic() + ttl, result)
-            return result
+            return await self.operator_query(resource, parameters, remaining, cache)
 
         route_result = await query(
             CITYBUS["route_stops"],
@@ -624,6 +636,30 @@ class TransportSearch:
             }
         )
 
+    @staticmethod
+    def join_failure(candidate, exc):
+        code = (
+            exc.code
+            if isinstance(exc, DomainError)
+            else (
+                "comparison_deadline"
+                if isinstance(exc, asyncio.TimeoutError)
+                else "TRANSPORT_MAPPING_UNVERIFIED"
+            )
+        )
+        if code == "TRANSPORT_NOT_SERVING_ORDER":
+            candidate["arrivalStatus"] = "ineligible"
+            candidate["ineligibleReason"] = code
+        elif code in {"TRANSPORT_LOOKUP_LIMIT", "comparison_deadline"}:
+            candidate["arrivalStatus"] = "unchecked"
+            candidate["uncheckedReason"] = code
+        else:
+            candidate["arrivalStatus"] = "unavailable"
+            candidate["arrivalError"] = {
+                "code": code,
+                "message": "Live arrivals could not be verified; the reference candidate remains unknown.",
+            }
+
     async def journey(self, query):
         cached = await self.index()
         candidates, origins, destinations = await asyncio.to_thread(
@@ -631,12 +667,67 @@ class TransportSearch:
         )
         remaining, request_cache = [64], {}
         deadline = time.monotonic() + 45
+        reference_count = len(candidates)
+
+        async def lookup(resource, parameters, filters=None):
+            return await self.operator_query(
+                resource, parameters, remaining, request_cache, filters
+            )
+
+        expanded = []
+        for candidate in candidates:
+            operators = candidate["route"]["operator"].split("+")
+            namespaces = []
+            if not query.operator or query.operator == "CTB":
+                if "CTB" in operators:
+                    namespaces.append("ctb")
+            if not query.operator or query.operator in {"KMB", "LWB"}:
+                if set(operators) & {"KMB", "LWB"}:
+                    namespaces.append("kmb")
+            if not query.operator or query.operator == "NLB":
+                if "NLB" in operators:
+                    namespaces.append("nlb")
+            if not query.includeArrivals or not namespaces:
+                expanded.append(candidate)
+                continue
+            for namespace in namespaces:
+                current = {**candidate, "operatorNamespace": namespace}
+                if namespace == "ctb":
+                    expanded.append(current)
+                    continue
+                try:
+                    if time.monotonic() >= deadline:
+                        raise asyncio.TimeoutError()
+                    choices = await asyncio.wait_for(
+                        expand_join(current, namespace, lookup),
+                        max(0, deadline - time.monotonic()),
+                    )
+                    expanded.extend(choices)
+                except (
+                    DomainError,
+                    asyncio.TimeoutError,
+                    ValueError,
+                    KeyError,
+                    TypeError,
+                    IndexError,
+                ) as exc:
+                    self.join_failure(current, exc)
+                    expanded.append(current)
+                if len(expanded) > 10000:
+                    raise DomainError(
+                        "STOP_SELECTION_REQUIRED",
+                        "Too many operator route variants; select exact stops",
+                        400,
+                    )
+        candidates = expanded
         for candidate in candidates:
             if not query.includeArrivals:
                 candidate["arrivalStatus"] = "unchecked"
                 candidate["uncheckedReason"] = "not_requested"
                 continue
-            if "CTB" not in candidate["route"]["operator"].split("+"):
+            if candidate["arrivalStatus"] in {"unavailable", "unchecked", "ineligible"}:
+                continue
+            if "operatorNamespace" not in candidate:
                 candidate["arrivalStatus"] = "unchecked"
                 candidate["uncheckedReason"] = "operator_join_not_qualified"
                 continue
@@ -646,7 +737,11 @@ class TransportSearch:
                 continue
             try:
                 await asyncio.wait_for(
-                    self.citybus(candidate, remaining, request_cache),
+                    (
+                        self.citybus(candidate, remaining, request_cache)
+                        if candidate["operatorNamespace"] == "ctb"
+                        else verify_join(candidate, lookup, name_key)
+                    ),
                     timeout=max(0, deadline - time.monotonic()),
                 )
             except (
@@ -657,24 +752,7 @@ class TransportSearch:
                 TypeError,
                 IndexError,
             ) as exc:
-                code = (
-                    exc.code
-                    if isinstance(exc, DomainError)
-                    else (
-                        "comparison_deadline"
-                        if isinstance(exc, asyncio.TimeoutError)
-                        else "TRANSPORT_MAPPING_UNVERIFIED"
-                    )
-                )
-                if code in {"TRANSPORT_LOOKUP_LIMIT", "comparison_deadline"}:
-                    candidate["arrivalStatus"] = "unchecked"
-                    candidate["uncheckedReason"] = code
-                else:
-                    candidate["arrivalStatus"] = "unavailable"
-                    candidate["arrivalError"] = {
-                        "code": code,
-                        "message": "Live arrivals could not be verified; the reference candidate remains unknown.",
-                    }
+                self.join_failure(candidate, exc)
         now = time.time()
         for candidate in candidates:
             if candidate["arrivalStatus"] != "live":
@@ -693,9 +771,10 @@ class TransportSearch:
             expired, unknown = 0, 0
             for row in candidate["arrivals"]["items"]:
                 try:
-                    predicted = timestamp(row.get("eta"))
+                    field = candidate["arrivals"].get("predictionField", "eta")
+                    predicted = timestamp(row.get(field))
                     if predicted >= now:
-                        predictions.append((predicted, row["eta"]))
+                        predictions.append((predicted, row[field]))
                     else:
                         expired += 1
                 except (DomainError, ValueError, TypeError, AttributeError):
@@ -717,6 +796,9 @@ class TransportSearch:
                 presented.append(candidate)
                 continue
             key = (
+                candidate.get("operatorNamespace"),
+                candidate.get("operatorServiceType"),
+                candidate.get("operatorRouteId"),
                 candidate["route"]["route"],
                 candidate["direction"],
                 candidate["operatorBoardStopId"],
@@ -755,8 +837,9 @@ class TransportSearch:
         )
         accepted = sum(c["arrivalStatus"] == "live" for c in candidates)
         failed = sum(c["arrivalStatus"] == "unavailable" for c in candidates)
-        unchecked = len(candidates) - accepted - failed
-        checked = accepted + failed
+        ineligible = sum(c["arrivalStatus"] == "ineligible" for c in candidates)
+        unchecked = len(candidates) - accepted - failed - ineligible
+        checked = accepted + failed + ineligible
         eligible = sum(bool(c.get("operatorEligibilityVerified")) for c in candidates)
         stale_index = time.time() - cached[0]["checked"] >= TTL
         complete = not failed and not unchecked and not stale_index
@@ -772,7 +855,10 @@ class TransportSearch:
             cached,
             {
                 "items": presented[: query.limit],
-                "totalMatched": len(candidates),
+                "totalMatched": reference_count,
+                "expandedCandidateCount": len(candidates),
+                "referenceCandidateCount": reference_count,
+                "candidateMeaning": "Reference routes expanded into discovered operator service/route variants where joined; failed expansion retains one unknown reference.",
                 "totalDepartureChoices": len(presented),
                 "originCandidates": origins[:10],
                 "destinationCandidates": destinations[:10],
@@ -781,7 +867,8 @@ class TransportSearch:
                 "coverage": {
                     "candidate": len(candidates),
                     "eligible": eligible,
-                    "eligibilityUnknown": len(candidates) - eligible,
+                    "eligibilityUnknown": len(candidates) - eligible - ineligible,
+                    "verifiedNotServingOrder": ineligible,
                     "acceptedArrivalChecks": accepted,
                     "checked": checked,
                     "failed": failed,

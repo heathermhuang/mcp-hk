@@ -1,0 +1,155 @@
+{
+  "scope": "isolated compaction experiment only; production untouched",
+  "sourceBytes": 447975424,
+  "compactedBytes": 447975424,
+  "savedBytes": 0,
+  "allTablesLogicalMultiplicityAndValueHashesMatch": true,
+  "tables": {
+    "active_packs": {
+      "rows": 3,
+      "logicalSha256": "7cf83776eb653ecfb1c6f1737bdb774229f4331180ce7f32a879a1aa508402d4"
+    },
+    "address_cache": {
+      "rows": 1,
+      "logicalSha256": "2dcf85963d981103c98f5cb3c95617f75f3ea3837a0b0a4a96ac20abf64a3db6"
+    },
+    "budgets": {
+      "rows": 9,
+      "logicalSha256": "9a9c7541c8a3125fcbdedc22ca55aa9e574a68ebcc51f0c1eaec6072d3c214b8"
+    },
+    "catalogue_runs": {
+      "rows": 6,
+      "logicalSha256": "958e2ae1ee11f9169a3d65c7cffdb5fca2e9078302bc963bd56735af4f290407"
+    },
+    "ingestion_runs": {
+      "rows": 29,
+      "logicalSha256": "7eca163da8355e38b809cc7c834bf7daaed8d01784ad3276d1b072aa14eb5d34"
+    },
+    "inventories": {
+      "rows": 2,
+      "logicalSha256": "9973d6dadfb7d6424ac4307e5f6a5179047df442eb334f2ecedc20e484aa3faa"
+    },
+    "inventory_datasets": {
+      "rows": 10039,
+      "logicalSha256": "bcf0957512d19b79fdaa5e7081bc9abbfdd6d20eca97dc71beb6bda62c5b7655"
+    },
+    "inventory_head": {
+      "rows": 1,
+      "logicalSha256": "2c5fd5dcf8439614fc357c9e53e191fde9e3c8763a1d16ec8494ccc37811443e"
+    },
+    "inventory_resources": {
+      "rows": 127510,
+      "logicalSha256": "cadf61b302d0751226cce4da5071d48a5e8e92aeec1c4b0d1a2b910107083c5a"
+    },
+    "racing_accepted": {
+      "rows": 18,
+      "logicalSha256": "8f1e9820f30dda95a0b58af7eabc2b7d45a5f1eedda2e386d487968fa8a63e8f"
+    },
+    "racing_attempts": {
+      "rows": 1466,
+      "logicalSha256": "84d0c0dc3fd336c810a9a1a185f6418217f0ec86b29d014819af3cb02bc6a694"
+    },
+    "racing_calendar": {
+      "rows": 15,
+      "logicalSha256": "b171deb83f65f250079b7da61a1d24bd98c96a8561a4fb1a4a5285f02f968f13"
+    },
+    "racing_control": {
+      "rows": 20,
+      "logicalSha256": "466df2df98c0ae3d09a5886ce26db77067855292ecbd69d23909e26c59287b3c"
+    },
+    "racing_current": {
+      "rows": 18,
+      "logicalSha256": "7236a19f0d97536241f271990fb707128da8091faccd02c885ce9f0d23877d7a"
+    },
+    "racing_pages": {
+      "rows": 948,
+      "logicalSha256": "d5a40bf44bb14b5cccba31cb8c55eac793feab4befa0f283ce777238f332dd3a"
+    },
+    "racing_profile_current": {
+      "rows": 252,
+      "logicalSha256": "d4bdd804701ca32adaf5999711d26dceefee206f2d5363f79fe92668e37891c2"
+    },
+    "racing_profile_meta": {
+      "rows": 4,
+      "logicalSha256": "ae1e3b79f8f2bdb47b8fac587d96d00a77caa4ee6fd2d2552e57753ca46a5662"
+    },
+    "racing_profile_queue": {
+      "rows": 1042,
+      "logicalSha256": "61662029f2736187b7b3e3f3414606ad2e1c30b327b072be6ff6b2bee1a2503b"
+    },
+    "racing_profile_versions": {
+      "rows": 252,
+      "logicalSha256": "29114048f663df28d0374f2e74685938453a98677898646c9b006663068522a0"
+    },
+    "racing_publications": {
+      "rows": 40,
+      "logicalSha256": "95c3c88ef3694b75389423d97ae0fb62b70f616c7d2eb1eb3467f4ea12d3f39e"
+    },
+    "racing_queue": {
+      "rows": 104,
+      "logicalSha256": "7486b18c7fe12c2228909411810d0be2747c6ecba805c4f18c0ada6a990f2270"
+    },
+    "racing_redirect_inspections": {
+      "rows": 2,
+      "logicalSha256": "79ef87601a4656f9270902f3d98540903e778aaa16ecbafe70af36a4d0905d83"
+    },
+    "racing_remote_requests": {
+      "rows": 1397,
+      "logicalSha256": "261de226b9bd3d1b8e27c569ab02c8eccf3fa5537c08b51d2fbb627bff7e6c6c"
+    },
+    "racing_snapshots": {
+      "rows": 40,
+      "logicalSha256": "3ba351a40dfc8e4aa7477b22712adff085367a2309920ef735e588652266a7bc"
+    },
+    "records": {
+      "rows": 96738,
+      "logicalSha256": "6071b83c1c621e819ff380b972f05725e928fa61c3a18c46e4a1fd8562af8139"
+    },
+    "resource_audit_cursor": {
+      "rows": 1,
+      "logicalSha256": "a81e39b3795a3100d064b9bf0c8d52c9d3dcc0d969d6be5cce9cd2ddb8359cc3"
+    },
+    "resource_cache": {
+      "rows": 169,
+      "logicalSha256": "12aab8717770f9dc74910db8dbc8f9c07caf7797e5532ac76cb2f2f2c23e06f1"
+    },
+    "resource_checks": {
+      "rows": 65821,
+      "logicalSha256": "104b27b74a9838a8c6d786c8a1044ffa5c80b7d22e5667d7fe3093077a643190"
+    },
+    "resource_policies": {
+      "rows": 39,
+      "logicalSha256": "7215e6a93bd1b444fe1e95b553a30386c6ada65bdfc5464116eabbfcf9fa3dd5"
+    },
+    "resource_review_policy": {
+      "rows": 65821,
+      "logicalSha256": "c7dc085c0e65b7486e6c8f3a1cff1075be45affee72271ca4c961647dc699cc1"
+    },
+    "resource_review_setup": {
+      "rows": 1,
+      "logicalSha256": "584b0e509a89d2e82c6da58752006a3c25dba34f6884a7cbae248dae8730c5e9"
+    },
+    "resource_review_state": {
+      "rows": 1,
+      "logicalSha256": "6c375ccba7f1c3c88bb6d5a401d587a5957782ba3ee43bde50cc958c128e63c8"
+    },
+    "resource_selection_options": {
+      "rows": 87,
+      "logicalSha256": "a193aa11a0979b24a8607eaeb5b062a609eb1c73de06d5db7b25737c55581dad"
+    },
+    "resource_variants": {
+      "rows": 56517,
+      "logicalSha256": "33ecf1e897d1b807388b8dc3325db2fdc3783a1aa658ea779befc3fc18f922cf"
+    },
+    "snapshots": {
+      "rows": 4,
+      "logicalSha256": "f167373d1556e8747b09d98ede8bd2522a8e48f801f10e8a1cf15e72feee1f87"
+    },
+    "source_checks": {
+      "rows": 6,
+      "logicalSha256": "7c3826f83796245d745b2b1f3a158737bd60da0c9c8582f831e9432238bb3c3e"
+    }
+  },
+  "integrity": "ok",
+  "seconds": 14.038155875001394
+}

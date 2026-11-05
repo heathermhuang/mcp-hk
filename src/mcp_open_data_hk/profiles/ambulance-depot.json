@@ -1,0 +1,68 @@
+{
+  "id": "ambulance-depot-feature-points-1",
+  "resourceId": "2c5d0afb1ffb7ec9b27de104cd7e3767",
+  "datasetId": "csdi:hkfsd_rcd_1634799003993_7633",
+  "entityKind": "ambulance_depot",
+  "format": "GEOJSON",
+  "host": "portal.csdi.gov.hk",
+  "path": "/csdi-webpage/file-api",
+  "query": {
+    "dataset_id": [
+      "hkfsd_rcd_1634799003993_7633"
+    ],
+    "format": [
+      "geojson"
+    ],
+    "layer_name": [
+      "AmbDepots"
+    ]
+  },
+  "coordinates": {
+    "kind": "geojson_point",
+    "field": "geometry",
+    "crs": "EPSG:4326",
+    "propertyLatitude": "properties.Latitude",
+    "propertyLongitude": "properties.Longitude"
+  },
+  "identity": {
+    "field": "properties.OBJECTID",
+    "kind": "integer",
+    "namespace": "csdi:hkfsd_rcd_1634799003993_7633:AmbDepots:OBJECTID",
+    "scope": "feature_identifier_within_accepted_version"
+  },
+  "requiredFields": {
+    "geometry": [
+      "object"
+    ],
+    "properties.OBJECTID": [
+      "number"
+    ],
+    "properties.Name_ENG": [
+      "string"
+    ],
+    "properties.Name_TC": [
+      "string"
+    ],
+    "properties.FSDID": [
+      "string"
+    ]
+  },
+  "sourceContext": {
+    "type": "FeatureCollection",
+    "name": "AmbDepots"
+  },
+  "rowContext": {},
+  "grain": "Published ambulance-depot location features; this is not emergency dispatch, operational readiness or a service-availability directory.",
+  "evidence": [
+    "https://portal.csdi.gov.hk/geoportal/rest/metadata/item/hkfsd_rcd_1634799003993_7633/html",
+    "https://portal.csdi.gov.hk/csdi-webpage/info/WhatsNew",
+    "docs/verification/backlog-20261105/point-qualification.json"
+  ],
+  "coordinateQualification": "CSDI's 5 December 2025 notice establishes WGS84 longitude/latitude decimal degrees for these GeoJSON exports. Full export geometry, source context and version-scoped identity are independently checked in the qualification receipt. Geometry drives distance; property coordinates stay raw, including disagreements.",
+  "qualifiedDate": "2026-11-05",
+  "aliases": [
+    "ambulance depot",
+    "ambulance depots",
+    "救護站"
+  ]
+}

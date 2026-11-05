@@ -1,0 +1,1577 @@
+{
+  "scope": "local_candidate_join_code_using_actual_production_resource_source_reads_and_restored_index; not deployed join proof",
+  "results": [
+    {
+      "operator": "NLB",
+      "reference": {
+        "id": "route:1723",
+        "kind": "route",
+        "routeId": "1723",
+        "operator": "NLB",
+        "route": "1",
+        "origin": {
+          "en": "Mui Wo Ferry Pier",
+          "zhHant": "梅窩碼頭"
+        },
+        "destination": {
+          "en": "Tai O",
+          "zhHant": "大澳"
+        },
+        "serviceMode": "R",
+        "specialType": "2",
+        "sourceUpdatedAt": "2025-10-30T00:00:00"
+      },
+      "origin": "12000",
+      "destination": "11000",
+      "seconds": 14.45006654199824,
+      "result": {
+        "data": {
+          "items": [
+            {
+              "route": {
+                "id": "route:1723",
+                "kind": "route",
+                "routeId": "1723",
+                "operator": "NLB",
+                "route": "1",
+                "origin": {
+                  "en": "Mui Wo Ferry Pier",
+                  "zhHant": "梅窩碼頭"
+                },
+                "destination": {
+                  "en": "Tai O",
+                  "zhHant": "大澳"
+                },
+                "serviceMode": "R",
+                "specialType": "2",
+                "sourceUpdatedAt": "2025-10-30T00:00:00"
+              },
+              "direction": "outbound",
+              "board": {
+                "id": "path:1723:1:1",
+                "kind": "route_stop",
+                "stopId": "12000",
+                "namespace": "td:stop",
+                "name": {
+                  "en": "Mui Wo Ferry Pier",
+                  "zhHant": "梅窩碼頭"
+                },
+                "latitude": 22.26485,
+                "longitude": 114.00156,
+                "distanceM": null,
+                "operators": [
+                  "NLB"
+                ],
+                "routeId": "1723",
+                "direction": "outbound",
+                "sequence": 1,
+                "pickup": true,
+                "dropoff": false,
+                "sourcePickupDrop": "2",
+                "sourceUpdatedAt": "2025-02-14T00:00:00",
+                "occurrence": 1,
+                "occurrenceCount": 1
+              },
+              "alight": {
+                "id": "path:1723:1:49",
+                "kind": "route_stop",
+                "stopId": "11000",
+                "namespace": "td:stop",
+                "name": {
+                  "en": "Tai O",
+                  "zhHant": "大澳"
+                },
+                "latitude": 22.25262,
+                "longitude": 113.86255,
+                "distanceM": null,
+                "operators": [
+                  "NLB"
+                ],
+                "routeId": "1723",
+                "direction": "outbound",
+                "sequence": 49,
+                "pickup": false,
+                "dropoff": true,
+                "sourcePickupDrop": "1",
+                "sourceUpdatedAt": "2025-02-14T00:00:00",
+                "occurrence": 1,
+                "occurrenceCount": 1
+              },
+              "referenceStopCount": 48,
+              "arrivalStatus": "live",
+              "operatorNamespace": "nlb",
+              "operatorRouteId": 1,
+              "operatorRouteReference": {
+                "routeId": 1,
+                "routeNo": "1",
+                "routeName_c": "梅窩碼頭 > 大澳",
+                "routeName_s": "梅窝码头 > 大澳",
+                "routeName_e": "Mui Wo Ferry Pier > Tai O",
+                "overnightRoute": 0,
+                "specialRoute": 0
+              },
+              "operatorEligibilityVerified": true,
+              "operatorBoardStopId": "1",
+              "operatorAlightStopId": "55",
+              "operatorBoardSequence": 1,
+              "operatorAlightSequence": 56,
+              "operatorStopCount": 55,
+              "operatorBoardReference": {
+                "stopId": 1,
+                "stopName_c": "梅窩碼頭",
+                "stopName_s": "梅窝码头",
+                "stopName_e": "Mui Wo Ferry Pier",
+                "stopLocation_c": "梅窩碼頭",
+                "stopLocation_s": "梅窝码头",
+                "stopLocation_e": "Mui Wo Ferry Pier",
+                "latitude": "22.26466400",
+                "longitude": "114.00155400",
+                "fare": "12.7",
+                "fareHoliday": "21.4",
+                "someDepartureObserveOnly": 0
+              },
+              "operatorAlightReference": {
+                "stopId": 55,
+                "stopName_c": "大澳",
+                "stopName_s": "大澳",
+                "stopName_e": "Tai O",
+                "stopLocation_c": "大澳道",
+                "stopLocation_s": "大澳道",
+                "stopLocation_e": "Tai O Road",
+                "latitude": "22.25253000",
+                "longitude": "113.86275300",
+                "fare": "0.0",
+                "fareHoliday": "0.0",
+                "someDepartureObserveOnly": 0
+              },
+              "arrivalCheckedAt": 1793893356.164757,
+              "arrivals": {
+                "items": [
+                  {
+                    "estimatedArrivalTime": "2026-11-06 00:10:00",
+                    "routeVariantName": "",
+                    "departed": 0,
+                    "noGPS": 1,
+                    "wheelChair": 0,
+                    "generateTime": "2026-11-05 23:42:28"
+                  }
+                ],
+                "predictionField": "estimatedArrivalTime",
+                "transport": {
+                  "operator": "New Lantao Bus",
+                  "mode": "bus",
+                  "operation": "arrivals",
+                  "requiredParameters": [
+                    "languageCode",
+                    "routeId",
+                    "stopId"
+                  ],
+                  "optionalParameters": {},
+                  "parameterExamples": {
+                    "languageCode": "en",
+                    "routeId": "1",
+                    "stopId": "1"
+                  },
+                  "cacheTTLSeconds": 20,
+                  "maxSourceAgeSeconds": 150,
+                  "validationScope": "last_selected_route_or_stop",
+                  "policyVersion": "transport-2",
+                  "omittedStaleRecords": 0,
+                  "arrivalState": "arrivals",
+                  "sourceTimestamp": "2026-11-05 23:42:28",
+                  "sourceAgeSeconds": 7.913907766342163,
+                  "freshnessBasis": "provider_timestamp",
+                  "freshUntil": 1793893498.0,
+                  "cacheAgeSeconds": 0.025667428970336914
+                },
+                "warnings": [],
+                "provenance": [
+                  {
+                    "sourceUrl": "https://rt.data.gov.hk/v2/transport/nlb/stop.php?action=estimatedArrivals&routeId=1&stopId=1&language=en",
+                    "originalResourceUrl": "https://rt.data.gov.hk/v2/transport/nlb/stop.php?action=estimatedArrivals&routeId={routeId}&stopId={stopId}&language={languageCode}",
+                    "catalogueUrl": "https://data.gov.hk/en-data/dataset/nlb-bus-nlb-bus-service-v2",
+                    "attribution": "New Lantao Bus Company (1973) Limited / DATA.GOV.HK",
+                    "termsUrl": "https://data.gov.hk/en/terms-and-conditions",
+                    "retrievedAt": 1793893355.888266,
+                    "observedAt": null,
+                    "lastCheckedAt": 1793893355.888266,
+                    "lastValidatedAt": 1793893355.888266,
+                    "publicationDate": "2022-07-15",
+                    "referencePeriod": null,
+                    "contentHash": "80c6638e1bb86f23018bc3721f165d4ef486942f6cb3b7c3a2dbe04edffa7691",
+                    "stale": false
+                  }
+                ]
+              },
+              "operatorVerification": {
+                "method": "route_membership_name_location_and_occurrence",
+                "namespace": "nlb",
+                "provenance": [
+                  {
+                    "sourceUrl": "https://rt.data.gov.hk/v2/transport/nlb/stop.php?action=list&routeId=1",
+                    "originalResourceUrl": "https://rt.data.gov.hk/v2/transport/nlb/stop.php?action=list&routeId={routeId}",
+                    "catalogueUrl": "https://data.gov.hk/en-data/dataset/nlb-bus-nlb-bus-service-v2",
+                    "attribution": "New Lantao Bus Company (1973) Limited / DATA.GOV.HK",
+                    "termsUrl": "https://data.gov.hk/en/terms-and-conditions",
+                    "retrievedAt": 1793891334.9933887,
+                    "observedAt": null,
+                    "lastCheckedAt": 1793893353.9666224,
+                    "lastValidatedAt": 1793893353.9666224,
+                    "publicationDate": "2022-07-15",
+                    "referencePeriod": null,
+                    "contentHash": "b0306babbcf366ef6b2e01f0a0199774207e8e9ba66ce27c5e8b053f1765387b",
+                    "stale": false
+                  }
+                ]
+              },
+              "earliestPredictedDeparture": "2026-11-06 00:10:00",
+              "predictionCoverage": {
+                "future": 1,
+                "expired": 0,
+                "unknown": 0,
+                "emptyFeedDoesNotProveNoService": true
+              },
+              "referenceVariants": [
+                {
+                  "id": "route:1723",
+                  "kind": "route",
+                  "routeId": "1723",
+                  "operator": "NLB",
+                  "route": "1",
+                  "origin": {
+                    "en": "Mui Wo Ferry Pier",
+                    "zhHant": "梅窩碼頭"
+                  },
+                  "destination": {
+                    "en": "Tai O",
+                    "zhHant": "大澳"
+                  },
+                  "serviceMode": "R",
+                  "specialType": "2",
+                  "sourceUpdatedAt": "2025-10-30T00:00:00"
+                },
+                {
+                  "id": "route:8567",
+                  "kind": "route",
+                  "routeId": "8567",
+                  "operator": "NLB",
+                  "route": "1",
+                  "origin": {
+                    "en": "Mui Wo Ferry Pier",
+                    "zhHant": "梅窩碼頭"
+                  },
+                  "destination": {
+                    "en": "Tai O (via Sha Tsui Correctional Institution)",
+                    "zhHant": "大澳(經沙咀懲教所)"
+                  },
+                  "serviceMode": "T",
+                  "specialType": "3",
+                  "sourceUpdatedAt": "2025-10-30T00:00:00"
+                },
+                {
+                  "id": "route:8570",
+                  "kind": "route",
+                  "routeId": "8570",
+                  "operator": "NLB",
+                  "route": "1",
+                  "origin": {
+                    "en": "Mui Wo Ferry Pier",
+                    "zhHant": "梅窩碼頭"
+                  },
+                  "destination": {
+                    "en": "Tai O (via Tong Fuk Correctional Institution)",
+                    "zhHant": "大澳(經塘福懲教所)"
+                  },
+                  "serviceMode": "T",
+                  "specialType": "3",
+                  "sourceUpdatedAt": "2025-10-31T00:00:00"
+                },
+                {
+                  "id": "route:8568",
+                  "kind": "route",
+                  "routeId": "8568",
+                  "operator": "NLB",
+                  "route": "1",
+                  "origin": {
+                    "en": "Mui Wo Ferry Pier",
+                    "zhHant": "梅窩碼頭"
+                  },
+                  "destination": {
+                    "en": "Tai O (via Mui Wo Old Town)",
+                    "zhHant": "大澳(經梅窩舊墟)"
+                  },
+                  "serviceMode": "R",
+                  "specialType": "2",
+                  "sourceUpdatedAt": "2025-10-31T00:00:00"
+                },
+                {
+                  "id": "route:8569",
+                  "kind": "route",
+                  "routeId": "8569",
+                  "operator": "NLB",
+                  "route": "1",
+                  "origin": {
+                    "en": "Mui Wo Ferry Pier",
+                    "zhHant": "梅窩碼頭"
+                  },
+                  "destination": {
+                    "en": "Tai O (via Sha Tsui Correctional Institution and Mui Wo Old Town)",
+                    "zhHant": "大澳(經沙咀懲教所及梅窩舊墟)"
+                  },
+                  "serviceMode": "T",
+                  "specialType": "3",
+                  "sourceUpdatedAt": "2025-10-30T00:00:00"
+                }
+              ],
+              "alightingAlternatives": [
+                {
+                  "referenceStop": {
+                    "id": "path:1723:1:49",
+                    "kind": "route_stop",
+                    "stopId": "11000",
+                    "namespace": "td:stop",
+                    "name": {
+                      "en": "Tai O",
+                      "zhHant": "大澳"
+                    },
+                    "latitude": 22.25262,
+                    "longitude": 113.86255,
+                    "distanceM": null,
+                    "operators": [
+                      "NLB"
+                    ],
+                    "routeId": "1723",
+                    "direction": "outbound",
+                    "sequence": 49,
+                    "pickup": false,
+                    "dropoff": true,
+                    "sourcePickupDrop": "1",
+                    "sourceUpdatedAt": "2025-02-14T00:00:00",
+                    "occurrence": 1,
+                    "occurrenceCount": 1
+                  },
+                  "operatorStopId": "55",
+                  "operatorSequence": 56
+                },
+                {
+                  "referenceStop": {
+                    "id": "path:8567:1:50",
+                    "kind": "route_stop",
+                    "stopId": "11000",
+                    "namespace": "td:stop",
+                    "name": {
+                      "en": "Tai O",
+                      "zhHant": "大澳"
+                    },
+                    "latitude": 22.25262,
+                    "longitude": 113.86255,
+                    "distanceM": null,
+                    "operators": [
+                      "NLB"
+                    ],
+                    "routeId": "8567",
+                    "direction": "outbound",
+                    "sequence": 50,
+                    "pickup": false,
+                    "dropoff": true,
+                    "sourcePickupDrop": "1",
+                    "sourceUpdatedAt": "2025-02-14T00:00:00",
+                    "occurrence": 1,
+                    "occurrenceCount": 1
+                  },
+                  "operatorStopId": "55",
+                  "operatorSequence": 56
+                },
+                {
+                  "referenceStop": {
+                    "id": "path:8570:1:51",
+                    "kind": "route_stop",
+                    "stopId": "11000",
+                    "namespace": "td:stop",
+                    "name": {
+                      "en": "Tai O",
+                      "zhHant": "大澳"
+                    },
+                    "latitude": 22.25262,
+                    "longitude": 113.86255,
+                    "distanceM": null,
+                    "operators": [
+                      "NLB"
+                    ],
+                    "routeId": "8570",
+                    "direction": "outbound",
+                    "sequence": 51,
+                    "pickup": false,
+                    "dropoff": true,
+                    "sourcePickupDrop": "1",
+                    "sourceUpdatedAt": "2025-02-14T00:00:00",
+                    "occurrence": 1,
+                    "occurrenceCount": 1
+                  },
+                  "operatorStopId": "55",
+                  "operatorSequence": 56
+                },
+                {
+                  "referenceStop": {
+                    "id": "path:8568:1:53",
+                    "kind": "route_stop",
+                    "stopId": "11000",
+                    "namespace": "td:stop",
+                    "name": {
+                      "en": "Tai O",
+                      "zhHant": "大澳"
+                    },
+                    "latitude": 22.25262,
+                    "longitude": 113.86255,
+                    "distanceM": null,
+                    "operators": [
+                      "NLB"
+                    ],
+                    "routeId": "8568",
+                    "direction": "outbound",
+                    "sequence": 53,
+                    "pickup": false,
+                    "dropoff": true,
+                    "sourcePickupDrop": "1",
+                    "sourceUpdatedAt": "2025-02-14T00:00:00",
+                    "occurrence": 1,
+                    "occurrenceCount": 1
+                  },
+                  "operatorStopId": "55",
+                  "operatorSequence": 56
+                },
+                {
+                  "referenceStop": {
+                    "id": "path:8569:1:54",
+                    "kind": "route_stop",
+                    "stopId": "11000",
+                    "namespace": "td:stop",
+                    "name": {
+                      "en": "Tai O",
+                      "zhHant": "大澳"
+                    },
+                    "latitude": 22.25262,
+                    "longitude": 113.86255,
+                    "distanceM": null,
+                    "operators": [
+                      "NLB"
+                    ],
+                    "routeId": "8569",
+                    "direction": "outbound",
+                    "sequence": 54,
+                    "pickup": false,
+                    "dropoff": true,
+                    "sourcePickupDrop": "1",
+                    "sourceUpdatedAt": "2025-02-14T00:00:00",
+                    "occurrence": 1,
+                    "occurrenceCount": 1
+                  },
+                  "operatorStopId": "55",
+                  "operatorSequence": 56
+                }
+              ],
+              "alightingAlternativeCount": 5
+            },
+            {
+              "route": {
+                "id": "route:1723",
+                "kind": "route",
+                "routeId": "1723",
+                "operator": "NLB",
+                "route": "1",
+                "origin": {
+                  "en": "Mui Wo Ferry Pier",
+                  "zhHant": "梅窩碼頭"
+                },
+                "destination": {
+                  "en": "Tai O",
+                  "zhHant": "大澳"
+                },
+                "serviceMode": "R",
+                "specialType": "2",
+                "sourceUpdatedAt": "2025-10-30T00:00:00"
+              },
+              "direction": "outbound",
+              "board": {
+                "id": "path:1723:1:1",
+                "kind": "route_stop",
+                "stopId": "12000",
+                "namespace": "td:stop",
+                "name": {
+                  "en": "Mui Wo Ferry Pier",
+                  "zhHant": "梅窩碼頭"
+                },
+                "latitude": 22.26485,
+                "longitude": 114.00156,
+                "distanceM": null,
+                "operators": [
+                  "NLB"
+                ],
+                "routeId": "1723",
+                "direction": "outbound",
+                "sequence": 1,
+                "pickup": true,
+                "dropoff": false,
+                "sourcePickupDrop": "2",
+                "sourceUpdatedAt": "2025-02-14T00:00:00",
+                "occurrence": 1,
+                "occurrenceCount": 1
+              },
+              "alight": {
+                "id": "path:1723:1:49",
+                "kind": "route_stop",
+                "stopId": "11000",
+                "namespace": "td:stop",
+                "name": {
+                  "en": "Tai O",
+                  "zhHant": "大澳"
+                },
+                "latitude": 22.25262,
+                "longitude": 113.86255,
+                "distanceM": null,
+                "operators": [
+                  "NLB"
+                ],
+                "routeId": "1723",
+                "direction": "outbound",
+                "sequence": 49,
+                "pickup": false,
+                "dropoff": true,
+                "sourcePickupDrop": "1",
+                "sourceUpdatedAt": "2025-02-14T00:00:00",
+                "occurrence": 1,
+                "occurrenceCount": 1
+              },
+              "referenceStopCount": 48,
+              "arrivalStatus": "ineligible",
+              "operatorNamespace": "nlb",
+              "operatorRouteId": 2,
+              "operatorRouteReference": {
+                "routeId": 2,
+                "routeNo": "1",
+                "routeName_c": "大澳 > 梅窩碼頭",
+                "routeName_s": "大澳 > 梅窝码头",
+                "routeName_e": "Tai O > Mui Wo Ferry Pier",
+                "overnightRoute": 0,
+                "specialRoute": 0
+              },
+              "ineligibleReason": "TRANSPORT_NOT_SERVING_ORDER"
+            },
+            {
+              "route": {
+                "id": "route:1736",
+                "kind": "route",
+                "routeId": "1736",
+                "operator": "NLB",
+                "route": "N1",
+                "origin": {
+                  "en": "Mui Wo Ferry Pier",
+                  "zhHant": "梅窩碼頭"
+                },
+                "destination": {
+                  "en": "Tai O",
+                  "zhHant": "大澳"
+                },
+                "serviceMode": "NT",
+                "specialType": "3",
+                "sourceUpdatedAt": "2025-10-31T00:00:00"
+              },
+              "direction": "outbound",
+              "board": {
+                "id": "path:1736:1:1",
+                "kind": "route_stop",
+                "stopId": "12000",
+                "namespace": "td:stop",
+                "name": {
+                  "en": "Mui Wo Ferry Pier",
+                  "zhHant": "梅窩碼頭"
+                },
+                "latitude": 22.26485,
+                "longitude": 114.00156,
+                "distanceM": null,
+                "operators": [
+                  "NLB"
+                ],
+                "routeId": "1736",
+                "direction": "outbound",
+                "sequence": 1,
+                "pickup": true,
+                "dropoff": false,
+                "sourcePickupDrop": "2",
+                "sourceUpdatedAt": "2025-02-14T00:00:00",
+                "occurrence": 1,
+                "occurrenceCount": 1
+              },
+              "alight": {
+                "id": "path:1736:1:49",
+                "kind": "route_stop",
+                "stopId": "11000",
+                "namespace": "td:stop",
+                "name": {
+                  "en": "Tai O",
+                  "zhHant": "大澳"
+                },
+                "latitude": 22.25262,
+                "longitude": 113.86255,
+                "distanceM": null,
+                "operators": [
+                  "NLB"
+                ],
+                "routeId": "1736",
+                "direction": "outbound",
+                "sequence": 49,
+                "pickup": false,
+                "dropoff": true,
+                "sourcePickupDrop": "1",
+                "sourceUpdatedAt": "2025-02-14T00:00:00",
+                "occurrence": 1,
+                "occurrenceCount": 1
+              },
+              "referenceStopCount": 48,
+              "arrivalStatus": "live",
+              "operatorNamespace": "nlb",
+              "operatorRouteId": 40,
+              "operatorRouteReference": {
+                "routeId": 40,
+                "routeNo": "N1",
+                "routeName_c": "梅窩碼頭  > 大澳",
+                "routeName_s": "梅窝码头  > 大澳",
+                "routeName_e": "Mui Wo Ferry Pier > Tai O",
+                "overnightRoute": 1,
+                "specialRoute": 0
+              },
+              "operatorEligibilityVerified": true,
+              "operatorBoardStopId": "1",
+              "operatorAlightStopId": "55",
+              "operatorBoardSequence": 1,
+              "operatorAlightSequence": 49,
+              "operatorStopCount": 48,
+              "operatorBoardReference": {
+                "stopId": 1,
+                "stopName_c": "梅窩碼頭",
+                "stopName_s": "梅窝码头",
+                "stopName_e": "Mui Wo Ferry Pier",
+                "stopLocation_c": "梅窩碼頭",
+                "stopLocation_s": "梅窝码头",
+                "stopLocation_e": "Mui Wo Ferry Pier",
+                "latitude": "22.26466400",
+                "longitude": "114.00155400",
+                "fare": "19.2",
+                "fareHoliday": "32.8",
+                "someDepartureObserveOnly": 0
+              },
+              "operatorAlightReference": {
+                "stopId": 55,
+                "stopName_c": "大澳",
+                "stopName_s": "大澳",
+                "stopName_e": "Tai O",
+                "stopLocation_c": "大澳道",
+                "stopLocation_s": "大澳道",
+                "stopLocation_e": "Tai O Road",
+                "latitude": "22.25253000",
+                "longitude": "113.86275300",
+                "fare": "0.0",
+                "fareHoliday": "0.0",
+                "someDepartureObserveOnly": 0
+              },
+              "arrivalCheckedAt": 1793893362.176957,
+              "arrivals": {
+                "items": [],
+                "predictionField": "estimatedArrivalTime",
+                "transport": {
+                  "operator": "New Lantao Bus",
+                  "mode": "bus",
+                  "operation": "arrivals",
+                  "requiredParameters": [
+                    "languageCode",
+                    "routeId",
+                    "stopId"
+                  ],
+                  "optionalParameters": {},
+                  "parameterExamples": {
+                    "languageCode": "en",
+                    "routeId": "1",
+                    "stopId": "1"
+                  },
+                  "cacheTTLSeconds": 20,
+                  "maxSourceAgeSeconds": 150,
+                  "validationScope": "last_selected_route_or_stop",
+                  "policyVersion": "transport-2",
+                  "omittedStaleRecords": 0,
+                  "arrivalState": "no_arrivals",
+                  "sourceTimestamp": "2026-11-05T15:42:28+00:00",
+                  "sourceAgeSeconds": 13.959864616394043,
+                  "freshnessBasis": "provider_timestamp",
+                  "freshUntil": 1793893498.0,
+                  "cacheAgeSeconds": 0.12201571464538574
+                },
+                "warnings": [],
+                "provenance": [
+                  {
+                    "sourceUrl": "https://rt.data.gov.hk/v2/transport/nlb/stop.php?action=estimatedArrivals&routeId=40&stopId=1&language=en",
+                    "originalResourceUrl": "https://rt.data.gov.hk/v2/transport/nlb/stop.php?action=estimatedArrivals&routeId={routeId}&stopId={stopId}&language={languageCode}",
+                    "catalogueUrl": "https://data.gov.hk/en-data/dataset/nlb-bus-nlb-bus-service-v2",
+                    "attribution": "New Lantao Bus Company (1973) Limited / DATA.GOV.HK",
+                    "termsUrl": "https://data.gov.hk/en/terms-and-conditions",
+                    "retrievedAt": 1793892258.2479455,
+                    "observedAt": null,
+                    "lastCheckedAt": 1793893361.8378806,
+                    "lastValidatedAt": 1793893361.8378806,
+                    "publicationDate": "2022-07-15",
+                    "referencePeriod": null,
+                    "contentHash": "e4f430d2d563999e42612dc75ab68e12254b30e7c0555d4ac812a08377e65ee5",
+                    "stale": false
+                  }
+                ]
+              },
+              "operatorVerification": {
+                "method": "route_membership_name_location_and_occurrence",
+                "namespace": "nlb",
+                "provenance": [
+                  {
+                    "sourceUrl": "https://rt.data.gov.hk/v2/transport/nlb/stop.php?action=list&routeId=40",
+                    "originalResourceUrl": "https://rt.data.gov.hk/v2/transport/nlb/stop.php?action=list&routeId={routeId}",
+                    "catalogueUrl": "https://data.gov.hk/en-data/dataset/nlb-bus-nlb-bus-service-v2",
+                    "attribution": "New Lantao Bus Company (1973) Limited / DATA.GOV.HK",
+                    "termsUrl": "https://data.gov.hk/en/terms-and-conditions",
+                    "retrievedAt": 1793892257.8853874,
+                    "observedAt": null,
+                    "lastCheckedAt": 1793893359.501186,
+                    "lastValidatedAt": 1793893359.501186,
+                    "publicationDate": "2022-07-15",
+                    "referencePeriod": null,
+                    "contentHash": "9eb8201c8a6dca4b95a14fbaebdc75ac5a44f6178a725ea5607209539182cf20",
+                    "stale": false
+                  }
+                ]
+              },
+              "earliestPredictedDeparture": null,
+              "predictionCoverage": {
+                "future": 0,
+                "expired": 0,
+                "unknown": 0,
+                "emptyFeedDoesNotProveNoService": true
+              },
+              "referenceVariants": [
+                {
+                  "id": "route:1736",
+                  "kind": "route",
+                  "routeId": "1736",
+                  "operator": "NLB",
+                  "route": "N1",
+                  "origin": {
+                    "en": "Mui Wo Ferry Pier",
+                    "zhHant": "梅窩碼頭"
+                  },
+                  "destination": {
+                    "en": "Tai O",
+                    "zhHant": "大澳"
+                  },
+                  "serviceMode": "NT",
+                  "specialType": "3",
+                  "sourceUpdatedAt": "2025-10-31T00:00:00"
+                }
+              ],
+              "alightingAlternatives": [
+                {
+                  "referenceStop": {
+                    "id": "path:1736:1:49",
+                    "kind": "route_stop",
+                    "stopId": "11000",
+                    "namespace": "td:stop",
+                    "name": {
+                      "en": "Tai O",
+                      "zhHant": "大澳"
+                    },
+                    "latitude": 22.25262,
+                    "longitude": 113.86255,
+                    "distanceM": null,
+                    "operators": [
+                      "NLB"
+                    ],
+                    "routeId": "1736",
+                    "direction": "outbound",
+                    "sequence": 49,
+                    "pickup": false,
+                    "dropoff": true,
+                    "sourcePickupDrop": "1",
+                    "sourceUpdatedAt": "2025-02-14T00:00:00",
+                    "occurrence": 1,
+                    "occurrenceCount": 1
+                  },
+                  "operatorStopId": "55",
+                  "operatorSequence": 49
+                }
+              ],
+              "alightingAlternativeCount": 1
+            },
+            {
+              "route": {
+                "id": "route:8567",
+                "kind": "route",
+                "routeId": "8567",
+                "operator": "NLB",
+                "route": "1",
+                "origin": {
+                  "en": "Mui Wo Ferry Pier",
+                  "zhHant": "梅窩碼頭"
+                },
+                "destination": {
+                  "en": "Tai O (via Sha Tsui Correctional Institution)",
+                  "zhHant": "大澳(經沙咀懲教所)"
+                },
+                "serviceMode": "T",
+                "specialType": "3",
+                "sourceUpdatedAt": "2025-10-30T00:00:00"
+              },
+              "direction": "outbound",
+              "board": {
+                "id": "path:8567:1:1",
+                "kind": "route_stop",
+                "stopId": "12000",
+                "namespace": "td:stop",
+                "name": {
+                  "en": "Mui Wo Ferry Pier",
+                  "zhHant": "梅窩碼頭"
+                },
+                "latitude": 22.26485,
+                "longitude": 114.00156,
+                "distanceM": null,
+                "operators": [
+                  "NLB"
+                ],
+                "routeId": "8567",
+                "direction": "outbound",
+                "sequence": 1,
+                "pickup": true,
+                "dropoff": false,
+                "sourcePickupDrop": "2",
+                "sourceUpdatedAt": "2025-02-14T00:00:00",
+                "occurrence": 1,
+                "occurrenceCount": 1
+              },
+              "alight": {
+                "id": "path:8567:1:50",
+                "kind": "route_stop",
+                "stopId": "11000",
+                "namespace": "td:stop",
+                "name": {
+                  "en": "Tai O",
+                  "zhHant": "大澳"
+                },
+                "latitude": 22.25262,
+                "longitude": 113.86255,
+                "distanceM": null,
+                "operators": [
+                  "NLB"
+                ],
+                "routeId": "8567",
+                "direction": "outbound",
+                "sequence": 50,
+                "pickup": false,
+                "dropoff": true,
+                "sourcePickupDrop": "1",
+                "sourceUpdatedAt": "2025-02-14T00:00:00",
+                "occurrence": 1,
+                "occurrenceCount": 1
+              },
+              "referenceStopCount": 49,
+              "arrivalStatus": "ineligible",
+              "operatorNamespace": "nlb",
+              "operatorRouteId": 2,
+              "operatorRouteReference": {
+                "routeId": 2,
+                "routeNo": "1",
+                "routeName_c": "大澳 > 梅窩碼頭",
+                "routeName_s": "大澳 > 梅窝码头",
+                "routeName_e": "Tai O > Mui Wo Ferry Pier",
+                "overnightRoute": 0,
+                "specialRoute": 0
+              },
+              "ineligibleReason": "TRANSPORT_NOT_SERVING_ORDER"
+            },
+            {
+              "route": {
+                "id": "route:8568",
+                "kind": "route",
+                "routeId": "8568",
+                "operator": "NLB",
+                "route": "1",
+                "origin": {
+                  "en": "Mui Wo Ferry Pier",
+                  "zhHant": "梅窩碼頭"
+                },
+                "destination": {
+                  "en": "Tai O (via Mui Wo Old Town)",
+                  "zhHant": "大澳(經梅窩舊墟)"
+                },
+                "serviceMode": "R",
+                "specialType": "2",
+                "sourceUpdatedAt": "2025-10-31T00:00:00"
+              },
+              "direction": "outbound",
+              "board": {
+                "id": "path:8568:1:1",
+                "kind": "route_stop",
+                "stopId": "12000",
+                "namespace": "td:stop",
+                "name": {
+                  "en": "Mui Wo Ferry Pier",
+                  "zhHant": "梅窩碼頭"
+                },
+                "latitude": 22.26485,
+                "longitude": 114.00156,
+                "distanceM": null,
+                "operators": [
+                  "NLB"
+                ],
+                "routeId": "8568",
+                "direction": "outbound",
+                "sequence": 1,
+                "pickup": true,
+                "dropoff": false,
+                "sourcePickupDrop": "2",
+                "sourceUpdatedAt": "2025-02-14T00:00:00",
+                "occurrence": 1,
+                "occurrenceCount": 1
+              },
+              "alight": {
+                "id": "path:8568:1:53",
+                "kind": "route_stop",
+                "stopId": "11000",
+                "namespace": "td:stop",
+                "name": {
+                  "en": "Tai O",
+                  "zhHant": "大澳"
+                },
+                "latitude": 22.25262,
+                "longitude": 113.86255,
+                "distanceM": null,
+                "operators": [
+                  "NLB"
+                ],
+                "routeId": "8568",
+                "direction": "outbound",
+                "sequence": 53,
+                "pickup": false,
+                "dropoff": true,
+                "sourcePickupDrop": "1",
+                "sourceUpdatedAt": "2025-02-14T00:00:00",
+                "occurrence": 1,
+                "occurrenceCount": 1
+              },
+              "referenceStopCount": 52,
+              "arrivalStatus": "ineligible",
+              "operatorNamespace": "nlb",
+              "operatorRouteId": 2,
+              "operatorRouteReference": {
+                "routeId": 2,
+                "routeNo": "1",
+                "routeName_c": "大澳 > 梅窩碼頭",
+                "routeName_s": "大澳 > 梅窝码头",
+                "routeName_e": "Tai O > Mui Wo Ferry Pier",
+                "overnightRoute": 0,
+                "specialRoute": 0
+              },
+              "ineligibleReason": "TRANSPORT_NOT_SERVING_ORDER"
+            }
+          ],
+          "totalMatched": 11,
+          "referenceCandidateCount": 6,
+          "candidateMeaning": "Reference routes expanded into discovered operator service/route variants where joined; failed expansion retains one unknown reference.",
+          "totalDepartureChoices": 7,
+          "originCandidates": [
+            {
+              "id": "stop:12000",
+              "kind": "stop",
+              "stopId": "12000",
+              "namespace": "td:stop",
+              "name": {
+                "en": "[NLB] MUI WO FERRY PIER",
+                "zhHant": "[NLB] 梅窩碼頭"
+              },
+              "latitude": 22.26485,
+              "longitude": 114.00156,
+              "distanceM": null,
+              "operators": [
+                "NLB"
+              ]
+            }
+          ],
+          "destinationCandidates": [
+            {
+              "id": "stop:11000",
+              "kind": "stop",
+              "stopId": "11000",
+              "namespace": "td:stop",
+              "name": {
+                "en": "[NLB] TAI O",
+                "zhHant": "[NLB] 大澳"
+              },
+              "latitude": 22.25262,
+              "longitude": 113.86255,
+              "distanceM": null,
+              "operators": [
+                "NLB"
+              ]
+            }
+          ],
+          "scope": "direct_bus_routes_only",
+          "currentServiceVerified": false,
+          "coverage": {
+            "candidate": 11,
+            "eligible": 6,
+            "eligibilityUnknown": 0,
+            "verifiedNotServingOrder": 5,
+            "acceptedArrivalChecks": 6,
+            "checked": 11,
+            "failed": 0,
+            "unchecked": 0,
+            "uncheckedReasons": {},
+            "sourceRequests": 7,
+            "requestLimit": 64,
+            "deadlineSeconds": 45,
+            "referenceIndexStale": false,
+            "complete": true,
+            "eligibilityMeaning": "Verified current operator boarding/alighting occurrence; service calendars remain unknown."
+          },
+          "departureComparison": {
+            "scope": "earliest_reported_departure_among_checked_candidates",
+            "earliestPredictedAt": "2026-11-06 00:10:00",
+            "allReferenceCandidatesChecked": true,
+            "globallyEarliest": false,
+            "serviceCalendarsVerified": false,
+            "walkingFeasibilityVerified": false,
+            "fastestArrivalVerified": false
+          }
+        },
+        "meta": {
+          "requestId": "64645f90798c4576ab5a086955188ec6",
+          "apiVersion": "v1",
+          "snapshotIds": [
+            "6744b7fe22ac451580a879f4a359631e"
+          ],
+          "truncated": false,
+          "indexVersion": "6744b7fe22ac451580a879f4a359631e",
+          "arrivalFreshnessIndependent": true
+        },
+        "provenance": [
+          {
+            "sourceId": "transport",
+            "sourceUrl": "https://data.gov.hk/en-data/dataset/hk-td-tis_11-pt-headway-en",
+            "attribution": "Transport Department / DATA.GOV.HK; live arrivals attributed separately to each operator",
+            "retrievedAt": "2026-11-05T14:14:39.937663+00:00",
+            "lastCheckedAt": "2026-11-05T14:14:39.937663+00:00",
+            "referencePeriod": null,
+            "stale": false,
+            "freshnessBasis": "last_successful_source_check"
+          },
+          {
+            "sourceUrl": "https://static.data.gov.hk/td/pt-headway-en/stops.txt",
+            "originalSourceUrl": "https://static.data.gov.hk/td/pt-headway-en/stops.txt",
+            "retrievedAt": 1793888058.4559512,
+            "sourceModified": "Mon, 02 Nov 2026 07:04:16 GMT",
+            "contentHash": "8b1cb7e18365201e5640f10fc6bc79b9549820240109ce0f1f2898755cffb696"
+          },
+          {
+            "sourceUrl": "https://static.data.gov.hk/td/pt-headway-tc/stops.txt",
+            "originalSourceUrl": "https://static.data.gov.hk/td/pt-headway-tc/stops.txt",
+            "retrievedAt": 1793888058.789509,
+            "sourceModified": "Mon, 02 Nov 2026 07:04:25 GMT",
+            "contentHash": "d1a9bff99808bf6d55e2c4b48163295cb5520ce23e092262397baa4d23cb8ced"
+          },
+          {
+            "sourceUrl": "https://static.data.gov.hk/td/routes-fares-xml/ROUTE_BUS.xml",
+            "originalSourceUrl": "https://static.data.gov.hk/td/routes-fares-xml/ROUTE_BUS.xml",
+            "retrievedAt": 1793888058.8455741,
+            "sourceModified": "Mon, 02 Nov 2026 07:04:42 GMT",
+            "contentHash": "7366f0516c6da6619b18c108680826726aff0f04faf01f17e83db33f37e83ee1"
+          },
+          {
+            "sourceUrl": "https://static.data.gov.hk/td/routes-fares-xml/RSTOP_BUS.xml",
+            "originalSourceUrl": "https://static.data.gov.hk/td/routes-fares-xml/RSTOP_BUS.xml",
+            "retrievedAt": 1793888060.7374184,
+            "sourceModified": "Mon, 02 Nov 2026 07:04:43 GMT",
+            "contentHash": "eeac29b41622cef00d45b0944d317c5b905cb2e66d549842abbf85d48be201cd"
+          }
+        ],
+        "warnings": [
+          {
+            "code": "BUS_DISCOVERY_SCOPE",
+            "message": "Direct bus routes from dated Transport Department files, not a fastest-trip planner or proof of current operation. Distances are straight-line. Joined live ETAs verify Citybus, KMB/LWB and NLB operator references; other arrival feeds remain available through resource queries. Temporary diversions and service calendars are not inferred."
+          }
+        ]
+      }
+    },
+    {
+      "operator": "KMB",
+      "reference": {
+        "id": "route:1001",
+        "kind": "route",
+        "routeId": "1001",
+        "operator": "KMB",
+        "route": "1",
+        "origin": {
+          "en": "CHUK YUEN ESTATE",
+          "zhHant": "竹園邨"
+        },
+        "destination": {
+          "en": "STAR FERRY",
+          "zhHant": "尖沙咀碼頭"
+        },
+        "serviceMode": "R",
+        "specialType": "0",
+        "sourceUpdatedAt": "2026-05-22T00:00:00"
+      },
+      "origin": "4001",
+      "destination": "4003",
+      "seconds": 45.159701000000496,
+      "result": {
+        "data": {
+          "items": [
+            {
+              "route": {
+                "id": "route:1001",
+                "kind": "route",
+                "routeId": "1001",
+                "operator": "KMB",
+                "route": "1",
+                "origin": {
+                  "en": "CHUK YUEN ESTATE",
+                  "zhHant": "竹園邨"
+                },
+                "destination": {
+                  "en": "STAR FERRY",
+                  "zhHant": "尖沙咀碼頭"
+                },
+                "serviceMode": "R",
+                "specialType": "0",
+                "sourceUpdatedAt": "2026-05-22T00:00:00"
+              },
+              "direction": "outbound",
+              "board": {
+                "id": "path:1001:1:1",
+                "kind": "route_stop",
+                "stopId": "4001",
+                "namespace": "td:stop",
+                "name": {
+                  "en": "CHUK YUEN ESTATE BUS TERMINUS",
+                  "zhHant": "竹園邨總站"
+                },
+                "latitude": 22.34535,
+                "longitude": 114.19244,
+                "distanceM": null,
+                "operators": [
+                  "CTB",
+                  "KMB"
+                ],
+                "routeId": "1001",
+                "direction": "outbound",
+                "sequence": 1,
+                "pickup": true,
+                "dropoff": false,
+                "sourcePickupDrop": "2",
+                "sourceUpdatedAt": "2026-05-20T00:00:00",
+                "occurrence": 1,
+                "occurrenceCount": 1
+              },
+              "alight": {
+                "id": "path:1001:1:3",
+                "kind": "route_stop",
+                "stopId": "4003",
+                "namespace": "td:stop",
+                "name": {
+                  "en": "MA CHAI HANG RECREATION GROUND",
+                  "zhHant": "馬仔坑遊樂場"
+                },
+                "latitude": 22.34422,
+                "longitude": 114.18777,
+                "distanceM": null,
+                "operators": [
+                  "CTB",
+                  "KMB"
+                ],
+                "routeId": "1001",
+                "direction": "outbound",
+                "sequence": 3,
+                "pickup": true,
+                "dropoff": true,
+                "sourcePickupDrop": "3",
+                "sourceUpdatedAt": "2026-05-20T00:00:00",
+                "occurrence": 1,
+                "occurrenceCount": 1
+              },
+              "referenceStopCount": 2,
+              "arrivalStatus": "unchecked",
+              "operatorNamespace": "kmb",
+              "operatorServiceType": "1",
+              "uncheckedReason": "comparison_deadline"
+            },
+            {
+              "route": {
+                "id": "route:1008",
+                "kind": "route",
+                "routeId": "1008",
+                "operator": "KMB+CTB",
+                "route": "103",
+                "origin": {
+                  "en": "CHUK YUEN ESTATE",
+                  "zhHant": "竹園邨"
+                },
+                "destination": {
+                  "en": "POKFIELD RD",
+                  "zhHant": "蒲飛路"
+                },
+                "serviceMode": "R",
+                "specialType": "0",
+                "sourceUpdatedAt": "2025-01-05T00:00:00"
+              },
+              "direction": "outbound",
+              "board": {
+                "id": "path:1008:1:1",
+                "kind": "route_stop",
+                "stopId": "4001",
+                "namespace": "td:stop",
+                "name": {
+                  "en": "CHUK YUEN ESTATE BUS TERMINUS/<br>Chuk Yuen Estate",
+                  "zhHant": "竹園邨總站/<br>竹園邨"
+                },
+                "latitude": 22.34535,
+                "longitude": 114.19244,
+                "distanceM": null,
+                "operators": [
+                  "CTB",
+                  "KMB"
+                ],
+                "routeId": "1008",
+                "direction": "outbound",
+                "sequence": 1,
+                "pickup": true,
+                "dropoff": false,
+                "sourcePickupDrop": "2",
+                "sourceUpdatedAt": "2023-07-25T00:00:00",
+                "occurrence": 1,
+                "occurrenceCount": 1
+              },
+              "alight": {
+                "id": "path:1008:1:3",
+                "kind": "route_stop",
+                "stopId": "4003",
+                "namespace": "td:stop",
+                "name": {
+                  "en": "MA CHAI HANG RECREATION GROUND/<br>Ma Chai Hang Recreation Ground, Ma Chai Hang Road",
+                  "zhHant": "馬仔坑遊樂場/<br>馬仔坑遊樂場, 馬仔坑道"
+                },
+                "latitude": 22.34422,
+                "longitude": 114.18777,
+                "distanceM": null,
+                "operators": [
+                  "CTB",
+                  "KMB"
+                ],
+                "routeId": "1008",
+                "direction": "outbound",
+                "sequence": 3,
+                "pickup": true,
+                "dropoff": true,
+                "sourcePickupDrop": "3",
+                "sourceUpdatedAt": "2023-07-25T00:00:00",
+                "occurrence": 1,
+                "occurrenceCount": 1
+              },
+              "referenceStopCount": 2,
+              "arrivalStatus": "unchecked",
+              "operatorNamespace": "kmb",
+              "operatorServiceType": "1",
+              "uncheckedReason": "comparison_deadline"
+            },
+            {
+              "route": {
+                "id": "route:1028",
+                "kind": "route",
+                "routeId": "1028",
+                "operator": "KMB",
+                "route": "11C",
+                "origin": {
+                  "en": "CHUK YUEN ESTATE",
+                  "zhHant": "竹園邨"
+                },
+                "destination": {
+                  "en": "SAU MAU PING (UPPER)",
+                  "zhHant": "上秀茂坪"
+                },
+                "serviceMode": "R",
+                "specialType": "0",
+                "sourceUpdatedAt": "2026-05-15T00:00:00"
+              },
+              "direction": "outbound",
+              "board": {
+                "id": "path:1028:1:1",
+                "kind": "route_stop",
+                "stopId": "4001",
+                "namespace": "td:stop",
+                "name": {
+                  "en": "CHUK YUEN ESTATE BUS TERMINUS",
+                  "zhHant": "竹園邨總站"
+                },
+                "latitude": 22.34535,
+                "longitude": 114.19244,
+                "distanceM": null,
+                "operators": [
+                  "CTB",
+                  "KMB"
+                ],
+                "routeId": "1028",
+                "direction": "outbound",
+                "sequence": 1,
+                "pickup": true,
+                "dropoff": false,
+                "sourcePickupDrop": "2",
+                "sourceUpdatedAt": "2025-02-14T00:00:00",
+                "occurrence": 1,
+                "occurrenceCount": 1
+              },
+              "alight": {
+                "id": "path:1028:1:3",
+                "kind": "route_stop",
+                "stopId": "4003",
+                "namespace": "td:stop",
+                "name": {
+                  "en": "MA CHAI HANG RECREATION GROUND",
+                  "zhHant": "馬仔坑遊樂場"
+                },
+                "latitude": 22.34422,
+                "longitude": 114.18777,
+                "distanceM": null,
+                "operators": [
+                  "CTB",
+                  "KMB"
+                ],
+                "routeId": "1028",
+                "direction": "outbound",
+                "sequence": 3,
+                "pickup": true,
+                "dropoff": true,
+                "sourcePickupDrop": "3",
+                "sourceUpdatedAt": "2025-02-14T00:00:00",
+                "occurrence": 1,
+                "occurrenceCount": 1
+              },
+              "referenceStopCount": 2,
+              "arrivalStatus": "unchecked",
+              "operatorNamespace": "kmb",
+              "operatorServiceType": "1",
+              "uncheckedReason": "comparison_deadline"
+            },
+            {
+              "route": {
+                "id": "route:1030",
+                "kind": "route",
+                "routeId": "1030",
+                "operator": "KMB",
+                "route": "11K",
+                "origin": {
+                  "en": "CHUK YUEN ESTATE",
+                  "zhHant": "竹園邨"
+                },
+                "destination": {
+                  "en": "HUNG HOM STATION",
+                  "zhHant": "紅磡站"
+                },
+                "serviceMode": "R",
+                "specialType": "0",
+                "sourceUpdatedAt": "2025-01-05T00:00:00"
+              },
+              "direction": "outbound",
+              "board": {
+                "id": "path:1030:1:1",
+                "kind": "route_stop",
+                "stopId": "4001",
+                "namespace": "td:stop",
+                "name": {
+                  "en": "CHUK YUEN ESTATE BUS TERMINUS",
+                  "zhHant": "竹園邨總站"
+                },
+                "latitude": 22.34535,
+                "longitude": 114.19244,
+                "distanceM": null,
+                "operators": [
+                  "CTB",
+                  "KMB"
+                ],
+                "routeId": "1030",
+                "direction": "outbound",
+                "sequence": 1,
+                "pickup": true,
+                "dropoff": false,
+                "sourcePickupDrop": "2",
+                "sourceUpdatedAt": "2023-01-18T00:00:00",
+                "occurrence": 1,
+                "occurrenceCount": 1
+              },
+              "alight": {
+                "id": "path:1030:1:3",
+                "kind": "route_stop",
+                "stopId": "4003",
+                "namespace": "td:stop",
+                "name": {
+                  "en": "MA CHAI HANG RECREATION GROUND",
+                  "zhHant": "馬仔坑遊樂場"
+                },
+                "latitude": 22.34422,
+                "longitude": 114.18777,
+                "distanceM": null,
+                "operators": [
+                  "CTB",
+                  "KMB"
+                ],
+                "routeId": "1030",
+                "direction": "outbound",
+                "sequence": 3,
+                "pickup": true,
+                "dropoff": true,
+                "sourcePickupDrop": "3",
+                "sourceUpdatedAt": "2023-01-18T00:00:00",
+                "occurrence": 1,
+                "occurrenceCount": 1
+              },
+              "referenceStopCount": 2,
+              "arrivalStatus": "unchecked",
+              "operatorNamespace": "kmb",
+              "operatorServiceType": "1",
+              "uncheckedReason": "comparison_deadline"
+            }
+          ],
+          "totalMatched": 4,
+          "referenceCandidateCount": 4,
+          "candidateMeaning": "Reference routes expanded into discovered operator service/route variants where joined; failed expansion retains one unknown reference.",
+          "totalDepartureChoices": 4,
+          "originCandidates": [
+            {
+              "id": "stop:4001",
+              "kind": "stop",
+              "stopId": "4001",
+              "namespace": "td:stop",
+              "name": {
+                "en": "[CTB] CHUK YUEN ESTATE|[KMB+CTB] CHUK YUEN ESTATE BUS TERMINUS/<BR>CHUK YUEN ESTATE|[KMB] CHUK YUEN ESTATE BUS TERMINUS",
+                "zhHant": "[CTB] 竹園邨|[KMB+CTB] 竹園邨總站/<BR>竹園邨|[KMB] 竹園邨總站"
+              },
+              "latitude": 22.34535,
+              "longitude": 114.19244,
+              "distanceM": null,
+              "operators": [
+                "CTB",
+                "KMB"
+              ]
+            }
+          ],
+          "destinationCandidates": [
+            {
+              "id": "stop:4003",
+              "kind": "stop",
+              "stopId": "4003",
+              "namespace": "td:stop",
+              "name": {
+                "en": "[KMB+CTB] MA CHAI HANG RECREATION GROUND/<BR>MA CHAI HANG RECREATION GROUND, MA CHAI HANG ROAD|[KMB] MA CHAI HANG RECREATION GROUND",
+                "zhHant": "[KMB+CTB] 馬仔坑遊樂場/<BR>馬仔坑遊樂場, 馬仔坑道|[KMB] 馬仔坑遊樂場"
+              },
+              "latitude": 22.34422,
+              "longitude": 114.18777,
+              "distanceM": null,
+              "operators": [
+                "CTB",
+                "KMB"
+              ]
+            }
+          ],
+          "scope": "direct_bus_routes_only",
+          "currentServiceVerified": false,
+          "coverage": {
+            "candidate": 4,
+            "eligible": 0,
+            "eligibilityUnknown": 4,
+            "verifiedNotServingOrder": 0,
+            "acceptedArrivalChecks": 0,
+            "checked": 0,
+            "failed": 0,
+            "unchecked": 4,
+            "uncheckedReasons": {
+              "comparison_deadline": 4
+            },
+            "sourceRequests": 16,
+            "requestLimit": 64,
+            "deadlineSeconds": 45,
+            "referenceIndexStale": false,
+            "complete": false,
+            "eligibilityMeaning": "Verified current operator boarding/alighting occurrence; service calendars remain unknown."
+          },
+          "departureComparison": {
+            "scope": "earliest_reported_departure_among_checked_candidates",
+            "earliestPredictedAt": null,
+            "allReferenceCandidatesChecked": false,
+            "globallyEarliest": false,
+            "serviceCalendarsVerified": false,
+            "walkingFeasibilityVerified": false,
+            "fastestArrivalVerified": false
+          }
+        },
+        "meta": {
+          "requestId": "0b1db4e4c037471bb9f3b5fe3a83a1d6",
+          "apiVersion": "v1",
+          "snapshotIds": [
+            "6744b7fe22ac451580a879f4a359631e"
+          ],
+          "truncated": false,
+          "indexVersion": "6744b7fe22ac451580a879f4a359631e",
+          "arrivalFreshnessIndependent": true
+        },
+        "provenance": [
+          {
+            "sourceId": "transport",
+            "sourceUrl": "https://data.gov.hk/en-data/dataset/hk-td-tis_11-pt-headway-en",
+            "attribution": "Transport Department / DATA.GOV.HK; live arrivals attributed separately to each operator",
+            "retrievedAt": "2026-11-05T14:14:39.937663+00:00",
+            "lastCheckedAt": "2026-11-05T14:14:39.937663+00:00",
+            "referencePeriod": null,
+            "stale": false,
+            "freshnessBasis": "last_successful_source_check"
+          },
+          {
+            "sourceUrl": "https://static.data.gov.hk/td/pt-headway-en/stops.txt",
+            "originalSourceUrl": "https://static.data.gov.hk/td/pt-headway-en/stops.txt",
+            "retrievedAt": 1793888058.4559512,
+            "sourceModified": "Mon, 02 Nov 2026 07:04:16 GMT",
+            "contentHash": "8b1cb7e18365201e5640f10fc6bc79b9549820240109ce0f1f2898755cffb696"
+          },
+          {
+            "sourceUrl": "https://static.data.gov.hk/td/pt-headway-tc/stops.txt",
+            "originalSourceUrl": "https://static.data.gov.hk/td/pt-headway-tc/stops.txt",
+            "retrievedAt": 1793888058.789509,
+            "sourceModified": "Mon, 02 Nov 2026 07:04:25 GMT",
+            "contentHash": "d1a9bff99808bf6d55e2c4b48163295cb5520ce23e092262397baa4d23cb8ced"
+          },
+          {
+            "sourceUrl": "https://static.data.gov.hk/td/routes-fares-xml/ROUTE_BUS.xml",
+            "originalSourceUrl": "https://static.data.gov.hk/td/routes-fares-xml/ROUTE_BUS.xml",
+            "retrievedAt": 1793888058.8455741,
+            "sourceModified": "Mon, 02 Nov 2026 07:04:42 GMT",
+            "contentHash": "7366f0516c6da6619b18c108680826726aff0f04faf01f17e83db33f37e83ee1"
+          },
+          {
+            "sourceUrl": "https://static.data.gov.hk/td/routes-fares-xml/RSTOP_BUS.xml",
+            "originalSourceUrl": "https://static.data.gov.hk/td/routes-fares-xml/RSTOP_BUS.xml",
+            "retrievedAt": 1793888060.7374184,
+            "sourceModified": "Mon, 02 Nov 2026 07:04:43 GMT",
+            "contentHash": "eeac29b41622cef00d45b0944d317c5b905cb2e66d549842abbf85d48be201cd"
+          }
+        ],
+        "warnings": [
+          {
+            "code": "BUS_DISCOVERY_SCOPE",
+            "message": "Direct bus routes from dated Transport Department files, not a fastest-trip planner or proof of current operation. Distances are straight-line. Joined live ETAs verify Citybus, KMB/LWB and NLB operator references; other arrival feeds remain available through resource queries. Temporary diversions and service calendars are not inferred."
+          }
+        ]
+      }
+    }
+  ]
+}

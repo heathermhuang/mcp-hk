@@ -1,5 +1,29 @@
 # Reconciled catalogue and resource queries
 
+## Explicit Census report series
+
+C&SD `wbr.html?ecode=...&download_excel=1` URLs are report applications which
+generate spreadsheets in the browser. Schema inspection discovers published table
+IDs; inspect one with `recordPath` to discover exact `table/variable/presentation`
+choices. A full choice reads one original issue-scoped MDT CSV file with its
+report issue, dictionary, classification labels, units and footnotes retained.
+It does not substitute the latest-data API or reconstruct a workbook. Original
+strings, leading zeros, observation text and suppression flags remain unchanged.
+The `sourceFiles` hashes identify every manifest/component/dictionary/CSV read;
+the report manifest is checked again before acceptance. Source files are not an
+atomic publication snapshot. Failed/missing files are not successful zero rows.
+Use `recordPath`, without workbook `sheet` or map `layer`. Existing byte/row/cache,
+selection, admission and recovery bounds apply.
+
+Four additional exact GeoJSON sources have reviewed point profiles: public library
+features (including mobile stops), museum features, fire stations and ambulance
+depots. They reuse the existing nearby engine and version-scoped source OBJECTIDs.
+Geometry drives straight-line distance; property-coordinate disagreements remain
+raw. These are source features, not unique buildings, current opening hours,
+emergency dispatch or service availability. Discovery accepts `library`, `museum`,
+`fire_station` and `ambulance_depot` entity kinds. Qualification receipts are in
+`docs/verification/backlog-20261105/`; production acceptance remains a release gate.
+
 ## Partial-text search across datasets
 
 `hk_resource_query` and `POST /api/v1/resources/{resourceId}/query` accept

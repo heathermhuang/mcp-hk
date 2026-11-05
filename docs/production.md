@@ -144,11 +144,18 @@ reader/writer pump, aborts both sides on failure, and advances recovery pointers
 after immutable storage succeeds. Regression tests cover the unsupported pipe and
 retain the previous pointer on truncation.
 
-Checkpoint copies expand compressed inventory/schema metadata to equivalent JSON
-text before shared archive compression. Live metadata and the bounded record cache
-are unchanged. The measured archive fell from 82.7 MB to 46.8 MB; the restored SQLite
-file grew to 244 MB, within the existing 500 MB bound. Both metadata tables retained
-identical logical checksums. Cold MCP startup still requires a 120-second client
+Checkpoint copies use shared archive compression for inventory JSON and retain the
+existing lossless compressed encoding for schema JSON. Earlier copies expanded both
+tables, which eventually left only 52 MB of restored-database headroom. The bounded
+backlog pilot restored 311,255,040 bytes of SQLite from a 106,745,164-byte archive,
+with all 36 tables' logical values and multiplicities unchanged. Compressing both
+tables was rejected because its 145 MB archive left too little transfer headroom.
+The actual hosted fast-compression setting produced a 116,289,086-byte archive of
+the same 311,255,040-byte database, leaving 33,710,914 archive bytes of headroom.
+Only the isolated backup copy changes; live rows and the 4 MB record cache remain.
+Readers retain compatibility with both older expanded and compressed metadata.
+The 150/500/750 MB limits remain unchanged. See the measured recovery receipts in
+`docs/verification/backlog-20261105/`. Cold MCP startup still requires a 120-second client
 window; a real cold Codex test passed after the default 30-second window timed out.
 
 Transient container proxy responses (plain-text 502/503/504) are converted to the

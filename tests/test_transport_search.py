@@ -17,6 +17,19 @@ from mcp_open_data_hk.services import Service
 from mcp_open_data_hk.storage import Store
 from mcp_open_data_hk.transport_api import JourneyQuery, StopQuery
 from mcp_open_data_hk.transport_search import CITYBUS, compile_index, parse_index
+from mcp_open_data_hk.transport_joins import KMB, NLB
+
+
+def test_kmb_name_annotation_is_bilingual_exact_and_preserves_source_values():
+    from mcp_open_data_hk.transport_joins import kmb_names
+
+    source = {"name_en": "STOP NAME (WT001)", "name_tc": "巴士站 (WT001)"}
+    assert kmb_names(source) == {"en": "STOP NAME", "zhHant": "巴士站"}
+    assert source["name_en"].endswith("(WT001)")
+    different = {**source, "name_tc": "巴士站 (WT002)"}
+    assert kmb_names(different)["en"] == source["name_en"]
+    ordinary_name = {"name_en": "STOP (TERMINAL)", "name_tc": "巴士站 (總站)"}
+    assert kmb_names(ordinary_name)["en"] == ordinary_name["name_en"]
 
 
 def xml(tag, rows):
@@ -531,7 +544,7 @@ async def test_budget_unchecked_and_other_operator_are_unknown_not_ineligible(
         cached[1], JourneyQuery(origin="Lan", destination="Seymour")
     )[0][0]
     candidates = [copy.deepcopy(base) for _ in range(70)]
-    candidates[-1]["route"]["operator"] = "KMB"
+    candidates[-1]["route"]["operator"] = "DB"
     monkeypatch.setattr(service.transport, "direct", lambda *a: (candidates, [], []))
 
     async def citybus(candidate, remaining, cache):
@@ -552,6 +565,159 @@ async def test_budget_unchecked_and_other_operator_are_unknown_not_ineligible(
     assert data["coverage"]["eligibilityUnknown"] == 70
     assert data["coverage"]["uncheckedReasons"]["operator_join_not_qualified"] == 1
     assert not data["coverage"]["complete"]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("operator", ["KMB", "NLB"])
+@pytest.mark.parametrize(
+    "broken", [None, "stop_identity", "loop", "eta_identity", "truncated"]
+)
+async def test_new_operator_variants_preserve_ids_native_eta_and_complete_comparison(
+    service, monkeypatch, operator, broken
+):
+    from datetime import datetime, timezone, timedelta
+
+    cached = await service.transport.index()
+    base = service.transport.direct(
+        cached[1], JourneyQuery(origin="Lan", destination="Seymour")
+    )[0][0]
+    base["route"]["operator"] = operator
+    monkeypatch.setattr(service.transport, "direct", lambda *a: ([base], [], []))
+    calls = []
+    ids = ["0000000000000001", "0000000000000002"]
+    early = (datetime.now(timezone.utc) + timedelta(minutes=3)).isoformat()
+    late = (datetime.now(timezone.utc) + timedelta(minutes=8)).isoformat()
+
+    async def query(resource, parameters, filters=None, **kwargs):
+        calls.append((resource, tuple(sorted(parameters.items()))))
+        next_offset = None
+        if resource == KMB["routes"]:
+            assert filters == {"route": "12", "bound": "O"}
+            items = [
+                {"route": "12", "bound": "O", "service_type": s} for s in ["2", "7"]
+            ]
+        elif resource == KMB["path"]:
+            assert parameters["service_type"] in {"2", "7"}
+            items = [
+                {
+                    "route": "12",
+                    "bound": "O",
+                    "service_type": parameters["service_type"],
+                    "seq": str(i + 1),
+                    "stop": sid,
+                }
+                for i, sid in enumerate(ids)
+            ]
+            if broken == "loop":
+                items.append({**items[0], "seq": "3"})
+        elif resource == KMB["stop"]:
+            sid = parameters["stop_id"]
+            target = base["board"] if sid == ids[0] else base["alight"]
+            items = [
+                {
+                    "data": {
+                        "stop": (
+                            "FFFFFFFFFFFFFFFF" if broken == "stop_identity" else sid
+                        ),
+                        "name_en": target["name"]["en"] + " (WT001)",
+                        "name_tc": target["name"]["zhHant"] + " (WT001)",
+                        "lat": str(target["latitude"]),
+                        "long": str(target["longitude"]),
+                    }
+                }
+            ]
+        elif resource == KMB["eta"]:
+            items = [
+                {
+                    "co": "CTB" if broken == "eta_identity" else "KMB",
+                    "route": "12",
+                    "dir": "O",
+                    "service_type": int(parameters["service_type"]),
+                    "seq": 1,
+                    "eta": early if parameters["service_type"] == "7" else late,
+                }
+            ]
+        elif resource == NLB["routes"]:
+            assert filters == {"routeNo": "12"}
+            items = [{"routeNo": "12", "routeId": i} for i in [12, 73]]
+        elif resource == NLB["path"]:
+            targets = [base["board"], base["alight"]]
+            if parameters["routeId"] == "12":
+                targets.reverse()
+            items = [
+                {
+                    "stopId": 1 if t is base["board"] else 2,
+                    "stopName_e": (
+                        "different" if broken == "stop_identity" else t["name"]["en"]
+                    ),
+                    "stopName_c": (
+                        "different"
+                        if broken == "stop_identity"
+                        else t["name"]["zhHant"]
+                    ),
+                    "latitude": str(t["latitude"]),
+                    "longitude": str(t["longitude"]),
+                }
+                for t in targets
+            ]
+            if broken == "loop":
+                items.append(items[0])
+        elif resource == NLB["eta"]:
+            if broken == "eta_identity":
+                raise DomainError("STALE_TRANSPORT_DATA", "source expired", 503)
+            items = [
+                {
+                    "estimatedArrivalTime": early,
+                    "routeVariantName": "source variant",
+                    "departed": 0,
+                    "noGPS": 1,
+                }
+            ]
+        else:
+            raise AssertionError(resource)
+        if broken == "truncated" and resource in {KMB["routes"], NLB["routes"]}:
+            next_offset = 100
+        return {
+            "data": {"items": items},
+            "meta": {"nextOffset": next_offset},
+            "schema": {"transport": {"freshUntil": time.time() + 20}},
+            "warnings": [],
+            "provenance": [],
+        }
+
+    monkeypatch.setattr(service.resources, "query", query)
+    result = await service.transport.journey(
+        JourneyQuery(origin="Lan", destination="Seymour", limit=1)
+    )
+    data = result["data"]
+    coverage = data["coverage"]
+    assert coverage["sourceRequests"] <= 64
+    assert coverage["candidate"] == coverage["checked"] + coverage["unchecked"]
+    assert not data["departureComparison"]["globallyEarliest"]
+    if broken:
+        assert coverage["failed"] > 0
+        assert not coverage["complete"]
+        assert not any(c["arrivalStatus"] == "live" for c in data["items"])
+    else:
+        assert data["referenceCandidateCount"] == 1
+        assert data["totalMatched"] == 1
+        assert data["expandedCandidateCount"] == 2
+        assert coverage["candidate"] == coverage["checked"] == 2
+        assert coverage["complete"]
+        assert data["items"][0]["earliestPredictedDeparture"] == early
+        if operator == "KMB":
+            assert data["items"][0]["operatorServiceType"] == "7"
+            assert data["items"][0]["operatorBoardStopId"] == ids[0]
+            assert len(calls) == len(set(calls)) == 7
+            assert "shared-stop" in data["items"][0]["variantWarning"]
+        else:
+            assert data["items"][0]["operatorRouteId"] == 73
+            assert coverage["verifiedNotServingOrder"] == 1
+            assert data["items"][0]["arrivals"]["items"][0]["noGPS"] == 1
+            assert (
+                data["items"][0]["arrivals"]["predictionField"]
+                == "estimatedArrivalTime"
+            )
 
 
 @pytest.mark.asyncio

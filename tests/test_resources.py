@@ -498,11 +498,12 @@ async def test_conditional_unchanged_keeps_retrieval_timestamp(
 
 
 @pytest.mark.asyncio
-async def test_wfs_rejects_unproved_total(monkeypatch):
+@pytest.mark.parametrize("matched", [2, True, "unknown", "1.0", -1, None])
+async def test_wfs_rejects_unproved_total(monkeypatch, matched):
     from mcp_open_data_hk.resources import wfs
 
     async def read(url, params=None):
-        return {"features": [{}], "numberMatched": 2}, b"{}", {}, url
+        return {"features": [{}], "numberMatched": matched}, b"{}", {}, url
 
     monkeypatch.setattr("mcp_open_data_hk.resources.read_json", read)
     with pytest.raises(DomainError, match="INCOMPLETE_SOURCE"):

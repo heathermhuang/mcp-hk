@@ -59,7 +59,7 @@ def register_http(app, transport):
 
     @app.post("/api/v1/transport/journeys")
     async def journeys(query: JourneyQuery):
-        """Find direct bus routes and attach independently verified Citybus live arrivals."""
+        """Find direct bus routes and independently verify Citybus/KMB/LWB/NLB arrivals."""
         return await transport.journey(query)
 
 
@@ -103,7 +103,7 @@ def register_mcp(server, current):
         includeArrivals: bool = True,
         limit: int = 3,
     ) -> dict:
-        """Find direct bus routes between partial bilingual stop names, TD stop IDs or WGS84 locations. Citybus arrivals verify current operator stop identities and route order, then read live ETA with a maximum 20-second cache. Other operators return dated route references; use their generic resource arrival tools. Check each arrivalStatus/error, source dates and service flags. No transfer, walking-time, fastest-route or current-service guarantee."""
+        """Find direct bus routes between partial bilingual stop names, TD stop IDs or WGS84 locations. Citybus, KMB/LWB and NLB joins verify operator identities, service variants and current stop order before reading ETA with a maximum 20-second cache. Other operators return dated references. Check coverage, arrivalStatus/error, dates and raw service flags. No transfer, walking-time, fastest-route or current-service guarantee."""
         return await current().transport.journey(
             JourneyQuery(
                 origin=origin,
