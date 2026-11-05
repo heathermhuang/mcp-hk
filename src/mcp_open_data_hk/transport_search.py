@@ -8,7 +8,7 @@ import math
 import re
 import time
 import unicodedata
-from collections import defaultdict
+from collections import defaultdict, Counter
 
 from defusedxml import ElementTree as ET
 from defusedxml.common import DefusedXmlException
@@ -16,6 +16,7 @@ from defusedxml.common import DefusedXmlException
 from .contracts import DomainError
 from .resource_fetch import fetch, fetch_file
 from .services import distance
+from .transport import timestamp
 
 TD = "https://static.data.gov.hk/td/"
 FILES = {
@@ -375,6 +376,11 @@ class TransportSearch:
             route = index["routes"][rid]
             if query.operator and query.operator not in route["operator"].split("+"):
                 continue
+            counts = Counter(row["stopId"] for row in path)
+            seen, occurrences = Counter(), {}
+            for row in path:
+                seen[row["stopId"]] += 1
+                occurrences[row["sequence"]] = seen[row["stopId"]]
             for board in path:
                 if board["stopId"] not in orig or not board["pickup"]:
                     continue
@@ -388,13 +394,29 @@ class TransportSearch:
                             {
                                 "route": route,
                                 "direction": direction,
-                                "board": {**orig[board["stopId"]], **board},
-                                "alight": {**dest[alight["stopId"]], **alight},
+                                "board": {
+                                    **orig[board["stopId"]],
+                                    **board,
+                                    "occurrence": occurrences[board["sequence"]],
+                                    "occurrenceCount": counts[board["stopId"]],
+                                },
+                                "alight": {
+                                    **dest[alight["stopId"]],
+                                    **alight,
+                                    "occurrence": occurrences[alight["sequence"]],
+                                    "occurrenceCount": counts[alight["stopId"]],
+                                },
                                 "referenceStopCount": alight["sequence"]
                                 - board["sequence"],
                                 "arrivalStatus": "not_requested",
                             }
                         )
+                        if len(candidates) > 10000:
+                            raise DomainError(
+                                "STOP_SELECTION_REQUIRED",
+                                "Too many route occurrences; select exact stops",
+                                400,
+                            )
         candidates.sort(
             key=lambda r: (
                 r["route"]["specialType"] != "0",
@@ -405,11 +427,19 @@ class TransportSearch:
         )
         return candidates, origins, destinations
 
-    async def citybus(self, candidate, remaining):
+    async def citybus(self, candidate, remaining, cache=None):
+        cache = cache if cache is not None else {}
         route = candidate["route"]["route"]
         resources = self.service.resources
 
         async def query(resource, parameters):
+            key = resource, tuple(sorted(parameters.items()))
+            if key in cache:
+                until, prior = cache[key]
+                if until > time.monotonic():
+                    if isinstance(prior, DomainError):
+                        raise prior
+                    return prior
             if remaining[0] <= 0:
                 raise DomainError(
                     "TRANSPORT_LOOKUP_LIMIT",
@@ -420,13 +450,26 @@ class TransportSearch:
             await asyncio.to_thread(
                 self.service.store.consume_budget, "transport_lookup", 5000
             )
-            result = await resources.query(
-                resource, parameters=parameters, limit=100, require_fresh=True
+            try:
+                result = await resources.query(
+                    resource, parameters=parameters, limit=100, require_fresh=True
+                )
+            except DomainError as exc:
+                cache[key] = (float("inf"), exc)
+                raise
+            ttl = 20 if resource == CITYBUS["eta"] else 45
+            fresh_until = (
+                result.get("schema", {}).get("transport", {}).get("freshUntil")
             )
-            if any(p.get("stale") for p in result.get("provenance", [])):
-                raise DomainError(
+            if resource == CITYBUS["eta"] and isinstance(fresh_until, (float, int)):
+                ttl = min(ttl, max(0, fresh_until - time.time()))
+            if ttl <= 0 or any(p.get("stale") for p in result.get("provenance", [])):
+                error = DomainError(
                     "STALE_SOURCE", "Fresh operator reference data is required", 503
                 )
+                cache[key] = (float("inf"), error)
+                raise error
+            cache[key] = (time.monotonic() + ttl, result)
             return result
 
         route_result = await query(
@@ -451,7 +494,7 @@ class TransportSearch:
             raise DomainError(
                 "TRANSPORT_MAPPING_UNVERIFIED", "Operator route identity changed", 503
             )
-        details, found = {}, []
+        details, found, selected_occurrences = {}, [], []
         for target in (candidate["board"], candidate["alight"]):
             matched = None
             # Sequence is only a lookup hint. Both name and location must agree;
@@ -508,21 +551,24 @@ class TransportSearch:
                     503,
                 )
             found.append(matched)
-        pairs = [
-            (a, b)
-            for a in path
-            for b in path
-            if a["stop"] == found[0]
-            and b["stop"] == found[1]
-            and int(a["seq"]) < int(b["seq"])
-        ]
-        if not pairs:
+            visits = sorted(
+                (r for r in path if r["stop"] == matched), key=lambda r: int(r["seq"])
+            )
+            if len(visits) != target.get("occurrenceCount", 1):
+                raise DomainError(
+                    "TRANSPORT_MAPPING_UNVERIFIED",
+                    "Repeated-stop topology differs from the reference; occurrence is unverified",
+                    503,
+                )
+            selected_occurrences.append(visits[target.get("occurrence", 1) - 1])
+        board, alight = selected_occurrences
+        if int(board["seq"]) >= int(alight["seq"]):
             raise DomainError(
                 "TRANSPORT_MAPPING_UNVERIFIED",
                 "Stops are not in the requested order on the current operator route",
                 503,
             )
-        board, alight = min(pairs, key=lambda p: int(p[1]["seq"]) - int(p[0]["seq"]))
+        candidate["operatorEligibilityVerified"] = True
         eta = await query(CITYBUS["eta"], {"route": route, "stop_id": found[0]})
         if any(
             r.get("route") != route or r.get("stop") != found[0]
@@ -547,6 +593,9 @@ class TransportSearch:
                 "operatorBoardStopId": found[0],
                 "operatorAlightStopId": found[1],
                 "operatorStopCount": int(alight["seq"]) - int(board["seq"]),
+                "operatorBoardSequence": int(board["seq"]),
+                "operatorAlightSequence": int(alight["seq"]),
+                "arrivalCheckedAt": time.time(),
                 "arrivals": {
                     "items": items,
                     "transport": {
@@ -573,18 +622,24 @@ class TransportSearch:
         candidates, origins, destinations = await asyncio.to_thread(
             self.direct, cached[1], query
         )
-        selected = candidates[: query.limit]
-        remaining = [64]
+        remaining, request_cache = [64], {}
         deadline = time.monotonic() + 45
-        for candidate in selected:
+        for candidate in candidates:
             if not query.includeArrivals:
+                candidate["arrivalStatus"] = "unchecked"
+                candidate["uncheckedReason"] = "not_requested"
                 continue
             if "CTB" not in candidate["route"]["operator"].split("+"):
-                candidate["arrivalStatus"] = "use_resource_query"
+                candidate["arrivalStatus"] = "unchecked"
+                candidate["uncheckedReason"] = "operator_join_not_qualified"
+                continue
+            if time.monotonic() >= deadline:
+                candidate["arrivalStatus"] = "unchecked"
+                candidate["uncheckedReason"] = "comparison_deadline"
                 continue
             try:
                 await asyncio.wait_for(
-                    self.citybus(candidate, remaining),
+                    self.citybus(candidate, remaining, request_cache),
                     timeout=max(0, deadline - time.monotonic()),
                 )
             except (
@@ -593,24 +648,159 @@ class TransportSearch:
                 ValueError,
                 KeyError,
                 TypeError,
+                IndexError,
             ) as exc:
+                code = (
+                    exc.code
+                    if isinstance(exc, DomainError)
+                    else (
+                        "comparison_deadline"
+                        if isinstance(exc, asyncio.TimeoutError)
+                        else "TRANSPORT_MAPPING_UNVERIFIED"
+                    )
+                )
+                if code in {"TRANSPORT_LOOKUP_LIMIT", "comparison_deadline"}:
+                    candidate["arrivalStatus"] = "unchecked"
+                    candidate["uncheckedReason"] = code
+                else:
+                    candidate["arrivalStatus"] = "unavailable"
+                    candidate["arrivalError"] = {
+                        "code": code,
+                        "message": "Live arrivals could not be verified; the reference candidate remains unknown.",
+                    }
+        now = time.time()
+        for candidate in candidates:
+            if candidate["arrivalStatus"] != "live":
+                continue
+            live = candidate["arrivals"]["transport"]
+            fresh_until = live.get("freshUntil", candidate["arrivalCheckedAt"] + 20)
+            if fresh_until <= now:
                 candidate["arrivalStatus"] = "unavailable"
                 candidate["arrivalError"] = {
-                    "code": (
-                        exc.code
-                        if isinstance(exc, DomainError)
-                        else "TRANSPORT_MAPPING_UNVERIFIED"
-                    ),
-                    "message": "Live arrivals could not be verified; this candidate remains a dated route reference.",
+                    "code": "STALE_SOURCE",
+                    "message": "Arrival evidence expired during comparison.",
                 }
+                candidate.pop("arrivals")
+                continue
+            predictions = []
+            expired, unknown = 0, 0
+            for row in candidate["arrivals"]["items"]:
+                try:
+                    predicted = timestamp(row.get("eta"))
+                    if predicted >= now:
+                        predictions.append((predicted, row["eta"]))
+                    else:
+                        expired += 1
+                except (DomainError, ValueError, TypeError, AttributeError):
+                    unknown += 1
+            candidate["earliestPredictedDeparture"] = (
+                min(predictions)[1] if predictions else None
+            )
+            candidate["predictionCoverage"] = {
+                "future": len(predictions),
+                "expired": expired,
+                "unknown": unknown,
+                "emptyFeedDoesNotProveNoService": True,
+            }
+        # Only after checking all eligible references do we merge the same live
+        # boarding occurrence and apply presentation limits. Retain variant flags.
+        groups, presented = {}, []
+        for candidate in candidates:
+            if candidate["arrivalStatus"] != "live":
+                presented.append(candidate)
+                continue
+            key = (
+                candidate["route"]["route"],
+                candidate["direction"],
+                candidate["operatorBoardStopId"],
+                candidate["operatorBoardSequence"],
+            )
+            if key not in groups:
+                groups[key] = candidate
+                candidate["referenceVariants"] = []
+                candidate["alightingAlternatives"] = []
+                candidate["alightingAlternativeCount"] = 0
+                presented.append(candidate)
+            group = groups[key]
+            variant = candidate["route"]
+            if variant not in group["referenceVariants"]:
+                group["referenceVariants"].append(variant)
+            group["alightingAlternativeCount"] += 1
+            if len(group["alightingAlternatives"]) < 10:
+                group["alightingAlternatives"].append(
+                    {
+                        "referenceStop": candidate["alight"],
+                        "operatorStopId": candidate["operatorAlightStopId"],
+                        "operatorSequence": candidate["operatorAlightSequence"],
+                    }
+                )
+        presented.sort(
+            key=lambda c: (
+                (
+                    timestamp(c["earliestPredictedDeparture"])
+                    if c.get("earliestPredictedDeparture")
+                    else float("inf")
+                ),
+                c["route"]["routeId"],
+                c["direction"],
+                c["board"]["sequence"],
+            )
+        )
+        accepted = sum(c["arrivalStatus"] == "live" for c in candidates)
+        failed = sum(c["arrivalStatus"] == "unavailable" for c in candidates)
+        unchecked = len(candidates) - accepted - failed
+        checked = accepted + failed
+        eligible = sum(bool(c.get("operatorEligibilityVerified")) for c in candidates)
+        stale_index = time.time() - cached[0]["checked"] >= TTL
+        complete = not failed and not unchecked and not stale_index
+        earliest = next(
+            (
+                c["earliestPredictedDeparture"]
+                for c in presented
+                if c.get("earliestPredictedDeparture")
+            ),
+            None,
+        )
         return self.envelope(
             cached,
             {
-                "items": selected,
+                "items": presented[: query.limit],
                 "totalMatched": len(candidates),
+                "totalDepartureChoices": len(presented),
                 "originCandidates": origins[:10],
                 "destinationCandidates": destinations[:10],
                 "scope": "direct_bus_routes_only",
                 "currentServiceVerified": False,
+                "coverage": {
+                    "candidate": len(candidates),
+                    "eligible": eligible,
+                    "eligibilityUnknown": len(candidates) - eligible,
+                    "acceptedArrivalChecks": accepted,
+                    "checked": checked,
+                    "failed": failed,
+                    "unchecked": unchecked,
+                    "uncheckedReasons": dict(
+                        Counter(
+                            c.get("uncheckedReason")
+                            for c in candidates
+                            if c["arrivalStatus"] == "unchecked"
+                        )
+                    ),
+                    "sourceRequests": 64 - remaining[0],
+                    "requestLimit": 64,
+                    "deadlineSeconds": 45,
+                    "referenceIndexStale": stale_index,
+                    "complete": complete,
+                    "eligibilityMeaning": "Verified current operator boarding/alighting occurrence; service calendars remain unknown.",
+                },
+                "departureComparison": {
+                    "scope": "earliest_reported_departure_among_checked_candidates",
+                    "earliestPredictedAt": earliest,
+                    "allReferenceCandidatesChecked": complete,
+                    "globallyEarliest": False,
+                    "serviceCalendarsVerified": False,
+                    "walkingFeasibilityVerified": False,
+                    "fastestArrivalVerified": False,
+                },
             },
         )

@@ -1,0 +1,401 @@
+{
+  "generation": "f8d8e9945a694617b6a2a9eb565e2a03",
+  "datasetCount": 4984,
+  "resourceCount": 63360,
+  "byStatus": {
+    "restricted": 5254,
+    "queryable": 40765,
+    "needs_adapter": 2990,
+    "unavailable": 561,
+    "needs_selection": 3022,
+    "unsupported": 10390,
+    "capacity_limited": 378
+  },
+  "datasetsWithAcceptedRepresentation": 3961,
+  "uncoveredDatasetOperationPairs": 1023,
+  "rankedBacklog": [
+    {
+      "accessFamily": "api_unqualified",
+      "status": "unsupported",
+      "reason": "API_ADAPTER_REQUIRED",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 477,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "json",
+      "status": "unavailable",
+      "reason": "SOURCE_HTTP_ERROR",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 197,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "unknown",
+      "status": "unsupported",
+      "reason": "UNSUPPORTED_FORMAT",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 186,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "arcgis",
+      "status": "needs_selection",
+      "reason": "LAYER_REQUIRED",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 113,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "features",
+      "status": "restricted",
+      "reason": "ACCESS_RESTRICTED",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 87,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "xml_features",
+      "status": "restricted",
+      "reason": "ACCESS_RESTRICTED",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 87,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "arcgis",
+      "status": "restricted",
+      "reason": "ACCESS_RESTRICTED",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 76,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "table",
+      "status": "needs_adapter",
+      "reason": "SOURCE_SCHEMA_CHANGED",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 67,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "xml",
+      "status": "needs_adapter",
+      "reason": "SOURCE_PARSE_ERROR",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 59,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "arcgis",
+      "status": "needs_adapter",
+      "reason": "SOURCE_PARSE_ERROR",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 58,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "workbook",
+      "status": "needs_adapter",
+      "reason": "SOURCE_PARSE_ERROR",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 54,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "arcgis",
+      "status": "needs_selection",
+      "reason": "TYPE_NAME_REQUIRED",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 42,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "xml_features",
+      "status": "needs_adapter",
+      "reason": "SOURCE_PARSE_ERROR",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 40,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "features",
+      "status": "capacity_limited",
+      "reason": "SOURCE_TOO_LARGE",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 33,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "features",
+      "status": "unavailable",
+      "reason": "SOURCE_TIMEOUT",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 22,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "json",
+      "status": "needs_adapter",
+      "reason": "SOURCE_PARSE_ERROR",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 19,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "table",
+      "status": "restricted",
+      "reason": "ACCESS_RESTRICTED",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 14,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "workbook",
+      "status": "needs_selection",
+      "reason": "SHEET_REQUIRED",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 14,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "json",
+      "status": "unavailable",
+      "reason": "SOURCE_UNAVAILABLE",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 10,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "table",
+      "status": "unavailable",
+      "reason": "SOURCE_UNAVAILABLE",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 10,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "workbook",
+      "status": "unavailable",
+      "reason": "SOURCE_UNAVAILABLE",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 7,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "xml",
+      "status": "unavailable",
+      "reason": "SOURCE_UNAVAILABLE",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 7,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "json",
+      "status": "unsupported",
+      "reason": "PARAMETER_ADAPTER_REQUIRED",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 6,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "json",
+      "status": "needs_selection",
+      "reason": "RECORD_PATH_REQUIRED",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 4,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "xml",
+      "status": "unsupported",
+      "reason": "UNSUPPORTED_FORMAT",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 4,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "archive",
+      "status": "capacity_limited",
+      "reason": "SOURCE_TOO_LARGE",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 3,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "workbook",
+      "status": "capacity_limited",
+      "reason": "SOURCE_TOO_LARGE",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 3,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "xml_features",
+      "status": "capacity_limited",
+      "reason": "SOURCE_TOO_LARGE",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 3,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "features",
+      "status": "unavailable",
+      "reason": "SOURCE_UNAVAILABLE",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 2,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "table",
+      "status": "capacity_limited",
+      "reason": "SOURCE_TOO_LARGE",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 2,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "table",
+      "status": "unavailable",
+      "reason": "SOURCE_HTTP_ERROR",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 2,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "xml",
+      "status": "capacity_limited",
+      "reason": "SOURCE_TOO_LARGE",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 2,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "api_unqualified",
+      "status": "unavailable",
+      "reason": "SOURCE_UNAVAILABLE",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 1,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "arcgis",
+      "status": "unavailable",
+      "reason": "SOURCE_API_ERROR",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 1,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "features",
+      "status": "needs_adapter",
+      "reason": "SOURCE_PARSE_ERROR",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 1,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "json",
+      "status": "restricted",
+      "reason": "ACCESS_RESTRICTED",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 1,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "table",
+      "status": "unavailable",
+      "reason": "SOURCE_TIMEOUT",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 1,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    },
+    {
+      "accessFamily": "xml",
+      "status": "unavailable",
+      "reason": "SOURCE_HTTP_ERROR",
+      "operation": "records",
+      "disposition": "requires_scope_review",
+      "uncoveredDatasetCount": 1,
+      "benefit": "candidate_only_scope_equivalence_unverified",
+      "cost": null
+    }
+  ],
+  "providerRequests": 0,
+  "mutations": 0,
+  "scope": "Existing local October 17 checkpoint; not current production generation or source validation. Candidate families overlap; WMS imagery is not a record-reader opportunity."
+}

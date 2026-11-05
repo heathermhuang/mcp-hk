@@ -351,3 +351,251 @@ def test_parser_rejects_duplicate_ids_and_orphan_stop(bodies):
     )
     with pytest.raises(ValueError, match="Orphan"):
         parse_index(changed, [])
+
+
+@pytest.mark.asyncio
+async def test_comparison_checks_later_candidates_before_presentation_limit(
+    service, monkeypatch
+):
+    from datetime import datetime, timezone
+
+    cached = await service.transport.index()
+    base = service.transport.direct(
+        cached[1], JourneyQuery(origin="Lan", destination="Seymour")
+    )[0][0]
+    candidates = [copy.deepcopy(base) for _ in range(2)]
+    for i, candidate in enumerate(candidates):
+        candidate["route"]["routeId"] = "synthetic-" + str(i)
+        candidate["route"]["route"] = "fixture-later" if i == 0 else "fixture-earlier"
+    monkeypatch.setattr(service.transport, "direct", lambda *a: (candidates, [], []))
+    calls = []
+
+    async def citybus(candidate, remaining, cache):
+        calls.append(candidate["route"]["route"])
+        eta = datetime.fromtimestamp(
+            time.time() + (600 if len(calls) == 1 else 120), timezone.utc
+        ).isoformat()
+        candidate.update(
+            arrivalStatus="live",
+            operatorEligibilityVerified=True,
+            operatorBoardStopId="001042",
+            operatorAlightStopId="001021",
+            operatorBoardSequence=4,
+            operatorAlightSequence=11,
+            arrivalCheckedAt=time.time(),
+            arrivals={
+                "items": [{"eta": eta}],
+                "transport": {"freshUntil": time.time() + 20},
+            },
+        )
+
+    monkeypatch.setattr(service.transport, "citybus", citybus)
+    result = await service.transport.journey(
+        JourneyQuery(origin="Lan", destination="Seymour", limit=1)
+    )
+    data = result["data"]
+    assert len(calls) == data["coverage"]["checked"] == 2
+    assert data["items"][0]["route"]["route"] == "fixture-earlier"
+    assert data["coverage"]["complete"]
+    assert not data["departureComparison"]["globallyEarliest"]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("loop", [False, True])
+async def test_operator_reads_deduplicate_and_repeated_stops_keep_occurrence(
+    service, bodies, monkeypatch, loop
+):
+    from datetime import datetime, timezone
+
+    if loop:
+        root = ET.fromstring(bodies["route_stops"])
+        first, last = copy.deepcopy(root[0]), copy.deepcopy(root[-1])
+        first.find("STOP_SEQ").text = "3"
+        last.find("STOP_SEQ").text = "4"
+        root.remove(root[-1])
+        root.append(first)
+        root.append(last)
+        bodies["route_stops"] = ET.tostring(root)
+    cached = await service.transport.index()
+    base = service.transport.direct(
+        cached[1], JourneyQuery(origin="Lan", destination="Seymour")
+    )[0]
+    if not loop:
+        alternative = copy.deepcopy(base[0])
+        alternative["alight"] = {
+            **cached[1]["stops"]["262"],
+            **cached[1]["paths"][("1750", "outbound")][1],
+            "distanceM": None,
+            "occurrence": 1,
+            "occurrenceCount": 1,
+        }
+        base.append(alternative)
+    monkeypatch.setattr(service.transport, "direct", lambda *a: (base, [], []))
+    calls = []
+
+    async def query(resource, parameters, **kwargs):
+        calls.append((resource, tuple(sorted(parameters.items()))))
+        if resource == CITYBUS["route_stops"]:
+            pairs = (
+                [(4, "001042"), (5, "001084")]
+                + ([(9, "001042")] if loop else [])
+                + [(11, "001021")]
+            )
+            items = [
+                {"route": "12", "dir": "O", "seq": seq, "stop": sid}
+                for seq, sid in pairs
+            ]
+        elif resource == CITYBUS["stop"]:
+            sid = parameters["stop_id"]
+            en, tc, lat, lon = {
+                "001042": ("Lan Kwai Fong", "蘭桂坊", 22.2815165, 114.1561392),
+                "001084": ("Lyndhurst Terrace", "擺花街", 22.282, 114.155),
+                "001021": ("Seymour Road", "西摩道", 22.2831597, 114.1478635),
+            }[sid]
+            items = [
+                {
+                    "data": {
+                        "stop": sid,
+                        "name_en": en,
+                        "name_tc": tc,
+                        "lat": str(lat),
+                        "long": str(lon),
+                    }
+                }
+            ]
+        else:
+            items = [
+                {
+                    "route": "12",
+                    "stop": "001042",
+                    "dir": "O",
+                    "seq": seq,
+                    "eta": datetime.fromtimestamp(
+                        time.time() + seconds, timezone.utc
+                    ).isoformat(),
+                }
+                for seq, seconds in ([(4, 600), (9, 120)] if loop else [(4, 120)])
+            ]
+        return {
+            "data": {"items": items},
+            "meta": {"nextOffset": None},
+            "schema": {"transport": {"freshUntil": time.time() + 20}},
+            "provenance": [{"stale": False}],
+            "warnings": [],
+        }
+
+    monkeypatch.setattr(service.resources, "query", query)
+    result = await service.transport.journey(
+        JourneyQuery(origin="Lan", destination="Seymour", limit=1)
+    )
+    data = result["data"]
+    candidate = data["items"][0]
+    assert len(calls) == len(set(calls)) == data["coverage"]["sourceRequests"] == 5
+    assert data["coverage"]["checked"] == 2
+    assert data["coverage"]["failed"] == data["coverage"]["unchecked"] == 0
+    if loop:
+        assert candidate["operatorBoardSequence"] == 9
+        assert candidate["board"]["occurrence"] == 2
+        assert data["totalDepartureChoices"] == 2
+    else:
+        assert candidate["alightingAlternativeCount"] == 2
+        assert data["totalDepartureChoices"] == 1
+
+
+@pytest.mark.asyncio
+async def test_budget_unchecked_and_other_operator_are_unknown_not_ineligible(
+    service, monkeypatch
+):
+    cached = await service.transport.index()
+    base = service.transport.direct(
+        cached[1], JourneyQuery(origin="Lan", destination="Seymour")
+    )[0][0]
+    candidates = [copy.deepcopy(base) for _ in range(70)]
+    candidates[-1]["route"]["operator"] = "KMB"
+    monkeypatch.setattr(service.transport, "direct", lambda *a: (candidates, [], []))
+
+    async def citybus(candidate, remaining, cache):
+        if remaining[0] <= 0:
+            raise DomainError("TRANSPORT_LOOKUP_LIMIT", "bound", 503)
+        remaining[0] -= 1
+        raise DomainError("SOURCE_UNAVAILABLE", "source down", 502)
+
+    monkeypatch.setattr(service.transport, "citybus", citybus)
+    data = (
+        await service.transport.journey(
+            JourneyQuery(origin="Lan", destination="Seymour")
+        )
+    )["data"]
+    assert data["coverage"]["candidate"] == 70
+    assert data["coverage"]["checked"] == data["coverage"]["failed"] == 64
+    assert data["coverage"]["unchecked"] == 6
+    assert data["coverage"]["eligibilityUnknown"] == 70
+    assert data["coverage"]["uncheckedReasons"]["operator_join_not_qualified"] == 1
+    assert not data["coverage"]["complete"]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("expired", [False, True])
+async def test_empty_or_expired_eta_is_not_no_bus(service, monkeypatch, expired):
+    cached = await service.transport.index()
+    candidates = service.transport.direct(
+        cached[1], JourneyQuery(origin="Lan", destination="Seymour")
+    )[0]
+    monkeypatch.setattr(service.transport, "direct", lambda *a: (candidates, [], []))
+
+    async def citybus(candidate, remaining, cache):
+        candidate.update(
+            arrivalStatus="live",
+            operatorEligibilityVerified=True,
+            operatorBoardStopId="001042",
+            operatorAlightStopId="001021",
+            operatorBoardSequence=4,
+            operatorAlightSequence=11,
+            arrivalCheckedAt=time.time(),
+            arrivals={
+                "items": [],
+                "transport": {"freshUntil": time.time() + (-1 if expired else 20)},
+            },
+        )
+
+    monkeypatch.setattr(service.transport, "citybus", citybus)
+    data = (
+        await service.transport.journey(
+            JourneyQuery(origin="Lan", destination="Seymour")
+        )
+    )["data"]
+    assert data["departureComparison"]["earliestPredictedAt"] is None
+    assert not data["currentServiceVerified"]
+    if expired:
+        assert data["coverage"]["failed"] == 1
+        assert "arrivals" not in data["items"][0]
+    else:
+        assert data["items"][0]["predictionCoverage"]["emptyFeedDoesNotProveNoService"]
+
+
+@pytest.mark.asyncio
+async def test_stale_shared_read_cannot_be_reused_as_a_live_success(
+    service, monkeypatch
+):
+    cached = await service.transport.index()
+    base = service.transport.direct(
+        cached[1], JourneyQuery(origin="Lan", destination="Seymour")
+    )[0][0]
+    candidates = [copy.deepcopy(base), copy.deepcopy(base)]
+    monkeypatch.setattr(service.transport, "direct", lambda *a: (candidates, [], []))
+    calls = []
+
+    async def query(*args, **kwargs):
+        calls.append(True)
+        return {"schema": {}, "provenance": [{"stale": True}]}
+
+    monkeypatch.setattr(service.resources, "query", query)
+    data = (
+        await service.transport.journey(
+            JourneyQuery(origin="Lan", destination="Seymour")
+        )
+    )["data"]
+    assert len(calls) == 1
+    assert data["coverage"]["failed"] == 2
+    assert all(c["arrivalError"]["code"] == "STALE_SOURCE" for c in data["items"])
+    assert data["departureComparison"]["earliestPredictedAt"] is None
