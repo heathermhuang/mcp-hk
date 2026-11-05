@@ -1298,7 +1298,7 @@ class Resources:
             result = await self._schema(
                 resource_id, record_path, sheet, layer, require_fresh, parameters
             )
-            return await self._selection_response(resource_id, result)
+            return await self._selection_response(resource_id, result, parameters)
         except DomainError as exc:
             if exc.code == "SHEET_REQUIRED" and getattr(exc, "sheets", None):
                 return await self._selection_response(
@@ -1311,6 +1311,7 @@ class Resources:
                         "recordCount": None,
                         "structuredQueryable": False,
                     },
+                    parameters,
                 )
             if (
                 exc.code not in resource_selections.SELECTION_ERRORS
@@ -1336,13 +1337,26 @@ class Resources:
                 422,
             ) from None
 
-    async def _selection_response(self, resource_id, result):
+    async def _selection_response(self, resource_id, result, parameters=None):
         groups = resource_selections.describe(resource_id, result)
-        if groups:
+        scoped = bool(parameters) or result.get("selectionRequired") == "parameters"
+        if scoped:
+            # These choices belong to this caller's explicit request. Never
+            # publish parameter values or borrow choices from another context.
+            for group in groups:
+                group["scopedToParameterNames"] = sorted(parameters or {})
+                for option in group["options"]:
+                    if parameters:
+                        option["nextAction"]["arguments"]["parameters"] = dict(
+                            parameters
+                        )
+            result["selections"] = groups
+        elif groups:
             await asyncio.to_thread(self.catalogue.record_options, resource_id, groups)
-        result["selections"] = await asyncio.to_thread(
-            self.catalogue.selection_options, resource_id
-        )
+        if not scoped:
+            result["selections"] = await asyncio.to_thread(
+                self.catalogue.selection_options, resource_id
+            )
         if "capabilities" not in result:
             result["capabilities"] = await asyncio.to_thread(
                 self.catalogue.capability, resource_id
@@ -1359,6 +1373,9 @@ class Resources:
         parameters=None,
     ):
         resource = self.catalogue.resource(resource_id)
+        if parameters and not transport.profile(resource):
+            # Discovery shortcuts must not silently ignore undeclared arguments.
+            template_url(resource["url"], parameters)
         if census_reports.location(resource["url"]) and (sheet or layer is not None):
             raise DomainError(
                 "INVALID_QUERY",

@@ -1,0 +1,15 @@
+{
+  "checkedAtUtc": "2026-11-05T22:19:29.983899+00:00",
+  "scope": "one actual hosted HKMA query after reader-contract adoption; no repeated source denial",
+  "resourceId": "d7c84da8696472f6d7a7e9ee4e3e681d",
+  "httpStatus": 502,
+  "httpSeconds": 1.958,
+  "state": "held_with_no_partial_or_empty_success",
+  "sourceError": "SOURCE_HTTP_ERROR",
+  "httpMcpHeldMetadataParity": true,
+  "sourceQueryRepeatedAfterFailure": false,
+  "heldCapability": {
+    "state": "held",
+    "reason": "SOURCE_HTTP_ERROR"
+  }
+}

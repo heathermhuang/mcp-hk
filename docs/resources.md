@@ -488,6 +488,13 @@ survive normal SQLite backup/restore and expire with retired inventory resources
 Successful option discovery and invalid user selections cannot replace a prior
 source failure or accepted record receipt. Only an actual accepted read upgrades it.
 
+For a request with explicit source parameters, schema choices belong to that
+request. Their next actions repeat the same parameters so they can be followed
+without losing the selected context. Those choices and parameter values are
+returned only to the caller and are not written into the shared public option
+cache. A request still requiring parameters does not borrow another context's
+cached choices. Undeclared parameters fail before discovery contacts a source.
+
 ## Typed comparisons and ordering
 
 Resource queries accept `predicates`, for example

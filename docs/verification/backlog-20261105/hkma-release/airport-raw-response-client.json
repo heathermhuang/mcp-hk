@@ -1,0 +1,45 @@
+{
+  "checkedAtUtc": "2026-11-05T23:04:09.688708+00:00",
+  "resourceId": "09a0ff52d3ca25dfcaef1b584bebc49c",
+  "selection": {
+    "parameters": {
+      "date": "2026-11-05"
+    },
+    "limit": 10
+  },
+  "scope": "complete returned historical API response as native date-group records; child flight lists retained without flattening, identity or event-time binding",
+  "sourceDateGroups": [
+    {
+      "date": "2026-11-04",
+      "nestedObservations": 2,
+      "lastUpdatedTime": "2026-11-06T05:41:04+08:00"
+    },
+    {
+      "date": "2026-11-05",
+      "nestedObservations": 402,
+      "lastUpdatedTime": "2026-11-06T05:41:04+08:00"
+    }
+  ],
+  "nativeDateGroupRecords": 2,
+  "nestedListObservations": 404,
+  "uniqueFlightCount": null,
+  "httpMcpRecordParity": true,
+  "version": "2136333e57ebdf96924ebd7a7b542a34dd913f883d3905ce6da9fdafcef8268f",
+  "provenance": [
+    {
+      "sourceUrl": "https://www.hongkongairport.com/flightinfo-rest/rest/flights/past?date=2026-11-05&lang=en&cargo=false&arrival=false",
+      "originalResourceUrl": "https://www.hongkongairport.com/flightinfo-rest/rest/flights/past?date=<date>&lang=en&cargo=false&arrival=false",
+      "catalogueUrl": "https://data.gov.hk/en-data/dataset/aahk-team1-flight-info",
+      "attribution": "Airport Authority Hong Kong / DATA.GOV.HK",
+      "termsUrl": "https://data.gov.hk/en/terms-and-conditions",
+      "retrievedAt": 1793919046.646947,
+      "observedAt": null,
+      "lastCheckedAt": 1793919848.5135539,
+      "lastValidatedAt": 1793919848.5135539,
+      "publicationDate": "2019-06-26",
+      "referencePeriod": null,
+      "contentHash": "2136333e57ebdf96924ebd7a7b542a34dd913f883d3905ce6da9fdafcef8268f",
+      "stale": false
+    }
+  ]
+}

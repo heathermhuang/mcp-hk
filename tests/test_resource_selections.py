@@ -256,3 +256,153 @@ async def test_ogc_scope_is_not_silently_broadened_or_treated_as_rest(
     with pytest.raises(DomainError, match="INVALID_QUERY"):
         await service.resources.schema("WFS")
     assert service.resources.catalogue.check("WFS") == {}
+
+
+@pytest.mark.asyncio
+async def test_parameter_scoped_actions_are_executable_without_publishing_values(
+    service, monkeypatch
+):
+    import json
+    from urllib.parse import parse_qs, urlsplit
+    from fastmcp import Client
+    from mcp_open_data_hk.api import create_app
+
+    catalogue = service.resources.catalogue
+    original = catalogue.resource
+    monkeypatch.setattr(
+        catalogue,
+        "resource",
+        lambda rid, generation=None: {
+            **original(rid, generation),
+            "format": "JSON",
+            "url": "https://example.gov.hk/data?date=<date>",
+            "isApi": True,
+        },
+    )
+    old = [
+        {
+            "kind": "record_path",
+            "argument": "recordPath",
+            "options": [
+                {
+                    "value": "unrelated_old_path",
+                    "label": "old",
+                    "nextAction": {
+                        "tool": "hk_resource_schema",
+                        "arguments": {
+                            "resourceId": "XLSX",
+                            "recordPath": "unrelated_old_path",
+                        },
+                    },
+                }
+            ],
+            "totalOptions": 1,
+            "truncated": False,
+        }
+    ]
+    catalogue.record_options("XLSX", old)
+    before = catalogue.selection_options("XLSX")
+    calls = []
+
+    async def fetch(url, headers=None, **kwargs):
+        calls.append(url)
+        assert parse_qs(urlsplit(url).query)["date"] == ["2026-11-05"]
+        return (
+            json.dumps([{"native": "001"}]).encode(),
+            {"content-type": "application/json"},
+            url,
+            200,
+        )
+
+    monkeypatch.setattr("mcp_open_data_hk.resources.fetch", fetch)
+    async with Client(create_app(service).state.mcp) as client:
+        response = json.loads(
+            (
+                await client.call_tool(
+                    "hk_resource_schema",
+                    {"resourceId": "XLSX", "parameters": {"date": "2026-11-05"}},
+                )
+            )
+            .content[0]
+            .text
+        )
+        action = response["selections"][0]["options"][0]["nextAction"]
+        assert action["arguments"]["parameters"] == {"date": "2026-11-05"}
+        followed = json.loads(
+            (await client.call_tool(action["tool"], action["arguments"]))
+            .content[0]
+            .text
+        )
+        assert followed["recordCount"] == 1
+    assert len(calls) == 1
+    assert catalogue.selection_options("XLSX") == before
+    assert "2026-11-05" not in json.dumps(catalogue.selection_options("XLSX"))
+    missing = await service.resources.schema("XLSX")
+    assert missing["selectionRequired"] == "parameters"
+    assert missing["selections"] == []
+    assert len(calls) == 1
+
+
+@pytest.mark.asyncio
+async def test_parameterized_workbook_sheet_actions_keep_the_same_context(
+    service, monkeypatch
+):
+    catalogue = service.resources.catalogue
+    original = catalogue.resource
+    monkeypatch.setattr(
+        catalogue,
+        "resource",
+        lambda rid, generation=None: {
+            **original(rid, generation),
+            "url": "https://example.gov.hk/book.xlsx?date=<date>",
+        },
+    )
+    book = Workbook()
+    book.active.title = "Published"
+    book.active.append(["id"])
+    book.active.append(["001"])
+    book.create_sheet("Other")
+    body = io.BytesIO()
+    book.save(body)
+
+    async def fetch(url, headers=None, **kwargs):
+        return body.getvalue(), {}, url, 200
+
+    monkeypatch.setattr("mcp_open_data_hk.resources.fetch", fetch)
+    result = await service.resources.schema("XLSX", parameters={"date": "2026-11-05"})
+    action = result["selections"][0]["options"][0]["nextAction"]["arguments"]
+    assert action == {
+        "resourceId": "XLSX",
+        "sheet": "Published",
+        "parameters": {"date": "2026-11-05"},
+    }
+    selected = await service.resources.schema(
+        "XLSX", sheet=action["sheet"], parameters=action["parameters"]
+    )
+    assert selected["recordCount"] == 1
+    assert catalogue.selection_options("XLSX") == []
+
+
+@pytest.mark.asyncio
+async def test_discovery_does_not_ignore_undeclared_parameters(service, monkeypatch):
+    from mcp_open_data_hk.contracts import DomainError
+
+    catalogue = service.resources.catalogue
+    original = catalogue.resource
+    monkeypatch.setattr(
+        catalogue,
+        "resource",
+        lambda rid, generation=None: {
+            **original(rid, generation),
+            "url": "https://www.censtatd.gov.hk/en/wbr.html?ecode=B10200082026MM09&download_excel=1",
+        },
+    )
+    before = catalogue.check("XLSX")
+
+    async def forbidden(*args, **kwargs):
+        raise AssertionError("Invalid arguments must not contact the source")
+
+    monkeypatch.setattr("mcp_open_data_hk.resources.fetch", forbidden)
+    with pytest.raises(DomainError, match="PARAMETERS_REQUIRED"):
+        await service.resources.schema("XLSX", parameters={"date": "2026-11-05"})
+    assert catalogue.check("XLSX") == before

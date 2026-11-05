@@ -1,5 +1,40 @@
 # Remaining-backlog implementation releases — 6 November 2026
 
+PR #148 is deployed at `b53ae1039642e22908ef9fe5e6da2a93bc4139cf`. All five
+exact-main CI groups and the full local checks passed. Cloudflare version
+`acac20f5-b1d0-4be6-a991-8fdcac57dd2a` adopted application version 75 and image
+`sha256:0585458753edb04094a5673ebd191a1b73b0f085a7c23bd08d05ec4dee0e443f`.
+Actual controller diagnostics, backend `hkma-pages-2`, six-binding health and
+accepted-pack readiness were verified after the owned pause/propagation/lease gates.
+
+The hosted HKMA query returned `SOURCE_HTTP_ERROR`. HTTP and native MCP metadata
+both held the source, with no partial/empty success and no repeated source denial.
+This release corrects false completeness; it does not clear HKMA access or claim
+new live HKMA records. Existing HTTP/native MCP point, Census, RVD and bus
+regressions passed. An additional LWB comparison checked all six expanded native
+candidates in 13 resource lookups in each client, with matching coverage and no
+failed/unchecked choices. Calendars, unique vehicles and globally earliest service
+remain unverified. E101e still returned 22 raw-grid rows.
+
+The fresh post-client accepted archive
+`ad000a759486d7f1f21f02967988c64610b28342f1c01e736c68d86132fb21a9`
+restored 315,248,640 SQLite bytes / 346,393,085 total bytes from a 109,123,214-byte
+archive. Integrity, captures/registry, packs, both inventory generations, six
+bindings, 84 workbook choices, three repaired WFS metadata scopes and 34
+pre-existing HKMA variant hashes/schema fingerprints/counts passed. Restored
+old/new HTTP/native MCP reads and the HKMA held-metadata check made zero provider
+requests. All five original schedules were restored and independently read back;
+final health passed and the owned slot was released. Receipts: `hkma-release/`.
+
+After this release, the existing generic parameterized reader also passed actual
+HTTP/MCP qualification for the airport's explicitly requested historical response:
+two native date-group records containing 404 nested list observations. The second
+returned source date was retained. This is raw response-group access, with no
+unique-flight count, flattened flight-query capability or event-time binding claim.
+That later read is separate from the release checkpoint's recovery evidence.
+
+## Earlier WFS release
+
 PR #144 is deployed at `ad69dc0324f4ac3f4c243e57d98e4eb7f6f8e143`, with all five
 exact-main CI groups passed. Cloudflare version
 `304883ef-737d-4dd3-aa96-8c6c81c771f7` adopted application version 74 and image
