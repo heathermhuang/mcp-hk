@@ -2,6 +2,7 @@
 
 import asyncio
 import hashlib
+import heapq
 import json
 import re
 import time
@@ -24,6 +25,7 @@ from .observation_quality import (
 )
 from .review_config import SOURCE_REVIEW, CONCURRENCY, BATCH_SIZE, RUN_SECONDS
 from .source_contracts import annotate as annotate_source_contract
+from .resource_predicates import Predicates
 from .resource_fields import selected, MISSING, inspect_nested
 from .resource_fetch import fetch, fetch_file
 from .resource_stream import FileRows
@@ -1103,6 +1105,8 @@ class Resources:
         typed_filters=None,
         presentation=False,
         contains=None,
+        predicates=None,
+        order_by=None,
         stop=None,
     ):
         filters = decode_filters(typed_filters or [], filters)
@@ -1186,42 +1190,84 @@ class Resources:
                 raise DomainError(
                     "UNKNOWN_FIELD", "Inspect schema for exact source field names", 400
                 )
+            typed = Predicates(
+                predicates or [], order_by or [], value["schema"], names, offset, limit
+            )
+            if order_by and offset and not version:
+                raise DomainError(
+                    "RESOURCE_VERSION_REQUIRED",
+                    "Pin the accepted version for later ordered pages",
+                    400,
+                )
             # Unfiltered previews already have an accepted exact row count.
             # Do not rescan the full source merely to rediscover that count.
-            unfiltered = not filters and not text_filters
+            unfiltered = (
+                not filters and not text_filters and not predicates and not order_by
+            )
             total = len(value["rows"]) if unfiltered else 0
             items = []
-            for index, r in enumerate(value["rows"]):
-                if index % 256 == 0:
-                    check_budget()
-                if unfiltered and index >= offset + limit:
-                    break
-                if unfiltered or (
+
+            def matches(row):
+                return (
                     all(
-                        (actual := selected(r, k)) is not MISSING
+                        (actual := selected(row, k)) is not MISSING
                         and type(actual) is type(v)
                         and actual == v
                         for k, v in (filters or {}).items()
                     )
                     and all(
-                        isinstance((actual := selected(r, k)), str)
+                        isinstance((actual := selected(row, k)), str)
                         and needle in unicodedata.normalize("NFKC", actual).casefold()
                         for k, needle in text_filters.items()
                     )
-                ):
-                    position = index if unfiltered else total
-                    if offset <= position < offset + limit:
-                        items.append(
-                            {
-                                k: selected(r, k)
-                                for k in fields
-                                if selected(r, k) is not MISSING
-                            }
-                            if fields
-                            else r
-                        )
-                    if not unfiltered:
-                        total += 1
+                    and typed.matches(row)
+                )
+
+            def projected(row):
+                return (
+                    {
+                        k: selected(row, k)
+                        for k in fields
+                        if selected(row, k) is not MISSING
+                    }
+                    if fields
+                    else row
+                )
+
+            if order_by:
+
+                def matching_keys():
+                    nonlocal total
+                    for index, row in enumerate(value["rows"]):
+                        if index % 256 == 0:
+                            check_budget()
+                        if matches(row):
+                            total += 1
+                            yield typed.key(row, index)
+
+                ranked = heapq.nsmallest(offset + limit, matching_keys())[offset:]
+                indices = {key.index: position for position, key in enumerate(ranked)}
+                page = {}
+                for index, row in enumerate(value["rows"]):
+                    if index % 256 == 0:
+                        check_budget()
+                    if index in indices:
+                        page[indices[index]] = projected(row)
+                    if len(page) == len(indices):
+                        break
+                items = [page[i] for i in range(len(page))]
+            else:
+                for index, row in enumerate(value["rows"]):
+                    if index % 256 == 0:
+                        check_budget()
+                    if unfiltered and index >= offset + limit:
+                        break
+                    if unfiltered or matches(row):
+                        position = index if unfiltered else total
+                        if offset <= position < offset + limit:
+                            items.append(projected(row))
+                        if not unfiltered:
+                            total += 1
             check_budget()
             if len(json.dumps(items, ensure_ascii=False).encode()) > 512_000:
                 raise DomainError(
@@ -1254,6 +1300,12 @@ class Resources:
                     "version": check.get("hash"),
                     "pagination": "Pass version on every subsequent page; changed content returns 409.",
                     "structuredQueryable": not document,
+                    "typedPredicates": {
+                        "excludedRows": typed.excluded,
+                        "interval": "[start,end)",
+                        "orderTieBreaker": "source_ordinal",
+                        "nullOrder": "last",
+                    },
                 },
             }
             if presentation:

@@ -36,3 +36,16 @@ Root cause: the fake fetch omitted the positional headers argument used by load.
 Fix: match the fetch signature in the fixture. Evidence/regression: four selector
 regressions pass, including the workbook failure-retention and physical restore test.
 Status: DONE. No application error was hidden or source guard relaxed.
+
+P2 predicates: allowlisted numeric and qualified temporal comparisons; bounded,
+version-pinned ordering over in-memory and real disk-backed sources. No CSV casts.
+85 focused predicate/resource/quality tests passed, including unsafe integer
+precision, half-open dates, unknown types, raw IDs, complete streamed matching totals,
+null ordering and HTTP/MCP parity. Existing HKO updateTime uses its source contract;
+arbitrary date-looking strings remain unqualified. Required exact-head checks/CI
+and deployment remain pending for this increment.
+
+P3 investigation: current EDB CSV sample coordinates are decimal-looking while its
+DATA.GOV.HK metadata says DMS. This conflict must be reconciled before activating
+its point binding. DH sample has Point [longitude,latitude], separate category and
+OBJECTID; unique-facility identity, CRS and source context still need qualification.

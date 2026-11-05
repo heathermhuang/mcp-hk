@@ -438,3 +438,27 @@ there is no inferred default. Options retain observation times and truncation co
 survive normal SQLite backup/restore and expire with retired inventory resources.
 Successful option discovery and invalid user selections cannot replace a prior
 source failure or accepted record receipt. Only an actual accepted read upgrades it.
+
+## Typed comparisons and ordering
+
+Resource queries accept `predicates`, for example
+`[{"field":"value","kind":"number","op":"between","value":"1.2","upper":"3"}]`.
+Operators are `lt`, `lte`, `gt`, `gte`, `between`; intervals are `[start,end)`.
+Decimal query values are strings so clients can transmit exact large integers.
+Native numeric fields compare mathematically without changing returned values;
+booleans and CSV identifiers are never cast. Date/datetime strings require a
+reader-declared native temporal type or an explicit reviewed field contract.
+Calendar dates use `YYYY-MM-DD`; datetimes require ISO timestamps with a timezone.
+The existing HKO current-weather contract qualifies `updateTime` for that comparison.
+Unknown units, reference periods and other string dates stay unqualified.
+
+`orderBy` accepts up to three `{field,kind,direction}` entries (`asc`/`desc`).
+Kinds are `number`, `date`, `datetime`, `string` (raw Unicode lexical order).
+Null/missing/invalid sort values come last in either direction; source row ordinal
+breaks ties. Ordered pagination is bounded to the first 1,000 matches and later
+pages require the accepted `version`. Source strings used as order keys are bounded
+to 1,000 UTF-8 bytes. A bounded key heap and a second scan recover the page without
+retaining complete streamed source rows in memory. Predicates run before page limits;
+matching totals cover the entire accepted source, with excluded missing/null/invalid
+row counts. Existing deadlines, cancellation, two scan slots, byte bounds and source
+failure semantics apply. These additions do not grant arbitrary SQL or expressions.

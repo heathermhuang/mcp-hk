@@ -28,10 +28,28 @@ class TypedEquality(BaseModel):
     value: str = Field(max_length=1000)
 
 
+class Predicate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    field: str = Field(min_length=1, max_length=300)
+    kind: Literal["number", "date", "datetime"]
+    op: Literal["lt", "lte", "gt", "gte", "between"]
+    value: str = Field(min_length=1, max_length=100)
+    upper: str | None = Field(default=None, max_length=100)
+
+
+class OrderBy(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    field: str = Field(min_length=1, max_length=300)
+    kind: Literal["number", "date", "datetime", "string"]
+    direction: Literal["asc", "desc"] = "asc"
+
+
 class ResourceQuery(ResourceSchemaQuery):
     contains: dict[str, str] = Field(default_factory=dict, max_length=10)
     typedFilters: list[TypedEquality] = Field(default_factory=list, max_length=10)
     presentation: bool = False
+    predicates: list[Predicate] = Field(default_factory=list, max_length=10)
+    orderBy: list[OrderBy] = Field(default_factory=list, max_length=3)
 
     @model_validator(mode="after")
     def validate_typed(self):
@@ -43,6 +61,8 @@ class ResourceQuery(ResourceSchemaQuery):
     def arguments(self):
         data = super().arguments()
         data["typed_filters"] = data.pop("typedFilters")
+        data["predicates"] = [p.model_dump(exclude_none=True) for p in self.predicates]
+        data["order_by"] = data.pop("orderBy")
         return data
 
     filters: dict[str, str | int | float | bool | None] = Field(
@@ -222,10 +242,14 @@ def register_mcp(server, current):
         typedFilters: list[TypedEquality] | None = None,
         presentation: bool = False,
         contains: dict[str, str] | None = None,
+        predicates: list[Predicate] | None = None,
+        orderBy: list[OrderBy] | None = None,
     ) -> dict:
         """Query actual records with bounded pages (1..100). filters is typed exact equality; contains maps source field names to case-insensitive partial text (AND across fields, including nested scalar paths). For transport arrivals, provide parameters from hk_resource_schema; caches are 10/20 seconds with checked provider timestamps and no expired fallback. requireFresh forces an arrival-source read. Preserve source flags/advisories. Pin version for later pages. PDF is unverified text. A source read does not prove full coverage."""
         query = ResourceQuery(
             typedFilters=typedFilters or [],
+            predicates=predicates or [],
+            orderBy=orderBy or [],
             presentation=presentation,
             contains=contains or {},
             filters=filters or {},
