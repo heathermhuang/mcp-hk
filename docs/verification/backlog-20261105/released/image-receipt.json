@@ -1,0 +1,7 @@
+{
+  "sourceCommit": "a687580e03977e7fab76a0306bdd83973d4b8300",
+  "imageDigest": "sha256:2cf4287389e91b30113ee17507270bb0917890b83a00056d82a6a3f86b0d49cf",
+  "pushedWith": "wrangler 4.158.0 using existing OAuth",
+  "projectDependenciesChanged": false,
+  "credentialsCreatedOrRotated": false
+}

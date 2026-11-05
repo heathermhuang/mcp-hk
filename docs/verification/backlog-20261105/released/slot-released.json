@@ -1,0 +1,14 @@
+{
+  "source": "mcp.hk remaining backlog",
+  "sourceChatId": "01a1ac38-ef71-7630-b466-7a0e5cb2ca0f",
+  "checkout": "/private/tmp/mcp-hk-transport-20261105",
+  "commit": "a687580e03977e7fab76a0306bdd83973d4b8300",
+  "operation": "PR140 merge and combined PR139/140 release after recovered CI",
+  "state": "released",
+  "startedAt": "2026-11-05T18:20:33.623426+00:00",
+  "rollbackReference": "0444e8c4b2e82652303f5e19f58c0db2c1d9a935",
+  "sourceDiskReservationBytes": 0,
+  "updatedAt": "2026-11-05T19:03:17.043389+00:00",
+  "allFiveSchedulesVerified": true,
+  "freshRestoreVerified": true
+}
