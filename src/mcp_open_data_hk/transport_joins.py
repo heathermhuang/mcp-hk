@@ -105,6 +105,14 @@ async def verified_stops(candidate, path, detail, name_key):
     """Match names/location and repeated occurrences against current operator order."""
     selected = []
     for target in (candidate["board"], candidate["alight"]):
+        reference_names = {key: [target["name"][key]] for key in ("en", "zhHant")}
+        if candidate.get("operatorNamespace") == "kmb":
+            codes = set(candidate["route"]["operator"].split("+")) & {"KMB", "LWB"}
+            for key in reference_names:
+                for part in target.get("sourceStopNames", {}).get(key, "").split("|"):
+                    match = re.fullmatch(r"\[([A-Z]+)\]\s*([^|<>]+)", part.strip())
+                    if match and match[1] in codes:
+                        reference_names[key].append(match[2])
         matched = None
         for row in sorted(path, key=lambda r: abs(r["sequence"] - target["sequence"])):
             sid, value = await detail(row)
@@ -116,9 +124,9 @@ async def verified_stops(candidate, path, detail, name_key):
                 raise invalid("Invalid operator stop coordinates")
             if (
                 any(
-                    name_key(target["name"][lang])
-                    and name_key(target["name"][lang]) == name_key(names[lang])
+                    name_key(reference) and name_key(reference) == name_key(names[lang])
                     for lang in ("en", "zhHant")
+                    for reference in reference_names[lang]
                 )
                 and distance(target["latitude"], target["longitude"], *coordinates)
                 <= 35
