@@ -25,6 +25,25 @@ HKO_DICTIONARY = (
 )
 
 
+def typed_bindings(schema):
+    """Inherit only a locally qualified source contract, never a matching field name."""
+    result = dict(schema.get("typedFieldBindings", {}))
+    if (schema.get("sourceContract") or {}).get("id") == HKO_CURRENT and any(
+        f["name"] == "updateTime" and set(f.get("types", [])) == {"string"}
+        for f in schema.get("fields", [])
+    ):
+        result.setdefault(
+            "updateTime",
+            {
+                "kind": "datetime",
+                "conversion": "iso8601_timezone_required",
+                "evidence": HKO_DICTIONARY,
+                "revision": HKO_CURRENT,
+            },
+        )
+    return result
+
+
 def annotate(resource, rows, schema):
     url = urlsplit(resource["url"])
     if (

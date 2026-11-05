@@ -1,6 +1,18 @@
 """Bounded typed selector options: metadata evidence, never read acceptance."""
 
 MAX_BYTES = 1_000_000
+SELECTION_ERRORS = frozenset(
+    {
+        "SHEET_REQUIRED",
+        "LAYER_REQUIRED",
+        "INVALID_SHEET",
+        "INVALID_RECORD_PATH",
+        "TYPE_NAME_REQUIRED",
+        "PARAMETERS_REQUIRED",
+        "RECORD_PATH_REQUIRED",
+        "INVALID_QUERY",
+    }
+)
 
 
 def describe(resource_id, result):

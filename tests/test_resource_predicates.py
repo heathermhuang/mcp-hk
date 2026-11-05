@@ -245,3 +245,101 @@ def test_native_date_evidence_does_not_guess_csv_dates():
     )
     assert predicate.matches({"updateTime": "2026-11-05T12:00:00+08:00"})
     assert not predicate.matches({"updateTime": "2026-11-05T12:00:00"})
+
+
+def test_existing_qualified_hko_receipt_inherits_datetime_without_provider_requests():
+    from mcp_open_data_hk.source_contracts import HKO_CURRENT
+
+    schema = {
+        "fields": [{"name": "updateTime", "types": ["string"]}],
+        "sourceContract": {"id": HKO_CURRENT},
+    }
+    typed = Predicates(
+        [
+            {
+                "field": "updateTime",
+                "kind": "datetime",
+                "op": "gte",
+                "value": "2026-11-05T04:00:00Z",
+            }
+        ],
+        [],
+        schema,
+        {"updateTime"},
+        0,
+        20,
+    )
+    assert typed.matches({"updateTime": "2026-11-05T12:00:00+08:00"})
+    assert "typedFieldBindings" not in schema
+    with pytest.raises(DomainError, match="INVALID_PREDICATE"):
+        Predicates(
+            [
+                {
+                    "field": "updateTime",
+                    "kind": "datetime",
+                    "op": "gte",
+                    "value": "2026-11-05T04:00:00Z",
+                }
+            ],
+            [],
+            {"fields": schema["fields"]},
+            {"updateTime"},
+            0,
+            20,
+        )
+
+
+def test_numeric_predicate_schema_honours_literal_dotted_key_precedence():
+    schema = {
+        "fields": [{"name": "a.b", "types": ["number"]}],
+        "queryFields": [{"name": "a.b", "types": ["string"]}],
+    }
+    typed = Predicates(
+        [{"field": "a.b", "kind": "number", "op": "gt", "value": "5"}],
+        [],
+        schema,
+        {"a.b"},
+        0,
+        20,
+    )
+    assert typed.matches({"a.b": 10, "a": {"b": "001"}})
+
+
+@pytest.mark.asyncio
+async def test_ordered_window_end_has_no_invalid_next_page_and_keeps_full_total(
+    service, monkeypatch
+):
+    async def fetch(url, headers=None, **kwargs):
+        return (
+            json.dumps([{"id": str(i), "amount": i} for i in range(1100)]).encode(),
+            {},
+            url,
+            200,
+        )
+
+    monkeypatch.setattr("mcp_open_data_hk.resources.fetch", fetch)
+    order = [{"field": "amount", "kind": "number", "direction": "desc"}]
+    first = await service.resources.query("r", order_by=order, limit=1)
+    last = await service.resources.query(
+        "r", order_by=order, limit=100, offset=900, version=first["meta"]["version"]
+    )
+    assert last["meta"]["total"] == 1100
+    assert last["meta"]["nextOffset"] is None
+    assert last["meta"]["orderedWindow"] == {"limit": 1000, "truncated": True}
+    assert [last["data"]["items"][i]["amount"] for i in (0, -1)] == [199, 100]
+
+
+def test_temporal_binding_does_not_override_a_conflicting_native_source_type():
+    schema = {
+        "fields": [{"name": "date", "types": ["boolean"]}],
+        "nativeTemporalFields": {"date": "date"},
+    }
+    with pytest.raises(DomainError, match="INVALID_PREDICATE"):
+        Predicates(
+            [{"field": "date", "kind": "date", "op": "gte", "value": "2026-01-01"}],
+            [],
+            schema,
+            {"date"},
+            0,
+            20,
+        )

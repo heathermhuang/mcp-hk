@@ -322,3 +322,51 @@ async def test_nearby_source_failure_retains_records_but_cannot_be_an_empty_spat
             resource["id"], nearby={"lat": 22.28, "lon": 114.15, "radiusM": 2000}
         )
     assert (await service.resources.query(resource["id"]))["meta"]["total"] == 5
+
+
+@pytest.mark.asyncio
+async def test_checkpoint_restore_preserves_bindings_options_generations_and_legacy_reads(
+    point_service, tmp_path
+):
+    from mcp_open_data_hk.operations import checkpoint, restore
+    from mcp_open_data_hk.sources import DISTRICTS
+
+    service, profile, resource, state = point_service
+    await service.resources.schema(resource["id"])
+    catalogue = service.resources.catalogue
+    first_generation = catalogue.head()
+    dataset = catalogue.dataset(profile["datasetId"])
+    dataset["title"] = "Updated metadata"
+    catalogue.publish([dataset], [resource], {})
+    assert catalogue.head() != first_generation
+    catalogue.record_options(
+        resource["id"], [{"kind": "record_path", "options": [], "totalOptions": 0}]
+    )
+    service.store.publish(
+        "restaurants", [{"id": "test", "latitude": 22.3, "longitude": 114.1}], None
+    )
+    service.store.publish(
+        "population",
+        [{"id": d["id"] + ":2024", "districtId": d["id"]} for d in DISTRICTS],
+        None,
+    )
+    packed, digest = checkpoint(service.store.path)
+    target = tmp_path / "isolated-restored" / "db.sqlite3"
+    restore(packed.read_bytes(), digest, str(target))
+    restored = Service(Store(str(target)))
+    assert restored.status()["ready"]
+    with restored.store.connect() as db:
+        assert db.execute("SELECT count(*) FROM inventories").fetchone()[0] == 2
+    assert restored.resources.catalogue.selection_options(resource["id"])
+    assert (
+        restored.resources.catalogue.capability(resource["id"])["operations"]["nearby"][
+            "state"
+        ]
+        == "available"
+    )
+    legacy = await restored.resources.query(resource["id"], limit=1)
+    assert legacy["meta"]["total"] == 5
+    nearby = await restored.resources.query(
+        resource["id"], nearby={"lat": 22.28, "lon": 114.15, "radiusM": 2000}, limit=1
+    )
+    assert nearby["meta"]["total"] == 3

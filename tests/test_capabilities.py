@@ -133,3 +133,138 @@ async def test_discovery_filters_http_mcp_and_no_url_token_search(service):
         ]
         == "available"
     )
+
+
+def test_unchanged_checkpoint_skips_matrix_but_receipt_change_reranks(service):
+    first = opportunity_report(service.store.path)
+    repeated = opportunity_report(service.store.path, first)
+    assert repeated["unchanged"]
+    assert "matrix" not in repeated
+    assert repeated["mutations"] == repeated["providerRequests"] == 0
+    service.resources.catalogue.failure("csv", "SOURCE_UNAVAILABLE")
+    changed = opportunity_report(service.store.path, first)
+    assert not changed["unchanged"]
+    assert changed["checkpoint"] != first["checkpoint"]
+    assert changed["byStatus"]["unavailable"] == 1
+    with service.store.connect() as db:
+        db.execute("INSERT INTO resource_cache VALUES ('unused','csv','h',X'00',1)")
+        db.execute("UPDATE resource_cache SET accessed=2")
+    assert opportunity_report(service.store.path, changed)["unchanged"]
+
+
+def test_backend_health_reports_the_real_capability_and_binding_contracts(service):
+    from mcp_open_data_hk.capabilities import REVISION
+    from mcp_open_data_hk.spatial_profiles import manifest_fingerprint
+
+    with TestClient(create_app(service)) as client:
+        health = client.get("/healthz").json()
+    assert health["resourceCapabilities"] == REVISION
+    assert health["pointBindings"] == manifest_fingerprint()
+
+
+def test_arcgis_hosted_wms_and_wfs_keep_their_actual_access_protocol():
+    from mcp_open_data_hk.capabilities import family
+
+    assert (
+        family(
+            {"format": "WMS", "url": "https://portal.csdi.gov.hk/MapServer/WMSServer"}
+        )
+        == "map_imagery"
+    )
+    assert (
+        family(
+            {"format": "WFS", "url": "https://portal.csdi.gov.hk/MapServer/WFSServer"}
+        )
+        == "wfs"
+    )
+    assert (
+        family({"format": "ARCGIS", "url": "https://portal.csdi.gov.hk/MapServer"})
+        == "arcgis"
+    )
+
+
+def test_old_record_receipt_cannot_promote_wms_and_archive_scope_stays_explicit(
+    service,
+):
+    catalogue = service.resources.catalogue
+    catalogue.accept(
+        "wms",
+        "old-records",
+        [{"id": "001"}],
+        {
+            "format": "CSV",
+            "scope": "supported_archive_members",
+            "unreadMembers": ["unread.bin"],
+            "fields": [{"name": "id", "types": ["string"]}],
+        },
+        "hash",
+        {},
+    )
+    cap = catalogue.capability("wms")
+    assert cap["operations"]["records"]["state"] == "unsupported"
+    assert cap["acceptedSelections"][0]["representation"] == "CSV"
+    assert cap["acceptedSelections"][0]["readScope"] == "supported_archive_members"
+    assert cap["acceptedSelections"][0]["unreadMemberCount"] == 1
+    catalogue.failure("csv", "SOURCE_TOO_LARGE", "capacity_limited")
+    assert (
+        catalogue.capability("csv")["operations"]["records"]["reason"]
+        == "SOURCE_TOO_LARGE"
+    )
+
+
+def test_public_scope_never_discloses_older_callers_parameter_values(service):
+    catalogue = service.resources.catalogue
+    schema = {
+        "format": "CSV",
+        "fields": [{"name": "id", "types": ["string"]}],
+        "sourceSelection": {
+            "recordPath": "data",
+            "parameters": {
+                "query": "private synthetic search text",
+                "lat": "22.281234",
+            },
+        },
+    }
+    catalogue.accept("csv", "param-key", [{"id": "001"}], schema, "hash", {})
+    cap = catalogue.capability("csv")
+    assert cap["acceptedSelections"][0]["selection"]["parameterNames"] == [
+        "lat",
+        "query",
+    ]
+    assert "private synthetic search text" not in json.dumps(cap)
+    assert "22.281234" not in json.dumps(cap)
+    assert "param-key" not in json.dumps(cap)
+
+
+def test_directory_keeps_its_inventory_generation_during_concurrent_publication(
+    service, monkeypatch
+):
+    catalogue = service.resources.catalogue
+    generation = catalogue.head()
+    resources = [catalogue.resource(key) for key in ("csv", "wms", "xls")]
+    original = catalogue.capability
+    calls = []
+
+    def concurrent(resource_id, pinned=None):
+        calls.append(pinned)
+        if len(calls) == 1:
+            catalogue.publish(
+                [
+                    {
+                        "id": "schools",
+                        "title": "Changed title",
+                        "provider": "EDB",
+                        "catalogue": "DATA.GOV.HK",
+                    }
+                ],
+                resources,
+                {},
+            )
+        return original(resource_id, pinned)
+
+    monkeypatch.setattr(catalogue, "capability", concurrent)
+    result = catalogue.resources("schools")
+    assert catalogue.head() != generation
+    assert result["generation"] == generation
+    assert calls == [generation] * 3
+    assert result["total"] == len(result["items"]) == 3

@@ -16,6 +16,10 @@ def main():
     parser.add_argument(
         "operation", choices=["sync", "audit", "coverage", "opportunities"]
     )
+    parser.add_argument(
+        "--since",
+        help="Existing opportunity-report JSON checkpoint; read-only unchanged comparison",
+    )
     parser.add_argument("--batch", type=int, default=20)
     parser.add_argument("--cycles", type=int, default=1)
     args = parser.parse_args()
@@ -25,7 +29,17 @@ def main():
     if args.operation == "opportunities":
         from .capability_report import opportunity_report
 
-        print(json.dumps(opportunity_report(path), ensure_ascii=False, indent=2))
+        prior = None
+        if args.since:
+            try:
+                from pathlib import Path
+
+                prior = json.loads(Path(args.since).read_text())
+                if not isinstance(prior, dict):
+                    raise ValueError("Expected a report object")
+            except (OSError, ValueError) as exc:
+                parser.error("Cannot read --since report: " + str(exc))
+        print(json.dumps(opportunity_report(path, prior), ensure_ascii=False, indent=2))
         return
     store = Store(path)
     if args.operation == "sync":

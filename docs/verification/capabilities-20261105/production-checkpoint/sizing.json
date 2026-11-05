@@ -1,0 +1,35 @@
+{
+  "scope": "local isolated restore of accepted production checkpoint; not deployed CPU/latency",
+  "generation": "e10744696ea04c6fad6e96d13c0199d4",
+  "fullMatrixSeconds": 3.315,
+  "unchangedComparisonSeconds": 1.076,
+  "warmLookupSamples": 60,
+  "warmLookupP50Ms": 6.579,
+  "warmLookupP95Ms": 11.56,
+  "largestSchemaReceiptResources": [
+    {
+      "resourceId": "d94de274cfb4dfefb9f61a40914e0479",
+      "lookupMs": 11.441
+    },
+    {
+      "resourceId": "ec36e7f686afbcebee23366844058624",
+      "lookupMs": 15.199
+    },
+    {
+      "resourceId": "78fb2a5d658f33089c5507d233911818",
+      "lookupMs": 8.665
+    },
+    {
+      "resourceId": "d6d6fd793c811b6d13e541e65406a33c",
+      "lookupMs": 10.995
+    },
+    {
+      "resourceId": "88d7eaf8a8dc90bda69daac0ea92447e",
+      "lookupMs": 11.925
+    }
+  ],
+  "databaseBytesBeforeMigration": 420438016,
+  "databaseBytesAfterMetadataMigration": 420446208,
+  "providerRequests": 0,
+  "mutationsByReport": 0
+}

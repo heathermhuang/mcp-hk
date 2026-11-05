@@ -1,13 +1,55 @@
 """Operator-only read transaction over the existing inventory; never opens Store."""
 
 import sqlite3
+import hashlib
+import json
 from collections import Counter, defaultdict
 from pathlib import Path
 
-from .capabilities import family, unpack
+from .capabilities import family, unpack, REVISION
+from .spatial_profiles import profiles, fingerprint
 
 
-def opportunity_report(path):
+def checkpoint(db, generation):
+    """Compare receipt metadata once, excluding record cache touches and other packs."""
+    digest = hashlib.sha256(
+        json.dumps(
+            [
+                "opportunity-matrix-2",
+                generation,
+                REVISION,
+                [fingerprint(p) for p in profiles()],
+            ],
+            sort_keys=True,
+        ).encode()
+    )
+    for table, identity in (("resource_checks", "id"), ("resource_variants", "key")):
+        digest.update(table.encode())
+        for row in db.execute(
+            f"SELECT {identity},checked,validated,status,reason,hash,schema_hash,rows FROM {table} ORDER BY {identity}"
+        ):
+            digest.update(
+                json.dumps(
+                    tuple(row), separators=(",", ":"), ensure_ascii=False
+                ).encode()
+            )
+            digest.update(b"\n")
+    if db.execute(
+        "SELECT 1 FROM sqlite_master WHERE name='resource_selection_options'"
+    ).fetchone():
+        for row in db.execute(
+            "SELECT resource,kind,checked,payload FROM resource_selection_options ORDER BY resource,kind"
+        ):
+            digest.update(
+                json.dumps(
+                    tuple(row)[:3], separators=(",", ":"), ensure_ascii=False
+                ).encode()
+            )
+            digest.update(row["payload"])
+    return digest.hexdigest()
+
+
+def opportunity_report(path, prior=None):
     db = sqlite3.connect(Path(path).resolve().as_uri() + "?mode=ro", uri=True)
     db.row_factory = sqlite3.Row
     try:
@@ -16,6 +58,16 @@ def opportunity_report(path):
         generation = db.execute(
             "SELECT generation FROM inventory_head WHERE id=1"
         ).fetchone()[0]
+        current_checkpoint = checkpoint(db, generation)
+        if prior and prior.get("checkpoint") == current_checkpoint:
+            return {
+                "generation": generation,
+                "checkpoint": current_checkpoint,
+                "unchanged": True,
+                "providerRequests": 0,
+                "mutations": 0,
+                "scope": "Inventory, receipt metadata and capability/profile revisions are unchanged; no matrix scan or source request.",
+            }
         datasets = {
             r["id"]: unpack(r["payload"])
             for r in db.execute(
@@ -104,6 +156,8 @@ def opportunity_report(path):
         )
         return {
             "generation": generation,
+            "checkpoint": current_checkpoint,
+            "unchanged": False,
             "datasetCount": len(datasets),
             "resourceCount": sum(statuses.values()),
             "byStatus": dict(statuses),

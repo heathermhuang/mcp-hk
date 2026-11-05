@@ -486,7 +486,9 @@ class TransportSearch:
         expected_dir = "O" if candidate["direction"] == "outbound" else "I"
         if any(
             r.get("route") != route
+            or r.get("co") not in {None, "CTB"}
             or r.get("dir") != expected_dir
+            or not re.fullmatch(r"[0-9]{1,3}", str(r.get("seq", "")))
             or not re.fullmatch(r"[0-9]{6}", str(r.get("stop", "")))
             or not 1 <= int(r.get("seq", -1)) <= 300
             for r in path
@@ -571,7 +573,12 @@ class TransportSearch:
         candidate["operatorEligibilityVerified"] = True
         eta = await query(CITYBUS["eta"], {"route": route, "stop_id": found[0]})
         if any(
-            r.get("route") != route or r.get("stop") != found[0]
+            r.get("route") != route
+            or r.get("stop") != found[0]
+            or r.get("co") not in {None, "CTB"}
+            or r.get("dir") not in {"O", "I"}
+            or not re.fullmatch(r"[0-9]{1,3}", str(r.get("seq", "")))
+            or not 1 <= int(r["seq"]) <= 300
             for r in eta["data"]["items"]
         ):
             raise DomainError(

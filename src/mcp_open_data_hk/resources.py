@@ -24,7 +24,7 @@ from .observation_quality import (
     observation_freshness,
 )
 from .review_config import SOURCE_REVIEW, CONCURRENCY, BATCH_SIZE, RUN_SECONDS
-from .source_contracts import annotate as annotate_source_contract
+from .source_contracts import annotate as annotate_source_contract, typed_bindings
 from .resource_predicates import Predicates
 from .spatial_query import qualify as qualify_spatial, Nearby
 from .spatial_profiles import profile_for, fingerprint as profile_fingerprint
@@ -465,7 +465,7 @@ class Resources:
             "recordPath": record_path,
             "sheet": sheet,
             "layer": layer,
-            "parameters": parameters or {},
+            "parameterNames": sorted(parameters or {}),
         }
         resource = self.catalogue.resource(resource_id)
         profile = transport.profile(resource)
@@ -728,6 +728,7 @@ class Resources:
                     schema["sourceTransport"] = headers.get(
                         "_mcp_source_transport", "direct"
                     )
+                    schema["readerRevision"] = "structured-reader-3"
                     schema["sourceResponseComplete"] = True
                     schema["sourceSelection"] = source_selection
                     schema["cacheTTLSeconds"] = ttl
@@ -787,17 +788,7 @@ class Resources:
                             if code == "ACCESS_RESTRICTED"
                             else (
                                 "needs_selection"
-                                if code
-                                in {
-                                    "SHEET_REQUIRED",
-                                    "LAYER_REQUIRED",
-                                    "INVALID_SHEET",
-                                    "INVALID_RECORD_PATH",
-                                    "TYPE_NAME_REQUIRED",
-                                    "PARAMETERS_REQUIRED",
-                                    "RECORD_PATH_REQUIRED",
-                                    "INVALID_QUERY",
-                                }
+                                if code in resource_selections.SELECTION_ERRORS
                                 else (
                                     "capacity_limited"
                                     if code
@@ -831,6 +822,9 @@ class Resources:
                 ) from None
 
     def envelope(self, resource, value, check, stale=False):
+        bindings = typed_bindings(value["schema"])
+        if bindings:
+            value["schema"]["typedFieldBindings"] = bindings
         observation = observation_freshness(value["schema"])
         live = value["schema"].get("transport")
         if live and live.get("sourceTimestamp"):
@@ -935,7 +929,10 @@ class Resources:
                         "structuredQueryable": False,
                     },
                 )
-            if self.catalogue.check(resource_id).get("checked", 0) < started:
+            if (
+                exc.code not in resource_selections.SELECTION_ERRORS
+                and (self.catalogue.check(resource_id).get("checked") or 0) < started
+            ):
                 await asyncio.to_thread(
                     self.catalogue.failure,
                     resource_id,
@@ -1355,12 +1352,20 @@ class Resources:
                 "meta": {
                     "total": total,
                     "offset": offset,
-                    "nextOffset": offset + limit if offset + limit < total else None,
+                    "nextOffset": (
+                        offset + limit
+                        if offset + limit < (min(total, 1000) if ordered else total)
+                        else None
+                    ),
+                    "orderedWindow": (
+                        {"limit": 1000, "truncated": total > 1000} if ordered else None
+                    ),
                     "version": check.get("hash"),
                     "pagination": "Pass version on every subsequent page; changed content returns 409.",
                     "structuredQueryable": not document,
                     "typedPredicates": {
                         "excludedRows": typed.excluded,
+                        "excludedRowsScope": "After equality/text filters; first invalid typed predicate per rejected row.",
                         "interval": "[start,end)",
                         "orderTieBreaker": "source_ordinal",
                         "nullOrder": "last",

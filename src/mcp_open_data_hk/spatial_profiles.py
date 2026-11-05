@@ -60,3 +60,9 @@ def accepted_binding(resource, schema):
     if profile and binding.get("profileFingerprint") == fingerprint(profile):
         return binding
     return None
+
+
+def manifest_fingerprint():
+    return hashlib.sha256(
+        "\n".join(fingerprint(p) for p in profiles()).encode()
+    ).hexdigest()

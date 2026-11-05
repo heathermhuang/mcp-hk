@@ -175,7 +175,18 @@ async def test_direct_routes_obey_order_pickup_and_operator(service):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "broken", [None, "direction", "location", "eta_identity", "empty_stop"]
+    "broken",
+    [
+        None,
+        "direction",
+        "location",
+        "eta_identity",
+        "empty_stop",
+        "path_sequence_bool",
+        "eta_sequence_bool",
+        "eta_direction",
+        "eta_operator",
+    ],
 )
 async def test_live_join_uses_verified_operator_order_and_preserves_eta_flags(
     service, monkeypatch, broken
@@ -227,6 +238,15 @@ async def test_live_join_uses_verified_operator_order_and_preserves_eta_flags(
             items[0]["stop"] = "999999"
         if broken == "empty_stop" and resource == CITYBUS["stop"]:
             items = []
+        if broken == "path_sequence_bool" and resource == CITYBUS["route_stops"]:
+            items[0]["seq"] = True
+        if broken == "eta_sequence_bool" and resource == CITYBUS["eta"]:
+            items[0]["seq"] = True
+        if broken == "eta_direction" and resource == CITYBUS["eta"]:
+            items[0]["dir"] = "unknown"
+        if broken == "eta_operator" and resource == CITYBUS["eta"]:
+            items[0]["co"] = "another-operator"
+
         return {
             "data": {"items": items},
             "meta": {"nextOffset": None},

@@ -519,3 +519,33 @@ not a canonical physical facility. Opening hours, accepting patients, school pla
 walking routes and service availability are not inferred. Observation age remains
 separate from source validation. See the first-cohort receipts in
 `docs/verification/capabilities-20261105/`.
+
+## Incremental qualification checkpoints
+
+`mcp-hk-catalogue opportunities --since prior-report.json` first compares a
+consistent fingerprint of inventory generation, receipt metadata, capability/profile
+revisions and typed options. An unchanged checkpoint returns immediately without the
+matrix scan, source requests or writes. Record-cache LRU touches and unrelated packs
+do not trigger it. Save the command's JSON output through the ordinary operator
+workflow; it creates no schedule, model job or second variant cache.
+
+Capability history exposes parameter names and accepted timestamps/schema hashes,
+never prior callers' parameter values or internal cache hashes. Native typed fields
+and the existing qualified HKO source contract inherit comparisons from accepted
+receipts; an arbitrary matching field name does not establish a binding. Literal
+top-level dotted keys retain precedence over nested selectors for typed operations.
+Invalid client selectors retain prior source status. Unknown/failed sources remain
+independent of selection metadata and operation availability.
+
+Ordered queries keep complete matching totals while `meta.orderedWindow` states
+the 1,000-match addressable window and truncation. Its final page has no next offset.
+Typed exclusion counts apply after equality/text filters, with the first invalid
+predicate counted per rejected row. Catalogue responses keep the inventory generation
+whose rows were selected even if a new inventory publishes during projection.
+
+`/healthz` identifies the actual backend capability contract and point-binding
+manifest. Release checks must still verify the controller, accepted source paths,
+HTTP/MCP behaviour, recovery and all five schedules; a static header is insufficient.
+The bounded drivers are `scripts/verify_capabilities.py` (two point bindings) and
+`scripts/verify_capability_inheritance.py --require-current` (existing weather,
+district, company and explicitly selected historical-sheet contracts).

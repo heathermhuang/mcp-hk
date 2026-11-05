@@ -1,0 +1,37 @@
+{
+  "archiveSha256": "00250013b5f436ac2bcd0436800473973a13bdd6772596a7a6e0a2a3ff2c0c56",
+  "archiveBytes": 92302122,
+  "acceptedAt": "2026-11-05T11:59:30.084Z",
+  "nativeConfiguredR2Read": true,
+  "restoreChecksumAndIntegrityAndPacks": true,
+  "readOnlyDatabaseChecksumUnchanged": true,
+  "reportSeconds": 1.0851347089992487,
+  "matrixRows": 13363,
+  "databaseBytes": 420438016,
+  "generation": "e10744696ea04c6fad6e96d13c0199d4",
+  "datasetCount": 5048,
+  "resourceCount": 64012,
+  "byStatus": {
+    "restricted": 4257,
+    "queryable": 41169,
+    "needs_adapter": 3585,
+    "unavailable": 452,
+    "needs_selection": 3629,
+    "unsupported": 10442,
+    "capacity_limited": 397,
+    "schema_drift": 71,
+    "stale": 9,
+    "pending": 1
+  },
+  "datasetsWithAcceptedRepresentation": 4034,
+  "uncoveredDatasetOperationPairs": 1014,
+  "providerRequests": 0,
+  "mutations": 0,
+  "restoredCaptureBytes": 31144445,
+  "totalRestoredBytes": 451582461,
+  "bounds": {
+    "archiveBytes": 150000000,
+    "databaseBytes": 500000000,
+    "totalRestoredBytes": 750000000
+  }
+}

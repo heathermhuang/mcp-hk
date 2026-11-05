@@ -6,9 +6,11 @@ No source requests, semantic inference, status writes or second receipt cache.
 import json
 import zlib
 from urllib.parse import urlsplit
+from .resource_fields import field_catalogue
+from .source_contracts import typed_bindings
 from .spatial_profiles import accepted_binding, profile_for, dataset_kind
 
-REVISION = "resource-capabilities-1"
+REVISION = "resource-capabilities-2"
 OPERATIONS = ("records", "text_search", "typed_comparison", "nearby")
 READERS = {
     "CSV": "table",
@@ -39,6 +41,9 @@ def unpack(value):
 
 def family(resource):
     # An access family is a routing hint, never evidence that the URL returns it.
+    fmt = resource.get("format", "").upper()
+    if fmt in {"WMS", "WFS"}:
+        return READERS[fmt]
     path = urlsplit(resource.get("url", "")).path.lower()
     if "featureserver" in path or "mapserver" in path:
         return "arcgis"
@@ -49,16 +54,49 @@ def operation(state, reason):
     return {"state": state, "reason": reason}
 
 
+def public_selection(schema):
+    raw = schema.get("sourceSelection")
+    if raw:
+        result = {
+            key: raw[key]
+            for key in ("recordPath", "sheet", "layer", "scope")
+            if key in raw
+        }
+        names = raw.get("parameterNames") or sorted(
+            (raw.get("parameters") or {}).keys()
+        )
+        if names:
+            result["parameterNames"] = names
+            result["parameterValues"] = "not_disclosed"
+        return result
+    return {
+        "recordPath": schema.get("recordPath"),
+        "sheet": schema.get("sheet"),
+        "scope": "legacy_receipt_selection_not_fully_recorded",
+    }
+
+
 def project(resource, check=None, receipts=(), schema=None):
     check = check or {}
     status = check.get("status") or "pending"
     access = family(resource)
     accepted = []
+    has_typed_fields = False
     spatial_binding = accepted_binding(resource, schema) if schema else None
     for receipt in receipts:
         if not receipt.get("schema_json") or not receipt.get("schema_hash"):
             continue
         observed = unpack(receipt["schema_json"])
+        bindings = typed_bindings(observed)
+        typed_count = sum(
+            set(field.get("types", [])) - {"null"} == {"number"}
+            or name in observed.get("nativeTemporalFields", {})
+            or name in bindings
+            for name, field in field_catalogue(observed).items()
+        )
+        has_typed_fields = has_typed_fields or bool(
+            typed_count and receipt.get("status") == "queryable"
+        )
         scoped_binding = accepted_binding(resource, observed)
         if (
             spatial_binding is None
@@ -68,25 +106,34 @@ def project(resource, check=None, receipts=(), schema=None):
             spatial_binding = scoped_binding
         accepted.append(
             {
-                "receiptKey": receipt.get("key"),
+                "receiptKey": None,  # Internal cache hashes can encode caller parameters.
+                "representation": observed.get("format"),
+                "readScope": observed.get("scope"),
+                "datasetCompleteness": observed.get("datasetCompleteness"),
+                "unreadMemberCount": len(observed.get("unreadMembers", [])),
                 "schemaFingerprint": receipt["schema_hash"],
-                "selection": observed.get("sourceSelection")
-                or {
-                    "recordPath": observed.get("recordPath"),
-                    "sheet": observed.get("sheet"),
-                    "scope": "legacy_receipt_selection_not_fully_recorded",
-                },
+                "selection": public_selection(observed),
                 "status": receipt.get("status"),
                 "lastCheckedAt": receipt.get("checked"),
                 "lastValidatedAt": receipt.get("validated"),
                 "retrievedAt": receipt.get("retrieved"),
-                "readerRevision": observed.get("readerContract"),
+                "readerRevision": observed.get("readerRevision")
+                or observed.get("readerContract"),
                 "sourceContract": observed.get("sourceContract"),
                 "sourceResponseComplete": observed.get("sourceResponseComplete"),
                 "semanticBinding": scoped_binding,
+                "typedComparisonFieldCount": typed_count,
             }
         )
-    if status in {"restricted", "unavailable", "schema_drift", "stale"}:
+    if access == "map_imagery":
+        state, reason = "unsupported", "map_imagery_is_not_a_record_collection"
+    elif status in {
+        "restricted",
+        "unavailable",
+        "schema_drift",
+        "stale",
+        "capacity_limited",
+    }:
         state, reason = "held", check.get("reason") or status
     elif status == "needs_selection":
         state, reason = "requires_selection", check.get("reason") or status
@@ -101,7 +148,7 @@ def project(resource, check=None, receipts=(), schema=None):
             check.get("reason") or "not_an_accepted_record_collection",
         )
     else:
-        state, reason = "held", (
+        state, reason = "held", check.get("reason") or (
             "reader_support_unverified" if access != "unknown" else "reader_unknown"
         )
     operations = {
@@ -112,6 +159,8 @@ def project(resource, check=None, receipts=(), schema=None):
         ),
         "nearby": operation("requires_binding", "no_qualified_point_binding"),
     }
+    if has_typed_fields:
+        operations["typed_comparison"] = operation(state, reason)
     if spatial_binding:
         operations["nearby"] = operation(
             state if spatial_binding.get("state") == "available" else "held",
@@ -129,7 +178,7 @@ def project(resource, check=None, receipts=(), schema=None):
             if (
                 types == {"number"}
                 or field["name"] in schema.get("nativeTemporalFields", {})
-                or field["name"] in schema.get("typedFieldBindings", {})
+                or field["name"] in typed_bindings(schema)
             ):
                 operators += ["lt", "lte", "gt", "gte", "between", "order"]
                 operations["typed_comparison"] = operation(state, reason)
