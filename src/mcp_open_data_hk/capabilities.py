@@ -9,7 +9,7 @@ from urllib.parse import urlsplit
 from .resource_fields import field_catalogue
 from .source_contracts import typed_bindings
 from .spatial_profiles import accepted_binding, profile_for, dataset_kind
-from .resource_protocols import protocol
+from .resource_protocols import protocol, HKMA_PAGING_CONTRACT
 
 REVISION = "resource-capabilities-3"
 OPERATIONS = ("records", "text_search", "typed_comparison", "nearby")
@@ -81,12 +81,17 @@ def project(resource, check=None, receipts=(), schema=None):
     status = check.get("status") or "pending"
     access = family(resource)
     accepted = []
+    hkma = urlsplit(resource.get("url", "")).hostname == "api.hkma.gov.hk"
     has_typed_fields = False
     spatial_binding = accepted_binding(resource, schema) if schema else None
     for receipt in receipts:
         if not receipt.get("schema_json") or not receipt.get("schema_hash"):
             continue
         observed = unpack(receipt["schema_json"])
+        revalidate = (
+            hkma and observed.get("hkmaPaginationContract") != HKMA_PAGING_CONTRACT
+        )
+        eligible = receipt.get("status") == "queryable" and not revalidate
         bindings = typed_bindings(observed)
         typed_count = sum(
             set(field.get("types", [])) - {"null"} == {"number"}
@@ -94,15 +99,9 @@ def project(resource, check=None, receipts=(), schema=None):
             or name in bindings
             for name, field in field_catalogue(observed).items()
         )
-        has_typed_fields = has_typed_fields or bool(
-            typed_count and receipt.get("status") == "queryable"
-        )
+        has_typed_fields = has_typed_fields or bool(typed_count and eligible)
         scoped_binding = accepted_binding(resource, observed)
-        if (
-            spatial_binding is None
-            and scoped_binding
-            and receipt.get("status") == "queryable"
-        ):
+        if spatial_binding is None and scoped_binding and eligible:
             spatial_binding = scoped_binding
         accepted.append(
             {
@@ -123,6 +122,7 @@ def project(resource, check=None, receipts=(), schema=None):
                 "sourceResponseComplete": observed.get("sourceResponseComplete"),
                 "semanticBinding": scoped_binding,
                 "typedComparisonFieldCount": typed_count,
+                **({"requiresRevalidation": revalidate} if hkma else {}),
             }
         )
     if access == "map_imagery":
@@ -137,6 +137,15 @@ def project(resource, check=None, receipts=(), schema=None):
         state, reason = "held", check.get("reason") or status
     elif status == "needs_selection":
         state, reason = "requires_selection", check.get("reason") or status
+    elif (
+        hkma
+        and status == "queryable"
+        and not any(
+            r["status"] == "queryable" and not r.get("requiresRevalidation")
+            for r in accepted
+        )
+    ):
+        state, reason = "held", "hkma_pagination_revalidation_required"
     elif status == "queryable" and any(r["status"] == "queryable" for r in accepted):
         state, reason = "available", "accepted_receipt_selections_only"
     elif status in {"unsupported", "document", "needs_adapter"} or access in {
@@ -189,7 +198,11 @@ def project(resource, check=None, receipts=(), schema=None):
         "datasetId": resource["datasetId"],
         "representation": resource.get("format"),
         "readerFamily": access,
-        "readerSupport": "unverified" if not accepted else "accepted_selections_only",
+        "readerSupport": (
+            "accepted_selections_only"
+            if any(not r.get("requiresRevalidation") for r in accepted)
+            else "unverified"
+        ),
         "operations": operations,
         "acceptedSelections": accepted,
         "fields": fields,
@@ -201,7 +214,11 @@ def project(resource, check=None, receipts=(), schema=None):
             "lastCheckedAt": check.get("checked"),
         },
         "observationTime": None,
-        "completeness": "per_receipt_selection_only" if accepted else "unknown",
+        "completeness": (
+            "per_receipt_selection_only"
+            if any(not r.get("requiresRevalidation") for r in accepted)
+            else "unknown"
+        ),
         "nextAction": {
             "tool": "hk_resource_schema",
             "arguments": {"resourceId": resource["id"]},

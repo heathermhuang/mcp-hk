@@ -1,8 +1,10 @@
-"""Identify inventoried OGC access independently of its requested representation."""
+"""Identify inventoried access protocols and shared reader contracts."""
 
 from urllib.parse import parse_qs, urlsplit
 
 from .contracts import DomainError
+
+HKMA_PAGING_CONTRACT = "hkma-pages-2"
 
 
 def protocol(resource):

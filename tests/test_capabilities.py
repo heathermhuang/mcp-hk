@@ -155,11 +155,13 @@ def test_unchanged_checkpoint_skips_matrix_but_receipt_change_reranks(service):
 def test_backend_health_reports_the_real_capability_and_binding_contracts(service):
     from mcp_open_data_hk.capabilities import REVISION
     from mcp_open_data_hk.spatial_profiles import manifest_fingerprint
+    from mcp_open_data_hk.resource_protocols import HKMA_PAGING_CONTRACT
 
     with TestClient(create_app(service)) as client:
         health = client.get("/healthz").json()
     assert health["resourceCapabilities"] == REVISION
     assert health["pointBindings"] == manifest_fingerprint()
+    assert health["hkmaPaginationContract"] == HKMA_PAGING_CONTRACT
 
 
 def test_arcgis_hosted_wms_and_wfs_keep_their_actual_access_protocol():

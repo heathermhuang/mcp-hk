@@ -200,11 +200,19 @@ count. Original and resolved source links and the access method are returned. A 
 96-record table passed this reconciliation; a previously oversized JSON table streamed
 58,374 records successfully.
 
-The HKMA adapter reconciles `datasize` across all bounded `offset`/`pagesize` pages and
-rejects early termination, count changes and repeated pages. Its pagination remains
-live because the provider supplies no snapshot token. The local egress path returned
-an upstream HTTP 405 access page during verification; fixture success is not a live
-provider clearance. Recheck from production after deployment before reporting access.
+HKMA's `datasize` counts the returned page, rather than an independent global total.
+The adapter validates every page count, follows offsets to an explicit empty terminal
+page, rejects repeated pages, and rechecks the first and last nonempty pages.
+All reads and rechecks share the unchanged 100-request/8 MB budgets and 100,000-row
+ceiling, with a 120-second complete-read deadline. Count evidence exposes each
+page's rows and leaves the independent total
+unknown. Live boundary checks do not create an atomic snapshot or entity identity.
+Older cached selections require the `hkma-pages-2` contract before they can establish
+record capability; their historical receipts remain visible. Actual source fixtures
+returned 1,000 rows at offset zero and 51 more at offset 1,000. The actual offset-1,051
+request returned HTTP 405, so full source traversal remains held. The positive local
+replay uses an explicitly simulated permitted empty terminal page. Hosted source/client
+verification remains separate; source errors never become empty results.
 
 ArcGIS complete-layer reads spool to the same disk-backed reader after exact object-ID
 batch reconciliation, with up to 1m IDs, 128 MB representation and a 120-second adapter
