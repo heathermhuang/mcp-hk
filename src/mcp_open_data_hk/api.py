@@ -210,11 +210,13 @@ def create_app(service=None):
         from .quality import REVISION
         from .capabilities import REVISION as CAPABILITY_REVISION
         from .spatial_profiles import manifest_fingerprint
+        from .resource_protocols import HKMA_PAGING_CONTRACT
 
         return {
             "status": "ok",
             "resourceCapabilities": CAPABILITY_REVISION,
             "pointBindings": manifest_fingerprint(),
+            "hkmaPaginationContract": HKMA_PAGING_CONTRACT,
             "sourceReviewPolicy": REVISION,
             "racingPipeline": "results-r2-v1",
             "racingProfilesPipeline": "profile-observations-r2-v1",

@@ -1,0 +1,16 @@
+{
+  "url": "https://api.hkma.gov.hk/public/bank-svf-info/banks-branch-locator?lang=en&pagesize=1000&offset=1000",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "checkedAtUtc": "2026-11-05T21:11:45.481466+00:00",
+  "bytes": 25084,
+  "responseSha256": "305e713c572f34e7c91fcdc7d5be5fe68bed367b34bc59b069b3b9f67729d270",
+  "truncated": false,
+  "header": {
+    "success": true,
+    "err_code": "0000",
+    "err_msg": "No error found"
+  },
+  "dataSize": 51,
+  "returnedRows": 51
+}

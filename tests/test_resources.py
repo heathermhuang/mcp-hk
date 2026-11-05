@@ -793,7 +793,7 @@ async def test_hkma_family_reconciles_pages_and_rejects_repeated_pages(monkeypat
         records = [{"id": i} for i in range(offset, min(offset + 1000, 1002))]
         value = {
             "header": {"success": True},
-            "result": {"datasize": 1002, "records": records},
+            "result": {"datasize": len(records), "records": records},
         }
         return value, json.dumps(value).encode(), {}, url
 
@@ -801,13 +801,13 @@ async def test_hkma_family_reconciles_pages_and_rejects_repeated_pages(monkeypat
     body, _, _, info = await hkma_records(
         "https://api.hkma.gov.hk/public/example?lang=en"
     )
-    assert len(json.loads(body)) == 1002 and offsets == [0, 1000]
+    assert len(json.loads(body)) == 1002 and offsets == [0, 1000, 1002, 0, 1000]
     assert info["scope"] == "complete_api_pages_live"
 
     async def repeated(url, params=None):
         value = {
             "header": {"success": True},
-            "result": {"datasize": 3, "records": [{"id": 1}]},
+            "result": {"datasize": 1000, "records": [{"id": i} for i in range(1000)]},
         }
         return value, json.dumps(value).encode(), {}, url
 

@@ -16,7 +16,7 @@ from urllib.parse import parse_qs, quote, unquote, urlencode, urlsplit, urlunspl
 from .catalogue_store import CatalogueStore, unpack
 from .contracts import DomainError
 from . import census_reports
-from .resource_protocols import protocol, pinned_feature_type
+from .resource_protocols import protocol, pinned_feature_type, HKMA_PAGING_CONTRACT
 from . import transport, capabilities, resource_selections
 from .quality import freshness, semantic_quality
 from .observation_quality import (
@@ -163,41 +163,31 @@ async def hkma_records(url):
     params = {k: v[-1] for k, v in parse_qs(p.query).items()}
     params.pop("fields", None)
     params.update(pagesize=1000, offset=0)
-    records = []
-    expected = None
-    hashes = []
-    size = 0
+    records, hashes, page_counts = [], [], []
+    size, requests = 0, 0
+    started = time.monotonic()
     page_hashes = set()
-    for _ in range(100):
-        value, body, headers, final = await read_json(params_url(url, params))
-        if value.get("header", {}).get("success") is not True:
-            raise DomainError("SOURCE_API_ERROR", "HKMA rejected the API query", 502)
-        result = value.get("result", {})
-        total = result.get("datasize")
-        batch = result.get("records")
-        if (
-            not isinstance(total, int)
-            or not isinstance(batch, list)
-            or (expected is not None and expected != total)
-        ):
+
+    async def page(offset):
+        nonlocal size, requests
+        if requests >= 100:
             raise DomainError(
-                "INCOMPLETE_SOURCE", "HKMA count changed or response was malformed", 422
+                "SOURCE_TOO_LARGE", "HKMA read exceeds request budget", 422
             )
-        expected = total
-        if expected > 100000:
-            raise DomainError("SOURCE_TOO_LARGE", "HKMA result exceeds row budget", 422)
-        if len(batch) > 1000 or (not batch and len(records) < expected):
+        requests += 1
+        remaining = 120 - (time.monotonic() - started)
+        if remaining <= 0:
             raise DomainError(
-                "INCOMPLETE_SOURCE", "HKMA pagination ended before total", 422
+                "SOURCE_TIMEOUT", "Complete HKMA read exceeded its deadline", 504
             )
-        signature = hashlib.sha256(
-            json.dumps(batch, sort_keys=True).encode()
-        ).hexdigest()
-        if batch and signature in page_hashes:
-            raise DomainError("INCOMPLETE_SOURCE", "HKMA returned a repeated page", 422)
-        page_hashes.add(signature)
-        hashes.append(hashlib.sha256(body).hexdigest())
-        records.extend(batch)
+        try:
+            value, body, headers, final = await asyncio.wait_for(
+                read_json(params_url(url, {**params, "offset": offset})), remaining
+            )
+        except asyncio.TimeoutError:
+            raise DomainError(
+                "SOURCE_TIMEOUT", "Complete HKMA read exceeded its deadline", 504
+            ) from None
         size += len(body)
         if size > 8_000_000:
             raise DomainError(
@@ -205,25 +195,86 @@ async def hkma_records(url):
                 "HKMA pages exceed bounded representation budget",
                 422,
             )
-        if len(records) == expected:
-            break
-        if len(records) > expected:
+        if value.get("header", {}).get("success") is not True:
+            raise DomainError("SOURCE_API_ERROR", "HKMA rejected the API query", 502)
+        result = value.get("result", {})
+        count, batch = result.get("datasize"), result.get("records")
+        if (
+            type(count) is not int
+            or not isinstance(batch, list)
+            or count != len(batch)
+            or not 0 <= count <= params["pagesize"]
+        ):
             raise DomainError(
-                "INCOMPLETE_SOURCE", "HKMA returned more rows than total", 422
+                "INCOMPLETE_SOURCE", "HKMA page count/schema did not reconcile", 422
             )
-        params["offset"] = len(records)
-    if len(records) != expected:
-        raise DomainError("INCOMPLETE_SOURCE", "HKMA pages incomplete", 422)
+        hashes.append(hashlib.sha256(body).hexdigest())
+        signature = hashlib.sha256(
+            json.dumps(batch, sort_keys=True).encode()
+        ).hexdigest()
+        return batch, signature, headers, final
+
+    first, last, terminal = None, None, None
+    first_headers, first_source = None, None
+    while True:
+        offset = len(records)
+        batch, signature, headers, final = await page(offset)
+        if batch and signature in page_hashes:
+            raise DomainError("INCOMPLETE_SOURCE", "HKMA returned a repeated page", 422)
+        page_hashes.add(signature)
+        if first is None:
+            first = signature
+            first_headers, first_source = headers, final
+        page_counts.append(len(batch))
+        if not batch:
+            terminal = offset
+            break
+        last = offset, signature
+        records.extend(batch)
+        if len(records) > 100000:
+            raise DomainError("SOURCE_TOO_LARGE", "HKMA result exceeds row budget", 422)
+        # A terminal response plus two boundary rechecks must still fit the
+        # existing 100-request ceiling; never accept a capped traversal.
+        if requests + 3 > 100:
+            raise DomainError(
+                "SOURCE_TOO_LARGE", "HKMA read exceeds request budget", 422
+            )
+
+    for offset, expected in dict([(0, first)] + ([last] if last else [])).items():
+        _, signature, _, _ = await page(offset)
+        if signature != expected:
+            raise DomainError(
+                "SOURCE_CHANGED", "HKMA boundary page changed during reading", 409
+            )
+    # Validators from one response cannot validate the compiled live view.
+    composite_headers = {"content-type": "application/json"}
+    if first_headers.get("_mcp_source_transport"):
+        composite_headers["_mcp_source_transport"] = first_headers[
+            "_mcp_source_transport"
+        ]
     return (
         json.dumps(records, ensure_ascii=False).encode(),
-        headers,
-        final,
+        composite_headers,
+        first_source,
         {
             "apiFamily": "HKMA",
+            "hkmaPaginationContract": HKMA_PAGING_CONTRACT,
             "scope": "complete_api_pages_live",
-            "sourceMatched": expected,
+            "sourceMatched": len(records),
             "pageSourceHashes": hashes,
-            "consistency": "Upstream pages are live; no upstream snapshot token is available.",
+            "countEvidence": {
+                "basis": "native_per_page_counts_and_explicit_empty_terminal_page",
+                "pageCounts": page_counts,
+                "terminalOffset": terminal,
+                "terminalRows": 0,
+                "boundaryPagesRevalidated": True,
+                "boundaryOffsets": sorted(
+                    dict([(0, first)] + ([last] if last else []))
+                ),
+                "independentGlobalTotal": None,
+                "providerRequests": requests,
+            },
+            "consistency": "Upstream pages are live; boundary rechecks do not establish an atomic snapshot or stable entity identity.",
         },
     )
 
@@ -800,6 +851,11 @@ class Resources:
                     else []
                 )
                 + ([OBSERVATION_REVISION] if hko_current(resource) else [])
+                + (
+                    [HKMA_PAGING_CONTRACT]
+                    if urlsplit(resource["url"]).hostname == "api.hkma.gov.hk"
+                    else []
+                )
                 + (["rss-feed-root-1"] if resource.get("format") == "RSS" else [])
                 + ([transport.REVISION] if profile else [])
                 + ([profile_fingerprint(point_profile)] if point_profile else [])
