@@ -14,7 +14,7 @@ from urllib.parse import parse_qs, quote, unquote, urlencode, urlsplit, urlunspl
 
 from .catalogue_store import CatalogueStore, unpack
 from .contracts import DomainError
-from . import transport
+from . import transport, capabilities
 from .quality import freshness, semantic_quality
 from .observation_quality import (
     REVISION as OBSERVATION_REVISION,
@@ -699,6 +699,12 @@ class Resources:
                         "_mcp_source_transport", "direct"
                     )
                     schema["sourceResponseComplete"] = True
+                    schema["sourceSelection"] = {
+                        "recordPath": record_path,
+                        "sheet": sheet,
+                        "layer": layer,
+                        "parameters": parameters or {},
+                    }
                     schema["cacheTTLSeconds"] = ttl
                     schema.setdefault(
                         "scope",
@@ -813,6 +819,9 @@ class Resources:
             "resource": resource,
             "dataset": dataset,
             "schema": value["schema"],
+            "capabilities": capabilities.project(
+                resource, check, [check], value["schema"]
+            ),
             "quality": semantic_quality(value["schema"]),
             "observationFreshness": observation,
             "validationFreshness": freshness(
@@ -1024,7 +1033,11 @@ class Resources:
                     503,
                 )
             return {
-                **self.envelope(resource, value, check, stale),
+                **(
+                    await asyncio.to_thread(
+                        self.envelope, resource, value, check, stale
+                    )
+                ),
                 "recordCount": len(value["rows"]),
             }
         finally:

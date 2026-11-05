@@ -13,13 +13,21 @@ from .storage import Store
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("operation", choices=["sync", "audit", "coverage"])
+    parser.add_argument(
+        "operation", choices=["sync", "audit", "coverage", "opportunities"]
+    )
     parser.add_argument("--batch", type=int, default=20)
     parser.add_argument("--cycles", type=int, default=1)
     args = parser.parse_args()
     if not 1 <= args.cycles <= 1000:
         parser.error("cycles must be 1..1000")
-    store = Store(os.environ.get("MCP_HK_DATABASE", ".data/mcp-hk.sqlite3"))
+    path = os.environ.get("MCP_HK_DATABASE", ".data/mcp-hk.sqlite3")
+    if args.operation == "opportunities":
+        from .capability_report import opportunity_report
+
+        print(json.dumps(opportunity_report(path), ensure_ascii=False, indent=2))
+        return
+    store = Store(path)
     if args.operation == "sync":
         result = asyncio.run(sync(store))
     elif args.operation == "audit":

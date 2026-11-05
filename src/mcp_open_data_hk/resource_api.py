@@ -73,9 +73,15 @@ def register_http(app, resources):
             "unclassified",
         ] = "all",
         order: Literal["relevance", "title"] = "relevance",
+        capability: Literal[
+            "all", "records", "requires_selection", "unqualified"
+        ] = "all",
+        entityKind: Literal["all", "unqualified"] = "all",
     ):
         """Search connected services and the reconciled native catalogue inventory, independent of the incomplete CKAN search index."""
-        return resources.catalogue.search(q, limit, offset, access, provider, order)
+        return resources.catalogue.search(
+            q, limit, offset, access, provider, order, capability, entityKind
+        )
 
     @app.get("/api/v1/catalogue/datasets/{datasetId}")
     def dataset(datasetId: str):
@@ -162,10 +168,14 @@ def register_mcp(server, current):
             "unclassified",
         ] = "all",
         order: Literal["relevance", "title"] = "relevance",
+        capability: Literal[
+            "all", "records", "requires_selection", "unqualified"
+        ] = "all",
+        entityKind: Literal["all", "unqualified"] = "all",
     ) -> dict:
         """Search connected query services (including independent Plate.hk and SeeHouse) and harvested DATA.GOV.HK/CSDI sources. Connected entries include direct HTTP/MCP actions; source entries require resource inspection. Discovery is not record validation."""
         return current().resources.catalogue.search(
-            q, limit, offset, access, provider, order
+            q, limit, offset, access, provider, order, capability, entityKind
         )
 
     @server.tool(annotations=annotation)
