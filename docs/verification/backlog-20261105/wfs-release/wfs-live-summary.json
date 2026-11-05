@@ -1,0 +1,110 @@
+{
+  "checkedAtUtc": "2026-11-05T20:34:23.264619+00:00",
+  "scope": "actual production HTTP/native MCP on five exact previously failed WFS selections after changed reader",
+  "selections": [
+    {
+      "resourceId": "f517af5f1721b0896cca46a0dec103f3",
+      "selection": {
+        "recordPath": "APP_AMEND_CSDI:AMEND_CRT"
+      },
+      "schemaHttpStatus": 200,
+      "schemaSeconds": 2.164,
+      "sourceRows": 16,
+      "httpMcpParity": true,
+      "countEvidence": {
+        "basis": "WFS_2_hits_before_and_after",
+        "beforeMatched": 16,
+        "afterMatched": 16,
+        "jsonDeclaredMatched": null,
+        "snapshot": "count_reconciled_not_atomic_publication",
+        "featureIdentity": "not_inferred_when_geojson_omits_native_feature_ids"
+      },
+      "contract": "wfs-2-count-1",
+      "acceptedVersion": "a319b26570ac108c88c30d35e383beafecb7bb6d9289574d9589828cb093e95e",
+      "error": null,
+      "clientFailure": null
+    },
+    {
+      "resourceId": "f517af5f1721b0896cca46a0dec103f3",
+      "selection": {
+        "recordPath": "APP_AMEND_CSDI:APP_CRT"
+      },
+      "schemaHttpStatus": 200,
+      "schemaSeconds": 21.229,
+      "sourceRows": 2179,
+      "httpMcpParity": true,
+      "countEvidence": {
+        "basis": "WFS_2_hits_before_and_after",
+        "beforeMatched": 2179,
+        "afterMatched": 2179,
+        "jsonDeclaredMatched": null,
+        "snapshot": "count_reconciled_not_atomic_publication",
+        "featureIdentity": "not_inferred_when_geojson_omits_native_feature_ids"
+      },
+      "contract": "wfs-2-count-1",
+      "acceptedVersion": "a1ad694683ffd139806bbde2d25ce013451ba32af21b872eba97cbc2abb92a7f",
+      "error": null,
+      "clientFailure": null
+    },
+    {
+      "resourceId": "f517af5f1721b0896cca46a0dec103f3",
+      "selection": {
+        "recordPath": "APP_AMEND_CSDI:AMEND_PAST"
+      },
+      "schemaHttpStatus": 200,
+      "schemaSeconds": 6.275,
+      "sourceRows": 1324,
+      "httpMcpParity": true,
+      "countEvidence": {
+        "basis": "WFS_2_hits_before_and_after",
+        "beforeMatched": 1324,
+        "afterMatched": 1324,
+        "jsonDeclaredMatched": null,
+        "snapshot": "count_reconciled_not_atomic_publication",
+        "featureIdentity": "not_inferred_when_geojson_omits_native_feature_ids"
+      },
+      "contract": "wfs-2-count-1",
+      "acceptedVersion": "b2405c33276b1778f811e6d2061553caaa1d75d5866605111fe7ba5ca569d534",
+      "error": null,
+      "clientFailure": null
+    },
+    {
+      "resourceId": "f517af5f1721b0896cca46a0dec103f3",
+      "selection": {
+        "recordPath": "APP_AMEND_CSDI:APP_PAST"
+      },
+      "schemaHttpStatus": 422,
+      "schemaSeconds": 127.772,
+      "sourceRows": null,
+      "httpMcpParity": false,
+      "countEvidence": null,
+      "contract": null,
+      "acceptedVersion": null,
+      "error": {
+        "code": "SOURCE_TOO_LARGE",
+        "message": "WFS paging exceeded its bounded request/deadline window",
+        "requestId": "66ca07e6ac534433ae618a3a25808cd9"
+      },
+      "clientFailure": null
+    },
+    {
+      "resourceId": "a22c14e0bc0175bda096fd8dc064fe39",
+      "selection": {
+        "recordPath": "OZP_PLAN_CSDI:TPIS_ADM.OD_OZP_PLAN_CSDI"
+      },
+      "schemaHttpStatus": 422,
+      "schemaSeconds": 8.565,
+      "sourceRows": null,
+      "httpMcpParity": false,
+      "countEvidence": null,
+      "contract": null,
+      "acceptedVersion": null,
+      "error": {
+        "code": "SOURCE_TOO_LARGE",
+        "message": "Individual streamed record exceeds budget",
+        "requestId": "f34e8fb602ea48049d2e373c2a15cbbf"
+      },
+      "clientFailure": null
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "applicationId": "a0311e26-5d76-46e6-beb5-67ed6bfefe03",
+  "updatedAt": "2026-11-05T20:33:45.040999936Z",
+  "version": 74,
+  "instances": 1,
+  "image": "registry.cloudflare.com/63a7fe52c985c63bb9e69ce47efdc569/mcp-hk-mcpcontainer@sha256:6f315bda1f2dc42d506f8e0539e98c67b90c173881eb47591030edb681c3f90a",
+  "observationHeaders": {
+    "Date": "Thu, 05 Nov 2026 20:34:09 GMT",
+    "Age": null,
+    "Cache-Control": "no-store",
+    "CF-Cache-Status": "DYNAMIC"
+  }
+}

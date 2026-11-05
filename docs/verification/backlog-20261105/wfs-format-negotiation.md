@@ -26,4 +26,6 @@ or source holds. Stable native counts do not establish an atomic publication.
 Fixtures cover the real capability/16-feature response and both host families'
 unsupported-format, unknown/changing/conflicting/short count, row-budget and
 immediate-denial paths. Local source replay is distinct from deployed HTTP/native
-MCP acceptance, which remains a release gate for this repair.
+MCP acceptance. That gate now passed for three exact planning selections, with
+two capacity holds retained; fresh isolated recovery and actual restored clients
+also passed. See `RELEASED.md` and `wfs-release/` for the released scope.

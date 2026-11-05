@@ -1,0 +1,44 @@
+{
+  "checkedAtUtc": "2026-11-05T20:12:28.800804+00:00",
+  "route": "11C",
+  "tdBoardStopId": "4001",
+  "tdAlightStopId": "4003",
+  "status": "exact_mapping_hold",
+  "reason": "Matching boarding pole exceeds unchanged35m location gate",
+  "boarding": {
+    "stopId": "272546A2E2F4FCEF",
+    "names": {
+      "en": "CHUK YUEN ESTATE BUS TERMINUS",
+      "zhHant": "竹園邨總站"
+    },
+    "rawNames": {
+      "name_en": "CHUK YUEN ESTATE BUS TERMINUS (WT915)",
+      "name_tc": "竹園邨總站 (WT915)"
+    },
+    "distancesM": {
+      "board": 44.55,
+      "alight": 541.0
+    }
+  },
+  "alighting": {
+    "stopId": "1F189CEB915C191D",
+    "names": {
+      "en": "MA CHAI HANG RECREATION GROUND",
+      "zhHant": "馬仔坑遊樂場"
+    },
+    "rawNames": {
+      "name_en": "MA CHAI HANG RECREATION GROUND (WT425)",
+      "name_tc": "馬仔坑遊樂場 (WT425)"
+    },
+    "distancesM": {
+      "board": 494.23,
+      "alight": 26.86
+    }
+  },
+  "sourceRequests": 26,
+  "requestLimit": 64,
+  "deadlineSeconds": 45,
+  "seconds": 6.552,
+  "sourcePoliciesChanged": false,
+  "acceptedSourceFallbackInvented": false
+}
