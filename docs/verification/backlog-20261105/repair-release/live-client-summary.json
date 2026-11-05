@@ -1,0 +1,354 @@
+{
+  "scope": "actual production public HTTP and native FastMCP",
+  "checkedAtUtc": "2026-11-05T19:55:56.954199+00:00",
+  "pointCount": 4,
+  "resourceCount": 2,
+  "failures": [],
+  "buses": [
+    {
+      "operator": "CTB",
+      "clients": {
+        "http": {
+          "coverage": {
+            "candidate": 4,
+            "eligible": 4,
+            "eligibilityUnknown": 0,
+            "verifiedNotServingOrder": 0,
+            "acceptedArrivalChecks": 4,
+            "checked": 4,
+            "failed": 0,
+            "unchecked": 0,
+            "uncheckedReasons": {},
+            "sourceRequests": 12,
+            "requestLimit": 64,
+            "deadlineSeconds": 45,
+            "referenceIndexStale": false,
+            "complete": true,
+            "eligibilityMeaning": "Verified current operator boarding/alighting occurrence; service calendars remain unknown."
+          },
+          "departureComparison": {
+            "scope": "earliest_reported_departure_among_checked_candidates",
+            "earliestPredictedAt": null,
+            "allReferenceCandidatesChecked": true,
+            "globallyEarliest": false,
+            "serviceCalendarsVerified": false,
+            "walkingFeasibilityVerified": false,
+            "fastestArrivalVerified": false
+          },
+          "routes": [
+            {
+              "route": "12M",
+              "arrivalStatus": "live",
+              "operatorEligibilityVerified": true,
+              "error": null
+            },
+            {
+              "route": "13",
+              "arrivalStatus": "live",
+              "operatorEligibilityVerified": true,
+              "error": null
+            },
+            {
+              "route": "12",
+              "arrivalStatus": "live",
+              "operatorEligibilityVerified": true,
+              "error": null
+            }
+          ]
+        },
+        "mcp": {
+          "coverage": {
+            "candidate": 4,
+            "eligible": 4,
+            "eligibilityUnknown": 0,
+            "verifiedNotServingOrder": 0,
+            "acceptedArrivalChecks": 4,
+            "checked": 4,
+            "failed": 0,
+            "unchecked": 0,
+            "uncheckedReasons": {},
+            "sourceRequests": 12,
+            "requestLimit": 64,
+            "deadlineSeconds": 45,
+            "referenceIndexStale": false,
+            "complete": true,
+            "eligibilityMeaning": "Verified current operator boarding/alighting occurrence; service calendars remain unknown."
+          },
+          "departureComparison": {
+            "scope": "earliest_reported_departure_among_checked_candidates",
+            "earliestPredictedAt": null,
+            "allReferenceCandidatesChecked": true,
+            "globallyEarliest": false,
+            "serviceCalendarsVerified": false,
+            "walkingFeasibilityVerified": false,
+            "fastestArrivalVerified": false
+          },
+          "routes": [
+            {
+              "route": "12M",
+              "arrivalStatus": "live",
+              "operatorEligibilityVerified": true,
+              "error": null
+            },
+            {
+              "route": "13",
+              "arrivalStatus": "live",
+              "operatorEligibilityVerified": true,
+              "error": null
+            },
+            {
+              "route": "12",
+              "arrivalStatus": "live",
+              "operatorEligibilityVerified": true,
+              "error": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "operator": "KMB",
+      "clients": {
+        "http": {
+          "coverage": {
+            "candidate": 4,
+            "eligible": 3,
+            "eligibilityUnknown": 1,
+            "verifiedNotServingOrder": 0,
+            "acceptedArrivalChecks": 3,
+            "checked": 4,
+            "failed": 1,
+            "unchecked": 0,
+            "uncheckedReasons": {},
+            "sourceRequests": 40,
+            "requestLimit": 64,
+            "deadlineSeconds": 45,
+            "referenceIndexStale": false,
+            "complete": false,
+            "eligibilityMeaning": "Verified current operator boarding/alighting occurrence; service calendars remain unknown."
+          },
+          "departureComparison": {
+            "scope": "earliest_reported_departure_among_checked_candidates",
+            "earliestPredictedAt": null,
+            "allReferenceCandidatesChecked": false,
+            "globallyEarliest": false,
+            "serviceCalendarsVerified": false,
+            "walkingFeasibilityVerified": false,
+            "fastestArrivalVerified": false
+          },
+          "routes": [
+            {
+              "route": "1",
+              "arrivalStatus": "live",
+              "operatorEligibilityVerified": true,
+              "error": null
+            },
+            {
+              "route": "103",
+              "arrivalStatus": "live",
+              "operatorEligibilityVerified": true,
+              "error": null
+            },
+            {
+              "route": "11C",
+              "arrivalStatus": "unavailable",
+              "operatorEligibilityVerified": null,
+              "error": {
+                "code": "TRANSPORT_MAPPING_UNVERIFIED",
+                "message": "Live arrivals could not be verified; the reference candidate remains unknown."
+              }
+            },
+            {
+              "route": "11K",
+              "arrivalStatus": "live",
+              "operatorEligibilityVerified": true,
+              "error": null
+            }
+          ]
+        },
+        "mcp": {
+          "coverage": {
+            "candidate": 4,
+            "eligible": 3,
+            "eligibilityUnknown": 1,
+            "verifiedNotServingOrder": 0,
+            "acceptedArrivalChecks": 3,
+            "checked": 4,
+            "failed": 1,
+            "unchecked": 0,
+            "uncheckedReasons": {},
+            "sourceRequests": 40,
+            "requestLimit": 64,
+            "deadlineSeconds": 45,
+            "referenceIndexStale": false,
+            "complete": false,
+            "eligibilityMeaning": "Verified current operator boarding/alighting occurrence; service calendars remain unknown."
+          },
+          "departureComparison": {
+            "scope": "earliest_reported_departure_among_checked_candidates",
+            "earliestPredictedAt": null,
+            "allReferenceCandidatesChecked": false,
+            "globallyEarliest": false,
+            "serviceCalendarsVerified": false,
+            "walkingFeasibilityVerified": false,
+            "fastestArrivalVerified": false
+          },
+          "routes": [
+            {
+              "route": "1",
+              "arrivalStatus": "live",
+              "operatorEligibilityVerified": true,
+              "error": null
+            },
+            {
+              "route": "103",
+              "arrivalStatus": "live",
+              "operatorEligibilityVerified": true,
+              "error": null
+            },
+            {
+              "route": "11C",
+              "arrivalStatus": "unavailable",
+              "operatorEligibilityVerified": null,
+              "error": {
+                "code": "TRANSPORT_MAPPING_UNVERIFIED",
+                "message": "Live arrivals could not be verified; the reference candidate remains unknown."
+              }
+            },
+            {
+              "route": "11K",
+              "arrivalStatus": "live",
+              "operatorEligibilityVerified": true,
+              "error": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "operator": "NLB",
+      "clients": {
+        "http": {
+          "coverage": {
+            "candidate": 11,
+            "eligible": 6,
+            "eligibilityUnknown": 0,
+            "verifiedNotServingOrder": 5,
+            "acceptedArrivalChecks": 6,
+            "checked": 11,
+            "failed": 0,
+            "unchecked": 0,
+            "uncheckedReasons": {},
+            "sourceRequests": 7,
+            "requestLimit": 64,
+            "deadlineSeconds": 45,
+            "referenceIndexStale": false,
+            "complete": true,
+            "eligibilityMeaning": "Verified current operator boarding/alighting occurrence; service calendars remain unknown."
+          },
+          "departureComparison": {
+            "scope": "earliest_reported_departure_among_checked_candidates",
+            "earliestPredictedAt": null,
+            "allReferenceCandidatesChecked": true,
+            "globallyEarliest": false,
+            "serviceCalendarsVerified": false,
+            "walkingFeasibilityVerified": false,
+            "fastestArrivalVerified": false
+          },
+          "routes": [
+            {
+              "route": "1",
+              "arrivalStatus": "ineligible",
+              "operatorEligibilityVerified": null,
+              "error": null
+            },
+            {
+              "route": "1",
+              "arrivalStatus": "live",
+              "operatorEligibilityVerified": true,
+              "error": null
+            },
+            {
+              "route": "N1",
+              "arrivalStatus": "live",
+              "operatorEligibilityVerified": true,
+              "error": null
+            },
+            {
+              "route": "1",
+              "arrivalStatus": "ineligible",
+              "operatorEligibilityVerified": null,
+              "error": null
+            },
+            {
+              "route": "1",
+              "arrivalStatus": "ineligible",
+              "operatorEligibilityVerified": null,
+              "error": null
+            }
+          ]
+        },
+        "mcp": {
+          "coverage": {
+            "candidate": 11,
+            "eligible": 6,
+            "eligibilityUnknown": 0,
+            "verifiedNotServingOrder": 5,
+            "acceptedArrivalChecks": 6,
+            "checked": 11,
+            "failed": 0,
+            "unchecked": 0,
+            "uncheckedReasons": {},
+            "sourceRequests": 7,
+            "requestLimit": 64,
+            "deadlineSeconds": 45,
+            "referenceIndexStale": false,
+            "complete": true,
+            "eligibilityMeaning": "Verified current operator boarding/alighting occurrence; service calendars remain unknown."
+          },
+          "departureComparison": {
+            "scope": "earliest_reported_departure_among_checked_candidates",
+            "earliestPredictedAt": null,
+            "allReferenceCandidatesChecked": true,
+            "globallyEarliest": false,
+            "serviceCalendarsVerified": false,
+            "walkingFeasibilityVerified": false,
+            "fastestArrivalVerified": false
+          },
+          "routes": [
+            {
+              "route": "1",
+              "arrivalStatus": "ineligible",
+              "operatorEligibilityVerified": null,
+              "error": null
+            },
+            {
+              "route": "1",
+              "arrivalStatus": "live",
+              "operatorEligibilityVerified": true,
+              "error": null
+            },
+            {
+              "route": "N1",
+              "arrivalStatus": "live",
+              "operatorEligibilityVerified": true,
+              "error": null
+            },
+            {
+              "route": "1",
+              "arrivalStatus": "ineligible",
+              "operatorEligibilityVerified": null,
+              "error": null
+            },
+            {
+              "route": "1",
+              "arrivalStatus": "ineligible",
+              "operatorEligibilityVerified": null,
+              "error": null
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

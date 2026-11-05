@@ -106,7 +106,8 @@ Department JSON responses retain response context and scope. Generic API respons
 access does not imply that pagination, arbitrary endpoint parameters or full history
 have been integrated. Inventoried URL templates accept only their exact named `parameters` (up to ten string values), URL-encoded into the fixed source endpoint; credentials and parameterised hosts are rejected. Other API specifications and pagination families still require adapters.
 
-CSDI's WFS 2 services advertise `GEOJSON`, while their JSON features omit matched
+CSDI and other ArcGIS-hosted `WFSServer` WFS 2 services can advertise `GEOJSON`
+without advertising `application/json`; their JSON features can omit matched
 counts. The reader negotiates only an advertised supported JSON format and requires
 exact native WFS hit counts before and after the complete response. Changing,
 unknown, conflicting or truncated counts fail closed. Stable counts are not an
@@ -118,7 +119,9 @@ increasing native IDs throughout the count-reconciled scan. Native attributes an
 projected geometry remain raw; Esri JSON is not relabelled GeoJSON/WGS84. Files use
 the existing 128 MB streamed representation ceiling. Oversized pages may shrink
 within the same request/deadline budget; provider denials are never retried by that
-logic. Every incomplete/failed scan is discarded before acceptance.
+logic. Every incomplete/failed scan is discarded before acceptance. Previously
+accepted non-CSDI `WFSServer` selections use a distinct reader-contract key, so
+their old accepted status cannot stand in for a new count-reconciled read.
 
 ZIP/GTFS/KMZ and ZIP responses labelled CSV/GeoJSON are read in memory, without
 filesystem extraction. Every supported member has `_sourceArchiveMember` provenance;

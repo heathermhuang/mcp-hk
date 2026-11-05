@@ -1,0 +1,69 @@
+{
+  "mcp-hk-backlog-acceptance-a687580": {
+    "receiptCount": 260,
+    "operationStatusCounts": [
+      {
+        "operation": "query",
+        "httpStatus": 200,
+        "count": 44
+      },
+      {
+        "operation": "query",
+        "httpStatus": 502,
+        "count": 3
+      },
+      {
+        "operation": "query",
+        "httpStatus": null,
+        "count": 1
+      },
+      {
+        "operation": "schema",
+        "httpStatus": 200,
+        "count": 144
+      },
+      {
+        "operation": "schema",
+        "httpStatus": 422,
+        "count": 31
+      },
+      {
+        "operation": "schema",
+        "httpStatus": 502,
+        "count": 33
+      },
+      {
+        "operation": "schema",
+        "httpStatus": 504,
+        "count": 4
+      }
+    ],
+    "errorReceiptCounts": {
+      "SOURCE_PARSE_ERROR": 4,
+      "SOURCE_UNAVAILABLE": 4,
+      "ACCESS_RESTRICTED": 32,
+      "SOURCE_TIMEOUT": 4,
+      "SOURCE_TOO_LARGE": 27
+    },
+    "resourcesWithAcceptedSchema": 42,
+    "resourcesWithAcceptedQuery": 38
+  },
+  "mcp-hk-report-discovery-a687580": {
+    "receiptCount": 262,
+    "operationStatusCounts": [
+      {
+        "operation": "query",
+        "httpStatus": 200,
+        "count": 27
+      },
+      {
+        "operation": "schema",
+        "httpStatus": 200,
+        "count": 235
+      }
+    ],
+    "errorReceiptCounts": {},
+    "resourcesWithAcceptedSchema": 2,
+    "resourcesWithAcceptedQuery": 1
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "releasedCommit": "ced4b819f2c534c8c6440bf3d328476184b5b681",
+  "codePrs": [
+    141,
+    142,
+    143
+  ],
+  "cloudflareVersionId": "158cca65-ebb8-4397-8eaf-912ef2551c75",
+  "containerImageDigest": "sha256:beb98695ecd51f55b1591ebbacb9ff600ee14beb143bbe3da1415d46af705f52",
+  "verifiedAtUtc": "2026-11-05T20:01:28.388187+00:00",
+  "allFiveSchedulesVerified": true,
+  "actualHttpMcpRegressionPassed": true,
+  "arcgisExactRechecks": "Both selected layers now reach unchanged 128 MB streamed representation ceiling; capacity holds retained",
+  "kmb": "Route103 mapping verified; route11C mapping remains unverified; all4 candidates checked in40lookups in both clients",
+  "freshAcceptedRestore": {
+    "freshAcceptedArchiveSha256": "00ea623ecf9b153b6ccb852549e6535cd22aade6e197e09175b2d8aa0ed50454",
+    "archiveBytes": 106967463,
+    "databaseBytes": 311889920,
+    "captureBytes": 31144445,
+    "totalRestoredBytes": 343034365,
+    "integrity": "ok",
+    "baseAndTransportPacks": {
+      "population": 18,
+      "restaurants": 17289,
+      "transport": 62147
+    },
+    "sourceRegistryRecovered": true,
+    "nativeDatasetCount": 5048,
+    "activePreviousInventoryGenerations": 2,
+    "typedWorkbookOptions": 84,
+    "restoredPointBindings": [
+      {
+        "profileId": "ambulance-depot-feature-points-1",
+        "profileFingerprint": "2c46fabf80af8cc3a3d0393686a235d06912d5e189e2d773b6cf71771aae3fc8",
+        "sourceRows": 45
+      },
+      {
+        "profileId": "dh-clinic-feature-points-1",
+        "profileFingerprint": "d716d17e076adb0b4ee07a65c5ad00ea528ef66e0d4e03fb7b3d7f980b16ad26",
+        "sourceRows": 200
+      },
+      {
+        "profileId": "edb-school-record-points-1",
+        "profileFingerprint": "3263fce4baca106524b171f54228a7a425ea6e41232178ced42020ac063df2f9",
+        "sourceRows": 3496
+      },
+      {
+        "profileId": "fire-station-feature-points-1",
+        "profileFingerprint": "abfc4aa277d11dcb73d7eef77ab5233abab1e8ab310cde70451eedc2915928e1",
+        "sourceRows": 95
+      },
+      {
+        "profileId": "library-feature-points-1",
+        "profileFingerprint": "e75d4ced7e1654371ee3c563964d03d60bed7184a606b548e736b29c9caabc40",
+        "sourceRows": 184
+      },
+      {
+        "profileId": "museum-feature-points-1",
+        "profileFingerprint": "33282724e064947f6af7a4706ee355b7bcbafd6a900b18d31aa3b26fe408a524",
+        "sourceRows": 18
+      }
+    ],
+    "boundsUnchanged": {
+      "archive": 150000000,
+      "database": 500000000,
+      "totalRestored": 750000000
+    }
+  },
+  "restoredOldAndNewClientsProviderRequests": 0,
+  "wholeRemainingBacklogComplete": false,
+  "firstUnfinished": "Remaining explicit selection qualification, WFS parse investigation, KMB11C exact mapping evidence and candidate capacity/source holds"
+}

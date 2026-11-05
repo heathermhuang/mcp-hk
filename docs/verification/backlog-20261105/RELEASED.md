@@ -1,4 +1,37 @@
-# Remaining-backlog implementation release — 6 November 2026
+# Remaining-backlog implementation releases — 6 November 2026
+
+PRs #141–#143 are merged and deployed at
+`ced4b819f2c534c8c6440bf3d328476184b5b681`. All five exact-main CI groups passed.
+Cloudflare version `158cca65-ebb8-4397-8eaf-912ef2551c75` adopted immutable image
+`sha256:beb98695ecd51f55b1591ebbacb9ff600ee14beb143bbe3da1415d46af705f52`.
+Private controller diagnostics, the authoritative container application, actual
+backend health/readiness and changed source/client behavior were verified. An
+initial cached container-info response still described the previous image; a fresh
+read of the same authoritative API confirmed application version 73 and the new
+digest. No deployment was repeated to resolve that stale observation.
+
+Actual HTTP and native FastMCP regressions passed the four new point bindings,
+Census series, RVD028, Citybus and NLB cohorts. KMB route 103 now verifies using
+the explicitly published same-stop operator label. Both clients checked all four
+KMB candidates in 40 source lookups: routes 1, 103 and 11K passed, while route 11C
+retained `TRANSPORT_MAPPING_UNVERIFIED`. Coverage remains partial and never claims
+a globally earliest bus. The two formerly timed-out ArcGIS selections now reach
+the unchanged 128 MB streamed representation ceiling and return
+`SOURCE_TOO_LARGE`: these remain internal capacity holds, not accepted reads or
+provider refusals. Exact receipts are in `repair-release/`.
+
+The fresh post-client accepted checkpoint
+`00ea623ecf9b153b6ccb852549e6535cd22aade6e197e09175b2d8aa0ed50454`
+was retrieved by immutable R2 key and restored in isolation. Its 106,967,463-byte
+archive restored 311,889,920 SQLite bytes and 343,034,365 total bytes. Integrity,
+capture hashes, accepted packs, source registry, both inventory generations, six
+point bindings and 84 workbook choices passed. Old/new local HTTP and native MCP
+reads made zero provider requests. All five schedules were restored and
+independently read back; the owned release slot was released. The broader frozen
+programme remains open, including remaining selections, WFS parsing investigation
+and the exact KMB 11C mapping hold.
+
+## Earlier integration release
 
 PRs #139 and #140 are merged and deployed at
 `a687580e03977e7fab76a0306bdd83973d4b8300`. This is an implemented/released increment,
