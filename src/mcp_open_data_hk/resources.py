@@ -301,12 +301,18 @@ async def arcgis(url, layer):
         root + "/query", {"f": "json", "where": "1=1", "returnIdsOnly": "true"}
     )
     ids = identities.get("objectIds")
-    if not isinstance(ids, list) or len(ids) != len(set(ids)) or len(ids) > 1_000_000:
+    if isinstance(ids, list) and len(ids) > 1_000_000:
         raise DomainError(
             "SOURCE_TOO_LARGE",
-            "ArcGIS ID set is invalid or exceeds the row budget",
+            "ArcGIS ID set exceeds the existing row budget",
             422,
         )
+    if (
+        not isinstance(ids, list)
+        or any(type(i) is not int for i in ids)
+        or len(ids) != len(set(ids))
+    ):
+        raise DomainError("SOURCE_SCHEMA_CHANGED", "ArcGIS ID set is invalid", 422)
     fd, name = tempfile.mkstemp(prefix="mcp-hk-arcgis-", suffix=".json")
     os.close(fd)
     path = Path(name)
@@ -316,36 +322,80 @@ async def arcgis(url, layer):
     try:
         with path.open("wb") as output:
             output.write(b"[")
-            for offset in range(0, len(ids), 100):
+            offset, requests = 0, 0
+            declared_limit = metadata.get("maxRecordCount")
+            batch_size = (
+                min(500, declared_limit)
+                if type(declared_limit) is int and declared_limit > 0
+                else 100
+            )
+            while offset < len(ids):
                 if time.monotonic() - started > 120:
                     raise DomainError(
                         "SOURCE_TIMEOUT",
                         "Complete ArcGIS read exceeded its deadline",
                         504,
                     )
-                selected = ids[offset : offset + 100]
-                value, body, _, _ = await read_json(
-                    root + "/query",
-                    {
-                        "f": "json",
-                        "objectIds": ",".join(str(i) for i in selected),
-                        "outFields": "*",
-                        "returnGeometry": "true",
-                    },
-                )
-                batch = value.get("features", [])
-                chain.update(hashlib.sha256(body).digest())
-                if (
-                    value.get("exceededTransferLimit")
-                    or {r.get("attributes", {}).get(oid) for r in batch}
-                    != set(selected)
-                    or len(batch) != len(selected)
+                selected = ids[offset : offset + batch_size]
+                params = {
+                    "f": "json",
+                    "objectIds": ",".join(str(i) for i in selected),
+                    "outFields": "*",
+                    "returnGeometry": "true",
+                }
+                # Respect conservative GET query limits as well as the provider's
+                # declared record limit; no new public source budget is granted.
+                while (
+                    len(selected) > 1
+                    and len(params_url(root + "/query", params)) > 2000
                 ):
+                    batch_size = max(1, len(selected) - max(1, len(selected) // 10))
+                    selected = ids[offset : offset + batch_size]
+                    params["objectIds"] = ",".join(str(i) for i in selected)
+                requests += 1
+                try:
+                    value, body, _, _ = await asyncio.wait_for(
+                        read_json(root + "/query", params),
+                        max(0, 120 - (time.monotonic() - started)),
+                    )
+                except asyncio.TimeoutError:
+                    raise DomainError(
+                        "SOURCE_TIMEOUT",
+                        "Complete ArcGIS read exceeded its deadline",
+                        504,
+                    ) from None
+                except DomainError as exc:
+                    if exc.code != "SOURCE_TOO_LARGE" or len(selected) == 1:
+                        raise
+                    batch_size = max(1, len(selected) // 2)
+                    continue
+                batch = value.get("features", [])
+                returned = (
+                    [
+                        r.get("attributes", {}).get(oid)
+                        for r in batch
+                        if isinstance(r, dict)
+                    ]
+                    if isinstance(batch, list)
+                    else []
+                )
+                exact = (
+                    len(returned) == len(selected)
+                    and all(type(i) is int for i in returned)
+                    and set(returned) == set(selected)
+                )
+                if value.get("exceededTransferLimit"):
+                    if len(selected) > 1:
+                        batch_size = max(1, len(selected) // 2)
+                        continue
+                    exact = False
+                if not exact:
                     raise DomainError(
                         "INCOMPLETE_SOURCE",
                         "ArcGIS page did not contain every requested identity",
                         502,
                     )
+                chain.update(hashlib.sha256(body).digest())
                 for record in batch:
                     if count:
                         output.write(b",")
@@ -357,11 +407,27 @@ async def arcgis(url, layer):
                         "ArcGIS layer exceeds the streamed file budget",
                         422,
                     )
+                offset += len(selected)
             output.write(b"]")
-        again, _, _, _ = await read_json(
-            root + "/query", {"f": "json", "where": "1=1", "returnIdsOnly": "true"}
-        )
-        if set(again.get("objectIds", [])) != set(ids):
+        try:
+            again, _, _, _ = await asyncio.wait_for(
+                read_json(
+                    root + "/query",
+                    {"f": "json", "where": "1=1", "returnIdsOnly": "true"},
+                ),
+                max(0, 120 - (time.monotonic() - started)),
+            )
+        except asyncio.TimeoutError:
+            raise DomainError(
+                "SOURCE_TIMEOUT", "Complete ArcGIS read exceeded its deadline", 504
+            ) from None
+        final_ids = again.get("objectIds")
+        if (
+            not isinstance(final_ids, list)
+            or len(final_ids) != len(ids)
+            or any(type(i) is not int for i in final_ids)
+            or set(final_ids) != set(ids)
+        ):
             raise DomainError(
                 "SOURCE_CHANGED", "ArcGIS ID set changed during reading", 409
             )
@@ -371,6 +437,9 @@ async def arcgis(url, layer):
             "sourceFields": metadata.get("fields"),
             "sourceMatched": len(ids),
             "pageResponseChainHash": chain.hexdigest(),
+            "sourceBatchRequests": requests,
+            "sourceBatchSize": batch_size,
+            "advertisedMaxRecordCount": declared_limit,
             "coordinateReferenceSystem": metadata.get("extent", {}).get(
                 "spatialReference"
             ),
