@@ -19,12 +19,12 @@ async function browser({stored=null,id='G-TEST123456',url='https://mcp.hk/covera
   await new Promise(resolve=>setImmediate(resolve));
   const dialog=body.children[0];return {context,listeners,document,initialFocus,dialog,button,head,calls,reloaded:()=>reloaded,saved:()=>saved,reject:dialog.children[4],accept:dialog.children[5]};
 }
-test('no Google script or consent ping before choice, and rejection keeps the service usable',async()=>{
-  const b=await browser();assert.equal(b.head.children.length,0);assert.equal(b.context.dataLayer,undefined);assert.deepEqual(b.calls,['/assets/site-config.json']);assert.equal(b.dialog.open,true);assert.equal(b.dialog.modal,false);
-  b.reject.listeners.click();assert.equal(b.dialog.open,false);assert.equal(b.head.children.length,0);assert.equal(JSON.parse(b.saved()).allowed,false);
+test('Google starts automatically without a choice and an explicit opt-out stops it',async()=>{
+  const b=await browser();assert.equal(b.head.children.length,1);assert.ok(b.context.dataLayer);assert.equal(b.saved(),null);assert.deepEqual(b.calls,['/assets/site-config.json']);assert.equal(b.dialog.open,false);
+  b.reject.listeners.click();assert.equal(b.context['ga-disable-G-TEST123456'],true);assert.equal(JSON.parse(b.saved()).allowed,false);
   b.button.listeners.click();assert.equal(b.dialog.open,true);assert.equal(b.dialog.modal,true);
 });
-test('affirmative consent sends sanitized page views without search, fragment or advertising consent',async()=>{
+test('automatic collection sends sanitized page views without search, fragment or advertising consent',async()=>{
   const b=await browser();b.accept.listeners.click();assert.equal(b.head.children.length,1);assert.match(b.head.children[0].src,/googletagmanager\.com\/gtag\/js\?id=G-TEST123456/);
   const commands=b.context.dataLayer.map(args=>Array.from(args));
   const config=commands.find(args=>args[0]==='config');assert.equal(config[2].send_page_view,false);assert.equal(config[2].allow_google_signals,false);
@@ -38,7 +38,7 @@ test('saved consent, expiration, browser opt-out, disabled config and previews a
   for(const options of [{stored:saved,gpc:true},{stored:saved,dnt:true},{id:''},{url:'http://127.0.0.1:8765/'},{url:'https://mcp-hk.measurable.workers.dev/'}]){
     const b=await browser(options);assert.equal(b.head.children.length,0);assert.equal(b.accept.disabled,true);
   }
-  const expired=await browser({stored:JSON.stringify({version:1,allowed:true,at:Date.now()-181*86400000})});assert.equal(expired.head.children.length,0);assert.equal(expired.dialog.open,true);
+  const expired=await browser({stored:JSON.stringify({version:1,allowed:true,at:Date.now()-181*86400000})});assert.equal(expired.head.children.length,1);assert.equal(expired.dialog.open,false);
 });
 
 test('in-app navigation is counted once per path and never includes queries',async()=>{
@@ -50,14 +50,14 @@ test('in-app navigation is counted once per path and never includes queries',asy
 
 test('opening settings promotes an existing notice to an explicit modal without enabling analytics',async()=>{
  const b=await browser();assert.equal(b.dialog.modal,false);b.button.listeners.click();
- assert.equal(b.dialog.open,true);assert.equal(b.dialog.modal,true);assert.equal(b.head.children.length,0);
+ assert.equal(b.dialog.open,true);assert.equal(b.dialog.modal,true);assert.equal(b.head.children.length,1);
 });
 
 test('the asynchronous passive notice preserves an already focused search control',async()=>{
  const b=await browser();assert.equal(b.document.activeElement,b.initialFocus);
- assert.equal(b.dialog.modal,false);assert.equal(b.head.children.length,0);
+ assert.equal(b.dialog.modal,false);assert.equal(b.head.children.length,1);
 });
 
 test('playground intent and identities never enter analytics, before or after consent',async()=>{
- const b=await browser({url:'https://mcp.hk/playground?lang=en#p=private-address-record-identifier'});assert.equal(b.context.dataLayer,undefined);b.accept.listeners.click();const commands=b.context.dataLayer.map(args=>Array.from(args));assert.doesNotMatch(JSON.stringify(commands),/private-address|record-identifier|lang=en|#p=/);const event=commands.find(args=>args[0]==='event');assert.equal(event[2].page_location,'https://mcp.hk/playground');
+ const b=await browser({url:'https://mcp.hk/playground?lang=en#p=private-address-record-identifier'});assert.ok(b.context.dataLayer);assert.equal(b.saved(),null);const commands=b.context.dataLayer.map(args=>Array.from(args));assert.doesNotMatch(JSON.stringify(commands),/private-address|record-identifier|lang=en|#p=/);const event=commands.find(args=>args[0]==='event');assert.equal(event[2].page_location,'https://mcp.hk/playground');
 });
