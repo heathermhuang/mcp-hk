@@ -32,7 +32,12 @@ def opportunity_report(path):
         groups = defaultdict(
             lambda: {"resources": 0, "datasets": set(), "withAlternative": set()}
         )
-        statuses, uncovered, schema_counts = Counter(), defaultdict(set), Counter()
+        statuses, uncovered = Counter(), defaultdict(set)
+        schemas = defaultdict(list)
+        for row in db.execute(
+            "SELECT resource,schema_hash FROM resource_variants WHERE schema_hash IS NOT NULL GROUP BY resource,schema_hash ORDER BY resource,schema_hash"
+        ):
+            schemas[row["resource"]].append(row["schema_hash"])
         for r in db.execute(
             "SELECT r.*,c.status,c.reason,c.schema_hash FROM inventory_resources r LEFT JOIN resource_checks c ON c.id=r.id WHERE r.generation=? ORDER BY r.id",
             (generation,),
@@ -40,14 +45,7 @@ def opportunity_report(path):
             resource = unpack(r["payload"])
             status = r["status"] or "pending"
             statuses[status] += 1
-            fingerprints = tuple(
-                x[0]
-                for x in db.execute(
-                    "SELECT DISTINCT schema_hash FROM resource_variants WHERE resource=? AND schema_hash IS NOT NULL ORDER BY schema_hash",
-                    (r["id"],),
-                )
-            )
-            schema_counts[len(fingerprints)] += 1
+            fingerprints = tuple(schemas.get(r["id"], ()))
             provider = datasets[r["dataset"]].get("provider", "unknown")
             key = (
                 provider,
@@ -83,7 +81,12 @@ def opportunity_report(path):
                 "accessFamily": k[0],
                 "status": k[1],
                 "reason": k[2],
-                "operation": "records",
+                "operation": "map_imagery" if k[0] == "map_imagery" else "records",
+                "disposition": (
+                    "not_a_record_reader_opportunity"
+                    if k[0] in {"map_imagery", "document_text"}
+                    else "requires_scope_review"
+                ),
                 "uncoveredDatasetCount": len(ids),
                 "datasetIds": sorted(ids),
                 "benefit": "candidate_only_scope_equivalence_unverified",

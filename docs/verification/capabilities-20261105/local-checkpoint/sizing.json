@@ -1,0 +1,111 @@
+{
+  "scope": "existing local 17 October checkpoint, generation f8d8e9945a694617b6a2a9eb565e2a03; not current production qualification",
+  "initializationSeconds": 0.758,
+  "samples": 60,
+  "warmLookupP50Ms": 6.712,
+  "warmLookupP95Ms": 17.105,
+  "maximumMs": 32.988,
+  "addedPersistentCapabilityIndexBytes": 0,
+  "search": [
+    {
+      "q": "school",
+      "prior": {
+        "ms": 131.89,
+        "total": 105,
+        "firstTitles": [
+          "Primary School Profiles",
+          "Secondary School Profiles",
+          "English Schools Foundation (Primary)",
+          "English Schools Foundation (Secondary)",
+          "International Schools (Primary)"
+        ]
+      },
+      "candidate": {
+        "ms": 73.45,
+        "total": 104,
+        "firstTitles": [
+          "Primary School Profiles",
+          "Secondary School Profiles",
+          "English Schools Foundation (Primary)",
+          "English Schools Foundation (Secondary)",
+          "International Schools (Primary)"
+        ]
+      }
+    },
+    {
+      "q": "學校",
+      "prior": {
+        "ms": 47.64,
+        "total": 15,
+        "firstTitles": [
+          "English Schools Foundation (Primary)",
+          "English Schools Foundation (Secondary)",
+          "International Schools (Primary)",
+          "International Schools (Secondary)",
+          "Aided Special Schools"
+        ]
+      },
+      "candidate": {
+        "ms": 55.33,
+        "total": 15,
+        "firstTitles": [
+          "English Schools Foundation (Primary)",
+          "English Schools Foundation (Secondary)",
+          "International Schools (Primary)",
+          "International Schools (Secondary)",
+          "Aided Special Schools"
+        ]
+      }
+    },
+    {
+      "q": "clinic",
+      "prior": {
+        "ms": 47.95,
+        "total": 43,
+        "firstTitles": [
+          "List of Civil Service Chinese Medicine Clinics",
+          "Clinics / Health Centres under the Department of Health",
+          "Clinics registered under Cap. 343",
+          "List of Clinical Waste Collectors",
+          "List of Chinese Medicine Clinics cum Training and Research Centres"
+        ]
+      },
+      "candidate": {
+        "ms": 59.42,
+        "total": 43,
+        "firstTitles": [
+          "List of Civil Service Chinese Medicine Clinics",
+          "Clinics / Health Centres under the Department of Health",
+          "Clinics registered under Cap. 343",
+          "List of Clinical Waste Collectors",
+          "List of Chinese Medicine Clinics cum Training and Research Centres"
+        ]
+      }
+    },
+    {
+      "q": "school net",
+      "prior": {
+        "ms": 38.02,
+        "total": 7,
+        "firstTitles": [
+          "Primary One Admission School Net Boundaries",
+          "Secondary School Places Allocation System School Net Boundaries",
+          "Primary One Admission (POA) School Net Boundaries",
+          "Secondary School Places Allocation (SSPA) System School Net Information",
+          "Professional Support Team to Parents / Relatives Resource Centre"
+        ]
+      },
+      "candidate": {
+        "ms": 61.83,
+        "total": 7,
+        "firstTitles": [
+          "Primary One Admission School Net Boundaries",
+          "Secondary School Places Allocation System School Net Boundaries",
+          "Primary One Admission (POA) School Net Boundaries",
+          "Secondary School Places Allocation (SSPA) System School Net Information",
+          "Professional Support Team to Parents / Relatives Resource Centre"
+        ]
+      }
+    }
+  ]
+}

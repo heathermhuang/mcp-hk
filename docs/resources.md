@@ -462,3 +462,22 @@ retaining complete streamed source rows in memory. Predicates run before page li
 matching totals cover the entire accepted source, with excluded missing/null/invalid
 row counts. Existing deadlines, cancellation, two scan slots, byte bounds and source
 failure semantics apply. These additions do not grant arbitrary SQL or expressions.
+
+## Bus departure comparison coverage
+
+Journeys enumerate reference route/direction/boarding/alighting occurrences before
+checking ETAs or applying `limit`. Shared operator path/stop/ETA requests are reused
+within their freshness windows, preserving the existing 64-request/45-second bounds
+and daily source budget. Loops retain visit ordinal and require matching repeated-stop
+topology in the current operator path; a shortest-stop-pair guess is not used.
+
+Results rank future predictions after verification, merging the same live boarding
+occurrence while retaining reference service variants and alighting alternatives.
+`coverage` reports candidates, verified eligible occurrences, settled checks, failed
+checks (a subset), unchecked work/reasons and source requests. An unqualified operator,
+unknown calendar, failed/stale feed or exhausted budget never becomes ineligible/no
+service. Empty/past/no-prediction feeds do not prove no buses. The comparison is
+explicitly the earliest reported departure among checked candidates, with complete
+reference coverage reported separately. It guarantees neither walking feasibility,
+current service calendars nor fastest arrival. Ten alighting alternatives are shown
+with the complete alternative count; this limit never reduces the search.

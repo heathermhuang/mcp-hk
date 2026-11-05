@@ -49,3 +49,23 @@ P3 investigation: current EDB CSV sample coordinates are decimal-looking while i
 DATA.GOV.HK metadata says DMS. This conflict must be reconciled before activating
 its point binding. DH sample has Point [longitude,latitude], separate category and
 OBJECTID; unique-facility identity, CRS and source context still need qualification.
+
+P4 implementation: compare all candidates before presentation limits, deduplicate
+fresh source reads, retain loop visit identity and source service variants, expose
+eligible/settled/failed/unchecked coverage, and rank only unexpired future predictions.
+24 focused transport/capability regressions pass. The real HTTP/MCP verifier compares
+reference parity separately from dynamic ETA ranking and validates both clients'
+coverage. Production source verification is still pending.
+
+P0 report performance fix: EXPLAIN on the older local checkpoint showed a repeated
+full scan of 40,767 variant receipts without an index. One grouped fingerprint read
+now processes 63,360 resources/4,984 datasets in 2.09 s, with zero provider requests
+or record/status mutations. Counts reconcile; 3,961 datasets have accepted records,
+1,023 lack one. These are the October 17 local generation f8d8e9945a694617b6a2a9eb565e2a03,
+not the current 5,048-entry production generation. WMS backlog entries are explicitly
+imagery opportunities, not candidate table unlocks.
+
+Local isolated-copy sizing: 60 warm resource projections, p50 6.71 ms/p95 17.11 ms,
+max 32.99 ms; initialization/index installation 0.76 s. Four before/after lexical
+queries are retained under local-checkpoint/. No FTS index is justified by these
+measurements. Production performance and fresh accepted recovery remain pending.

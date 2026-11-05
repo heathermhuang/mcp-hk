@@ -76,7 +76,26 @@ async def main(args):
             "hk_transport_journey", {**search, "includeArrivals": False}
         )
         reference = json.loads(call.content[0].text)
-        assert identities(journey) == identities(reference)
+        reference_http = await client.post(
+            "/api/v1/transport/journeys", json={**search, "includeArrivals": False}
+        )
+        reference_http.raise_for_status()
+        assert identities(reference_http.json()) == identities(reference)
+        live_call = await mcp.call_tool("hk_transport_journey", search)
+        mcp_journey = json.loads(live_call.content[0].text)
+        for actual in (journey, mcp_journey):
+            coverage = actual["data"]["coverage"]
+            assert coverage["candidate"] == coverage["checked"] + coverage["unchecked"]
+            assert coverage["failed"] <= coverage["checked"]
+            assert coverage["sourceRequests"] <= coverage["requestLimit"] == 64
+            comparison = actual["data"]["departureComparison"]
+            assert (
+                comparison["scope"]
+                == "earliest_reported_departure_among_checked_candidates"
+            )
+            assert comparison["globallyEarliest"] is False
+            if coverage["failed"] or coverage["unchecked"]:
+                assert coverage["complete"] is False
         candidates = journey["data"]["items"]
         verified = [
             r
@@ -90,6 +109,9 @@ async def main(args):
             "indexVersion": journey["meta"]["indexVersion"],
             "provenance": journey["provenance"],
             "candidates": candidates,
+            "httpCoverage": journey["data"]["coverage"],
+            "mcpCoverage": mcp_journey["data"]["coverage"],
+            "departureComparison": journey["data"]["departureComparison"],
             "verifiedRoute12": bool(verified),
         }
         Path(args.out).write_text(
@@ -115,7 +137,7 @@ async def main(args):
                 ensure_ascii=False,
             )
         )
-        if not verified:
+        if not any(r["arrivalStatus"] == "live" for r in candidates):
             raise SystemExit(1)
 
 
