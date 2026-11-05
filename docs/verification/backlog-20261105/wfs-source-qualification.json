@@ -1,0 +1,46 @@
+{
+  "scope": "Local candidate HTTP/native MCP over original official source responses retrieved with normal TLS; native production source-guard/adoption proof remains pending",
+  "resourceId": "59a9eb26d741141f5a4d675ee17f701c",
+  "recordPath": "csdi:RVD028",
+  "version": "47a748d565bff01ec4f35a7dd3a0555652f1980a2b63d5942768163124b1b536",
+  "recordCount": 22,
+  "countEvidence": {
+    "basis": "WFS_2_hits_before_and_after",
+    "beforeMatched": 22,
+    "afterMatched": 22,
+    "jsonDeclaredMatched": null,
+    "snapshot": "count_reconciled_not_atomic_publication",
+    "featureIdentity": "not_inferred_when_geojson_omits_native_feature_ids"
+  },
+  "outputFormat": "GEOJSON",
+  "sourceCrs": {
+    "type": "name",
+    "properties": {
+      "name": "EPSG:4326"
+    }
+  },
+  "httpMcpParity": true,
+  "sourceRequests": 4,
+  "captures": [
+    {
+      "sourceUrl": "https://portal.csdi.gov.hk/server/services/common/rvd_rcd_1701825947419_23025/MapServer/WFSServer?service=WFS&version=2.0.0&request=GetCapabilities",
+      "sha256": "334642b0a31337cddb8da8bb16aeb2a7e1dccf9dc7e740ba979af1d99865b894",
+      "bytes": 13749
+    },
+    {
+      "sourceUrl": "https://portal.csdi.gov.hk/server/services/common/rvd_rcd_1701825947419_23025/MapServer/WFSServer?service=WFS&version=2.0.0&request=GetFeature&typeNames=csdi%3ARVD028&resultType=hits",
+      "sha256": "9751cc66bbffc4039bff71d65ecb1ce474c1591b5bd9977a9ece95f2eb617a27",
+      "bytes": 778
+    },
+    {
+      "sourceUrl": "https://portal.csdi.gov.hk/server/services/common/rvd_rcd_1701825947419_23025/MapServer/WFSServer?service=WFS&version=2.0.0&request=GetFeature&typeNames=csdi%3ARVD028&outputFormat=GEOJSON&count=100000",
+      "sha256": "47a748d565bff01ec4f35a7dd3a0555652f1980a2b63d5942768163124b1b536",
+      "bytes": 622465
+    },
+    {
+      "sourceUrl": "https://portal.csdi.gov.hk/server/services/common/rvd_rcd_1701825947419_23025/MapServer/WFSServer?service=WFS&version=2.0.0&request=GetFeature&typeNames=csdi%3ARVD028&resultType=hits",
+      "sha256": "3f68e4366b40bf290888c4a9501505bfd721412e9337408ce3abe57614995817",
+      "bytes": 778
+    }
+  ]
+}

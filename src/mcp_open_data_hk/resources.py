@@ -401,19 +401,169 @@ async def wfs(url, type_name):
     ):
         raise DomainError("INVALID_RECORD_PATH", "Invalid WFS type name", 400)
     endpoint = urlsplit(url)._replace(query="").geturl()
-    value, body, headers, final = await read_json(
-        endpoint,
-        {
-            "service": "WFS",
-            "version": "2.0.0",
-            "request": "GetFeature",
-            "typeNames": type_name,
-            "outputFormat": "application/json",
-            "count": 100000,
-        },
-    )
+    csdi = urlsplit(url).hostname == "portal.csdi.gov.hk" and urlsplit(
+        url
+    ).path.lower().endswith("/wfsserver")
+    output_format, before_count = "application/json", None
+    if csdi:
+        from defusedxml import ElementTree as ET
+
+        metadata, _, _, _ = await fetch(
+            params_url(
+                endpoint,
+                {"service": "WFS", "version": "2.0.0", "request": "GetCapabilities"},
+            )
+        )
+        root = ET.fromstring(metadata)
+        formats = [
+            v.text
+            for operation in root.iter("{http://www.opengis.net/ows/1.1}Operation")
+            if operation.get("name") == "GetFeature"
+            for parameter in operation
+            if parameter.tag == "{http://www.opengis.net/ows/1.1}Parameter"
+            and parameter.get("name") == "outputFormat"
+            for v in parameter.iter()
+            if v.tag == "{http://www.opengis.net/ows/1.1}Value"
+        ]
+        output_format = next(
+            (
+                value
+                for wanted in ("application/geo+json", "geojson", "application/json")
+                for value in formats
+                if value and value.lower() == wanted
+            ),
+            None,
+        )
+        if (
+            root.tag != "{http://www.opengis.net/wfs/2.0}WFS_Capabilities"
+            or not output_format
+        ):
+            raise DomainError(
+                "UNSUPPORTED_API",
+                "CSDI WFS does not advertise a supported WFS 2 JSON format",
+                422,
+            )
+
+        async def hit_count():
+            body, _, _, _ = await fetch(
+                params_url(
+                    endpoint,
+                    {
+                        "service": "WFS",
+                        "version": "2.0.0",
+                        "request": "GetFeature",
+                        "typeNames": type_name,
+                        "resultType": "hits",
+                    },
+                )
+            )
+            collection = ET.fromstring(body)
+            value = collection.get("numberMatched", "")
+            if (
+                collection.tag != "{http://www.opengis.net/wfs/2.0}FeatureCollection"
+                or collection.get("numberReturned") != "0"
+                or re.fullmatch(r"[0-9]{1,10}", value) is None
+            ):
+                raise DomainError(
+                    "INCOMPLETE_SOURCE",
+                    "WFS hits did not prove an exact feature count",
+                    422,
+                )
+            return int(value)
+
+        before_count = await hit_count()
+        if before_count > 100000:
+            raise DomainError(
+                "SOURCE_TOO_LARGE",
+                "WFS feature type exceeds the existing complete-response row bound",
+                422,
+            )
+        esri_format = next(
+            (value for value in formats if value and value.lower() == "esrigeojson"),
+            None,
+        )
+        if before_count > 10000 and esri_format:
+            from .wfs_paging import read_pages
+
+            return await read_pages(
+                endpoint, type_name, before_count, esri_format, read_json, hit_count
+            )
+    feature_params = {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": type_name,
+        "outputFormat": output_format,
+        "count": 100000,
+    }
+    try:
+        value, body, headers, final = await read_json(endpoint, feature_params)
+    except DomainError as exc:
+        if not csdi or exc.code != "SOURCE_TOO_LARGE":
+            raise
+        path, headers, final, _ = await fetch_file(
+            params_url(endpoint, feature_params), maximum=128_000_000
+        )
+        try:
+            after_count = await hit_count()
+            if before_count != after_count:
+                raise DomainError(
+                    "SOURCE_CHANGED", "WFS matched count changed during reading", 409
+                )
+            return (
+                path,
+                headers,
+                final,
+                {
+                    "apiFamily": "WFS",
+                    "scope": "complete_streamed_feature_type",
+                    "sourceMatched": before_count,
+                    "streamExpectedMatched": before_count,
+                    "wfsContract": "csdi-wfs-count-1",
+                    "outputFormat": output_format,
+                    "countEvidence": {
+                        "basis": "WFS_2_hits_before_and_after",
+                        "beforeMatched": before_count,
+                        "afterMatched": after_count,
+                        "jsonDeclaredMatched": None,
+                        "snapshot": "count_reconciled_not_atomic_publication",
+                        "featureIdentity": "not_inferred_when_geojson_omits_native_feature_ids",
+                    },
+                },
+            )
+        except BaseException:
+            path.unlink(missing_ok=True)
+            raise
     features = value.get("features")
     matched = value.get("numberMatched", value.get("totalFeatures"))
+    count_evidence = {}
+    if csdi:
+        after_count = await hit_count()
+        if before_count != after_count:
+            raise DomainError(
+                "SOURCE_CHANGED", "WFS matched count changed during reading", 409
+            )
+        if matched not in (None, "unknown") and (
+            type(matched) not in {int, str}
+            or re.fullmatch(r"[0-9]{1,10}", str(matched)) is None
+            or int(matched) != before_count
+        ):
+            raise DomainError(
+                "INCOMPLETE_SOURCE", "WFS JSON count conflicts with native hits", 422
+            )
+        count_evidence = {
+            "wfsContract": "csdi-wfs-count-1",
+            "outputFormat": output_format,
+            "countEvidence": {
+                "basis": "WFS_2_hits_before_and_after",
+                "beforeMatched": before_count,
+                "afterMatched": after_count,
+                "jsonDeclaredMatched": matched,
+                "snapshot": "count_reconciled_not_atomic_publication",
+                "featureIdentity": "not_inferred_when_geojson_omits_native_feature_ids",
+            },
+        }
+        matched = before_count
     if (
         not isinstance(features, list)
         or type(matched) not in {int, str}
@@ -433,8 +583,36 @@ async def wfs(url, type_name):
             "apiFamily": "WFS",
             "scope": "complete_feature_type",
             "sourceMatched": int(matched),
+            **count_evidence,
         },
     )
+
+
+def validate_wfs_stream_count(path, actual, expected):
+    """Blocking file work stays in a reader worker, before any acceptance write."""
+    import ijson
+
+    if actual != expected:
+        raise DomainError(
+            "INCOMPLETE_SOURCE", "WFS streamed feature count mismatch", 422
+        )
+    declared = None
+    for field in ("numberMatched", "totalFeatures"):
+        with path.open("rb") as source:
+            value = next(ijson.items(source, field), None)
+        if value not in (None, "unknown"):
+            if (
+                type(value) not in {int, str}
+                or re.fullmatch(r"[0-9]{1,10}", str(value)) is None
+                or int(value) != expected
+            ):
+                raise DomainError(
+                    "INCOMPLETE_SOURCE",
+                    "WFS JSON count conflicts with native hits",
+                    422,
+                )
+            declared = value
+    return declared
 
 
 class Resources:
@@ -535,6 +713,13 @@ class Resources:
         key = hashlib.sha256(
             json.dumps(
                 ["structured-reader-3", resource_id, record_path, sheet, layer]
+                + (
+                    ["csdi-wfs-count-1"]
+                    if access_protocol == "WFS"
+                    and urlsplit(resource["url"]).hostname == "portal.csdi.gov.hk"
+                    and urlsplit(resource["url"]).path.lower().endswith("/wfsserver")
+                    else []
+                )
                 + ([OBSERVATION_REVISION] if hko_current(resource) else [])
                 + (["rss-feed-root-1"] if resource.get("format") == "RSS" else [])
                 + ([transport.REVISION] if profile else [])
@@ -650,7 +835,7 @@ class Resources:
                                 "complete_wfs_json_for_inventoried_feature_type"
                             )
                             extra["originalResourceUrl"] = resource["url"]
-                        fmt = "GEOJSON"
+                        fmt = extra.get("representationFormat", "GEOJSON")
                         record_path = ""
                     else:
                         conditional = {}
@@ -755,6 +940,18 @@ class Resources:
                     if isinstance(body, Path):
                         rows = await asyncio.to_thread(FileRows, body, fmt, record_path)
                         schema = rows.schema
+                        if extra.get("streamExpectedMatched") is not None:
+                            try:
+                                declared = await asyncio.to_thread(
+                                    validate_wfs_stream_count,
+                                    body,
+                                    len(rows),
+                                    extra["streamExpectedMatched"],
+                                )
+                            except BaseException:
+                                await asyncio.to_thread(rows.close)
+                                raise
+                            extra["countEvidence"]["jsonDeclaredMatched"] = declared
                         if extra.get("streamCountPath"):
                             import ijson
 

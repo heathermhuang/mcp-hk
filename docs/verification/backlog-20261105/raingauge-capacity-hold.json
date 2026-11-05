@@ -1,0 +1,10 @@
+{
+  "resourceId": "30d0bd74b970a62b7a6ed99c5fb43121",
+  "sourceUrl": "https://portal.csdi.gov.hk/server/rest/services/common/cedd_rcd_1636517963140_47030/FeatureServer/0/query?f=json&where=1%3D1&returnCountOnly=true",
+  "nativeMatchedCount": 1126191,
+  "responseSha256": "21ea3588aab4715ca33253f4654e0f08e66b6e63035153e71883d50b4f2b46e6",
+  "currentArcgisRowCeiling": 1000000,
+  "state": "internal_capacity_hold",
+  "notExternalSourceRefusal": true,
+  "scope": "Whole-layer count exceeds the unchanged existing full-reader row ceiling; no partial read was accepted and no source/calendar/empty-data claim is inferred."
+}
