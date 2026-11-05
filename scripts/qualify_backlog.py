@@ -48,20 +48,22 @@ def main(args):
         tasks = [(discovery, "schema", {})]
         scheduled = {("schema", "{}")}
 
-        def schedule(operation, selection):
+        def schedule(operation, selection, *, immediate=False):
             canonical = json.dumps(selection, sort_keys=True)
             identity = (operation, canonical)
             if identity in scheduled:
                 return
             scheduled.add(identity)
             key = hashlib.sha256(canonical.encode()).hexdigest()[:16]
-            tasks.append(
-                (
-                    args.receipts / (rid + "-" + key + "-" + operation + ".json.gz"),
-                    operation,
-                    selection,
-                )
+            task = (
+                args.receipts / (rid + "-" + key + "-" + operation + ".json.gz"),
+                operation,
+                selection,
             )
+            if immediate:
+                tasks.insert(0, task)
+            else:
+                tasks.append(task)
 
         while tasks:
             target, operation, selection = tasks.pop(0)
@@ -159,7 +161,9 @@ def main(args):
                     value.get("recordCount") is not None
                     and value.get("schema", {}).get("sourceResponseComplete") is True
                 ):
-                    schedule("query", selection)
+                    # Qualify before sibling selections evict this accepted
+                    # variant from the existing 50-variant/4 MB caches.
+                    schedule("query", selection, immediate=True)
                     continue
                 for group in value.get("selections", []):
                     for option in group["options"]:

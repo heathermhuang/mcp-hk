@@ -1,0 +1,98 @@
+"""Qualification must not churn accepted selections past retention before querying."""
+
+import argparse
+from collections import OrderedDict
+import gzip
+import importlib.util
+import io
+import json
+from pathlib import Path
+
+
+def test_queries_precede_variant_eviction_and_saved_receipts_are_reused(
+    tmp_path, monkeypatch
+):
+    spec = importlib.util.spec_from_file_location(
+        "qualify_backlog",
+        Path(__file__).parents[1] / "scripts" / "qualify_backlog.py",
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    manifest = tmp_path / "manifest.json.gz"
+    manifest.write_bytes(
+        gzip.compress(
+            json.dumps(
+                {
+                    "familyCandidates": [
+                        {
+                            "resourceId": "workbook",
+                            "datasetId": "dataset",
+                            "family": "workbook",
+                            "lastStatus": "needs_selection",
+                            "acceptedSameDatasetAlternatives": [],
+                        }
+                    ]
+                }
+            ).encode()
+        )
+    )
+    cache = OrderedDict()
+    cache_misses = []
+    requests = []
+
+    def request(req, timeout):
+        args = json.loads(req.data)
+        operation = req.full_url.rsplit("/", 1)[1]
+        requests.append((operation, args.get("sheet")))
+        if "sheet" not in args:
+            value = {
+                "selections": [
+                    {
+                        "argument": "sheet",
+                        "options": [
+                            {
+                                "value": str(i),
+                                "nextAction": {
+                                    "arguments": {
+                                        "resourceId": "workbook",
+                                        "sheet": str(i),
+                                    }
+                                },
+                            }
+                            for i in range(52)
+                        ],
+                    }
+                ]
+            }
+        elif operation == "schema":
+            cache[args["sheet"]] = True
+            while len(cache) > 50:
+                cache.popitem(last=False)
+            value = {"recordCount": 1, "schema": {"sourceResponseComplete": True}}
+        else:
+            if args["sheet"] not in cache:
+                cache_misses.append(args["sheet"])
+            value = {"data": {"items": [{"raw": args["sheet"]}]}, "meta": {"total": 1}}
+        response = io.BytesIO(json.dumps(value).encode())
+        response.code = 200
+        return response
+
+    monkeypatch.setattr(module.urllib.request, "urlopen", request)
+    monkeypatch.setattr(module.time, "sleep", lambda _: None)
+    args = argparse.Namespace(
+        manifest=manifest,
+        receipts=tmp_path / "receipts",
+        family=None,
+        read_options=True,
+        requests=200,
+    )
+    module.main(args)
+    assert len(requests) == 105
+    assert not cache_misses
+    receipts = list(args.receipts.glob("*-query.json.gz"))
+    assert len(receipts) == 52
+    assert all(json.load(gzip.open(p, "rt"))["httpStatus"] == 200 for p in receipts)
+    requests.clear()
+    args.requests = 1
+    module.main(args)
+    assert not requests
