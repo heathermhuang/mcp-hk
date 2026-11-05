@@ -7,7 +7,7 @@ import uuid
 import zlib
 
 from .contracts import DomainError
-from . import capabilities
+from . import capabilities, resource_selections
 from . import transport, connected
 from .quality import REVISION as REVIEW_REVISION, freshness
 from .review_config import capacity
@@ -35,6 +35,7 @@ class CatalogueStore:
             CREATE TABLE IF NOT EXISTS resource_checks (id TEXT PRIMARY KEY, checked REAL, validated REAL, status TEXT, reason TEXT, hash TEXT, schema_hash TEXT, schema_json TEXT, etag TEXT, modified TEXT, retrieved REAL, rows INTEGER);
             CREATE TABLE IF NOT EXISTS resource_variants (key TEXT PRIMARY KEY, resource TEXT, checked REAL, validated REAL, status TEXT, reason TEXT, hash TEXT, schema_hash TEXT, schema_json TEXT, etag TEXT, modified TEXT, retrieved REAL, rows INTEGER);
             CREATE INDEX IF NOT EXISTS resource_variant_lookup ON resource_variants(resource,validated DESC);
+            CREATE TABLE IF NOT EXISTS resource_selection_options (resource TEXT, kind TEXT, checked REAL, payload BLOB, PRIMARY KEY(resource,kind));
             CREATE TABLE IF NOT EXISTS resource_cache (key TEXT PRIMARY KEY, resource TEXT, hash TEXT, payload BLOB, accessed REAL);
             CREATE TABLE IF NOT EXISTS catalogue_runs (id TEXT PRIMARY KEY, started REAL, finished REAL, status TEXT, receipt TEXT);
             CREATE TABLE IF NOT EXISTS resource_audit_cursor (id INTEGER PRIMARY KEY CHECK(id=1), generation TEXT, cursor TEXT);
@@ -193,6 +194,9 @@ class CatalogueStore:
                     for table in ("inventory_resources", "inventory_datasets"):
                         db.execute(f"DELETE FROM {table} WHERE generation=?", (row[0],))
                     db.execute("DELETE FROM inventories WHERE id=?", (row[0],))
+            db.execute(
+                "DELETE FROM resource_selection_options WHERE resource NOT IN (SELECT id FROM inventory_resources)"
+            )
         self.refresh_transport_policies()
         return generation
 
@@ -471,7 +475,41 @@ class CatalogueStore:
                     (resource_id,),
                 )
             ]
-        return capabilities.project(resource, self.check(resource_id), receipts)
+        result = capabilities.project(resource, self.check(resource_id), receipts)
+        result["selections"] = self.selection_options(resource_id)
+        return result
+
+    def selection_options(self, resource_id):
+        with self.store.connect() as db:
+            return [
+                {**unpack(r["payload"]), "checkedAt": r["checked"]}
+                for r in db.execute(
+                    "SELECT payload,checked FROM resource_selection_options WHERE resource=? ORDER BY kind",
+                    (resource_id,),
+                )
+            ]
+
+    def record_options(self, resource_id, groups):
+        with self.store.connect() as db:
+            for group in groups:
+                payload = zlib.compress(json.dumps(group).encode())
+                db.execute(
+                    "INSERT OR REPLACE INTO resource_selection_options VALUES (?,?,?,?)",
+                    (resource_id, group["kind"], time.time(), payload),
+                )
+            size = db.execute(
+                "SELECT COALESCE(sum(length(payload)),0) FROM resource_selection_options"
+            ).fetchone()[0]
+            for row in db.execute(
+                "SELECT resource,kind,length(payload) AS bytes FROM resource_selection_options ORDER BY checked,resource,kind"
+            ).fetchall():
+                if size <= resource_selections.MAX_BYTES:
+                    break
+                db.execute(
+                    "DELETE FROM resource_selection_options WHERE resource=? AND kind=?",
+                    (row["resource"], row["kind"]),
+                )
+                size -= row["bytes"]
 
     def check(self, resource_id, key=None):
         with self.store.connect() as db:
@@ -489,7 +527,7 @@ class CatalogueStore:
     def failure(self, resource_id, code, status="unavailable", key=None):
         with self.store.connect() as db:
             db.execute(
-                "INSERT INTO resource_checks(id,checked,status,reason) VALUES (?,?,?,?) ON CONFLICT(id) DO UPDATE SET checked=excluded.checked,status=excluded.status,reason=excluded.reason",
+                "INSERT INTO resource_checks(id,checked,status,reason) VALUES (?,?,?,?) ON CONFLICT(id) DO UPDATE SET checked=excluded.checked,status=excluded.status,reason=excluded.reason WHERE excluded.status != 'needs_selection' OR resource_checks.status IN ('pending','needs_selection')",
                 (resource_id, time.time(), status, code),
             )
             if key:

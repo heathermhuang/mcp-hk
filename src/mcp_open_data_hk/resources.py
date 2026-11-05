@@ -14,7 +14,7 @@ from urllib.parse import parse_qs, quote, unquote, urlencode, urlsplit, urlunspl
 
 from .catalogue_store import CatalogueStore, unpack
 from .contracts import DomainError
-from . import transport, capabilities
+from . import transport, capabilities, resource_selections
 from .quality import freshness, semantic_quality
 from .observation_quality import (
     REVISION as OBSERVATION_REVISION,
@@ -457,6 +457,12 @@ class Resources:
             or (layer is not None and not 0 <= layer <= 10000)
         ):
             raise DomainError("INVALID_QUERY", "Invalid source selector", 400)
+        source_selection = {
+            "recordPath": record_path,
+            "sheet": sheet,
+            "layer": layer,
+            "parameters": parameters or {},
+        }
         resource = self.catalogue.resource(resource_id)
         profile = transport.profile(resource)
         if profile and profile.arrivals and (record_path or sheet or layer is not None):
@@ -699,12 +705,7 @@ class Resources:
                         "_mcp_source_transport", "direct"
                     )
                     schema["sourceResponseComplete"] = True
-                    schema["sourceSelection"] = {
-                        "recordPath": record_path,
-                        "sheet": sheet,
-                        "layer": layer,
-                        "parameters": parameters or {},
-                    }
+                    schema["sourceSelection"] = source_selection
                     schema["cacheTTLSeconds"] = ttl
                     schema.setdefault(
                         "scope",
@@ -892,19 +893,23 @@ class Resources:
         self.catalogue.resource(resource_id)
         started = time.time()
         try:
-            return await self._schema(
+            result = await self._schema(
                 resource_id, record_path, sheet, layer, require_fresh, parameters
             )
+            return await self._selection_response(resource_id, result)
         except DomainError as exc:
             if exc.code == "SHEET_REQUIRED" and getattr(exc, "sheets", None):
-                return {
-                    "resource": self.catalogue.resource(resource_id),
-                    "selectionRequired": "sheet",
-                    "sheets": exc.sheets,
-                    "sheetCount": exc.sheet_count,
-                    "recordCount": None,
-                    "structuredQueryable": False,
-                }
+                return await self._selection_response(
+                    resource_id,
+                    {
+                        "resource": self.catalogue.resource(resource_id),
+                        "selectionRequired": "sheet",
+                        "sheets": exc.sheets,
+                        "sheetCount": exc.sheet_count,
+                        "recordCount": None,
+                        "structuredQueryable": False,
+                    },
+                )
             if self.catalogue.check(resource_id).get("checked", 0) < started:
                 await asyncio.to_thread(
                     self.catalogue.failure,
@@ -925,6 +930,19 @@ class Resources:
                 "Source schema inspection failed; receipt recorded",
                 422,
             ) from None
+
+    async def _selection_response(self, resource_id, result):
+        groups = resource_selections.describe(resource_id, result)
+        if groups:
+            await asyncio.to_thread(self.catalogue.record_options, resource_id, groups)
+        result["selections"] = await asyncio.to_thread(
+            self.catalogue.selection_options, resource_id
+        )
+        if "capabilities" not in result:
+            result["capabilities"] = await asyncio.to_thread(
+                self.catalogue.capability, resource_id
+            )
+        return result
 
     async def _schema(
         self,
@@ -981,7 +999,9 @@ class Resources:
             root = ET.fromstring(body)
             names = [
                 e.text
-                for e in root.iter()
+                for feature in root.iter()
+                if feature.tag.rsplit("}", 1)[-1] == "FeatureType"
+                for e in feature
                 if e.tag.rsplit("}", 1)[-1] == "Name" and e.text
             ]
             await asyncio.to_thread(
