@@ -1,9 +1,11 @@
 """Identical validated bus discovery contracts for HTTP and MCP."""
 
-from typing import Annotated
+from typing import Annotated, Literal
 
 from fastapi import Query
 from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+OperatorCode = Literal["", "CTB", "KMB", "LWB", "NLB", "DB", "PI", "LRTFeeder", "XB"]
 
 
 class StopQuery(BaseModel):
@@ -12,7 +14,7 @@ class StopQuery(BaseModel):
     lat: float | None = Field(default=None, ge=22, le=23)
     lon: float | None = Field(default=None, ge=113, le=115)
     radiusM: int = Field(default=500, ge=1, le=2000)
-    operator: str = Field(default="", pattern=r"^[A-Za-z]{0,20}$")
+    operator: OperatorCode = ""
     limit: int = Field(default=20, ge=1, le=50)
 
     @model_validator(mode="after")
@@ -33,7 +35,7 @@ class JourneyQuery(BaseModel):
     destinationLat: float | None = Field(default=None, ge=22, le=23)
     destinationLon: float | None = Field(default=None, ge=113, le=115)
     radiusM: int = Field(default=500, ge=1, le=2000)
-    operator: str = Field(default="", pattern=r"^[A-Za-z]{0,20}$")
+    operator: OperatorCode = ""
     includeArrivals: bool = True
     limit: int = Field(default=3, ge=1, le=5)
 
@@ -51,9 +53,7 @@ def register_http(app, transport):
         return await transport.stops(query)
 
     @app.get("/api/v1/transport/stops/{stopId}/routes")
-    async def routes(
-        stopId: str, operator: str = Query(default="", pattern=r"^[A-Za-z]{0,20}$")
-    ):
+    async def routes(stopId: str, operator: OperatorCode = ""):
         """Read directional route memberships. Stop IDs use the TD namespace."""
         return await transport.routes(stopId, operator)
 
@@ -72,7 +72,7 @@ def register_mcp(server, current):
         lat: float | None = None,
         lon: float | None = None,
         radiusM: int = 500,
-        operator: str = "",
+        operator: OperatorCode = "",
         limit: int = 20,
     ) -> dict:
         """Search bilingual bus stop names or nearby WGS84 locations. Returns TD stop IDs, not operator ETA IDs. Select a stop, then read routes or find a direct journey. Use hk_address_search first for an arbitrary landmark; distances are straight-line."""
@@ -83,7 +83,9 @@ def register_mcp(server, current):
         )
 
     @server.tool(annotations=annotation)
-    async def hk_transport_stop_routes(stopId: str, operator: str = "") -> dict:
+    async def hk_transport_stop_routes(
+        stopId: str, operator: OperatorCode = ""
+    ) -> dict:
         """Read directional bus route memberships for a TD stopId from stop search. Preserve regular/special service flags. This does not establish current operation."""
         query = StopQuery(q=stopId, operator=operator)
         return await current().transport.routes(query.q, query.operator)
@@ -92,7 +94,7 @@ def register_mcp(server, current):
     async def hk_transport_journey(
         origin: str = "",
         destination: str = "",
-        operator: str = "",
+        operator: OperatorCode = "",
         originLat: float | None = None,
         originLon: float | None = None,
         destinationLat: float | None = None,

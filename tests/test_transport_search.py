@@ -301,6 +301,10 @@ def test_http_validation_and_discovery(service):
         assert client.get("/api/v1/transport/stops").status_code == 400
         assert client.get("/api/v1/transport/stops?lat=22.28").status_code == 400
         assert (
+            client.get("/api/v1/transport/stops?q=Lan&operator=unknown").status_code
+            == 400
+        )
+        assert (
             client.post(
                 "/api/v1/transport/journeys", json={"origin": "Lan"}
             ).status_code
@@ -328,6 +332,10 @@ async def test_mcp_and_http_search_contracts_match(service):
             "hk_transport_stop_routes",
             "hk_transport_journey",
         } <= tools
+        schema = next(
+            t for t in await client.list_tools() if t.name == "hk_transport_stop_search"
+        ).inputSchema
+        assert {"CTB", "KMB"} <= set(schema["properties"]["operator"]["enum"])
         result = await client.call_tool("hk_transport_stop_search", {"q": "蘭桂坊"})
         payload = json.loads(result.content[0].text)
     assert (
