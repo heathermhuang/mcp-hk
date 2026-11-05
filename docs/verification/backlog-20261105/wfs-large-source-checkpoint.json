@@ -1,0 +1,31 @@
+{
+  "resourceId": "3b639e3c0b43811340850f9e5ca06be4",
+  "recordPath": "csdi:Slopes",
+  "nativeMatchedCount": 61527,
+  "geojsonResponseBytes": 22406023,
+  "actualGeojsonReturnedFeatures": 10000,
+  "geojsonSourceFileScope": "truncated_provider_page_not_complete_source",
+  "advertisedNativeRepresentation": "ESRIGEOJSON",
+  "nativeDictionaryOidField": "OBJECTID",
+  "declaredAliasAndReturnedAttribute": "FID",
+  "nativeCoordinateReferenceSystem": {
+    "wkid": 2326,
+    "latestWkid": 2326
+  },
+  "observedIdentityOrdering": "strict increasing IDs across captured pages; no publisher ordering default assumed",
+  "sourceQualificationState": "partial_original_source_evidence_full_native_production_scan_pending",
+  "localProviderHold": {
+    "lastAttemptLog": "/private/tmp/mcp-hk-wfs-slopes-replay-v4.log",
+    "httpStatus": 403,
+    "scope": "one local Mac-egress paging attempt",
+    "partialReadAccepted": false,
+    "furtherLocalCollectionStopped": true
+  },
+  "boundsUnchanged": {
+    "representationBytes": 128000000,
+    "featureRows": 100000,
+    "pages": 128,
+    "adapterSeconds": 120
+  },
+  "sourceCrsWasNotRelabelledWgs84": true
+}

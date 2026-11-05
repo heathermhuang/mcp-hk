@@ -84,3 +84,19 @@ No feature identity or atomic publication snapshot is inferred. Seven regression
 cover unsupported formats, changing/unknown/conflicting counts, truncation and the
 unchanged row bound. Receipt: `wfs-source-qualification.json`. Deployment was held;
 the earlier production release remained active with only resource cron paused.
+
+The GitHub Actions startup incident deferred deployment. All five original crons
+were independently read back, the old `0444e8c` backend remained healthy, and the
+owned slot was released with no Worker/container rollout or lease clearing.
+The incident has since recovered; required current-head CI still gates release.
+
+Large-source follow-up: Slopes' native count is 61,527 but its 22,406,023-byte
+GeoJSON response contains only the provider's first 10,000 features. The new WFS
+path uses advertised Esri JSON, the native OID declaration and its explicit FID
+alias, bounded native pages, strict observed ID order and before/after counts.
+Projected EPSG:2326 geometry stays native. Local full-source collection stopped
+on an actual HTTP 403; no partial scan was accepted. The full production scan is
+pending, not qualified by partial evidence. `wfs-large-source-checkpoint.json`
+retains this boundary. Raingauge has an independently observed 1,126,191 rows,
+above the unchanged one-million ArcGIS ceiling; its exact internal capacity hold
+is retained separately, without calling it a provider refusal.
