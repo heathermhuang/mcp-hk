@@ -404,3 +404,29 @@ values. `quality.completeness` summarizes all parsed rows of the selected source
 representation, before query filtering/projection; it is not a dataset-wide or
 real-world entity completeness claim. Previously cached metadata without this
 profile reports no profile rather than inventing zero missing values.
+
+## Receipt-backed capability discovery
+
+Catalogue search accepts `capability=records|requires_selection|unqualified` and
+`entityKind=unqualified` (omit either for all entries). `records` selects datasets
+with an accepted resource selection; it does not qualify all representations,
+periods or semantic questions. Entity kinds remain unknown until a reviewed binding
+exists. Search matches bilingual titles, descriptions, providers and keywords;
+metadata URL tokens are excluded. Connected services keep their dedicated contracts.
+
+Dataset detail/search summaries and resource directory entries expose `capabilities`.
+Each resource lists reader family, operation state/reason, accepted selection receipts,
+schema fingerprints and an allowlisted `hk_resource_schema` next action. A failed
+current read holds the capability while retaining earlier accepted evidence. Unread
+files have unverified reader support; WMS imagery has no record capability. Schema
+responses also describe source field types without guessing units or entity keys.
+Receipt completeness is restricted to its selection. Observation time can be unknown
+and is independent of successful validation. No new per-dataset tools are generated.
+
+Operators can run `mcp-hk-catalogue opportunities` with `MCP_HK_DATABASE` pointing to
+an existing accepted checkpoint or isolated restore. This opens SQLite in read-only
+mode and one consistent read transaction, without initializing tables or calling a
+provider. Output groups provider, access family, format, reason and schema fingerprint,
+reconciles native status totals, and ranks distinct uncovered dataset-record pairs.
+Family counts overlap and cannot be summed; alternative language/period equivalence,
+real task benefit and cost remain explicit unknowns.

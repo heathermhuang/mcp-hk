@@ -7,6 +7,7 @@ import uuid
 import zlib
 
 from .contracts import DomainError
+from . import capabilities
 from . import transport, connected
 from .quality import REVISION as REVIEW_REVISION, freshness
 from .review_config import capacity
@@ -223,10 +224,27 @@ class CatalogueStore:
             raise DomainError(
                 "DATASET_NOT_FOUND", "Dataset is absent from this inventory", 404
             )
-        return json.loads(row[0])
+        result = json.loads(row[0])
+        with self.store.connect() as db:
+            counts = dict(
+                db.execute(
+                    "SELECT COALESCE(c.status,'pending'),count(*) FROM inventory_resources r LEFT JOIN resource_checks c ON c.id=r.id WHERE r.generation=? AND r.dataset=? GROUP BY 1",
+                    (self.head(), dataset_id),
+                ).fetchall()
+            )
+        result["capabilities"] = capabilities.summary(counts)
+        return result
 
     def search(
-        self, q="", limit=20, offset=0, access="all", provider="all", order="relevance"
+        self,
+        q="",
+        limit=20,
+        offset=0,
+        access="all",
+        provider="all",
+        order="relevance",
+        capability="all",
+        entity_kind="all",
     ):
         if (
             len(q) > 200
@@ -242,6 +260,8 @@ class CatalogueStore:
                 "unclassified",
             }
             or order not in {"relevance", "title"}
+            or capability not in {"all", "records", "requires_selection", "unqualified"}
+            or entity_kind not in {"all", "unqualified"}
         ):
             raise DomainError("INVALID_QUERY", "Invalid search or pagination", 400)
         self.refresh_transport_policies()
@@ -251,18 +271,41 @@ class CatalogueStore:
             curated = [
                 e for e in curated if e.get("providerType", "unclassified") == provider
             ]
+        if capability != "all" or entity_kind != "all":
+            # Connected services retain their independently declared contracts.
+            curated = []
         terms = connected.normalise(q).split() or [""]
         patterns = [
             "%" + t.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%"
             for t in terms
         ]
-        where = "generation=?" + " AND payload LIKE ? ESCAPE '\\'" * len(patterns)
+        lexical = " || ' ' || ".join(
+            "COALESCE(json_extract(payload,'$." + field + "'),'')"
+            for field in (
+                "id",
+                "title",
+                "titleZhHant",
+                "description",
+                "descriptionZhHant",
+                "provider",
+                "keywords",
+            )
+        )
+        where = "generation=?" + (
+            " AND lower(" + lexical + ") LIKE ? ESCAPE '\\'"
+        ) * len(patterns)
         args = (generation, *patterns)
         if provider != "all":
             where += (
                 " AND COALESCE(json_extract(payload,'$.providerType'),'unclassified')=?"
             )
             args += (provider,)
+        if capability == "records":
+            where += " AND EXISTS (SELECT 1 FROM inventory_resources r JOIN resource_checks c ON c.id=r.id WHERE r.generation=inventory_datasets.generation AND r.dataset=inventory_datasets.id AND c.status='queryable' AND EXISTS (SELECT 1 FROM resource_variants v WHERE v.resource=r.id AND v.status='queryable' AND v.schema_hash IS NOT NULL))"
+        elif capability == "requires_selection":
+            where += " AND EXISTS (SELECT 1 FROM inventory_resources r JOIN resource_checks c ON c.id=r.id WHERE r.generation=inventory_datasets.generation AND r.dataset=inventory_datasets.id AND c.status='needs_selection')"
+        elif capability == "unqualified":
+            where += " AND NOT EXISTS (SELECT 1 FROM inventory_resources r JOIN resource_checks c ON c.id=r.id WHERE r.generation=inventory_datasets.generation AND r.dataset=inventory_datasets.id AND c.status='queryable')"
         with self.store.connect() as db:
             total_native = (
                 db.execute(
@@ -316,6 +359,7 @@ class CatalogueStore:
                         (generation, item["id"]),
                     )
                 }
+                item["capabilities"] = capabilities.summary(states)
                 item["entryKind"] = "source_dataset"
                 item["resourceSummary"] = {
                     "total": sum(states.values()),
@@ -397,6 +441,7 @@ class CatalogueStore:
                 }
             )
         for item in items:
+            item["capabilities"] = self.capability(item["id"])
             p = transport.profile(item)
             item["validation"]["freshness"] = freshness(
                 self.dataset(item["datasetId"]),
@@ -415,6 +460,18 @@ class CatalogueStore:
             "nextOffset": offset + limit if offset + limit < total else None,
             "generation": self.head(),
         }
+
+    def capability(self, resource_id):
+        resource = self.resource(resource_id)
+        with self.store.connect() as db:
+            receipts = [
+                dict(r)
+                for r in db.execute(
+                    "SELECT * FROM resource_variants WHERE resource=? ORDER BY checked DESC LIMIT 50",
+                    (resource_id,),
+                )
+            ]
+        return capabilities.project(resource, self.check(resource_id), receipts)
 
     def check(self, resource_id, key=None):
         with self.store.connect() as db:
