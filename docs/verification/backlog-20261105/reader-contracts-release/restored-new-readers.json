@@ -1,0 +1,312 @@
+{
+  "scope": "Fresh accepted archive restored in isolation; individually accepted raw scopes only, exact unresolved cases preserved",
+  "providerRequests": 0,
+  "results": [
+    {
+      "resourceId": "1cefa98483583d4ab9235f8764187d5f",
+      "kind": "serialization",
+      "parameters": {},
+      "version": "72f9c978f5df8eec2c737a47a3141f29bb5dcb79ff193045ae6a9d14fce6e840",
+      "total": 516,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "1e6a30329eb17f70afdd8ba409cbd051",
+      "kind": "serialization",
+      "parameters": {},
+      "version": "212b9595b388bef8c6591daec9348d4874a83b6b02aa9a0acd4a2574dca6f54d",
+      "total": 25,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "260a98fce8c4d56e32a2ee340c357c50",
+      "kind": "serialization",
+      "parameters": {},
+      "version": "f931966da6b551838bd3a7d02eafc5270facd6bfb6906208ef2774fc8a0d51a7",
+      "total": 25,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "55bc7360190275b95f54e4f04b73e8ae",
+      "kind": "serialization",
+      "parameters": {},
+      "version": "7afe79d58781158ec732fce4b5a6a9c2b1d0a90b0e3970cd37dc03420e24477a",
+      "total": 87,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "6a7901fe57e1c290181104bd43f84e3a",
+      "kind": "serialization",
+      "parameters": {},
+      "version": "d5a3f381066a0e1dca8b0e36f6dd1a09941a36b993fd1af9df57d59c77ba50e8",
+      "total": 25,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "6e528b183b64b43740c11487fd661460",
+      "kind": "serialization",
+      "parameters": {},
+      "version": "f435c25bdfc0dba76c273c3e1cf352104b3f109aa0e180115b54a654f86d3051",
+      "total": 25,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "7b77c421dffe803e5bf26f04cb4cf0ac",
+      "kind": "serialization",
+      "parameters": {},
+      "version": "40034e31c32881b187ee3e32a39c4d6ae6a4034557e40e1bff45ca60983f0221",
+      "total": 21,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "81ef2c5ff7c9ba23e8b131604fe9d5bb",
+      "kind": "serialization",
+      "parameters": {},
+      "version": "49b4f0b39695e89516bfe3fc4defbc5268fee736c100a4baa3feb5223063d5d6",
+      "total": 87,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "858b81e3339ef099d50c07d85ed10939",
+      "kind": "serialization",
+      "parameters": {},
+      "version": "acbc19d6dc1bfeb4e5633612470dd6b0f0db7dc26fbcb5889f752a14a162904a",
+      "total": 14,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "85c6940d4262250c9701b39823c0f479",
+      "kind": "serialization",
+      "parameters": {},
+      "version": "66ad8a79813d4aecfaed34678d3eb38c529b2a95f66ca29619cd429ef3cc2f4f",
+      "total": 87,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "86825703d24cb8a23490c7eb089a70d8",
+      "kind": "serialization",
+      "parameters": {},
+      "version": "e3291f682bcc98f6c30ea559c3cd8198b0c271c791f5c339d6344aa0df4c944c",
+      "total": 87,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "aba5c7384d64ca975c92328641aed04b",
+      "kind": "serialization",
+      "parameters": {},
+      "version": "01a369298002b6c80173962024cd11c4a6029b3be16033eff72490c007ecea09",
+      "total": 87,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "c43a1377b070e7990195715e502852dc",
+      "kind": "serialization",
+      "parameters": {},
+      "version": "cb0095a043ddde73325d557e286771b8bc09810150e11bd66b36569b70f49fb1",
+      "total": 920,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "cee30669593146305dd8e1649540df98",
+      "kind": "serialization",
+      "parameters": {},
+      "version": "bfc3deb23d03e14d5c78c7c26d8cdf1cda60e173925dfba295c71ac5c05cd343",
+      "total": 87,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "f7802a5bb5459c24b693773555275af2",
+      "kind": "serialization",
+      "parameters": {},
+      "version": "88eab9bb5501b408bfff0ba929903fca367d8912734c9c3d39730fc8d20e00b0",
+      "total": 21,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "1fd8818399022e50dd5f0752a45daa8f",
+      "kind": "geodetic",
+      "parameters": {
+        "inSys": "wgsgeog",
+        "outSys": "hkgrid",
+        "lat": "22.32224",
+        "long": "114.14118",
+        "h": "23.128"
+      },
+      "version": "eea046e5976d4fa9122ff1ada278d268b3065b1688479531530d32dc69197cd9",
+      "total": 1,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "1fd8818399022e50dd5f0752a45daa8f",
+      "kind": "geodetic",
+      "parameters": {
+        "inSys": "hkgeog",
+        "outSys": "wgsgeog",
+        "lat": "22.323774010",
+        "long": "114.138734969"
+      },
+      "version": "a046ac90c2beea67e146c3fd0c037e817af4ae857c92bf582ca4c6d2ff2f5d5d",
+      "total": 1,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "1fd8818399022e50dd5f0752a45daa8f",
+      "kind": "geodetic",
+      "parameters": {
+        "inSys": "hkgrid",
+        "outSys": "wgsgeog",
+        "e": "832591.320",
+        "n": "820359.389"
+      },
+      "version": "a046ac90c2beea67e146c3fd0c037e817af4ae857c92bf582ca4c6d2ff2f5d5d",
+      "total": 1,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "1fd8818399022e50dd5f0752a45daa8f",
+      "kind": "geodetic",
+      "parameters": {
+        "inSys": "utmgrid",
+        "outSys": "wgsgeog",
+        "zone": "50Q",
+        "e": "205494",
+        "n": "2471287"
+      },
+      "version": "b10945515af4a4642105b5fa1a957ea2f7cc862c5dad760b40c443fd1772849e",
+      "total": 1,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "1fd8818399022e50dd5f0752a45daa8f",
+      "kind": "geodetic",
+      "parameters": {
+        "inSys": "utmref",
+        "outSys": "hkgrid",
+        "zone": "50Q-KK",
+        "e": "054",
+        "n": "712"
+      },
+      "version": "edd8c8abeb57dbdf57e5ba2f04f0b7b607dfe7f486fc21ad3a64ca8d37078f72",
+      "total": 1,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "1fd8818399022e50dd5f0752a45daa8f",
+      "kind": "geodetic",
+      "parameters": {
+        "inSys": "wgsgeog",
+        "outSys": "hkgeog",
+        "inUnit": "dms",
+        "lat": "22.30405",
+        "long": "114.08405",
+        "outUnit": "decMin"
+      },
+      "version": "b12e4b44bcab96a5de4b75f0c0beb99af47254dcdd47621fb69c7f12ca524a58",
+      "total": 1,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "1fd8818399022e50dd5f0752a45daa8f",
+      "kind": "geodetic",
+      "parameters": {
+        "inSys": "wgsgeog",
+        "outSys": "hkgeog",
+        "inUnit": "decMin",
+        "lat": "22.30675",
+        "long": "114.08675",
+        "outUnit": "dms"
+      },
+      "version": "d66ab166fa412fdf2ad9b782bddae82312b405fd8c56147ccbda2523f3508912",
+      "total": 1,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "1fd8818399022e50dd5f0752a45daa8f",
+      "kind": "geodetic",
+      "parameters": {
+        "inSys": "utmref",
+        "outSys": "wgsgeog",
+        "zone": "50Q-KK",
+        "e": "0540",
+        "n": "7120"
+      },
+      "version": "4952f4c4f570c05ac4d71f2a2e87f965e54d6084cf2c50f33b25aee9c4d4bc6a",
+      "total": 1,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "1fd8818399022e50dd5f0752a45daa8f",
+      "kind": "geodetic",
+      "parameters": {
+        "inSys": "utmref",
+        "outSys": "wgsgeog",
+        "zone": "50Q-KK",
+        "e": "05400",
+        "n": "71200"
+      },
+      "version": "4952f4c4f570c05ac4d71f2a2e87f965e54d6084cf2c50f33b25aee9c4d4bc6a",
+      "total": 1,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "4c2d28574d52c5fc4804943be6c76e78",
+      "kind": "serialization",
+      "parameters": {},
+      "version": "9f8d3145a2f2515f815359ae56817c6636bb75345609e8b57867c0019c359f0c",
+      "total": 10,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "851aab38d8c7932828567d37432a092a",
+      "kind": "serialization",
+      "parameters": {},
+      "version": "48c52ecaa62fe9de8918a0cde5dc7c4ae176c3ef09913b48cfcda04745e969cf",
+      "total": 1,
+      "httpMcpParity": true
+    }
+  ],
+  "unresolvedScopes": [
+    {
+      "resourceId": "656fde3a4a402d2e33d856f2619a9ec3",
+      "kind": "serialization",
+      "parameters": {},
+      "checkedAtUtc": "2026-11-06T08:33:11.502870+00:00",
+      "httpStatus": 422,
+      "httpMcpParity": false,
+      "unresolved": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "11ffe25b20a646829b23d904839962c6"
+      },
+      "failureNotEmptyData": true
+    },
+    {
+      "resourceId": "3b66489e3a40df4b50d0dcf76b31950c",
+      "kind": "serialization",
+      "parameters": {},
+      "checkedAtUtc": "2026-11-06T08:33:48.556937+00:00",
+      "httpStatus": 422,
+      "httpMcpParity": false,
+      "unresolved": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "ab05911045bf4eedb3eb81629d292f7a"
+      },
+      "failureNotEmptyData": true
+    },
+    {
+      "resourceId": "f101df40374314150d641d26f4cdb625",
+      "kind": "serialization",
+      "parameters": {},
+      "checkedAtUtc": "2026-11-06T08:33:54.747552+00:00",
+      "httpStatus": 422,
+      "httpMcpParity": false,
+      "unresolved": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "872acf5d41414c14a6bfbd54bdc64b03"
+      },
+      "failureNotEmptyData": true
+    }
+  ]
+}

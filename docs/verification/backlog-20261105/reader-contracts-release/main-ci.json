@@ -1,0 +1,37 @@
+[
+  {
+    "conclusion": "success",
+    "databaseId": 42186650846,
+    "headSha": "ffe09b2b6ac33390d2355e8626cc2b7db396baac",
+    "name": "Deployment checks",
+    "status": "completed"
+  },
+  {
+    "conclusion": "success",
+    "databaseId": 42186650845,
+    "headSha": "ffe09b2b6ac33390d2355e8626cc2b7db396baac",
+    "name": "CI",
+    "status": "completed"
+  },
+  {
+    "conclusion": "success",
+    "databaseId": 42186650830,
+    "headSha": "ffe09b2b6ac33390d2355e8626cc2b7db396baac",
+    "name": "Code Quality",
+    "status": "completed"
+  },
+  {
+    "conclusion": "success",
+    "databaseId": 42186650827,
+    "headSha": "ffe09b2b6ac33390d2355e8626cc2b7db396baac",
+    "name": "Curated read model",
+    "status": "completed"
+  },
+  {
+    "conclusion": "success",
+    "databaseId": 42186650856,
+    "headSha": "ffe09b2b6ac33390d2355e8626cc2b7db396baac",
+    "name": "UX browser regressions",
+    "status": "completed"
+  }
+]

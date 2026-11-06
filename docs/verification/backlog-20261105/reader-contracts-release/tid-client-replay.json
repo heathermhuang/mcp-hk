@@ -1,0 +1,14 @@
+{
+  "scope": "Local HTTP/native MCP replay of exact dated captured publisher bytes; fixture replay, no current hosted acceptance claim",
+  "providerRequests": 0,
+  "fixtureReads": 1,
+  "results": [
+    {
+      "resourceId": "851aab38d8c7932828567d37432a092a",
+      "rows": 1,
+      "httpMcpParity": true,
+      "sourceSha256": "48c52ecaa62fe9de8918a0cde5dc7c4ae176c3ef09913b48cfcda04745e969cf",
+      "serialization": "xml_declaration_after_whitespace_prefix"
+    }
+  ]
+}

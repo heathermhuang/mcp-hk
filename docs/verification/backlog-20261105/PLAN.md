@@ -142,3 +142,11 @@ native MCP and fresh isolated recovery proof are in `published-interfaces-releas
 These are raw parameter-scoped responses; no new semantics or whole-inventory
 qualification is counted. Remaining frozen graphs and exact reader/task issues
 continue from saved receipts, with source and capacity holds preserved.
+
+PRs #159–#161 add the conditional coordinate request and exact publisher serialization
+readers. Individually observed hosted scopes and unresolved cases, fresh recovery
+and restored schedules are in `reader-contracts-release/`. The 24-body investigation
+also identifies fourteen distinct, unfetched Census files behind three original
+HTML pages. Native file/task selection remains an internal adapter frontier;
+malformed-source, schema, capacity and semantic reasons remain distinct. No
+qualification count or frozen native inventory denominator is silently expanded.

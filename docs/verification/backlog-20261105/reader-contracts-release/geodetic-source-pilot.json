@@ -1,0 +1,132 @@
+{
+  "scope": "Actual direct publisher responses through existing safe fetch and local HTTP/native MCP for exact frozen catalogue resource; no new coordinate semantics",
+  "results": [
+    {
+      "parameters": {
+        "inSys": "wgsgeog",
+        "outSys": "hkgrid",
+        "lat": "22.32224",
+        "long": "114.14118",
+        "h": "23.128"
+      },
+      "checkedAtUtc": "2026-11-06T07:20:44.475237+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "version": "eea046e5976d4fa9122ff1ada278d268b3065b1688479531530d32dc69197cd9",
+      "fields": [
+        "hkN",
+        "hkE",
+        "hkpd"
+      ],
+      "dataItemsSha256": "ef4518a8e1093e411770c8a328c1372a945be0063c236b8212cd28e843d0147c"
+    },
+    {
+      "parameters": {
+        "inSys": "hkgeog",
+        "outSys": "wgsgeog",
+        "lat": "22.323774010",
+        "long": "114.138734969"
+      },
+      "checkedAtUtc": "2026-11-06T07:20:46.976074+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "version": "a046ac90c2beea67e146c3fd0c037e817af4ae857c92bf582ca4c6d2ff2f5d5d",
+      "fields": [
+        "wgsLat",
+        "wgsLong"
+      ],
+      "dataItemsSha256": "1ebb9e025e5681bb7e7bce16e733e9a3720ff635084e1a38430e2fa292263eed"
+    },
+    {
+      "parameters": {
+        "inSys": "hkgrid",
+        "outSys": "wgsgeog",
+        "e": "832591.320",
+        "n": "820359.389"
+      },
+      "checkedAtUtc": "2026-11-06T07:20:49.425801+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "version": "a046ac90c2beea67e146c3fd0c037e817af4ae857c92bf582ca4c6d2ff2f5d5d",
+      "fields": [
+        "wgsLat",
+        "wgsLong"
+      ],
+      "dataItemsSha256": "1ebb9e025e5681bb7e7bce16e733e9a3720ff635084e1a38430e2fa292263eed"
+    },
+    {
+      "parameters": {
+        "inSys": "utmgrid",
+        "outSys": "wgsgeog",
+        "zone": "50Q",
+        "e": "205494",
+        "n": "2471287"
+      },
+      "checkedAtUtc": "2026-11-06T07:20:51.886840+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "version": "b10945515af4a4642105b5fa1a957ea2f7cc862c5dad760b40c443fd1772849e",
+      "fields": [
+        "wgsLat",
+        "wgsLong"
+      ],
+      "dataItemsSha256": "d0de6aea09cee073df6b96c61c063c71349184a4f20ba261fc79ce659d7a6d98"
+    },
+    {
+      "parameters": {
+        "inSys": "utmref",
+        "outSys": "hkgrid",
+        "zone": "50Q-KK",
+        "e": "054",
+        "n": "712"
+      },
+      "checkedAtUtc": "2026-11-06T07:20:54.358764+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "version": "edd8c8abeb57dbdf57e5ba2f04f0b7b607dfe7f486fc21ad3a64ca8d37078f72",
+      "fields": [
+        "hkN",
+        "hkE"
+      ],
+      "dataItemsSha256": "4cccfb8a353a9d6cfab148a7fb92b704b448413c09d6c4589b95483a4249a53a"
+    }
+  ],
+  "providerRequests": 5,
+  "responses": [
+    {
+      "request": "01",
+      "sha256": "eea046e5976d4fa9122ff1ada278d268b3065b1688479531530d32dc69197cd9",
+      "bytes": 52,
+      "httpStatus": 200,
+      "finalUrl": "https://www.geodetic.gov.hk/transform/v2/?inSys=wgsgeog&outSys=hkgrid&lat=22.32224&long=114.14118&h=23.128"
+    },
+    {
+      "request": "02",
+      "sha256": "a046ac90c2beea67e146c3fd0c037e817af4ae857c92bf582ca4c6d2ff2f5d5d",
+      "bytes": 49,
+      "httpStatus": 200,
+      "finalUrl": "https://www.geodetic.gov.hk/transform/v2/?inSys=hkgeog&outSys=wgsgeog&lat=22.323774010&long=114.138734969"
+    },
+    {
+      "request": "03",
+      "sha256": "a046ac90c2beea67e146c3fd0c037e817af4ae857c92bf582ca4c6d2ff2f5d5d",
+      "bytes": 49,
+      "httpStatus": 200,
+      "finalUrl": "https://www.geodetic.gov.hk/transform/v2/?inSys=hkgrid&outSys=wgsgeog&e=832591.320&n=820359.389"
+    },
+    {
+      "request": "04",
+      "sha256": "b10945515af4a4642105b5fa1a957ea2f7cc862c5dad760b40c443fd1772849e",
+      "bytes": 49,
+      "httpStatus": 200,
+      "finalUrl": "https://www.geodetic.gov.hk/transform/v2/?inSys=utmgrid&outSys=wgsgeog&zone=50Q&e=205494&n=2471287"
+    },
+    {
+      "request": "05",
+      "sha256": "edd8c8abeb57dbdf57e5ba2f04f0b7b607dfe7f486fc21ad3a64ca8d37078f72",
+      "bytes": 29,
+      "httpStatus": 200,
+      "finalUrl": "https://www.geodetic.gov.hk/transform/v2/?inSys=utmref&outSys=hkgrid&zone=50Q-KK&e=054&n=712"
+    }
+  ]
+}

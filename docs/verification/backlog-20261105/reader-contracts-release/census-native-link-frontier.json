@@ -1,0 +1,98 @@
+{
+  "scope": "Dated primary-page link extraction only; no download, format/availability, original-representation equivalence or task-completeness claim",
+  "resources": [
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "originalSourceUrl": "https://www.census2021.gov.hk/tc/district_profiles.html",
+      "sourcePageSha256": "9722fa797a1b82f8c81b431d02c48a7fa6c7b3b5788462b94768c39485803161",
+      "publishedDownloadLinks": [
+        "https://www.census2021.gov.hk/doc/DCCA_21C.xlsx",
+        "https://www.census2021.gov.hk/doc/DCCA_21C.zip",
+        "https://www.census2021.gov.hk/doc/DC_21C.xlsx",
+        "https://www.census2021.gov.hk/doc/DC_21C.zip",
+        "https://www.census2021.gov.hk/doc/HMA_BG_21C.xlsx",
+        "https://www.census2021.gov.hk/doc/HMA_BG_21C.zip",
+        "https://www.census2021.gov.hk/doc/LSUG_21C.xlsx",
+        "https://www.census2021.gov.hk/doc/LSUG_21C.zip",
+        "https://www.census2021.gov.hk/doc/LTPUG_21C.xlsx",
+        "https://www.census2021.gov.hk/doc/LTPUG_21C.zip",
+        "https://www.census2021.gov.hk/doc/SSUG_21C.xlsx",
+        "https://www.census2021.gov.hk/doc/SSUG_21C.zip",
+        "https://www.census2021.gov.hk/doc/STPUG_21C.xlsx",
+        "https://www.census2021.gov.hk/doc/STPUG_21C.zip"
+      ],
+      "state": "adapter_or_native_task_investigation_pending",
+      "newFileRequests": 0
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "originalSourceUrl": "https://www.census2021.gov.hk/en/district_profiles.html",
+      "sourcePageSha256": "2915d88700fd6bb448ac7f1ef9ad36c73146ac4e0f28926ea2cf57e2dfd5a5fd",
+      "publishedDownloadLinks": [
+        "https://www.census2021.gov.hk/doc/DCCA_21C.xlsx",
+        "https://www.census2021.gov.hk/doc/DCCA_21C.zip",
+        "https://www.census2021.gov.hk/doc/DC_21C.xlsx",
+        "https://www.census2021.gov.hk/doc/DC_21C.zip",
+        "https://www.census2021.gov.hk/doc/HMA_BG_21C.xlsx",
+        "https://www.census2021.gov.hk/doc/HMA_BG_21C.zip",
+        "https://www.census2021.gov.hk/doc/LSUG_21C.xlsx",
+        "https://www.census2021.gov.hk/doc/LSUG_21C.zip",
+        "https://www.census2021.gov.hk/doc/LTPUG_21C.xlsx",
+        "https://www.census2021.gov.hk/doc/LTPUG_21C.zip",
+        "https://www.census2021.gov.hk/doc/SSUG_21C.xlsx",
+        "https://www.census2021.gov.hk/doc/SSUG_21C.zip",
+        "https://www.census2021.gov.hk/doc/STPUG_21C.xlsx",
+        "https://www.census2021.gov.hk/doc/STPUG_21C.zip"
+      ],
+      "state": "adapter_or_native_task_investigation_pending",
+      "newFileRequests": 0
+    },
+    {
+      "resourceId": "651d6baa28971abd9488cfece3e4b826",
+      "originalSourceUrl": "https://www.census2021.gov.hk/sc/build_table.html",
+      "sourcePageSha256": "4da328b9c318ca5c1abee6e741555ddf8e999919762361c1e7b49ca47709b97a",
+      "publishedDownloadLinks": [],
+      "state": "adapter_or_native_task_investigation_pending",
+      "newFileRequests": 0
+    },
+    {
+      "resourceId": "c876138d09fe3e21ec5b5aad3c03d4cf",
+      "originalSourceUrl": "https://www.census2021.gov.hk/tc/build_table.html",
+      "sourcePageSha256": "84babdd3cc8e62df099b326aa7cabf95606bd01c1339c2db20d5489000d41443",
+      "publishedDownloadLinks": [],
+      "state": "adapter_or_native_task_investigation_pending",
+      "newFileRequests": 0
+    },
+    {
+      "resourceId": "d9bae2b3ac3e78ffbe1e7501092d7f8f",
+      "originalSourceUrl": "https://www.census2021.gov.hk/en/build_table.html",
+      "sourcePageSha256": "4c59aaea89d4542f860f3fbac6a7c3e0ffc6cf5d966e62ac02c388eb8704b8cc",
+      "publishedDownloadLinks": [],
+      "state": "adapter_or_native_task_investigation_pending",
+      "newFileRequests": 0
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "originalSourceUrl": "https://www.census2021.gov.hk/sc/district_profiles.html",
+      "sourcePageSha256": "3657e5d45353c2fcbb5d6a2f5c9e8b87b866a8500fd252cfc8b6206fa05650ac",
+      "publishedDownloadLinks": [
+        "https://www.census2021.gov.hk/doc/DCCA_21C.xlsx",
+        "https://www.census2021.gov.hk/doc/DCCA_21C.zip",
+        "https://www.census2021.gov.hk/doc/DC_21C.xlsx",
+        "https://www.census2021.gov.hk/doc/DC_21C.zip",
+        "https://www.census2021.gov.hk/doc/HMA_BG_21C.xlsx",
+        "https://www.census2021.gov.hk/doc/HMA_BG_21C.zip",
+        "https://www.census2021.gov.hk/doc/LSUG_21C.xlsx",
+        "https://www.census2021.gov.hk/doc/LSUG_21C.zip",
+        "https://www.census2021.gov.hk/doc/LTPUG_21C.xlsx",
+        "https://www.census2021.gov.hk/doc/LTPUG_21C.zip",
+        "https://www.census2021.gov.hk/doc/SSUG_21C.xlsx",
+        "https://www.census2021.gov.hk/doc/SSUG_21C.zip",
+        "https://www.census2021.gov.hk/doc/STPUG_21C.xlsx",
+        "https://www.census2021.gov.hk/doc/STPUG_21C.zip"
+      ],
+      "state": "adapter_or_native_task_investigation_pending",
+      "newFileRequests": 0
+    }
+  ]
+}

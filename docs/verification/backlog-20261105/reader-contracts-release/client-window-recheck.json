@@ -1,0 +1,10 @@
+{
+  "checkedAtUtc": "2026-11-06T08:35:31.119318+00:00",
+  "httpStatus": 200,
+  "headers": {
+    "RateLimit-Limit": "60",
+    "RateLimit-Remaining": "57",
+    "RateLimit-Reset": "41",
+    "Retry-After": null
+  }
+}
