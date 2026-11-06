@@ -35,7 +35,7 @@ from .resource_fetch import fetch, fetch_file
 from .resource_stream import FileRows
 from .resource_formats import parse
 from .resource_serializations import read as read_serialization
-from . import published_files, hydro_requests, wind_csv
+from . import published_files, hydro_requests, wind_csv, cyclone_list
 from .published_requests import (
     request_template,
     annotate_response,
@@ -791,6 +791,8 @@ class Resources:
             "parameterNames": sorted(parameters or {}),
         }
         resource = self.catalogue.resource(resource_id)
+        if cyclone_list.profile(resource):
+            cyclone_list.validate_selectors(record_path, sheet, layer)
         if hydro_requests.reuse_hold(resource["url"], resource.get("datasetId")):
             raise DomainError(
                 "SOURCE_REUSE_REVIEW_REQUIRED",
@@ -870,7 +872,13 @@ class Resources:
             else (
                 600
                 if wind_csv.profile(resource)
-                else (300 if resource.get("isApi") or query_api else 86400)
+                else (
+                    300
+                    if resource.get("isApi")
+                    or query_api
+                    or cyclone_list.profile(resource)
+                    else 86400
+                )
             )
         )
         force_transport_read = bool(profile and profile.arrivals and require_fresh)
@@ -911,6 +919,11 @@ class Resources:
         if wind_csv.profile(resource):
             previous_key = key
             key = hashlib.sha256((wind_csv.REVISION + ":" + key).encode()).hexdigest()
+        if cyclone_list.profile(resource):
+            previous_key = key
+            key = hashlib.sha256(
+                (cyclone_list.REVISION + ":" + key).encode()
+            ).hexdigest()
         # Per-resource lock coalesces cache misses; locks contain no pending source I/O.
         if len(self.locks) > 1000:
             self.locks = {k: v for k, v in self.locks.items() if v.locked()}

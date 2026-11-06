@@ -1,0 +1,12 @@
+{
+  "scope": "Complete captured HKO list bytes through local HTTP/native MCP, with retained legacy schemas; no current source or worldwide cyclone assertion",
+  "resourceId": "39679b6dc72e96e66bf48c6d85e1afce",
+  "sourceSha256": "ae592b7afea0e305ef9916d7a1cf0ad37a01d5749308687445dada9cf35fd15c",
+  "rawRows": 0,
+  "declaredSchemaFields": 4,
+  "observedValueCount": 0,
+  "httpMcpParity": true,
+  "retainedVariantMetadataUnchanged": 2,
+  "providerRequests": 0,
+  "fixtureReads": 1
+}
