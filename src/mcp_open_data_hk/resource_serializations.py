@@ -44,7 +44,7 @@ TID_URLS = {
 }
 
 
-def object_sequence(body):
+def object_sequence(body, comma_separated=False):
     decoded, _ = text(body)
     decoder = json.JSONDecoder(
         object_pairs_hook=no_duplicates,
@@ -64,6 +64,18 @@ def object_sequence(body):
         values.append(value)
         if len(values) > MAX_ROWS:
             invalid("Object sequence exceeds row budget", "SOURCE_TOO_LARGE")
+        if comma_separated:
+            while position < len(decoded) and decoded[position] in " \t\r\n":
+                position += 1
+            if position == len(decoded):
+                break
+            if decoded[position] != ",":
+                invalid("Expected comma between complete source objects")
+            position += 1
+            while position < len(decoded) and decoded[position] in " \t\r\n":
+                position += 1
+            if position == len(decoded):
+                invalid("Source object sequence ends with an incomplete separator")
     if len(values) < 2:
         return None
     return json.dumps(values, ensure_ascii=False).encode()
@@ -85,10 +97,15 @@ def read(resource, body, record_path="", sheet="", layer=None):
             )
         kind, actual_format = "flat_csv_advertised_as_xlsx", "CSV"
     elif url in AUD_URLS and fmt == "JSON":
-        decoded = object_sequence(body)
+        comma_separated = url.endswith("/accounts-certified.json")
+        decoded = object_sequence(body, comma_separated)
         if decoded is None:
             return None
-        kind = "complete_top_level_json_object_sequence"
+        kind = (
+            "complete_top_level_comma_separated_json_object_sequence"
+            if comma_separated
+            else "complete_top_level_json_object_sequence"
+        )
     elif url == NOTIFICATIONS and fmt == "JSON":
         value, _ = text(body)
         match = re.fullmatch(r"\s*NotiList\((.*)\)\s*;\s*", value, re.DOTALL)
