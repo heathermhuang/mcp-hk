@@ -1,0 +1,37 @@
+{
+  "scope": "Two exact remaining Hydro language download pages; verify published-client contract only, no period-file or language equivalence claim",
+  "results": [
+    {
+      "resourceId": "496eac1466714b914d558cb375de4aef",
+      "originalUrl": "https://current.hydro.gov.hk/main/download.php?lang=en",
+      "host": "current.hydro.gov.hk",
+      "format": "HTML",
+      "groupResources": 1,
+      "checkedAtUtc": "2026-11-06T13:39:38.308246+00:00",
+      "httpStatus": 200,
+      "bytes": 19799,
+      "sha256": "29fb193af42ba133dcacccf955d2edb92d47ccb79e43815cc869dc740657b8f4",
+      "contentType": "text/html; charset=UTF-8",
+      "responseUrl": "https://current.hydro.gov.hk/main/download.php?lang=en",
+      "signatureHex": "3c21444f43545950452068746d6c3e0a",
+      "parserState": "text_saved_without_execution",
+      "samePublishedMapClient": true
+    },
+    {
+      "resourceId": "be00600cbb0603b25c064daa0129813b",
+      "originalUrl": "https://current.hydro.gov.hk/main/download.php?lang=sc",
+      "host": "current.hydro.gov.hk",
+      "format": "HTML",
+      "groupResources": 1,
+      "checkedAtUtc": "2026-11-06T13:39:41.586120+00:00",
+      "httpStatus": 200,
+      "bytes": 19798,
+      "sha256": "49920bb1009fb17d4d87648f0a20c78823d3ee50ffeebdf29abe361f0e460f08",
+      "contentType": "text/html; charset=UTF-8",
+      "responseUrl": "https://current.hydro.gov.hk/main/download.php?lang=sc",
+      "signatureHex": "3c21444f43545950452068746d6c3e0a",
+      "parserState": "text_saved_without_execution",
+      "samePublishedMapClient": true
+    }
+  ]
+}

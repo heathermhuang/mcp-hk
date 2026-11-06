@@ -8,6 +8,7 @@ from .contracts import DomainError
 from .resource_formats import invalid, no_duplicates
 
 PAGE = "https://current.hydro.gov.hk/main/download.php?lang=tc"
+PAGES = {PAGE.replace("lang=tc", "lang=" + lang) for lang in ["tc", "en", "sc"]}
 TEMPLATE = (
     "https://current.hydro.gov.hk/data/static_geojson.php?time={time}&mode={mode}"
 )

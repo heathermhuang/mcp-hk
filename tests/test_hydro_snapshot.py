@@ -7,7 +7,7 @@ from urllib.parse import parse_qs, urlsplit
 import pytest
 
 from mcp_open_data_hk.contracts import DomainError
-from mcp_open_data_hk.hydro_requests import PAGE
+from mcp_open_data_hk.hydro_requests import PAGE, PAGES
 from mcp_open_data_hk.resources import source_parameters, template_url
 from mcp_open_data_hk.services import Service
 from mcp_open_data_hk.storage import Store
@@ -26,8 +26,8 @@ FEATURE = {
 }
 
 
-@pytest.fixture
-def service(tmp_path):
+@pytest.fixture(params=sorted(PAGES))
+def service(tmp_path, request):
     service = Service(Store(str(tmp_path / "db.sqlite3")))
     service.resources.catalogue.publish(
         [{"id": "hydro", "title": "Prediction", "provider": "Marine Department"}],
@@ -36,7 +36,7 @@ def service(tmp_path):
                 "id": "hydro",
                 "datasetId": "hydro",
                 "format": "CSV",
-                "url": PAGE,
+                "url": request.param,
                 "sourceUrl": "https://data.gov.hk/",
                 "catalogue": "DATA.GOV.HK",
                 "termsUrl": "https://data.gov.hk/en/terms-and-conditions",
@@ -145,6 +145,8 @@ async def test_failure_or_wrong_timestamp_never_becomes_empty_data(
         await service.resources.query("hydro", parameters=PARAMETERS)
 
 
-def test_only_the_inspected_original_interface_is_bound():
+def test_only_the_three_inspected_original_interfaces_are_bound():
     assert source_parameters(PAGE) == ["mode", "time"]
-    assert source_parameters(PAGE.replace("lang=tc", "lang=en")) == []
+    for page in PAGES:
+        assert source_parameters(page) == ["mode", "time"]
+    assert source_parameters(PAGE.replace("lang=tc", "lang=other")) == []

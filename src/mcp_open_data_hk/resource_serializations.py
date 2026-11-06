@@ -99,7 +99,7 @@ def read(resource, body, record_path="", sheet="", layer=None):
                 400,
             )
         kind, actual_format = "flat_csv_advertised_as_xlsx", "CSV"
-    elif url == hydro_requests.PAGE and fmt == "CSV":
+    elif url in hydro_requests.PAGES and fmt == "CSV":
         prediction_time = hydro_requests.validate_body(body)
         kind, actual_format = "hydro_published_map_prediction_snapshot", "GEOJSON"
     elif url in AUD_URLS and fmt == "JSON":
@@ -164,7 +164,7 @@ def read(resource, body, record_path="", sheet="", layer=None):
         sourceResponseBytes=len(body),
         sourceFramingFullyConsumed=True,
     )
-    if url == hydro_requests.PAGE:
+    if url in hydro_requests.PAGES:
         schema["observedPredictionTime"] = prediction_time
     if url == NOTIFICATIONS:
         schema["rowMeaning"] = (
