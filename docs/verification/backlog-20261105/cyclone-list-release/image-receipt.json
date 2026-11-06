@@ -1,0 +1,11 @@
+{
+  "sourceCommit": "7cb7aed5a83a62f18f127c8770d36bbedbf25e15",
+  "imageDigest": "sha256:85b7673b04cade87e2ea43febef48536cdf95c30f5bcfedf3275d9dc1fa2efab",
+  "localImageId": "sha256:2d53a16cbe91e80df422db4b0ac3b08f8378a46a1038298a315502bf5d509b7a",
+  "pushedWith": "wrangler4.158 existing OAuth grant",
+  "newCredentials": false,
+  "dependencyChanges": false,
+  "offlineCycloneListContractSmokePassed": true,
+  "defaultReuseHoldVerifiedOffline": true,
+  "HydroDataActivation": false
+}

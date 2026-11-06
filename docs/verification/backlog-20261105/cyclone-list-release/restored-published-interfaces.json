@@ -1,0 +1,36 @@
+{
+  "scope": "Fresh accepted archive restored in isolation; successful explicit raw response scopes and nonrecord metadata only. Source holds remain held.",
+  "providerRequests": 0,
+  "acceptedScopes": [
+    {
+      "resourceId": "18e150f1f3e1fbe6f0171cdb5fe947d9",
+      "httpMcpParity": true,
+      "total": 2,
+      "version": "20675f1569e2c74e0755c67650cdca435d00fd47c0e03bd968bf75a615c3c18e",
+      "missingInputIsolated": true
+    },
+    {
+      "resourceId": "8249e3d730a8f969980548f55fd79d86",
+      "httpMcpParity": true,
+      "total": 1760,
+      "version": "6f8bb00f875207cfab9218fb794940710432e6faffde97e877154539e2d94b48",
+      "missingInputIsolated": true
+    },
+    {
+      "resourceId": "6dcc39e9b683a2f8b1e38ae2e4cd6488",
+      "httpMcpParity": true,
+      "total": 1,
+      "version": "6831887885b368b98e859d5518af3ea5ba32fe3a70ea149e222aeed94d3fea57",
+      "missingInputIsolated": true
+    },
+    {
+      "resourceId": "7825a371cda35083cb7e0e3a40294a01",
+      "httpMcpParity": true,
+      "total": 1,
+      "version": "7a5cb90998bb9ca911c14de48c064a5ef5c27690260cb32ecb25a381a0582936",
+      "missingInputIsolated": true
+    }
+  ],
+  "sourceHolds": [],
+  "nonrecordMaps": 2
+}

@@ -1,5 +1,9 @@
 # Remaining-backlog implementation releases — 6 November 2026
 
+PR #177 is deployed at `7cb7aed5a83a62f18f127c8770d36bbedbf25e15` with hosted and freshly restored exact XML-list behavior, including its documented declared-schema empty state. See [cyclone list release](cyclone-list-release/README.md). No worldwide/safety qualification or GML placeholder approval; Hydro remains held and the full programme open.
+
+## Earlier wind release
+
 PR #176 is deployed at `2ac73249b2427849f6afb178baf04685b2b88b75` with three hosted raw wind scopes and matching naturally staged isolated recovery. Native markers are preserved; timezone/station/current-observation semantics remain unqualified. See [wind release](wind-columns-release/README.md). Hydro remains held and the full programme open.
 
 ## Earlier reuse guard release

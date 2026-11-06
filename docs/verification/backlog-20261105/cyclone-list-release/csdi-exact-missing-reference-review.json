@@ -1,0 +1,36 @@
+{
+  "scope": "Exact two frozen native references; source metadata only, no whole-dataset acceptance or source-status writes",
+  "results": [
+    {
+      "resourceId": "057542303d7e459079dee77e110b7c2b",
+      "nativeReference": "landsd_rcd_1637225500507_48341",
+      "metadataUrl": "https://portal.csdi.gov.hk/geoportal/rest/metadata/item/landsd_rcd_1637225500507_48341/html",
+      "checkedAtUtc": "2026-11-06T18:40:26.362386+00:00",
+      "recordRequests": 0,
+      "catalogueWrites": 0,
+      "httpStatus": 404,
+      "contentType": "application/json;charset=UTF-8",
+      "bodyBytes": 37,
+      "bodySha256": "89d661c0b548e5fd941e20500fe19c2db6c0fd48144d30f061120bb4a418cd0c"
+    },
+    {
+      "resourceId": "b0beb5766b0e1c401cb3075a8e052c5f",
+      "nativeReference": "landsd_rcd_1637542466823_72911",
+      "metadataUrl": "https://portal.csdi.gov.hk/geoportal/rest/metadata/item/landsd_rcd_1637542466823_72911/html",
+      "checkedAtUtc": "2026-11-06T18:40:29.706290+00:00",
+      "recordRequests": 0,
+      "catalogueWrites": 0,
+      "httpStatus": 404,
+      "contentType": "application/json;charset=UTF-8",
+      "bodyBytes": 37,
+      "bodySha256": "89d661c0b548e5fd941e20500fe19c2db6c0fd48144d30f061120bb4a418cd0c"
+    }
+  ],
+  "conclusion": {
+    "exactPublishedNativeReferences": "metadata_id_not_found",
+    "replacementIdentifiers": "unverified",
+    "globalDatasetAbsenceProven": false,
+    "recordAcceptanceChanged": false,
+    "noUnchangedRetry": true
+  }
+}

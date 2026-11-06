@@ -188,3 +188,5 @@ restore. Correlation metadata supports investigation without changing source
 requests, identity, quotas, retry policy or acceptance criteria.
 
 PR #176 repairs the three documented wind CSV layouts with hosted/fresh recovery proof in `wind-columns-release/`. Native provisional flags remain, old generated overflow metadata is retained, and no timezone, unique station or current-observation qualification is granted. Hydro's rights hold and the complete wider programme stay open.
+
+PR #177 repairs the exact HKO forecast-track XML list with hosted/fresh recovery proof in `cyclone-list-release/`. Declared-schema empty state follows its specific publisher rule; the GML placeholder and worldwide/safety semantics remain unqualified. Hydro reuse and the complete wider programme stay open.
