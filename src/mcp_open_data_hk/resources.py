@@ -844,6 +844,7 @@ class Resources:
                 and resource["format"] == "CSV"
                 and not census_reports.location(resource["url"])
                 and access_protocol != "WFS"
+                and not published_files.selected(resource["url"], record_path)
             )
             or (
                 layer is not None

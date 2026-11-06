@@ -1,4 +1,4 @@
-"""Explicit file choices from the original Census 2021 district-profile pages."""
+"""Explicit file choices from independently inspected publisher index pages."""
 
 import asyncio
 import hashlib
@@ -13,10 +13,27 @@ PAGES = {
     for lang in ["en", "tc", "sc"]
 }
 FILE = re.compile(r"[A-Za-z0-9_-]+_21C\.(?:xlsx|zip)\Z")
+RECYCLING = "https://www.wastereduction.gov.hk/zh-hk/resources-centre/recyclable-collection-points-dataset"
+RECYCLING_FILE = re.compile(r"wasteless[0-9]{6}\.csv\Z")
 
 
 def profile(url):
-    return url in PAGES
+    return url in PAGES or url == RECYCLING
+
+
+def rules(url):
+    if url in PAGES:
+        return "www.census2021.gov.hk", "/doc/", FILE, "XML"
+    if url == RECYCLING:
+        return (
+            "www.wastereduction.gov.hk",
+            "/sites/default/files/",
+            RECYCLING_FILE,
+            "CSV",
+        )
+    raise DomainError(
+        "UNSUPPORTED_FORMAT", "No published-file contract for this page", 422
+    )
 
 
 def selected(url, record_path):
@@ -34,29 +51,30 @@ class Links(HTMLParser):
 
 
 def discover(url, body):
+    host, prefix, pattern, _ = rules(url)
     parser = Links()
     parser.feed(body.decode("utf-8-sig"))
     files = {}
     for href in parser.urls:
         target = urlsplit(urljoin(url, href))
-        name = target.path.removeprefix("/doc/")
+        name = target.path.removeprefix(prefix)
         if (
             target.scheme == "https"
-            and target.netloc == "www.census2021.gov.hk"
-            and target.path == "/doc/" + name
-            and FILE.fullmatch(name)
+            and target.netloc == host
+            and target.path == prefix + name
+            and pattern.fullmatch(name)
             and not target.query
             and not target.fragment
         ):
             files["file:" + name] = {
                 "url": target.geturl(),
-                "format": "ZIP" if name.endswith(".zip") else "XLSX",
+                "format": name.rsplit(".", 1)[1].upper(),
                 "name": name,
             }
     if not files or len(files) > 100:
         raise DomainError(
             "SOURCE_SCHEMA_CHANGED",
-            "Published Census file list is absent or exceeds its bound",
+            "Published file list is absent or exceeds its bound",
             422,
         )
     return files
@@ -77,7 +95,7 @@ async def schema(url, fetch):
         "sourceInterface": {
             "kind": "published_file_index",
             "sourcePageSha256": digest,
-            "advertisedCatalogueFormat": "XML",
+            "advertisedCatalogueFormat": rules(url)[3],
             "originalRepresentationEquivalence": "unreviewed",
         },
         "schema": {
@@ -114,8 +132,12 @@ async def request(url, record_path, fetch):
                 "sourcePageSha256": digest,
                 "publishedUrl": file["url"],
             },
-            "advertisedCatalogueFormat": "XML",
+            "advertisedCatalogueFormat": rules(url)[3],
             "originalRepresentationEquivalence": "unreviewed",
-            "rowMeaning": "Raw parsed table/grid rows, including secondary headers or notes; not district/entity counts or qualified statistical observations.",
+            "rowMeaning": (
+                "Original published rows; collection-point identity, coordinates and current service status remain unreviewed."
+                if url == RECYCLING
+                else "Raw parsed table/grid rows, including secondary headers or notes; not district/entity counts or qualified statistical observations."
+            ),
         },
     )
