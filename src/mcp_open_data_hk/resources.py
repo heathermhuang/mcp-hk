@@ -34,6 +34,7 @@ from .resource_fields import selected, MISSING, inspect_nested
 from .resource_fetch import fetch, fetch_file
 from .resource_stream import FileRows
 from .resource_formats import parse
+from .resource_serializations import read as read_serialization
 from .published_requests import (
     request_template,
     annotate_response,
@@ -1129,9 +1130,20 @@ class Resources:
                                     422,
                                 )
                     else:
-                        rows, schema = await asyncio.to_thread(
-                            parse, body, fmt, record_path, sheet
+                        serialized = await asyncio.to_thread(
+                            read_serialization,
+                            resource,
+                            body,
+                            record_path,
+                            sheet,
+                            layer,
                         )
+                        if serialized is None:
+                            rows, schema = await asyncio.to_thread(
+                                parse, body, fmt, record_path, sheet
+                            )
+                        else:
+                            rows, schema = serialized
 
                     annotate_source_contract(resource, rows, schema)
                     qualify_observations(resource, rows, schema)
