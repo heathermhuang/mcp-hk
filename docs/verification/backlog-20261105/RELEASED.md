@@ -1,5 +1,22 @@
 # Remaining-backlog implementation releases — 6 November 2026
 
+PRs #154/#155 are deployed at `fc71d10ee602cf539ee399fa47fef29441723056`, with
+all five exact-main CI groups passed. Worker `f36c1d43-5c8e-4a4a-ba35-a484ff830e8d`,
+application/running-instance version 78 and actual controller/backend adoption
+were verified. A same-snapshot checkpoint compression fallback preserves fixed
+limits; the exact Location Search specification now binds to caller-supplied `q`.
+Actual HTTP/native MCP lookup returned 27 raw matches with context isolation and
+unreviewed coordinates/proximity held. Existing client regressions passed.
+
+The fresh 114,084,592-byte archive restored 329,687,040 SQLite / 360,842,323 total
+bytes. Lookup, old/new source reads, metadata and scoped actions made zero provider
+calls after isolated restoration. All five schedules were independently verified
+restored and the owned children resumed after slot release. The failed pre-pause
+native read, refreshed-grant post-pause proof and any natural fast-checkpoint
+follow-up remain explicit in `combined-release/`. Wider work remains open.
+
+## Earlier JSON discovery release
+
 PR #152 is deployed at `d76b1d6a62e98dae01d29ce0f70bebdc2d9b71fc` with all five
 exact-main CI groups passed. Worker `52d10b2c-4923-4ce7-950b-268d13e8de40`,
 application/running-instance version 77 and actual controller/backend adoption

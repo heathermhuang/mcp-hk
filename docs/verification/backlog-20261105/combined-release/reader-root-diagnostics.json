@@ -1,0 +1,2550 @@
+{
+  "scope": "Exact root-schema diagnostics only; counts and choices are not query-operation or semantic proof",
+  "resources": 135,
+  "httpStatuses": {
+    "422": 110,
+    "200": 19,
+    "409": 6
+  },
+  "errors": {
+    "SOURCE_PARSE_ERROR": 49,
+    "SOURCE_SCHEMA_CHANGED": 42,
+    "SCHEMA_DRIFT": 6,
+    "SOURCE_TOO_LARGE": 19
+  },
+  "rootResults": [
+    {
+      "resourceId": "01d13836b343a057c89bf7f3dcb2abb7",
+      "datasetId": "hk-landsd-openmap-development-location-search-api",
+      "format": "JSON",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "12cc7288fdbd496cb779bd6667224b57"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "0d37cd84813aaa129b8f795da25d07ac",
+      "datasetId": "hkpc-hkpc-hkpc-2021-22-kpi",
+      "format": "CSV",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "Source returned binary or HTML rather than CSV",
+        "requestId": "5fc075f230084fbfbddbffcf4015028f"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "107e280ccb878485694203cb8e090763",
+      "datasetId": "hkpc-hkpc-hkpc-2021-22-kpi",
+      "format": "CSV",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "Source returned binary or HTML rather than CSV",
+        "requestId": "27885d437c26470da90a85304a8489a9"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "11e76b42bb9390f649cbbd40bc095df9",
+      "datasetId": "hk-customs-ced_stat-msos",
+      "format": "CSV",
+      "httpStatus": 200,
+      "recordCount": 1071,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": null,
+      "sourceResponseComplete": true,
+      "selectionRequired": null,
+      "scope": "complete_file"
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "datasetId": "hk-censtatd-21c-2021-population-census-district-profiles",
+      "format": "XML",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "189743e5e0304f6881e91e484c8e209a"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "17cfb301dd55a195c52694b0ff74b2a9",
+      "datasetId": "hk-td-tis_10-monthly-traffic-and-transport-digest",
+      "format": "XLS",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "No table header",
+        "requestId": "878c4dd4eeb4484a8e727253d54820f3"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "18a90551a23fe5334192fc5b4108f02e",
+      "datasetId": "hk-archsd-archsddata-tngg",
+      "format": "JSON",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "e1ea36dc16174937aba5e297104c760f"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "18e150f1f3e1fbe6f0171cdb5fe947d9",
+      "datasetId": "hk-landsd-openmap-development-identify-api",
+      "format": "JSON",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "62fa9a489ac44d1dbda39c29525693f2"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "1ab00b0edf14d8c6ebd52ad06bf18cb3",
+      "datasetId": "hk-customs-ced_stat-msos",
+      "format": "CSV",
+      "httpStatus": 200,
+      "recordCount": 1071,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": null,
+      "sourceResponseComplete": true,
+      "selectionRequired": null,
+      "scope": "complete_file"
+    },
+    {
+      "resourceId": "1cefa98483583d4ab9235f8764187d5f",
+      "datasetId": "hk-aud-tab-vfm-by-subjects",
+      "format": "JSON",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "384f1619b55e496cb7902c6ee80055e3"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "1e6a30329eb17f70afdd8ba409cbd051",
+      "datasetId": "hk-fsd-fsd1-fsdfpptq",
+      "format": "XLSX",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "9fa9cd430c504717950a7b78bd333620"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "1fd8818399022e50dd5f0752a45daa8f",
+      "datasetId": "hk-landsd-openmap-coordinates-transformation-api",
+      "format": "JSON",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "a72d333aea3f428ab292cc5194b2fbed"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "2012d9a076c0835f90a283b53affb78b",
+      "datasetId": "hk-archsd-archsddata-tngg",
+      "format": "JSON",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "40e1890e37db474bbf1895863ca739d6"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "21c625710f50e09cdfe17e48b3d4b7bf",
+      "datasetId": "hkstp-hkstp-hkstp-incubation-graduates",
+      "format": "JSON",
+      "httpStatus": 200,
+      "recordCount": 1,
+      "structuredQueryable": null,
+      "selections": [
+        {
+          "kind": "record_path",
+          "argument": "recordPath",
+          "options": [],
+          "totalOptions": 0,
+          "truncated": false,
+          "scope": "discovered_options_not_accepted_record_reads",
+          "checkedAt": 1793933236.8525856
+        }
+      ],
+      "error": null,
+      "sourceResponseComplete": true,
+      "selectionRequired": null,
+      "scope": "source_response_object"
+    },
+    {
+      "resourceId": "24ab5f7857e202a7b4d3455ec7d33ddf",
+      "datasetId": "hkpc-hkpc-hkpc-2022-23-kpi",
+      "format": "CSV",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "Source returned binary or HTML rather than CSV",
+        "requestId": "049ccc48735a4c30b8d5296674d44aeb"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "2521674480a45f4172fd62aa871d9ba1",
+      "datasetId": "hkpc-hkpc-hkpc-2024-25-kpi",
+      "format": "CSV",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "Source returned binary or HTML rather than CSV",
+        "requestId": "ae9a743451774177bb9b6fdb52a42431"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "260a98fce8c4d56e32a2ee340c357c50",
+      "datasetId": "hk-fsd-fsd1-fsdfsiq",
+      "format": "XLSX",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "ac1507551d464b1793da4d99c749bf62"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "datasetId": "hk-censtatd-21c-2021-population-census-district-profiles",
+      "format": "XML",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "025362b536724ab7b58c48100c9fa0fd"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "2b83464739467cf53b3d7f1ddf3eb6ec",
+      "datasetId": "hk-td-tis_10-monthly-traffic-and-transport-digest",
+      "format": "XLS",
+      "httpStatus": 200,
+      "recordCount": 30,
+      "structuredQueryable": null,
+      "selections": [
+        {
+          "kind": "sheet",
+          "argument": "sheet",
+          "options": [
+            {
+              "value": "T2.3",
+              "label": "T2.3",
+              "state": "unverified",
+              "nextAction": {
+                "tool": "hk_resource_schema",
+                "arguments": {
+                  "resourceId": "2b83464739467cf53b3d7f1ddf3eb6ec",
+                  "sheet": "T2.3"
+                }
+              }
+            }
+          ],
+          "totalOptions": 1,
+          "truncated": false,
+          "scope": "discovered_options_not_accepted_record_reads",
+          "checkedAt": 1793933682.6322045
+        }
+      ],
+      "error": null,
+      "sourceResponseComplete": true,
+      "selectionRequired": null,
+      "scope": "complete_file"
+    },
+    {
+      "resourceId": "2cc7f524083b7cf6983a008b1bc50cbe",
+      "datasetId": "hkpc-hkpc-hkpc-2018-19-kpi",
+      "format": "CSV",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "Source returned binary or HTML rather than CSV",
+        "requestId": "a0bf8267d8c541a2aa49ad2eb4671442"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "2e35b866b0752ee2e3281233471620a0",
+      "datasetId": "hkpc-hkpc-hkpc-2024-25-kpi",
+      "format": "CSV",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "Source returned binary or HTML rather than CSV",
+        "requestId": "b936058df6e4459b890a2b6bc1fb4462"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "2e92b7b93b16cf866bf24cd222dbe72e",
+      "datasetId": "hk-archsd-archsddata-ca3m",
+      "format": "JSON",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "b61ba143757448bf8fa944332efbee0f"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "2f892afc64c3d419c70d6c7a6b90b79e",
+      "datasetId": "hkpc-hkpc-hkpc-2020-21-kpi",
+      "format": "CSV",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "Source returned binary or HTML rather than CSV",
+        "requestId": "91cfc4beed234b5184b519b5738f3080"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "300b0ec5b2253aa830b88d13d9618d1c",
+      "datasetId": "hk-td-tis_10-monthly-traffic-and-transport-digest",
+      "format": "XLS",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "No table header",
+        "requestId": "5823806f835d483c85511b6c3824fbc3"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "30b638ab333c60296dfcd6ace9578b80",
+      "datasetId": "hk-landsd-openmap-vector-map-api",
+      "format": "JSON",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "280617688997439b8eb20b9d9769633a"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "33f3a9904add55aff7648ccdab3bb0cf",
+      "datasetId": "hk-hko-rss-latest-ten-minute-wind-info",
+      "format": "CSV",
+      "httpStatus": 409,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SCHEMA_DRIFT",
+        "message": "Source fields/types changed; accepted version retained for operator review",
+        "requestId": "cee124994bd84d54a2c45df7f9d8bf89"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "3412d7be9d1b134dd20a9282368d46d8",
+      "datasetId": "hk-sb-sb_nd-crda-customization-service",
+      "format": "CSV",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "Source returned binary or HTML rather than CSV",
+        "requestId": "fa97a610b25744bd8e289477a8edb4f0"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "35f4fa534d677141e2d81d8c15b34287",
+      "datasetId": "hk-md-hydro-hong-kong-tidal-stream-prediction",
+      "format": "CSV",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "Source returned binary or HTML rather than CSV",
+        "requestId": "18f56477f5fe434cb7c803021b9ed8eb"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "39679b6dc72e96e66bf48c6d85e1afce",
+      "datasetId": "hk-hko-rss-tc-track-info",
+      "format": "XML",
+      "httpStatus": 409,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SCHEMA_DRIFT",
+        "message": "Source fields/types changed; accepted version retained for operator review",
+        "requestId": "4acaadf8f1ac4221980ce0b81d517247"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "39a41ca12e843a8df8d94e7f9f44c2c6",
+      "datasetId": "hk-hko-rss-weather-and-radiation-level-report",
+      "format": "JSON",
+      "httpStatus": 200,
+      "recordCount": null,
+      "structuredQueryable": false,
+      "selections": [],
+      "error": null,
+      "sourceResponseComplete": null,
+      "selectionRequired": "parameters",
+      "scope": null
+    },
+    {
+      "resourceId": "3b66489e3a40df4b50d0dcf76b31950c",
+      "datasetId": "hk-tid-itms-email-notification-services",
+      "format": "XML",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "913b446842ad4a68ac1b40f48452a400"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "3c93ce4766004e1e912192f434687589",
+      "datasetId": "hkpc-hkpc-hkpc-2023-24-kpi",
+      "format": "CSV",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "Source returned binary or HTML rather than CSV",
+        "requestId": "a7a2dcc8fc5f48f3a3d6092f1761ad95"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "3e0c3d70efce844e1b2a7cd764136708",
+      "datasetId": "csdi:d8387d09-8773-5b8c-acbe-b2f81537afdb",
+      "format": "GML",
+      "httpStatus": 409,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SCHEMA_DRIFT",
+        "message": "Source fields/types changed; accepted version retained for operator review",
+        "requestId": "c819a5c8756f4802b404fd5ece82aefe"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "4032e555264ac3363e7123cc81b9e23d",
+      "datasetId": "hkpc-hkpc-hkpc-2023-24-kpi",
+      "format": "CSV",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "Source returned binary or HTML rather than CSV",
+        "requestId": "b602e144a72048ef86b4d66fbf07cf34"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "45f75a703fe5e2fdc05a0e35dde0c338",
+      "datasetId": "hk-td-tis_10-monthly-traffic-and-transport-digest",
+      "format": "XLS",
+      "httpStatus": 200,
+      "recordCount": 27,
+      "structuredQueryable": null,
+      "selections": [
+        {
+          "kind": "sheet",
+          "argument": "sheet",
+          "options": [
+            {
+              "value": "T4.2&4.3",
+              "label": "T4.2&4.3",
+              "state": "unverified",
+              "nextAction": {
+                "tool": "hk_resource_schema",
+                "arguments": {
+                  "resourceId": "45f75a703fe5e2fdc05a0e35dde0c338",
+                  "sheet": "T4.2&4.3"
+                }
+              }
+            }
+          ],
+          "totalOptions": 1,
+          "truncated": false,
+          "scope": "discovered_options_not_accepted_record_reads",
+          "checkedAt": 1793933727.9708073
+        }
+      ],
+      "error": null,
+      "sourceResponseComplete": true,
+      "selectionRequired": null,
+      "scope": "complete_file"
+    },
+    {
+      "resourceId": "496eac1466714b914d558cb375de4aef",
+      "datasetId": "hk-md-hydro-hong-kong-tidal-stream-prediction",
+      "format": "CSV",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "Source returned binary or HTML rather than CSV",
+        "requestId": "81142748accd4dce90e5b97adc156a7e"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "4a181bd05bcb2edad981117d17e08e11",
+      "datasetId": "hkpc-hkpc-hkpc-2024-25-kpi",
+      "format": "CSV",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "Source returned binary or HTML rather than CSV",
+        "requestId": "64128dada9d443fa944e7e393d928dab"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "4c2d28574d52c5fc4804943be6c76e78",
+      "datasetId": "hk-dpo-mobileapps-govhk-notifications",
+      "format": "JSON",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "6c547215bea0451d90fc8aeacb393873"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "4d204e5706bfe0246af234329925e9c7",
+      "datasetId": "hk-sb-sb_nd-crda-customization-service",
+      "format": "CSV",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "Source returned binary or HTML rather than CSV",
+        "requestId": "cbefc01c7f254408ab37c5be7fbef6b9"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "4de920f979d163e70d7f2d59c9aeb0fc",
+      "datasetId": "hk-hko-rss-weather-and-radiation-level-report",
+      "format": "JSON",
+      "httpStatus": 200,
+      "recordCount": null,
+      "structuredQueryable": false,
+      "selections": [],
+      "error": null,
+      "sourceResponseComplete": null,
+      "selectionRequired": "parameters",
+      "scope": null
+    },
+    {
+      "resourceId": "50e7577f11d6aca1f57cd275dc60bfda",
+      "datasetId": "hk-hko-rss-latest-ten-minute-wind-info",
+      "format": "CSV",
+      "httpStatus": 409,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SCHEMA_DRIFT",
+        "message": "Source fields/types changed; accepted version retained for operator review",
+        "requestId": "fe6611f8721c445898dbeb2f1c5dcf75"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "51b68714316ba9cea2e8ee448594f858",
+      "datasetId": "hkpc-hkpc-hkpc-2025-26-kpi",
+      "format": "CSV",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "Source returned binary or HTML rather than CSV",
+        "requestId": "136ef6548c6f4a46b040b6106658195d"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "55297b7e00532bd0effe12233769690a",
+      "datasetId": "hk-archsd-archsddata-acgca",
+      "format": "JSON",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "817b990e08b343ae99f08c1f61c7616e"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "558ad7402e65fa0f5cfe1be7a0cf0dcf",
+      "datasetId": "hk-td-tis_10-monthly-traffic-and-transport-digest",
+      "format": "XLS",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "No table header",
+        "requestId": "26409173afb540698b632be5f54c3bc8"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "55bc7360190275b95f54e4f04b73e8ae",
+      "datasetId": "hk-fsd-fsd1-fsdasi",
+      "format": "XLSX",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "57a340d581ff44e18b5e085aa89acbfc"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "5917f335d1fe9643456814f8b480b3cd",
+      "datasetId": "hkpc-hkpc-hkpc-2019-20-kpi",
+      "format": "CSV",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "Source returned binary or HTML rather than CSV",
+        "requestId": "18a8611bfe874d7a965b0733e42faf8a"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "6132803d1b2f225b4aec73f92ad46598",
+      "datasetId": "hkpc-hkpc-hkpc-2018-19-kpi",
+      "format": "CSV",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "Source returned binary or HTML rather than CSV",
+        "requestId": "62acd314cdc740fe8a9f26a907f40c3a"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "650eb8c8d792968d2ad111c7fcb2bd8d",
+      "datasetId": "rehabsociety-access-accessibile-facilities",
+      "format": "XML",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "59d3b4ea59d04a2da073dcd5598cdc11"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "651d6baa28971abd9488cfece3e4b826",
+      "datasetId": "hk-censtatd-21c-2021-population-census-build-your-census-tables",
+      "format": "XML",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "f3ee50127cb940c18dfa49d241bbf414"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "656fde3a4a402d2e33d856f2619a9ec3",
+      "datasetId": "hk-aud-tab-accounts-certified",
+      "format": "JSON",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "0a6d235583dc46088576172af3ce822b"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "66924cb3f4b5e1f410ad8ba0fd6219e5",
+      "datasetId": "hk-archsd-archsddata-acgca",
+      "format": "JSON",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "f783d47a1c0f4710b88ffd77355f6cd4"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "69fff3e1804fb09a2be0c9f54e719c84",
+      "datasetId": "hk-td-tis_10-monthly-traffic-and-transport-digest",
+      "format": "XLS",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "No table header",
+        "requestId": "5e91bf9d0f6b454f93bb4c4766172c17"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "6a7901fe57e1c290181104bd43f84e3a",
+      "datasetId": "hk-fsd-fsd1-fsdfpptq",
+      "format": "XLSX",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "929358ecccf3448cb6c740ccdf7948a5"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "6dcc39e9b683a2f8b1e38ae2e4cd6488",
+      "datasetId": "hk-landsd-openmap-land-parcel-and-public-utility-number-search-api",
+      "format": "JSON",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "b563772ec3a84d658b27d95a0287ffdf"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "6e528b183b64b43740c11487fd661460",
+      "datasetId": "hk-fsd-fsd1-fsdfsiq",
+      "format": "XLSX",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "f472446519404eab986a6af6d6244800"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "6ff1c44456d1c5e4114f471cf4cf3586",
+      "datasetId": "hkpc-hkpc-hkpc-2025-26-kpi",
+      "format": "CSV",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "Source returned binary or HTML rather than CSV",
+        "requestId": "36d0d4f8bd3042d7b6635f662925a8bb"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "7562acbe4cf8775a65c58eaf3af604fb",
+      "datasetId": "hkpc-hkpc-hkpc-2019-20-kpi",
+      "format": "CSV",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "Source returned binary or HTML rather than CSV",
+        "requestId": "cdeaef1291e641ccb40ec991bc784c2b"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "768c7034f9d93fa2fe440724450b064b",
+      "datasetId": "hkpc-hkpc-hkpc-2020-21-kpi",
+      "format": "CSV",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "Source returned binary or HTML rather than CSV",
+        "requestId": "06ea65169ef340e2ab88456aea385987"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "7825a371cda35083cb7e0e3a40294a01",
+      "datasetId": "hk-landsd-openmap-development-lot-index-api",
+      "format": "GML",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "9b4f40e3b5234a9b9f53aede90ce1f8a"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "79f429c9458e010c8221f40785117d77",
+      "datasetId": "hk-hko-rss-weather-and-radiation-level-report",
+      "format": "JSON",
+      "httpStatus": 200,
+      "recordCount": null,
+      "structuredQueryable": false,
+      "selections": [],
+      "error": null,
+      "sourceResponseComplete": null,
+      "selectionRequired": "parameters",
+      "scope": null
+    },
+    {
+      "resourceId": "7b77c421dffe803e5bf26f04cb4cf0ac",
+      "datasetId": "hk-fsd-fsd1-fsdfppiq",
+      "format": "XLSX",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "1caed90acbec4d2d88b145f25a32550e"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "81ef2c5ff7c9ba23e8b131604fe9d5bb",
+      "datasetId": "hk-fsd-fsd1-fsdasi",
+      "format": "XLSX",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "2cf57949139046d38ad2d1961d83f2b1"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "8249e3d730a8f969980548f55fd79d86",
+      "datasetId": "hk-landsd-openmap-development-search-nearby-api",
+      "format": "JSON",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "33cb6ea0974d4b82ac8460166f447f8e"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "851aab38d8c7932828567d37432a092a",
+      "datasetId": "hk-tid-itms-email-notification-services",
+      "format": "XML",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "e08f3e6d502140d0ac9eb10d6d2731f6"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "858b81e3339ef099d50c07d85ed10939",
+      "datasetId": "hk-aud-tab-performance-indicators",
+      "format": "JSON",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "fa3a53c99d414508a3fa6cb8650ff3a6"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "85c6940d4262250c9701b39823c0f479",
+      "datasetId": "hk-fsd-fsd1-fsdfsi",
+      "format": "XLSX",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "cc10d07a098642dfb8dc98bf6a0f15d7"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "85db1ba3478f9fa802584e00790554a1",
+      "datasetId": "hk-epd-climatechg-greenhouse-gas-emissions-and-carbon-intensity",
+      "format": "JSON",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "72df2a39c4d747e4848fecd2e6277606"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "86825703d24cb8a23490c7eb089a70d8",
+      "datasetId": "hk-fsd-fsd1-fsdasi",
+      "format": "XLSX",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "0b70ed97c4a348bcb51a6cbf52b7eb4f"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "8a19c2404acdf37eedf8e4ed0f3bb408",
+      "datasetId": "hkpc-hkpc-hkpc-2025-26-kpi",
+      "format": "CSV",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "Source returned binary or HTML rather than CSV",
+        "requestId": "cd18bd63faa44920ad659e5bb81d073b"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "8b03d12d911e6ac6c0574cdb77fc71c0",
+      "datasetId": "hk-csb-csb-gov-vacancies",
+      "format": "JSON",
+      "httpStatus": 200,
+      "recordCount": 3,
+      "structuredQueryable": null,
+      "selections": [
+        {
+          "kind": "record_path",
+          "argument": "recordPath",
+          "options": [
+            {
+              "value": "common",
+              "label": "common",
+              "state": "unverified",
+              "nextAction": {
+                "tool": "hk_resource_schema",
+                "arguments": {
+                  "resourceId": "8b03d12d911e6ac6c0574cdb77fc71c0",
+                  "recordPath": "common"
+                }
+              }
+            }
+          ],
+          "totalOptions": 1,
+          "truncated": false,
+          "scope": "discovered_options_not_accepted_record_reads",
+          "checkedAt": 1793933829.6248608
+        }
+      ],
+      "error": null,
+      "sourceResponseComplete": true,
+      "selectionRequired": null,
+      "scope": "complete_file"
+    },
+    {
+      "resourceId": "8bacea5b7e49f0dfe0c3ec8d491fb65d",
+      "datasetId": "hk-td-tis_10-monthly-traffic-and-transport-digest",
+      "format": "XLS",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "No table header",
+        "requestId": "d2f97cfb27204d43a342f94cfa19bee6"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "90fe3c8510c728693d2e1ddc4d89c66c",
+      "datasetId": "hk-td-tis_10-monthly-traffic-and-transport-digest",
+      "format": "XLS",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "No table header",
+        "requestId": "6a5362fef80443c596b3a5efc944338b"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "913a9165c9e10ea1baee170d2e21aa61",
+      "datasetId": "hk-archsd-archsddata-acgca",
+      "format": "JSON",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "e822e73880dc4b028a9a251512a819d5"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "93962a58cdd448fc7907556bfdc0749b",
+      "datasetId": "hk-dpo-datagovhk1-carpark-info-vacancy",
+      "format": "JSON",
+      "httpStatus": 200,
+      "recordCount": 591,
+      "structuredQueryable": null,
+      "selections": [
+        {
+          "kind": "record_path",
+          "argument": "recordPath",
+          "options": [
+            {
+              "value": "results",
+              "label": "results",
+              "state": "unverified",
+              "nextAction": {
+                "tool": "hk_resource_schema",
+                "arguments": {
+                  "resourceId": "93962a58cdd448fc7907556bfdc0749b",
+                  "recordPath": "results"
+                }
+              }
+            }
+          ],
+          "totalOptions": 1,
+          "truncated": false,
+          "scope": "discovered_options_not_accepted_record_reads",
+          "checkedAt": 1793933922.5899034
+        }
+      ],
+      "error": null,
+      "sourceResponseComplete": true,
+      "selectionRequired": null,
+      "scope": "source_response"
+    },
+    {
+      "resourceId": "976bc8a0219cac816aab2e685a05695b",
+      "datasetId": "hkpc-hkpc-hkpc-2022-23-kpi",
+      "format": "CSV",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "Source returned binary or HTML rather than CSV",
+        "requestId": "bc15c543c973454abd5ab282464d47d3"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "999d814248ffdd57ca4ab01355b44397",
+      "datasetId": "hk-landsd-openmap-vector-map-label-api",
+      "format": "JSON",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "d64c47ade6ae47a28c7111d1607b3ec5"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "a26655ece473e8cf89bd217dbc4cdedb",
+      "datasetId": "hk-bd-opendata-registers-of-buildings-department",
+      "format": "CSV",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "Source returned binary or HTML rather than CSV",
+        "requestId": "a36312306b2a4003bcddc3593923942c"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "a5805f8458c6c83777edb6fd8d23649d",
+      "datasetId": "hk-td-tis_10-monthly-traffic-and-transport-digest",
+      "format": "XLS",
+      "httpStatus": 200,
+      "recordCount": 27,
+      "structuredQueryable": null,
+      "selections": [
+        {
+          "kind": "sheet",
+          "argument": "sheet",
+          "options": [
+            {
+              "value": "T4.2&4.3",
+              "label": "T4.2&4.3",
+              "state": "unverified",
+              "nextAction": {
+                "tool": "hk_resource_schema",
+                "arguments": {
+                  "resourceId": "a5805f8458c6c83777edb6fd8d23649d",
+                  "sheet": "T4.2&4.3"
+                }
+              }
+            }
+          ],
+          "totalOptions": 1,
+          "truncated": false,
+          "scope": "discovered_options_not_accepted_record_reads",
+          "checkedAt": 1793933934.1862416
+        }
+      ],
+      "error": null,
+      "sourceResponseComplete": true,
+      "selectionRequired": null,
+      "scope": "complete_file"
+    },
+    {
+      "resourceId": "aba5c7384d64ca975c92328641aed04b",
+      "datasetId": "hk-fsd-fsd1-fsdfsi",
+      "format": "XLSX",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "d3fda2cfd93d4a04aef6fe04ea4270f5"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "ae212d13358b1b7bf57368b743ccaa8d",
+      "datasetId": "hk-td-tis_10-monthly-traffic-and-transport-digest",
+      "format": "XLS",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "No table header",
+        "requestId": "ee0c3f38f7624df49e133fb7b6330dae"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "b10a2beeaacaf77f98acc4536b578571",
+      "datasetId": "hk-archsd-archsddata-tngg",
+      "format": "JSON",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "181fea92d568486ab05016aa313bd7b9"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "b255c7a8de8fc620e9d5f5eca43e4140",
+      "datasetId": "hk-hko-rss-latest-ten-minute-wind-info",
+      "format": "CSV",
+      "httpStatus": 409,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SCHEMA_DRIFT",
+        "message": "Source fields/types changed; accepted version retained for operator review",
+        "requestId": "abbb2cdf99994cf08d43fa5ec3ca5a4f"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "b48926d085267764cf9decddb1757d5d",
+      "datasetId": "hkpc-hkpc-hkpc-2018-19-kpi",
+      "format": "CSV",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "Source returned binary or HTML rather than CSV",
+        "requestId": "b48be91cb0a0441ca01c76e498fecd5b"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "b4fce60c11e1393cfe075fc035ba8558",
+      "datasetId": "hk-csb-csb-gov-vacancies",
+      "format": "JSON",
+      "httpStatus": 200,
+      "recordCount": 3,
+      "structuredQueryable": null,
+      "selections": [
+        {
+          "kind": "record_path",
+          "argument": "recordPath",
+          "options": [
+            {
+              "value": "common",
+              "label": "common",
+              "state": "unverified",
+              "nextAction": {
+                "tool": "hk_resource_schema",
+                "arguments": {
+                  "resourceId": "b4fce60c11e1393cfe075fc035ba8558",
+                  "recordPath": "common"
+                }
+              }
+            }
+          ],
+          "totalOptions": 1,
+          "truncated": false,
+          "scope": "discovered_options_not_accepted_record_reads",
+          "checkedAt": 1793933953.050597
+        }
+      ],
+      "error": null,
+      "sourceResponseComplete": true,
+      "selectionRequired": null,
+      "scope": "complete_file"
+    },
+    {
+      "resourceId": "b95de882b22a895d9adcdc1457526b30",
+      "datasetId": "hk-td-tis_10-monthly-traffic-and-transport-digest",
+      "format": "XLS",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "No table header",
+        "requestId": "a624a741b9d34f908f8035b4b216962e"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "bb11ddd9584f14e4ea374190a0d5f103",
+      "datasetId": "hk-archsd-archsddata-ca3m",
+      "format": "JSON",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "eaede5a1f5874c129955548b085a06fa"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "bba25323baf621535677e9a743b0923b",
+      "datasetId": "hk-epd-recycteam-waste-less-recyclable-collection-points-data",
+      "format": "CSV",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "Source returned binary or HTML rather than CSV",
+        "requestId": "4a3b591357e2402cb7d206ca16a4bce0"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "be00600cbb0603b25c064daa0129813b",
+      "datasetId": "hk-md-hydro-hong-kong-tidal-stream-prediction",
+      "format": "CSV",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "Source returned binary or HTML rather than CSV",
+        "requestId": "91c644d4191e4255b62b5e795d3cfadb"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "c43a1377b070e7990195715e502852dc",
+      "datasetId": "hk-aud-tab-vfm-by-auditees",
+      "format": "JSON",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "c4a53e3841dd4546840bb376d7315133"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "c78f7b45b88c250a97795e054d75fcd4",
+      "datasetId": "rehabsociety-access-accessibile-facilities",
+      "format": "XML",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "156ec43635344e92b4818f880f3ea23e"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "c876138d09fe3e21ec5b5aad3c03d4cf",
+      "datasetId": "hk-censtatd-21c-2021-population-census-build-your-census-tables",
+      "format": "XML",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "8de3c4dc75cc4b31887ef90d33edcf2e"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "cb7027451b2ee8cc0c21e58d32aefac5",
+      "datasetId": "hk-td-tis_10-monthly-traffic-and-transport-digest",
+      "format": "XLS",
+      "httpStatus": 200,
+      "recordCount": 18,
+      "structuredQueryable": null,
+      "selections": [
+        {
+          "kind": "sheet",
+          "argument": "sheet",
+          "options": [
+            {
+              "value": "T6.2&6.3",
+              "label": "T6.2&6.3",
+              "state": "unverified",
+              "nextAction": {
+                "tool": "hk_resource_schema",
+                "arguments": {
+                  "resourceId": "cb7027451b2ee8cc0c21e58d32aefac5",
+                  "sheet": "T6.2&6.3"
+                }
+              }
+            }
+          ],
+          "totalOptions": 1,
+          "truncated": false,
+          "scope": "discovered_options_not_accepted_record_reads",
+          "checkedAt": 1793933978.4087076
+        }
+      ],
+      "error": null,
+      "sourceResponseComplete": true,
+      "selectionRequired": null,
+      "scope": "complete_file"
+    },
+    {
+      "resourceId": "cee30669593146305dd8e1649540df98",
+      "datasetId": "hk-fsd-fsd1-fsdfsi",
+      "format": "XLSX",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "4b60c93006394566a81470fc09f64525"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "d1446331b470745bdac8da1ef6106c44",
+      "datasetId": "hkpc-hkpc-hkpc-2022-23-kpi",
+      "format": "CSV",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "Source returned binary or HTML rather than CSV",
+        "requestId": "bd194addda28445b97bf5fa925d11ce8"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "d28e5a983070c4e60efa4fe5a323ced7",
+      "datasetId": "hkpc-hkpc-hkpc-2021-22-kpi",
+      "format": "CSV",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "Source returned binary or HTML rather than CSV",
+        "requestId": "c2d070f887d34632a1b0c990cc8c3de9"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "d3e57933677a798eb8ce819fc2e7f7f5",
+      "datasetId": "hk-td-tis_10-monthly-traffic-and-transport-digest",
+      "format": "XLS",
+      "httpStatus": 200,
+      "recordCount": 31,
+      "structuredQueryable": null,
+      "selections": [
+        {
+          "kind": "sheet",
+          "argument": "sheet",
+          "options": [
+            {
+              "value": "T2.4",
+              "label": "T2.4",
+              "state": "unverified",
+              "nextAction": {
+                "tool": "hk_resource_schema",
+                "arguments": {
+                  "resourceId": "d3e57933677a798eb8ce819fc2e7f7f5",
+                  "sheet": "T2.4"
+                }
+              }
+            }
+          ],
+          "totalOptions": 1,
+          "truncated": false,
+          "scope": "discovered_options_not_accepted_record_reads",
+          "checkedAt": 1793933990.9345758
+        }
+      ],
+      "error": null,
+      "sourceResponseComplete": true,
+      "selectionRequired": null,
+      "scope": "complete_file"
+    },
+    {
+      "resourceId": "d52356ecbd7e894f04ad60dae715c9d0",
+      "datasetId": "hk-td-tis_10-monthly-traffic-and-transport-digest",
+      "format": "XLS",
+      "httpStatus": 200,
+      "recordCount": 27,
+      "structuredQueryable": null,
+      "selections": [
+        {
+          "kind": "sheet",
+          "argument": "sheet",
+          "options": [
+            {
+              "value": "keystat",
+              "label": "keystat",
+              "state": "unverified",
+              "nextAction": {
+                "tool": "hk_resource_schema",
+                "arguments": {
+                  "resourceId": "d52356ecbd7e894f04ad60dae715c9d0",
+                  "sheet": "keystat"
+                }
+              }
+            }
+          ],
+          "totalOptions": 1,
+          "truncated": false,
+          "scope": "discovered_options_not_accepted_record_reads",
+          "checkedAt": 1793933993.9598835
+        }
+      ],
+      "error": null,
+      "sourceResponseComplete": true,
+      "selectionRequired": null,
+      "scope": "complete_file"
+    },
+    {
+      "resourceId": "d7453c549e585c184199964e48e93247",
+      "datasetId": "hkpc-hkpc-hkpc-2020-21-kpi",
+      "format": "CSV",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "Source returned binary or HTML rather than CSV",
+        "requestId": "cbd876147e224c6bbb4dc6d9a3d9f673"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "d8b4f7f7de95a27253ff6a3efcb61343",
+      "datasetId": "hk-archsd-archsddata-ca3m",
+      "format": "JSON",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "841ce2c2367d452fb7cf0bd0e3054035"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "d9bae2b3ac3e78ffbe1e7501092d7f8f",
+      "datasetId": "hk-censtatd-21c-2021-population-census-build-your-census-tables",
+      "format": "XML",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "50f319044e064fd4abd606648492558e"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "df2492726bb048a59ad63da80a5295b6",
+      "datasetId": "hkstp-hkstp-hkstp-hksp-job-post",
+      "format": "JSON",
+      "httpStatus": 409,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SCHEMA_DRIFT",
+        "message": "Source fields/types changed; accepted version retained for operator review",
+        "requestId": "e2ee2ea5b9484f828afd70db1ef795f5"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "e17a254c314ff6f083a1068009d0eb70",
+      "datasetId": "rehabsociety-access-accessibile-facilities",
+      "format": "XML",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "ba72097327ce4b51b591800895493306"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "e24b6b473e39dbdf7ec8252202b07557",
+      "datasetId": "hk-censtatd-tablechart-940-92031",
+      "format": "XLSX",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_TOO_LARGE",
+        "message": "Decoded source exceeds download budget",
+        "requestId": "14aa919a52524d718df0acfbbb134bf6"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "e31d5cca2ec99fdb3fe0a40209837bbe",
+      "datasetId": "hk-censtatd-tablechart-210-06201",
+      "format": "XLSX",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_TOO_LARGE",
+        "message": "Decoded source exceeds download budget",
+        "requestId": "f63088b469a74b19bbced51347e2c16a"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "e41becdbd54cb6c7ad509fccb2cbeafe",
+      "datasetId": "hk-censtatd-tablechart-210-06508",
+      "format": "XLSX",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_TOO_LARGE",
+        "message": "Decoded source exceeds download budget",
+        "requestId": "c85d35605404439f80180e8a483eb40c"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "e46838c491316f3f4cee96c089d97e08",
+      "datasetId": "hk-censtatd-tablechart-130-06605",
+      "format": "XLSX",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_TOO_LARGE",
+        "message": "Decoded source exceeds download budget",
+        "requestId": "53f2e3ba85604b09b8f0fe2e124fd7e5"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "e496605dc283ac9e035e30a5d38ac02e",
+      "datasetId": "hk-censtatd-tablechart-510-60001a",
+      "format": "XLSX",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_TOO_LARGE",
+        "message": "Decoded source exceeds download budget",
+        "requestId": "34cac56a9b044374843d5602d19ab70d"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "e57df73a0870437c42343dfa2a3f52a3",
+      "datasetId": "hk-censtatd-tablechart-420-57002",
+      "format": "XLSX",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_TOO_LARGE",
+        "message": "Decoded source exceeds download budget",
+        "requestId": "4bb13e0be75d4ce291d59f88ff4f1791"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "e71955d18de4f4097ca2aaac01d5375c",
+      "datasetId": "hk-td-tis_10-monthly-traffic-and-transport-digest",
+      "format": "XLS",
+      "httpStatus": 200,
+      "recordCount": 51,
+      "structuredQueryable": null,
+      "selections": [
+        {
+          "kind": "sheet",
+          "argument": "sheet",
+          "options": [
+            {
+              "value": "T4.4",
+              "label": "T4.4",
+              "state": "unverified",
+              "nextAction": {
+                "tool": "hk_resource_schema",
+                "arguments": {
+                  "resourceId": "e71955d18de4f4097ca2aaac01d5375c",
+                  "sheet": "T4.4"
+                }
+              }
+            }
+          ],
+          "totalOptions": 1,
+          "truncated": false,
+          "scope": "discovered_options_not_accepted_record_reads",
+          "checkedAt": 1793934042.360321
+        }
+      ],
+      "error": null,
+      "sourceResponseComplete": true,
+      "selectionRequired": null,
+      "scope": "complete_file"
+    },
+    {
+      "resourceId": "e731800141d3420385090cba6b70e832",
+      "datasetId": "hk-censtatd-tablechart-130-06605",
+      "format": "XLSX",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_TOO_LARGE",
+        "message": "Decoded source exceeds download budget",
+        "requestId": "f279e965b08042ebaeb4b18f15f84ca3"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "e9214f0875b45b9af53103696e09daec",
+      "datasetId": "hk-censtatd-tablechart-510-60003",
+      "format": "XLSX",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_TOO_LARGE",
+        "message": "Decoded source exceeds download budget",
+        "requestId": "909cdecead2e4b45a02b7fece0360397"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "e947b2893124a324b1e2a8dd99a1c0b4",
+      "datasetId": "hkpc-hkpc-hkpc-2023-24-kpi",
+      "format": "CSV",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "Source returned binary or HTML rather than CSV",
+        "requestId": "09466a0458814df1bbc1651f5989f5fe"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "ea01fabbc61d412ee6eb642ff50ab0e3",
+      "datasetId": "hk-censtatd-tablechart-210-06305",
+      "format": "XLSX",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_TOO_LARGE",
+        "message": "Decoded source exceeds download budget",
+        "requestId": "dcc3a89e20ef4689b8543d45d193fb7b"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "ebd41f0e2c90aa957eb3d78e910d8b64",
+      "datasetId": "hk-td-tis_10-monthly-traffic-and-transport-digest",
+      "format": "XLS",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "No table header",
+        "requestId": "f42aacac886c429cbf89980a6701db3d"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "ee66c4a480884845c8c36e735b9320da",
+      "datasetId": "csdi:7fc6e859-48a7-5a94-bb71-b1c08145d7fd",
+      "format": "GML",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "458abd3a9c1f479b923edd22e7707ac5"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "eecf0f3e480485042c6a640735e63fe9",
+      "datasetId": "hk-censtatd-tablechart-130-06607",
+      "format": "XLSX",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_TOO_LARGE",
+        "message": "Decoded source exceeds download budget",
+        "requestId": "31a11e62bd4348cfa9273bb6ec7d8d46"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "f0c37fbb2e681cbb78cc4da82163c35c",
+      "datasetId": "hk-td-tis_10-monthly-traffic-and-transport-digest",
+      "format": "XLS",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "No table header",
+        "requestId": "4ef294a75ac948b7b6faeb966c783cbd"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "f0fe491ecefb11639f6587ae374a5c01",
+      "datasetId": "hk-censtatd-tablechart-115-01021",
+      "format": "XLSX",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_TOO_LARGE",
+        "message": "Decoded source exceeds download budget",
+        "requestId": "8e6968171fd24f1cb963de898b3c12b0"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "f101df40374314150d641d26f4cdb625",
+      "datasetId": "hk-tid-itms-email-notification-services",
+      "format": "XML",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "1fb1a1106b4640cea5c3bb9b1c8a63c6"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "f17da1ba8ebd3690c26621398c242746",
+      "datasetId": "hk-censtatd-tablechart-215-16010",
+      "format": "XLSX",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_TOO_LARGE",
+        "message": "Decoded source exceeds download budget",
+        "requestId": "817c290793324b62b6865cfea69802e9"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "f18ec5fa01db6fe226f051b74b3d2b65",
+      "datasetId": "hk-td-tis_10-monthly-traffic-and-transport-digest",
+      "format": "XLS",
+      "httpStatus": 200,
+      "recordCount": 18,
+      "structuredQueryable": null,
+      "selections": [
+        {
+          "kind": "sheet",
+          "argument": "sheet",
+          "options": [
+            {
+              "value": "T6.2&6.3",
+              "label": "T6.2&6.3",
+              "state": "unverified",
+              "nextAction": {
+                "tool": "hk_resource_schema",
+                "arguments": {
+                  "resourceId": "f18ec5fa01db6fe226f051b74b3d2b65",
+                  "sheet": "T6.2&6.3"
+                }
+              }
+            }
+          ],
+          "totalOptions": 1,
+          "truncated": false,
+          "scope": "discovered_options_not_accepted_record_reads",
+          "checkedAt": 1793934099.5340068
+        }
+      ],
+      "error": null,
+      "sourceResponseComplete": true,
+      "selectionRequired": null,
+      "scope": "complete_file"
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "datasetId": "hk-censtatd-21c-2021-population-census-district-profiles",
+      "format": "XML",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "99a6d2b16e3640ba97ca9537a3eccf0a"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "f3ef5194a0699dbde7992f08dba8d49c",
+      "datasetId": "hkpc-hkpc-hkpc-2019-20-kpi",
+      "format": "CSV",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "Source returned binary or HTML rather than CSV",
+        "requestId": "a4d9861539f54e57a1f02bd658fc4f10"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "f42e59b44f0991e0256798d0c3a00686",
+      "datasetId": "hk-censtatd-tablechart-210-06303",
+      "format": "XLSX",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_TOO_LARGE",
+        "message": "Decoded source exceeds download budget",
+        "requestId": "e2c8fe8b9b7a4e4cbb4e0cf8ae99dce1"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "f514d1ada66ddeb7c95803ea32c65553",
+      "datasetId": "rehabsociety-access-accessibile-facilities",
+      "format": "XML",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "730daceb4566484a89b4c2e0c8c289a9"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "f5f6071dc9c331c51a15940840d98abb",
+      "datasetId": "hk-csb-csb-gov-vacancies",
+      "format": "JSON",
+      "httpStatus": 200,
+      "recordCount": 3,
+      "structuredQueryable": null,
+      "selections": [
+        {
+          "kind": "record_path",
+          "argument": "recordPath",
+          "options": [
+            {
+              "value": "common",
+              "label": "common",
+              "state": "unverified",
+              "nextAction": {
+                "tool": "hk_resource_schema",
+                "arguments": {
+                  "resourceId": "f5f6071dc9c331c51a15940840d98abb",
+                  "recordPath": "common"
+                }
+              }
+            }
+          ],
+          "totalOptions": 1,
+          "truncated": false,
+          "scope": "discovered_options_not_accepted_record_reads",
+          "checkedAt": 1793934116.9213214
+        }
+      ],
+      "error": null,
+      "sourceResponseComplete": true,
+      "selectionRequired": null,
+      "scope": "complete_file"
+    },
+    {
+      "resourceId": "f7802a5bb5459c24b693773555275af2",
+      "datasetId": "hk-fsd-fsd1-fsdfppiq",
+      "format": "XLSX",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_PARSE_ERROR",
+        "message": "Source cannot be safely parsed; failure receipt recorded",
+        "requestId": "0e7316fb177741a6acf4fcdb8a9d7a3d"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "f7dff2abeaa600e29e7fbbb6272e60ac",
+      "datasetId": "hk-censtatd-tablechart-210-06305a",
+      "format": "XLSX",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_TOO_LARGE",
+        "message": "Decoded source exceeds download budget",
+        "requestId": "c71536c03d9945c4b5a715df9532040a"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "f95ab152e847c4e1f1acc90814a3265c",
+      "datasetId": "hk-censtatd-tablechart-210-06401",
+      "format": "XLSX",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_TOO_LARGE",
+        "message": "Decoded source exceeds download budget",
+        "requestId": "d57135145bf14005bbb5d33ad4b7d623"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "f9ce8154be440d27d716714428e7f602",
+      "datasetId": "hk-td-tis_10-monthly-traffic-and-transport-digest",
+      "format": "XLS",
+      "httpStatus": 200,
+      "recordCount": 59,
+      "structuredQueryable": null,
+      "selections": [
+        {
+          "kind": "sheet",
+          "argument": "sheet",
+          "options": [
+            {
+              "value": "T3.4",
+              "label": "T3.4",
+              "state": "unverified",
+              "nextAction": {
+                "tool": "hk_resource_schema",
+                "arguments": {
+                  "resourceId": "f9ce8154be440d27d716714428e7f602",
+                  "sheet": "T3.4"
+                }
+              }
+            }
+          ],
+          "totalOptions": 1,
+          "truncated": false,
+          "scope": "discovered_options_not_accepted_record_reads",
+          "checkedAt": 1793934230.9066668
+        }
+      ],
+      "error": null,
+      "sourceResponseComplete": true,
+      "selectionRequired": null,
+      "scope": "complete_file"
+    },
+    {
+      "resourceId": "fa8d0439d4cf1ace2d1e4ee7c1922698",
+      "datasetId": "hk-censtatd-tablechart-210-06309",
+      "format": "XLSX",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_TOO_LARGE",
+        "message": "Decoded source exceeds download budget",
+        "requestId": "6dee31375ec94851a36a5b27037024c3"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "fbbde36101a68efe214e9a1254f7c9f6",
+      "datasetId": "hk-censtatd-tablechart-210-06409",
+      "format": "XLSX",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_TOO_LARGE",
+        "message": "Decoded source exceeds download budget",
+        "requestId": "6c1f790701fd4dd5854e0b557c506206"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "fcdccf88f15195949281ec4c9c7e1fe5",
+      "datasetId": "hk-censtatd-tablechart-210-06203",
+      "format": "XLSX",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_TOO_LARGE",
+        "message": "Decoded source exceeds download budget",
+        "requestId": "5979cf5ae52a4c54b38fb7367a952aeb"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "fd0686487ab20a1bad6455988a395505",
+      "datasetId": "hk-sb-sb_nd-crda-customization-service",
+      "format": "CSV",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_SCHEMA_CHANGED",
+        "message": "Source returned binary or HTML rather than CSV",
+        "requestId": "205c1207f83f41229a690bca249b1941"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    },
+    {
+      "resourceId": "ff257496050cf7dd11882be85ebfbf7a",
+      "datasetId": "hk-censtatd-tablechart-215-16010",
+      "format": "XLSX",
+      "httpStatus": 422,
+      "recordCount": null,
+      "structuredQueryable": null,
+      "selections": [],
+      "error": {
+        "code": "SOURCE_TOO_LARGE",
+        "message": "Decoded source exceeds download budget",
+        "requestId": "8200699d9134455388d73e6ce3866551"
+      },
+      "sourceResponseComplete": null,
+      "selectionRequired": null,
+      "scope": null
+    }
+  ],
+  "completeRootSchemas": 16,
+  "requiredSettingsKinds": {
+    "parameters": 3
+  },
+  "sourceErrorScope": "Dated root diagnostics only; parsing/schema/capacity holds are internal unfinished work, not source-access clearance"
+}

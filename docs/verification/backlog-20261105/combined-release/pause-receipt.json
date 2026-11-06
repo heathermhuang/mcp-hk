@@ -1,0 +1,9 @@
+{
+  "pausedAtUtc": "2026-11-06T04:57:52.292158+00:00",
+  "propagationNotBeforeEpoch": 1793941972.292154,
+  "resourceCronOnly": true,
+  "remainingSchedules": 4,
+  "freshPrePauseNativeReadVerified": false,
+  "nativePostPauseReadVerified": true,
+  "existingOAuthGrantRefreshedByCli": true
+}

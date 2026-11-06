@@ -1,0 +1,5 @@
+{
+  "phase": "before",
+  "httpStatus": 401,
+  "claim": "Fresh native pre-pause observation unavailable; do not count as verified. Existing-grant CLI refresh and native post-pause read remain required."
+}

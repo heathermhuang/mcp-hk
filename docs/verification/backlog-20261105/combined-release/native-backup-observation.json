@@ -1,0 +1,31 @@
+{
+  "scope": "Read-only observation of a natural resources checkpoint after restoring the original cron; no operator resource refresh or artificial data",
+  "observations": [
+    {
+      "observedAtUtc": "2026-11-06T05:24:47.154067+00:00",
+      "createdAt": "2026-11-06T05:22:42.431Z",
+      "reason": "backup",
+      "bytes": 114084592,
+      "sha256": "3f42adfad3a41de8cc99f905d5c5411477ac28308655c578c0064f473ff569f2"
+    },
+    {
+      "observedAtUtc": "2026-11-06T05:35:23.657364+00:00",
+      "createdAt": "2026-11-06T05:35:09.792Z",
+      "reason": "resources",
+      "bytes": 113893239,
+      "sha256": "f8ec8b45be76fb4172818454524b4797452c8f3364d146ef396a538117fe10d5"
+    }
+  ],
+  "acceptedArchive": {
+    "key": "backups/2026-11-06T05-35-09.792Z-06135cdd-9f27-46f8-8ca5-52c5d8fbeffd.snapshot.tar.gz",
+    "sha256": "f8ec8b45be76fb4172818454524b4797452c8f3364d146ef396a538117fe10d5",
+    "createdAt": "2026-11-06T05:35:09.792Z",
+    "bytes": 113893239,
+    "reason": "resources"
+  },
+  "controllerRelease": "fc71d10ee602cf539ee399fa47fef29441723056",
+  "gzipExtraFlags": 0,
+  "resourcesEndpointRequestsCompressionLevel": 1,
+  "nativeBalancedFallbackObserved": true,
+  "fixedRecoveryLimitsUnchanged": true
+}

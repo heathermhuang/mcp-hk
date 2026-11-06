@@ -1,0 +1,9 @@
+{
+  "sourceCommit": "fc71d10ee602cf539ee399fa47fef29441723056",
+  "localImageId": "sha256:cd7010e877c106b651bd3e2cf60e6dabaa4dbaf5187e17ab1fa4ce7513037fc8",
+  "scope": "Exact built Linux runtime image with networking disabled; forced small-fixture fallback only, not a production compression timing claim",
+  "publishedTemplateBound": true,
+  "coordinatesRemainRaw": true,
+  "adaptiveBackupRestoreSmoke": true,
+  "fixedRecoveryLimitsUnchanged": true
+}
