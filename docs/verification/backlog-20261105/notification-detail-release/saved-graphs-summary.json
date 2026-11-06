@@ -1,0 +1,78 @@
+{
+  "scope": "Saved receipt graph only; does not request providers or establish semantic/alternative equivalence. In-flight writes remain pending.",
+  "checkedAt": 1793995103.5068622,
+  "archiveSha256": "bb291ef87161f77d24ac9f69aad229b7451ae18dc4d9e3ad2b1eb82fed710041",
+  "cohorts": {
+    "arcgis": {
+      "resources": 1148,
+      "states": {
+        "visited_with_failures": 156,
+        "visited": 926,
+        "pending": 66
+      },
+      "knownMissingOperations": 79,
+      "acceptedQuerySelections": 1313,
+      "truncatedResources": 0,
+      "errors": {
+        "SOURCE_TOO_LARGE": 35,
+        "ACCESS_RESTRICTED": 46,
+        "SOURCE_UNAVAILABLE": 70,
+        "SOURCE_TIMEOUT": 30,
+        "TimeoutError": 8,
+        "RESPONSE_TOO_LARGE": 2,
+        "SOURCE_API_ERROR": 1,
+        "SOURCE_CHANGED": 5
+      }
+    },
+    "wfs": {
+      "resources": 1120,
+      "states": {
+        "visited_with_failures": 72,
+        "visited": 34,
+        "pending": 1014
+      },
+      "knownMissingOperations": 1027,
+      "acceptedQuerySelections": 44,
+      "truncatedResources": 0,
+      "errors": {
+        "SOURCE_TOO_LARGE": 26,
+        "ACCESS_RESTRICTED": 64,
+        "SOURCE_UNAVAILABLE": 6,
+        "TimeoutError": 1
+      }
+    },
+    "workbook": {
+      "resources": 1310,
+      "states": {
+        "visited": 61,
+        "visited_with_failures": 42,
+        "pending": 1207
+      },
+      "knownMissingOperations": 1217,
+      "acceptedQuerySelections": 671,
+      "truncatedResources": 0,
+      "errors": {
+        "SOURCE_SCHEMA_CHANGED": 80,
+        "SOURCE_TOO_COMPLEX": 6,
+        "SOURCE_UNAVAILABLE": 1,
+        "ACCESS_RESTRICTED": 1
+      }
+    },
+    "reports": {
+      "resources": 162,
+      "states": {
+        "visited": 78,
+        "visited_with_failures": 1,
+        "pending": 83
+      },
+      "knownMissingOperations": 1477,
+      "acceptedQuerySelections": 4434,
+      "truncatedResources": 0,
+      "errors": {
+        "SOURCE_UNAVAILABLE": 1
+      }
+    }
+  },
+  "providerRequests": 0,
+  "fullProgrammeComplete": false
+}

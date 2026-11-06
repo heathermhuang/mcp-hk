@@ -1,5 +1,9 @@
 # Remaining-backlog implementation releases — 6 November 2026
 
+PR #181 is deployed at `b22381d510976d23b2ddb5c0505f7c3ec7fbfddd` with hosted native-ID detail and freshly restored HTTP/MCP proof. Message/timestamp values remain raw, timestamp units and active-alert/safety claims remain unqualified. See [notification detail release](notification-detail-release/README.md). Hydro and the full programme remain open.
+
+## Earlier cyclone-list release
+
 PR #177 is deployed at `7cb7aed5a83a62f18f127c8770d36bbedbf25e15` with hosted and freshly restored exact XML-list behavior, including its documented declared-schema empty state. See [cyclone list release](cyclone-list-release/README.md). No worldwide/safety qualification or GML placeholder approval; Hydro remains held and the full programme open.
 
 ## Earlier wind release

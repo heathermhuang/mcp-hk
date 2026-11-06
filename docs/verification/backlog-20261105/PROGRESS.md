@@ -9,11 +9,11 @@ remain unfinished. Earlier progress is retained in Git history and
 
 ## Current deployed evidence
 
-Runtime commit `7cb7aed5a83a62f18f127c8770d36bbedbf25e15`, application/running
-instance version 87, passed all five exact-main CI workflows, actual controller and
+Runtime commit `b22381d510976d23b2ddb5c0505f7c3ec7fbfddd`, application/running
+instance version 88, passed all five exact-main CI workflows, actual controller and
 image adoption, hosted HTTP/native MCP checks and fresh isolated recovery.
-[The release receipt](cyclone-list-release/release-receipt.json) records the immutable
-archive checksum: 121,970,117 archive / 363,311,104 SQLite / 394,466,387 total restored
+[The release receipt](notification-detail-release/release-receipt.json) records the immutable
+archive checksum: 123,143,850 archive / 365,322,240 SQLite / 396,477,523 total restored
 bytes. All five original schedules were restored and independently read back;
 final health passed, the owned release slot closed and both source lanes resumed.
 The restore's client checks made zero provider attempts. This is recovery of dated
@@ -21,7 +21,7 @@ accepted facts; expired arrivals are not presented as current service.
 
 Later releases are distinguished from the earlier release history in
 [RELEASED.md](RELEASED.md). Shared framing, selected Census files, recycling, HKSTP,
-wind and the exact cyclone XML list have their own hosted/recovery receipts. Hydro
+wind, the exact cyclone XML list and native-ID notification detail have their own hosted/recovery receipts. Hydro
 records remain denied pending reuse clarification; the separate cyclone GML
 placeholder remains unqualified.
 
@@ -101,3 +101,5 @@ The bulk archive guard is 130 MB; hard archive/SQLite/total restore limits remai
 The next work is the existing wider frozen qualification lanes and the exact
 unblocked task/reader/semantic frontiers they demonstrate. This checkpoint does not
 mark the complete programme finished.
+
+The current RVD028 canary is source-held after HTTP 502 / persisted SOURCE_UNAVAILABLE. Exact held HTTP/MCP metadata and retained dated facts recovered, but current records did not pass. See `notification-detail-release/rvd-source-hold.json`; this source request was not retried. The Identify API also retains its captured connection-timeout hold, with held metadata and dated two-row facts recovered; see `notification-detail-release/restored-identify-held.json`.

@@ -1,0 +1,7 @@
+{
+  "applicationId": "a0311e26-5d76-46e6-beb5-67ed6bfefe03",
+  "updatedAt": "2026-11-06T20:14:34.844999936Z",
+  "version": 88,
+  "instances": 1,
+  "image": "registry.cloudflare.com/63a7fe52c985c63bb9e69ce47efdc569/mcp-hk-mcpcontainer@sha256:586c7c99b62f6862314f8186a424723b1dfc638dc567a39396145449807c60b7"
+}

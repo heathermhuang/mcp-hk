@@ -1,0 +1,155 @@
+{
+  "scope": "Current readonly catalogue metadata after actual HTTP502; no provider query or status write",
+  "resource": {
+    "id": "59a9eb26d741141f5a4d675ee17f701c",
+    "datasetId": "csdi:rvd_rcd_1701825947419_23025",
+    "url": "https://portal.csdi.gov.hk/server/services/common/rvd_rcd_1701825947419_23025/MapServer/WFSServer?service=wfs&request=GetCapabilities",
+    "format": "WFS",
+    "catalogue": "CSDI",
+    "aliases": [
+      {
+        "name": "WFS",
+        "format": "WFS"
+      }
+    ],
+    "sourceUrl": "https://portal.csdi.gov.hk/geoportal/rest/metadata/item/rvd_rcd_1701825947419_23025/html",
+    "publicationDate": "2025-12-16T00:00:00Z",
+    "sourceModified": "2025-12-16T00:00:00Z",
+    "isApi": true,
+    "termsUrl": "https://portal.csdi.gov.hk/csdi-webpage/doc/TNC",
+    "validation": {
+      "status": "unavailable",
+      "reason": "SOURCE_UNAVAILABLE",
+      "lastCheckedAt": 1793996142.168582,
+      "lastValidatedAt": 1793991095.2434325,
+      "recordCount": 22,
+      "freshness": {
+        "lastValidatedAt": 1793991095.2434325,
+        "validationAgeSeconds": 5142,
+        "cacheTtlSeconds": 300,
+        "cacheExpired": true,
+        "reviewIntervalSeconds": 7776000,
+        "nextReviewAt": 1801767095.2434325,
+        "reviewOverdue": false,
+        "policyVersion": "source-review-11",
+        "scope": "Source validation only; publication dates, reference periods and record observations are separate."
+      },
+      "semanticVerification": "not_performed"
+    },
+    "capabilities": {
+      "revision": "resource-capabilities-3",
+      "resourceId": "59a9eb26d741141f5a4d675ee17f701c",
+      "datasetId": "csdi:rvd_rcd_1701825947419_23025",
+      "representation": "WFS",
+      "readerFamily": "wfs",
+      "readerSupport": "accepted_selections_only",
+      "operations": {
+        "records": {
+          "state": "held",
+          "reason": "SOURCE_UNAVAILABLE"
+        },
+        "text_search": {
+          "state": "held",
+          "reason": "SOURCE_UNAVAILABLE"
+        },
+        "typed_comparison": {
+          "state": "requires_binding",
+          "reason": "inspect_native_types_before_comparison"
+        },
+        "nearby": {
+          "state": "requires_binding",
+          "reason": "no_qualified_point_binding"
+        }
+      },
+      "acceptedSelections": [
+        {
+          "receiptKey": null,
+          "representation": "GEOJSON",
+          "readScope": "complete_feature_type",
+          "datasetCompleteness": "Not inferred from a file or a single API response.",
+          "unreadMemberCount": 0,
+          "schemaFingerprint": "8a26d311045052d8ed0efaa61dedb2ca674dc498fa22db2bbe178166cd2cbbc6",
+          "selection": {
+            "recordPath": "csdi:RVD028",
+            "sheet": "",
+            "layer": null
+          },
+          "status": "unavailable",
+          "lastCheckedAt": 1793996142.1691866,
+          "lastValidatedAt": 1793991095.2434325,
+          "retrievedAt": 1793904775.3357365,
+          "readerRevision": "structured-reader-3",
+          "sourceContract": null,
+          "sourceResponseComplete": true,
+          "semanticBinding": null,
+          "typedComparisonFieldCount": 3
+        }
+      ],
+      "fields": [],
+      "semanticBinding": null,
+      "entityKind": null,
+      "access": {
+        "status": "unavailable",
+        "reason": "SOURCE_UNAVAILABLE",
+        "lastCheckedAt": 1793996142.168582
+      },
+      "observationTime": null,
+      "completeness": "per_receipt_selection_only",
+      "nextAction": {
+        "tool": "hk_resource_schema",
+        "arguments": {
+          "resourceId": "59a9eb26d741141f5a4d675ee17f701c"
+        }
+      },
+      "selections": [
+        {
+          "kind": "feature_type",
+          "argument": "recordPath",
+          "options": [
+            {
+              "value": "csdi:RVD028",
+              "label": "csdi:RVD028",
+              "state": "unverified",
+              "nextAction": {
+                "tool": "hk_resource_schema",
+                "arguments": {
+                  "resourceId": "59a9eb26d741141f5a4d675ee17f701c",
+                  "recordPath": "csdi:RVD028"
+                }
+              }
+            }
+          ],
+          "totalOptions": 1,
+          "truncated": false,
+          "scope": "discovered_options_not_accepted_record_reads",
+          "checkedAt": 1793909702.3581274
+        },
+        {
+          "kind": "record_path",
+          "argument": "recordPath",
+          "options": [
+            {
+              "value": "features",
+              "label": "features",
+              "state": "unverified",
+              "nextAction": {
+                "tool": "hk_resource_schema",
+                "arguments": {
+                  "resourceId": "59a9eb26d741141f5a4d675ee17f701c",
+                  "recordPath": "features"
+                }
+              }
+            }
+          ],
+          "totalOptions": 1,
+          "truncated": false,
+          "scope": "discovered_options_not_accepted_record_reads",
+          "checkedAt": 1793909707.801563
+        }
+      ]
+    }
+  },
+  "httpMcpMetadataParity": true,
+  "sourceRequests": 0,
+  "providerErrorBodyWasCaptured": false
+}

@@ -1,0 +1,20 @@
+{
+  "resourceId": "59a9eb26d741141f5a4d675ee17f701c",
+  "scope": "Retained dated RVD metadata and current exact source hold; no current record-availability claim",
+  "httpMcpMetadataParity": true,
+  "providerRequests": 0,
+  "sourceHoldPreserved": true,
+  "records": {
+    "state": "held",
+    "reason": "SOURCE_UNAVAILABLE"
+  },
+  "retainedVariantFacts": [
+    {
+      "key": "3f435a73caa380cf92c5ed629dc7ce2f28d513f7141e896519343f5c0d0be17b",
+      "version": "47a748d565bff01ec4f35a7dd3a0555652f1980a2b63d5942768163124b1b536",
+      "schemaHash": "8a26d311045052d8ed0efaa61dedb2ca674dc498fa22db2bbe178166cd2cbbc6",
+      "rows": 22
+    }
+  ],
+  "recordsRecovered": false
+}

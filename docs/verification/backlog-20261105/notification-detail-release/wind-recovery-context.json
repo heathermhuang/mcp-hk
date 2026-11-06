@@ -1,0 +1,29 @@
+{
+  "results": [
+    {
+      "resourceId": "33f3a9904add55aff7648ccdab3bb0cf",
+      "version": "891871d77530db3dd66368d13654c0a5f79eecb77fd7a422a357845ed67d6d3c",
+      "rawRows": 30,
+      "sourceSha256": "70257d74ea69eccd4fbdf1717ad86c16737b4f5cd42691c8b692a59663e96f29",
+      "dataItemsSha256": "3777d048e9e382fb465a32e62956902188f58b44caef3cbd027370490d0ff387",
+      "differsFromEarlierLiveVersion": true
+    },
+    {
+      "resourceId": "50e7577f11d6aca1f57cd275dc60bfda",
+      "version": "61f6e8bdfe4d1127a8704fc968b18aa3db3a27347c0ae7e85c7b5da3ab5c00da",
+      "rawRows": 30,
+      "sourceSha256": "ac7046f5ca0b17449b12b0261de0f52a8ca53060f21f648d1fd2562381e73c2c",
+      "dataItemsSha256": "824e5c8d54232d57f664c30548dc92d71447f754c86c94cd94fe42027f1ced02",
+      "differsFromEarlierLiveVersion": true
+    },
+    {
+      "resourceId": "b255c7a8de8fc620e9d5f5eca43e4140",
+      "version": "d17e8d049964b15dc5f813af56427485db1f4a95f870cdde33ccade0b8617e80",
+      "rawRows": 30,
+      "sourceSha256": "f3f9ea98090e207f64710c6883680d90de7596c5039fedc853ddc3d7055b0402",
+      "dataItemsSha256": "44bcca3fe527cdd12671a842d958f3e7036f2f481ed0630c8e71817a836dbd34",
+      "differsFromEarlierLiveVersion": true
+    }
+  ],
+  "timestampsModified": false
+}

@@ -1,0 +1,48 @@
+{
+  "scope": "Fresh accepted archive restored in isolation; successful explicit raw response scopes and nonrecord metadata only. Source holds remain held.",
+  "providerRequests": 0,
+  "acceptedScopes": [
+    {
+      "resourceId": "8249e3d730a8f969980548f55fd79d86",
+      "httpMcpParity": true,
+      "total": 1760,
+      "version": "7e0f2d949cf79f05785e628c1ff4310898866f4a86d18571d6b09d9baed72305",
+      "missingInputIsolated": true
+    },
+    {
+      "resourceId": "6dcc39e9b683a2f8b1e38ae2e4cd6488",
+      "httpMcpParity": true,
+      "total": 1,
+      "version": "6831887885b368b98e859d5518af3ea5ba32fe3a70ea149e222aeed94d3fea57",
+      "missingInputIsolated": true
+    },
+    {
+      "resourceId": "7825a371cda35083cb7e0e3a40294a01",
+      "httpMcpParity": true,
+      "total": 1,
+      "version": "61e7f0a44af4a6e73f8068d9ac5a4c0ba796bcf00ba421295b5b2671e886a9f3",
+      "missingInputIsolated": true
+    }
+  ],
+  "sourceHolds": [
+    {
+      "resourceId": "18e150f1f3e1fbe6f0171cdb5fe947d9",
+      "parameters": {
+        "x": "835665",
+        "y": "817198",
+        "lang": "en"
+      },
+      "checkedAtUtc": "2026-11-06T20:20:50.734721+00:00",
+      "requiredInputHttpMcpParity": true,
+      "queryHttpStatus": 502,
+      "httpMcpDataParity": false,
+      "hold": {
+        "code": "SOURCE_UNAVAILABLE",
+        "message": "Source connection timed out",
+        "requestId": "52ddae60e3d940f78c2a240ed6df194a"
+      },
+      "providerFailureNotEmptyData": true
+    }
+  ],
+  "nonrecordMaps": 2
+}

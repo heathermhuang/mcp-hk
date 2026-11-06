@@ -1,0 +1,23 @@
+{
+  "checkedAtUtc": "2026-11-06T19:30:07.968977+00:00",
+  "scope": "Primary metadata/document review only; no API-record request, status write, endpoint replacement or denial retry",
+  "catalogueUrl": "https://data.gov.hk/en-data/dataset/legco-refdb-reference-database",
+  "catalogueReadable": true,
+  "publisherDictionaryUrl": "https://www.legco.gov.hk/datagovhk/data-dictionary-reference-data-en.pdf",
+  "publisherSourcePage": "https://www.legco.gov.hk/en/open-legco/open-data/meeting-schedule.html",
+  "publisherNotice": "https://www.legco.gov.hk/english/disclaim.htm",
+  "documentReaderResults": [
+    {
+      "url": "https://www.legco.gov.hk/en/open-legco/open-data/meeting-schedule.html",
+      "state": "web_reader_timeout"
+    },
+    {
+      "url": "https://www.legco.gov.hk/english/disclaim.htm",
+      "state": "web_reader_timeout"
+    }
+  ],
+  "sourceApiFailureCause": "unresolved",
+  "claimAllLegcoUnavailable": false,
+  "recordActivation": false,
+  "next": "Review independently available primary contract evidence; do not retry frozen failed API scopes unchanged or infer runtime cause from document-reader timeouts."
+}

@@ -1,0 +1,14 @@
+{
+  "resourceId": "39679b6dc72e96e66bf48c6d85e1afce",
+  "selection": {},
+  "httpStatus": 200,
+  "checkedAtUtc": "2026-11-06T20:23:11.395208+00:00",
+  "httpMcpParity": true,
+  "rawRows": 0,
+  "sourceEmptyCollection": true,
+  "schemaTypeBasis": "publisher_declared_xml_text",
+  "version": "ae592b7afea0e305ef9916d7a1cf0ad37a01d5749308687445dada9cf35fd15c",
+  "sourceSha256": "ae592b7afea0e305ef9916d7a1cf0ad37a01d5749308687445dada9cf35fd15c",
+  "dataItemsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "globalCycloneOrSafetyQualification": false
+}

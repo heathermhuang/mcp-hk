@@ -1,0 +1,65 @@
+{
+  "scope": "Isolated restored metadata and record-denial parity; no source permission or raw data activation",
+  "checkedAtUtc": "2026-11-06T20:34:41.366130+00:00",
+  "results": [
+    {
+      "resourceId": "35f4fa534d677141e2d81d8c15b34287",
+      "metadataHttpMcpParity": true,
+      "recordHttpStatus": 422,
+      "recordCode": "SOURCE_REUSE_REVIEW_REQUIRED",
+      "nativeMcpRecordHold": true,
+      "sourceReuseReview": {
+        "state": "pending_source_reuse_review",
+        "reason": "source_reuse_review_required",
+        "publisherNoticeUrl": "https://current.hydro.gov.hk/main/disclaimer.php?lang=tc",
+        "catalogueTermsUrl": "https://data.gov.hk/en/terms-and-conditions",
+        "noticeSha256": "14a341a8e49c3f24d29431b8de964a399332ec68f54c4351b12991b75f740cc5",
+        "noticeReviewedOn": "2026-11-06",
+        "publisherCondition": "Noncommercial reproduction requires Marine Department attribution; commercial use requires prior written authorization.",
+        "publicApiReuseBasis": "unverified",
+        "networkAccessAssessment": "not_assessed_by_reuse_policy"
+      },
+      "recordAccessActivated": false
+    },
+    {
+      "resourceId": "496eac1466714b914d558cb375de4aef",
+      "metadataHttpMcpParity": true,
+      "recordHttpStatus": 422,
+      "recordCode": "SOURCE_REUSE_REVIEW_REQUIRED",
+      "nativeMcpRecordHold": true,
+      "sourceReuseReview": {
+        "state": "pending_source_reuse_review",
+        "reason": "source_reuse_review_required",
+        "publisherNoticeUrl": "https://current.hydro.gov.hk/main/disclaimer.php?lang=tc",
+        "catalogueTermsUrl": "https://data.gov.hk/en/terms-and-conditions",
+        "noticeSha256": "14a341a8e49c3f24d29431b8de964a399332ec68f54c4351b12991b75f740cc5",
+        "noticeReviewedOn": "2026-11-06",
+        "publisherCondition": "Noncommercial reproduction requires Marine Department attribution; commercial use requires prior written authorization.",
+        "publicApiReuseBasis": "unverified",
+        "networkAccessAssessment": "not_assessed_by_reuse_policy"
+      },
+      "recordAccessActivated": false
+    },
+    {
+      "resourceId": "be00600cbb0603b25c064daa0129813b",
+      "metadataHttpMcpParity": true,
+      "recordHttpStatus": 422,
+      "recordCode": "SOURCE_REUSE_REVIEW_REQUIRED",
+      "nativeMcpRecordHold": true,
+      "sourceReuseReview": {
+        "state": "pending_source_reuse_review",
+        "reason": "source_reuse_review_required",
+        "publisherNoticeUrl": "https://current.hydro.gov.hk/main/disclaimer.php?lang=tc",
+        "catalogueTermsUrl": "https://data.gov.hk/en/terms-and-conditions",
+        "noticeSha256": "14a341a8e49c3f24d29431b8de964a399332ec68f54c4351b12991b75f740cc5",
+        "noticeReviewedOn": "2026-11-06",
+        "publisherCondition": "Noncommercial reproduction requires Marine Department attribution; commercial use requires prior written authorization.",
+        "publicApiReuseBasis": "unverified",
+        "networkAccessAssessment": "not_assessed_by_reuse_policy"
+      },
+      "recordAccessActivated": false
+    }
+  ],
+  "HydroDataActivation": false,
+  "providerRequests": 0
+}

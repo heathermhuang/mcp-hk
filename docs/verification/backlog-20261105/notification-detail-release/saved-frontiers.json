@@ -1,0 +1,51 @@
+{
+  "scope": "Read-only exact first unsaved operations under current qualifier ordering; saved failures reused, no status writes",
+  "providerRequests": 0,
+  "httpRequests": 0,
+  "frontiers": {
+    "arcgis": {
+      "resourceId": "bf3e4e580041493d60a42e3eac1721bc",
+      "datasetId": "csdi:td_rcd_1638949160594_2844",
+      "operation": "query",
+      "selection": {
+        "layer": 3
+      },
+      "receiptPath": "/private/tmp/mcp-hk-backlog-acceptance-a687580/bf3e4e580041493d60a42e3eac1721bc-1fbdf1a6079e53f6-query.json.gz",
+      "receiptAbsent": true,
+      "requestMade": false
+    },
+    "wfs": {
+      "resourceId": "3bc0063587ad01fc85becb11f7b17d48",
+      "datasetId": "csdi:afcd_rcd_1665632148848_93995",
+      "operation": "query",
+      "selection": {
+        "recordPath": "csdi:O2013"
+      },
+      "receiptPath": "/private/tmp/mcp-hk-backlog-acceptance-a687580/3bc0063587ad01fc85becb11f7b17d48-dcbc23ba253d540a-query.json.gz",
+      "receiptAbsent": true,
+      "requestMade": false
+    },
+    "workbooks": {
+      "resourceId": "4dc21935bc395983dbfd1f548685d017",
+      "datasetId": "hk-censtatd-census01c-d5210104",
+      "operation": "query",
+      "selection": {
+        "sheet": "D10"
+      },
+      "receiptPath": "/private/tmp/mcp-hk-backlog-acceptance-a687580/4dc21935bc395983dbfd1f548685d017-6342d3a0361d2d91-query.json.gz",
+      "receiptAbsent": true,
+      "requestMade": false
+    },
+    "reports": {
+      "resourceId": "60b330add7ab0521e3a6932fec70734b",
+      "datasetId": "hk-censtatd-tablechart-b1080014",
+      "operation": "query",
+      "selection": {
+        "recordPath": "ASW_R1_5_04/TR/Raw_M_hkd_d"
+      },
+      "receiptPath": "/private/tmp/mcp-hk-report-discovery-a687580/60b330add7ab0521e3a6932fec70734b-f0ee7b0cc20219dd-query.json.gz",
+      "receiptAbsent": true,
+      "requestMade": false
+    }
+  }
+}
