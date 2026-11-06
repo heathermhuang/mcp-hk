@@ -1,0 +1,14 @@
+{
+  "scope": "Local HTTP/native MCP replay of exact captured HKSTP publisher bytes; fixture replay, no current hosted acceptance claim",
+  "providerRequests": 0,
+  "fixtureReads": 1,
+  "results": [
+    {
+      "resourceId": "df2492726bb048a59ad63da80a5295b6",
+      "rows": 501,
+      "httpMcpParity": true,
+      "sourceSha256": "34fb8006cb9d0e43cf1cb8d6e1c3a772488d3f70abde9b1287661e5312d450ea",
+      "serialization": "hkstp_recruitment_array_in_json_string"
+    }
+  ]
+}

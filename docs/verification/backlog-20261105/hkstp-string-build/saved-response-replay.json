@@ -1,0 +1,13 @@
+{
+  "resourceId": "df2492726bb048a59ad63da80a5295b6",
+  "originalUrl": "https://opendata.hkstp.org/corporate/recruitment/v1/",
+  "sourceBytes": 273907,
+  "sourceSha256": "34fb8006cb9d0e43cf1cb8d6e1c3a772488d3f70abde9b1287661e5312d450ea",
+  "rawRecords": 501,
+  "fields": 13,
+  "entireDecodedArrayPreserved": true,
+  "matchesHistoricalAcceptedFieldContract": true,
+  "providerRequests": 0,
+  "productionChanged": false,
+  "semanticQualification": "unreviewed"
+}

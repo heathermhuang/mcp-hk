@@ -38,6 +38,7 @@ AUD_URLS = {
     ]
 }
 NOTIFICATIONS = "https://ogcmn.one.gov.hk/ogcmn/service/list/catwc/OGCMN*"
+HKSTP_RECRUITMENT = "https://opendata.hkstp.org/corporate/recruitment/v1/"
 TID_URLS = {
     "https://www.tid.gov.hk/service/utf/messageFromUs" + language + ".do"
     for language in ["En", "Tc", "Sc"]
@@ -113,6 +114,24 @@ def read(resource, body, record_path="", sheet="", layer=None):
             invalid("Expected the complete published NotiList JSONP wrapper")
         decoded = match[1].encode()
         kind = "fixed_NotiList_jsonp_wrapper"
+    elif url == HKSTP_RECRUITMENT and fmt == "JSON":
+        value, _ = text(body)
+        outer = json.loads(value)
+        if not isinstance(outer, str):
+            return None
+        inner = json.loads(
+            outer,
+            object_pairs_hook=no_duplicates,
+            parse_constant=lambda _: invalid("Nonfinite JSON number"),
+        )
+        if not isinstance(inner, list) or not all(
+            isinstance(row, dict) for row in inner
+        ):
+            invalid("Expected the complete HKSTP recruitment array in a JSON string")
+        if sheet or layer is not None:
+            invalid("This JSON response has no workbook/map selectors", "INVALID_QUERY")
+        decoded = outer.encode()
+        kind = "hkstp_recruitment_array_in_json_string"
     elif url in TID_URLS and fmt == "XML":
         trimmed = body.lstrip(b" \t\r\n")
         kind = "tid_xml_DATA_document"
