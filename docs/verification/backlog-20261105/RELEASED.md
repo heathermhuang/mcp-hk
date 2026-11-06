@@ -1,5 +1,9 @@
 # Remaining-backlog implementation releases — 6 November 2026
 
+PR #173 is deployed at `477d6692f143c5f77716c92e5bdb476e44ab7789`. Hosted HTTP/native MCP and fresh isolated recovery verify the public Hydro reuse hold; no Hydro records were activated. See [guard release](source-reuse-guard-release/README.md). The whole programme remains open.
+
+## Earlier HKSTP release
+
 PR #168 is deployed at `ce9d6f6250832cc0d6bf6454575a8d58878645ff` with actual HTTP/native MCP and fresh isolated zero-provider recovery of 501 raw recruitment records. Vacancy activity, identity and eligibility remain unreviewed. See [HKSTP release](hkstp-string-release/README.md). The full programme remains open.
 
 ## Earlier recycling release

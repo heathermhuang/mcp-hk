@@ -176,3 +176,5 @@ or a supported noncommercial scope is pending owner clarification. The aborted R
 rollout restored the original five schedules and existing version 84 without code
 activation. `hydro-reuse-hold/` records the evidence and fail-closed policy. The
 other frozen source graphs and supported tasks remain open.
+
+PR #173 is deployed with actual hosted/restored hold behavior in `source-reuse-guard-release/`. Hydro reuse remains pending owner clarification; no public records were activated. Wider frozen graphs, the report lane's exact internal failure and independently supported task/semantic work remain open.

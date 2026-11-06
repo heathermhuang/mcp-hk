@@ -1,0 +1,16 @@
+{
+  "atUtc": "2026-11-06T15:29:15.370878+00:00",
+  "instances": [
+    {
+      "id": "da978b7f97a820b95e71d6721ca29a9717eafa108c80b44e5fe988efcf38325d",
+      "name": "production",
+      "image": "registry.cloudflare.com/63a7fe52c985c63bb9e69ce47efdc569/mcp-hk-mcpcontainer@sha256:3f6fec4e07560bfd2735e9b946dd8bfd9a3edbc82cfa132a262a90d94ab1b31e",
+      "status": {
+        "state": "running",
+        "updated_at": "2026-11-06T13:33:26.564999936Z"
+      },
+      "started_at": "2026-11-06T13:32:25.550000128Z",
+      "configuration": null
+    }
+  ]
+}

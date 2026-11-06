@@ -1,0 +1,41 @@
+{
+  "scope": "Actual hosted exact recycling index/current published CSV; original raw rows only, no geographic/identity/current-service qualification",
+  "results": [
+    {
+      "resourceId": "bba25323baf621535677e9a743b0923b",
+      "selection": {
+        "recordPath": "file:wasteless260708.csv"
+      },
+      "checkedAtUtc": "2026-11-06T15:51:21.380649+00:00",
+      "httpStatus": 200,
+      "rawRows": 9735,
+      "version": "5429fc3b16c3c3ba700a3d2cc35d8c9bd330265929fa35281a432f1ce0b23832",
+      "sourceSha256": "62c7700f319d1ecfa744627246c01e840a3807a71f9f25184636af3b91f31753",
+      "dataItemsSha256": "ed6aac770cea7a60b2395797a520f8d2d1aa8ed4f0b036b9c99e7055bbd6a65c",
+      "publishedFile": {
+        "selection": "file:wasteless260708.csv",
+        "sourcePageUrl": "https://www.wastereduction.gov.hk/zh-hk/resources-centre/recyclable-collection-points-dataset",
+        "sourcePageSha256": "236b49f10a5483802754ca4fe3569c87e33c867e92f0e7805902687782aae334",
+        "publishedUrl": "https://www.wastereduction.gov.hk/sites/default/files/wasteless260708.csv"
+      },
+      "httpMcpParity": true
+    }
+  ],
+  "rootMetadataParity": true,
+  "sourceInterface": {
+    "kind": "published_file_index",
+    "sourcePageSha256": "236b49f10a5483802754ca4fe3569c87e33c867e92f0e7805902687782aae334",
+    "advertisedCatalogueFormat": "CSV",
+    "originalRepresentationEquivalence": "unreviewed"
+  },
+  "censusRegression": {
+    "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+    "selection": {
+      "recordPath": "file:DC_21C.zip",
+      "limit": 1
+    },
+    "rawRows": 75,
+    "version": "9e075657e4933f5a05ecb2256cc04d94728fd650ef18f16ad14727da218c9600",
+    "httpMcpParity": true
+  }
+}
