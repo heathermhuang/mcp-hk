@@ -1,19 +1,22 @@
 # Backlog execution checkpoint — 7 November 2026
 
-The complete objective remains open. Planning covers every frozen candidate;
-qualification continues through the existing finite source lanes. The named point,
-workbook and bounded bus-comparison implementations have released evidence. Wider
-source graphs, demonstrated task/reader gaps and independently supported semantics
-remain unfinished. Earlier progress is retained in Git history and
+The original full-backlog objective remains unfinished follow-up work. Explicitly
+approved launch-first steering froze the delivered version-89 candidate and ended
+one-off bulk qualification at saved safe boundaries. Existing production schedules
+remain configured. [Launch acceptance](census16-nested-xml-release/LAUNCH-ACCEPTANCE.md)
+passes the defined supported journeys using exact-release client, discovery and
+recovery evidence; it does not complete this backlog. Optional new coverage,
+adapters and semantic bindings are deferred from the launch critical path.
+Earlier progress is retained in Git history and
 [pre-integration-progress.md](pre-integration-progress.md).
 
 ## Current deployed evidence
 
-Runtime commit `b22381d510976d23b2ddb5c0505f7c3ec7fbfddd`, application/running
-instance version 88, passed all five exact-main CI workflows, actual controller and
+Runtime commit `910c117c0eac22ed4122fa88ea22d0727052713f`, application/running
+instance version 89, passed all five exact-main CI workflows, actual controller and
 image adoption, hosted HTTP/native MCP checks and fresh isolated recovery.
-[The release receipt](notification-detail-release/release-receipt.json) records the immutable
-archive checksum: 123,143,850 archive / 365,322,240 SQLite / 396,477,523 total restored
+[The release receipt](census16-nested-xml-release/release-receipt.json) records the immutable
+archive checksum: 123,689,142 archive / 366,432,256 SQLite / 397,587,539 total restored
 bytes. All five original schedules were restored and independently read back;
 final health passed, the owned release slot closed and both source lanes resumed.
 The restore's client checks made zero provider attempts. This is recovery of dated
@@ -30,7 +33,7 @@ placeholder remains unqualified.
 | Package | Evidence-backed state | Remaining work |
 |---|---|---|
 | B0 — ledger/capacity | Frozen plan, measured lossless storage repair and repeated accepted restores | Keep measuring later checkpoints; unchanged bulk/hard limits still apply. |
-| B1 — explicit selections | Saved original ArcGIS, WFS, workbook and report graphs are being qualified | Finish every unblocked choice; retain exact failures and unknown branches. |
+| B1 — explicit selections | Dated original ArcGIS, WFS, workbook and report receipts are preserved at saved boundaries | Finish every unblocked choice; retain exact failures and unknown branches. |
 | B2 — reader/task gaps | Released repairs and individual source/task evidence are linked in RELEASED.md | Remaining demonstrated gaps need exact fixtures/contracts; source refusal is not empty data. |
 | B3 — reviewed semantics/tasks | Four named new point bindings and all 83 remaining named workbook sheets have released source/client evidence | Further B1 tasks require independent dictionaries; raw grids do not establish normalized observations. |
 | B4 — KMB/LWB join | Bounded implementation, source specifications and actual HTTP/MCP comparison cohorts are released | KMB 11C stays mapping-held; calendar/global-earliest/walking/fastest claims remain unqualified. |
@@ -74,10 +77,11 @@ expose more choices. Counts are overlapping raw operations, not unique datasets,
 entities or semantic gains. [Exact saved frontiers](cyclone-list-release/saved-frontiers.json)
 are dated continuation pointers, not newly attempted operations.
 
-The two finite lanes reuse saved failures and enforce at least three seconds
-between resource requests. They retain their existing request ceilings and saved
-journals; a new window needs a terminal prior window, exact unsaved scope and fresh
-capacity evidence. Existing global source/scan slots, daily/request budgets,
+The two finite lanes reused saved failures and enforced at least three seconds
+between resource requests. They are now intentionally ended for launch-first
+deferral, with request ceilings, saved journals and continuation pointers retained.
+Any later authorized continuation requires the exact unsaved scope and fresh
+capacity evidence; the freeze is not a source failure or backlog completion. Existing global source/scan slots, daily/request budgets,
 50 variants/resource, 1 MB option metadata and 4 MB row cache remain unchanged.
 The bulk archive guard is 130 MB; hard archive/SQLite/total restore limits remain
 150/500/750 MB. No new service, scheduler, credential or paid evaluation was added.
@@ -98,8 +102,10 @@ The bulk archive guard is 130 MB; hard archive/SQLite/total restore limits remai
   and GML empty-placeholder uncertainty remain separate. Saved receipts are preserved;
   unchanged failures are not retried through another endpoint or request identity.
 
-The next work is the existing wider frozen qualification lanes and the exact
-unblocked task/reader/semantic frontiers they demonstrate. This checkpoint does not
-mark the complete programme finished.
+Launch-critical work is limited to acceptance of the frozen candidate. The wider
+frozen qualification lanes and task/reader/semantic frontiers remain deferred
+follow-up. This checkpoint does not mark the complete programme finished.
 
 The current RVD028 canary is source-held after HTTP 502 / persisted SOURCE_UNAVAILABLE. Exact held HTTP/MCP metadata and retained dated facts recovered, but current records did not pass. See `notification-detail-release/rvd-source-hold.json`; this source request was not retried. The Identify API also retains its captured connection-timeout hold, with held metadata and dated two-row facts recovered; see `notification-detail-release/restored-identify-held.json`.
+
+The current Census16 nested archive adapter is released with three hosted/staged scopes. Its complete deployed file/group cohort remains unfinished follow-up work; see `census16-nested-xml-release/README.md`. Prior RVD/Identify failed record scopes were not retried unchanged; readonly metadata does not establish current record availability.

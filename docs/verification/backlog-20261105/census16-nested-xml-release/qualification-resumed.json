@@ -1,0 +1,125 @@
+{
+  "atUtc": "2026-11-06T22:24:24.470595+00:00",
+  "launchFirstSteeringSourceChat": "01a1b2e4-b511-7ec3-9773-4dc65c06af4b",
+  "bulkQualificationDeferred": true,
+  "fullBacklogComplete": false,
+  "receiptsPreserved": true,
+  "leasesCleared": false,
+  "configuredProductionSchedulesChanged": false,
+  "lanes": [
+    {
+      "lane": "arcgis_workbooks",
+      "priorJournalSha256": "6343250a97398ccc5f02c92250d51ef10f656ca60303132439a623e2ff810525",
+      "savedBoundary": {
+        "state": "paused_at_operator_gate",
+        "lane": "arcgis_workbooks",
+        "pid": 78668,
+        "log": "/private/tmp/mcp-hk-frozen-lanes-20261106/arcgis_workbooks/013-workbooks.log",
+        "lastObservation": {
+          "operatorGate": "release_slot",
+          "resourceHttpAttemptMade": false
+        },
+        "pausedAtEpoch": 1794001520.685686
+      },
+      "reason": "explicitly approved launch-first deferral; preserve full backlog as unfinished follow-up",
+      "state": "ended_at_saved_boundary",
+      "pid": 78668,
+      "sourceRequestResumed": false,
+      "terminalJournal": {
+        "scope": "One-off bounded qualification of original frozen resource cohorts; no source/semantic approval generated",
+        "lane": "arcgis_workbooks",
+        "maxNewRequests": 1000,
+        "newRequests": 100,
+        "batches": [
+          {
+            "phase": "arcgis",
+            "newRequests": 20,
+            "returnCode": 0,
+            "summary": {
+              "requests": 20,
+              "state": "frozen_selection_candidates_visited"
+            },
+            "log": "/private/tmp/mcp-hk-frozen-lanes-20261106/arcgis_workbooks/012-arcgis.log"
+          },
+          {
+            "phase": "workbooks",
+            "newRequests": 80,
+            "returnCode": -15,
+            "summary": {},
+            "log": "/private/tmp/mcp-hk-frozen-lanes-20261106/arcgis_workbooks/013-workbooks.log"
+          }
+        ],
+        "state": "stopped_at_observed_operator_or_capacity_boundary",
+        "window": 2,
+        "priorCompletedWindowRequests": 2000,
+        "priorJournalSha256": "97512b1c43f64f21147e32a0741a537032a8ab06e6f0b6bb71028891a05df67a",
+        "globalBatchOffset": 11,
+        "basis": "fresh producer checkpoint below unchanged guard and exact first unsaved frozen scope; no saved failures removed",
+        "updatedAtUtc": "2026-11-06T22:24:24.176425+00:00"
+      }
+    },
+    {
+      "lane": "reports_wfs",
+      "priorJournalSha256": "fde245dd9ee1317f108ca848c6f403783e5eb214f06855978e61f019e64a0660",
+      "savedBoundary": {
+        "state": "paused_at_operator_gate",
+        "lane": "reports_wfs",
+        "pid": 80773,
+        "log": "/private/tmp/mcp-hk-frozen-lanes-20261106/reports_wfs/015-reports.log",
+        "lastObservation": {
+          "operatorGate": "release_slot",
+          "resourceHttpAttemptMade": false
+        },
+        "pausedAtEpoch": 1794001520.923807
+      },
+      "reason": "explicitly approved launch-first deferral; preserve full backlog as unfinished follow-up",
+      "state": "ended_at_saved_boundary",
+      "pid": 80773,
+      "sourceRequestResumed": false,
+      "terminalJournal": {
+        "scope": "One-off bounded qualification of original frozen resource cohorts; no source/semantic approval generated",
+        "lane": "reports_wfs",
+        "maxNewRequests": 1000,
+        "newRequests": 810,
+        "batches": [
+          {
+            "phase": "reports",
+            "newRequests": 400,
+            "returnCode": 0,
+            "summary": {
+              "requests": 400,
+              "nextResourceId": "cda856f529289d7e5d9856f047dfe995",
+              "state": "invocation_bound"
+            },
+            "log": "/private/tmp/mcp-hk-frozen-lanes-20261106/reports_wfs/013-reports.log"
+          },
+          {
+            "phase": "reports",
+            "newRequests": 400,
+            "returnCode": 0,
+            "summary": {
+              "requests": 400,
+              "nextResourceId": "d5b6f58e0bb0a503d6fbdd49f16cb8d3",
+              "state": "invocation_bound"
+            },
+            "log": "/private/tmp/mcp-hk-frozen-lanes-20261106/reports_wfs/014-reports.log"
+          },
+          {
+            "phase": "reports",
+            "newRequests": 10,
+            "returnCode": -15,
+            "summary": {},
+            "log": "/private/tmp/mcp-hk-frozen-lanes-20261106/reports_wfs/015-reports.log"
+          }
+        ],
+        "state": "stopped_at_observed_operator_or_capacity_boundary",
+        "window": 4,
+        "priorCompletedWindowRequests": 3000,
+        "priorJournalSha256": "bee0f9a7b9d220e9e9e42f6d96802270b240fb415a337488be596c571d761613",
+        "globalBatchOffset": 12,
+        "basis": "fresh producer checkpoint below unchanged guard and exact first unsaved frozen scope; no saved failures removed",
+        "updatedAtUtc": "2026-11-06T22:24:24.365025+00:00"
+      }
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scope": "All539 captured native groups accepted into isolated full checkpoint copy then checkpointed/restored; not live qualification or sustainable-growth guarantee",
+  "inputArchiveSha256": "c9840f4be20cdea4072e2084be9f2cc21000fbe395159e6ae5d1a2d3cc124203",
+  "inputArchiveBytes": 124038648,
+  "beforeDatabaseBytes": 366649344,
+  "afterDatabaseBytes": 368427008,
+  "archiveBytes": 123941766,
+  "archiveSha256": "540612100137330ebfa749429f1fc786c2400bfa215028900f99132a5301be04",
+  "marginalArchiveBytes": -96882,
+  "restoredDatabaseBytes": 367063040,
+  "captureBytes": 31155283,
+  "totalRestoredBytes": 398218323,
+  "integrity": "ok",
+  "nativeGroupsProcessed": 539,
+  "retainedVariantCounts": {
+    "7234cfec152aca3e86cb46779ab1ae9a": 50,
+    "76a5e9288bf457a9b0b3d666cb17c769": 50,
+    "792653ddc405a4f3a4293c91e782a3f7": 50
+  },
+  "rowCacheBytes": 3540553,
+  "optionMetadataBytes": 999954,
+  "fixtureReads": 539,
+  "providerRequests": 0,
+  "productionStatusWrites": 0,
+  "bulkGuardBytes": 130000000,
+  "belowBulkGuard": true,
+  "boundsUnchanged": {
+    "archive": 150000000,
+    "database": 500000000,
+    "restored": 750000000,
+    "variantsPerResource": 50,
+    "rowCacheBytes": 4000000,
+    "optionMetadataBytes": 1000000
+  },
+  "allGroupCachesRetainedSimultaneously": false,
+  "unrelatedVariantVersionSchemaCountFactsPreserved": 61889,
+  "nativeDatasetCount": 5048,
+  "acceptedPacks": {
+    "population": 18,
+    "restaurants": 17296,
+    "transport": 62147
+  },
+  "pointBindingsRecovered": [
+    "ambulance-depot-feature-points-1",
+    "dh-clinic-feature-points-1",
+    "edb-school-record-points-1",
+    "fire-station-feature-points-1",
+    "library-feature-points-1",
+    "museum-feature-points-1"
+  ],
+  "archiveDeltaIsNotSustainableGrowthEstimate": true
+}

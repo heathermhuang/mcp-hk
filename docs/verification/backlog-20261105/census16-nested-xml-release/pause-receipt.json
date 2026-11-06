@@ -1,0 +1,9 @@
+{
+  "resourceCronOnlyPaused": true,
+  "nativeFourSchedulesReadAt": "2026-11-06T21:45:16.283992+00:00",
+  "propagationSeconds": 900,
+  "propagationNotBeforeUtc": "2026-11-06T22:00:16.283992+00:00",
+  "propagationNotBeforeEpoch": 1794002416.283992,
+  "owningLeasesWillNotBeCleared": true,
+  "HydroDataActivation": false
+}

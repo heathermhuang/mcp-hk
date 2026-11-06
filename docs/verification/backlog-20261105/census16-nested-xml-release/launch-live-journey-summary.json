@@ -1,0 +1,145 @@
+{
+  "exactRelease": "910c117c0eac22ed4122fa88ea22d0727052713f",
+  "originalLiveReceiptSha256": "7c0439c17541c73bb60832437b61b27781de1ea26bfbb386a1d390cb95a698a3",
+  "nearby": [
+    {
+      "resourceId": "2c5d0afb1ffb7ec9b27de104cd7e3767",
+      "sourceVersion": "a850d3b853c6df0c4f35fdc727efbfe5f869caf02cd981bcc1fa3bbf822e9c8e",
+      "matched": 1,
+      "httpMcpParity": true,
+      "profileFingerprint": "2c46fabf80af8cc3a3d0393686a235d06912d5e189e2d773b6cf71771aae3fc8"
+    },
+    {
+      "resourceId": "395d43bfacb4461f6774f7d14e22c7db",
+      "sourceVersion": "896e0b2f08117ad329da468b033f38236bd08128140e9a86d9bb049d93ea7a89",
+      "matched": 1,
+      "httpMcpParity": true,
+      "profileFingerprint": "abfc4aa277d11dcb73d7eef77ab5233abab1e8ab310cde70451eedc2915928e1"
+    },
+    {
+      "resourceId": "368c1b639641cbdb729b8ec9ea4ad865",
+      "sourceVersion": "32973564bd229dac3e5af00f5fbf59c0b755e63ff5f911d102c5845f834df00a",
+      "matched": 1,
+      "httpMcpParity": true,
+      "profileFingerprint": "e75d4ced7e1654371ee3c563964d03d60bed7184a606b548e736b29c9caabc40"
+    },
+    {
+      "resourceId": "b6c922aee8773b1418f41cdaa9d31987",
+      "sourceVersion": "474e80ff7ad316059e7d4e9a41ed325c391c62ebcb4fa1e38603c64cfb9641b3",
+      "matched": 1,
+      "httpMcpParity": true,
+      "profileFingerprint": "33282724e064947f6af7a4706ee355b7bcbafd6a900b18d31aa3b26fe408a524"
+    }
+  ],
+  "buses": [
+    {
+      "operator": "CTB",
+      "selection": {
+        "origin": "261",
+        "destination": "249",
+        "operator": "CTB",
+        "limit": 5
+      },
+      "coverage": {
+        "candidate": 4,
+        "eligible": 4,
+        "eligibilityUnknown": 0,
+        "verifiedNotServingOrder": 0,
+        "acceptedArrivalChecks": 4,
+        "checked": 4,
+        "failed": 0,
+        "unchecked": 0,
+        "uncheckedReasons": {},
+        "sourceRequests": 12,
+        "requestLimit": 64,
+        "deadlineSeconds": 45,
+        "referenceIndexStale": false,
+        "complete": true,
+        "eligibilityMeaning": "Verified current operator boarding/alighting occurrence; service calendars remain unknown."
+      },
+      "departureComparison": {
+        "scope": "earliest_reported_departure_among_checked_candidates",
+        "earliestPredictedAt": "2026-11-07T06:33:18+08:00",
+        "allReferenceCandidatesChecked": true,
+        "globallyEarliest": false,
+        "serviceCalendarsVerified": false,
+        "walkingFeasibilityVerified": false,
+        "fastestArrivalVerified": false
+      },
+      "httpMcpCoverageParity": true
+    },
+    {
+      "operator": "KMB",
+      "selection": {
+        "origin": "4001",
+        "destination": "4003",
+        "operator": "KMB",
+        "limit": 5
+      },
+      "coverage": {
+        "candidate": 4,
+        "eligible": 3,
+        "eligibilityUnknown": 1,
+        "verifiedNotServingOrder": 0,
+        "acceptedArrivalChecks": 3,
+        "checked": 4,
+        "failed": 1,
+        "unchecked": 0,
+        "uncheckedReasons": {},
+        "sourceRequests": 40,
+        "requestLimit": 64,
+        "deadlineSeconds": 45,
+        "referenceIndexStale": false,
+        "complete": false,
+        "eligibilityMeaning": "Verified current operator boarding/alighting occurrence; service calendars remain unknown."
+      },
+      "departureComparison": {
+        "scope": "earliest_reported_departure_among_checked_candidates",
+        "earliestPredictedAt": "2026-11-07T06:15:00+08:00",
+        "allReferenceCandidatesChecked": false,
+        "globallyEarliest": false,
+        "serviceCalendarsVerified": false,
+        "walkingFeasibilityVerified": false,
+        "fastestArrivalVerified": false
+      },
+      "httpMcpCoverageParity": true
+    },
+    {
+      "operator": "NLB",
+      "selection": {
+        "origin": "12000",
+        "destination": "11000",
+        "operator": "NLB",
+        "limit": 5
+      },
+      "coverage": {
+        "candidate": 11,
+        "eligible": 6,
+        "eligibilityUnknown": 0,
+        "verifiedNotServingOrder": 5,
+        "acceptedArrivalChecks": 6,
+        "checked": 11,
+        "failed": 0,
+        "unchecked": 0,
+        "uncheckedReasons": {},
+        "sourceRequests": 7,
+        "requestLimit": 64,
+        "deadlineSeconds": 45,
+        "referenceIndexStale": false,
+        "complete": true,
+        "eligibilityMeaning": "Verified current operator boarding/alighting occurrence; service calendars remain unknown."
+      },
+      "departureComparison": {
+        "scope": "earliest_reported_departure_among_checked_candidates",
+        "earliestPredictedAt": "2026-11-07 06:35:00",
+        "allReferenceCandidatesChecked": true,
+        "globallyEarliest": false,
+        "serviceCalendarsVerified": false,
+        "walkingFeasibilityVerified": false,
+        "fastestArrivalVerified": false
+      },
+      "httpMcpCoverageParity": true
+    }
+  ],
+  "failedAvailableScopeChecks": []
+}

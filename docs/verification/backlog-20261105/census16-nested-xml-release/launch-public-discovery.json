@@ -1,0 +1,63 @@
+{
+  "checkedAtUtc": "2026-11-06T22:26:49.840415+00:00",
+  "exactRelease": "910c117c0eac22ed4122fa88ea22d0727052713f",
+  "checks": [
+    {
+      "path": "/",
+      "httpStatus": 200,
+      "releaseHeader": "910c117c0eac22ed4122fa88ea22d0727052713f",
+      "contentType": "text/html; charset=utf-8",
+      "bodyBytes": 45258,
+      "bodySha256": "2414eb062403d11560bb42ffc0f40b3a3e48f33c8b3fca4e01a5640cee12213b"
+    },
+    {
+      "path": "/connect",
+      "httpStatus": 200,
+      "releaseHeader": "910c117c0eac22ed4122fa88ea22d0727052713f",
+      "contentType": "text/html; charset=utf-8",
+      "bodyBytes": 22771,
+      "bodySha256": "62efa874e290d089070a02291385b1ce87f07ab8f0c19b783f88f759e9ee84b1"
+    },
+    {
+      "path": "/llms.txt",
+      "httpStatus": 200,
+      "releaseHeader": "910c117c0eac22ed4122fa88ea22d0727052713f",
+      "contentType": "text/plain",
+      "bodyBytes": 5173,
+      "bodySha256": "03e5eef77bba0e78397e2fdd0faeb02ed9e0cbb82b407e950fa52bfddd413478"
+    },
+    {
+      "path": "/.well-known/mcp/server-card.json",
+      "httpStatus": 200,
+      "releaseHeader": "910c117c0eac22ed4122fa88ea22d0727052713f",
+      "contentType": "application/json; charset=utf-8",
+      "bodyBytes": 549,
+      "bodySha256": "a2879c05761b6e45e17c3a6d669eead5c59560e067d2e37bddca042f0ee07f6e"
+    },
+    {
+      "path": "/.well-known/api-catalog",
+      "httpStatus": 200,
+      "releaseHeader": "910c117c0eac22ed4122fa88ea22d0727052713f",
+      "contentType": "application/linkset+json; charset=utf-8",
+      "bodyBytes": 827,
+      "bodySha256": "07aec59a3a0987d57b209b510fe7f8b3fdecbd57b511dfbd83f785f5c4a7c90d"
+    },
+    {
+      "path": "/openapi.json",
+      "httpStatus": 200,
+      "releaseHeader": "910c117c0eac22ed4122fa88ea22d0727052713f",
+      "contentType": "application/json",
+      "bodyBytes": 47046,
+      "bodySha256": "9f01c6c9df243046c8ef7a4647e3ac3f02c885dccefc84b4a320db2ba8506971"
+    }
+  ],
+  "canonicalMcpEndpoint": "https://mcp.hk/mcp",
+  "connectInstructionsExposeEndpoint": true,
+  "serverCardTransportMatchesTestedNativeClient": true,
+  "httpContractsExposeDataAndJourneys": true,
+  "localPageAssetsReturned200": true,
+  "renderedJourneyEvidence": "All five exact-main CI, including rendered-browser; reused for unchanged assets",
+  "actualNativeMcpEvidence": "R20 live HTTP/native MCP resource/nearby/bus/Census receipts",
+  "searchIndexingOrThirdPartyAdoptionClaimed": false,
+  "complete": true
+}

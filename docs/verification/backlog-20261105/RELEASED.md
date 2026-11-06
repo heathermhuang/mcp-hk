@@ -1,5 +1,9 @@
 # Remaining-backlog implementation releases — 6 November 2026
 
+PR #183 is deployed at `910c117c0eac22ed4122fa88ea22d0727052713f` with explicit nested XML file/group selectors and three hosted/staged HTTP/MCP scopes. See [Census16 release](census16-nested-xml-release/README.md). Discovery and captured replay do not qualify every live group; source, capacity and semantic holds remain.
+
+## Earlier notification release
+
 PR #181 is deployed at `b22381d510976d23b2ddb5c0505f7c3ec7fbfddd` with hosted native-ID detail and freshly restored HTTP/MCP proof. Message/timestamp values remain raw, timestamp units and active-alert/safety claims remain unqualified. See [notification detail release](notification-detail-release/README.md). Hydro and the full programme remain open.
 
 ## Earlier cyclone-list release

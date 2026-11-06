@@ -1,0 +1,33 @@
+{
+  "results": [
+    {
+      "resourceId": "33f3a9904add55aff7648ccdab3bb0cf",
+      "version": "8514c6f0bbcd4647747d4ab635cb008aea44cff4176e3ae6c58cde9a7900b20e",
+      "rawRows": 30,
+      "sourceSha256": "c8b7cba182925f610b8c3678e7ae900b243553975cc77cc3165e6508d7b52dc2",
+      "dataItemsSha256": "42da691f5815e9605c699b4f7749ab312f9ae444d3093a828e7f409dc3f61a7a",
+      "differsFromEarlierLiveVersion": true,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "50e7577f11d6aca1f57cd275dc60bfda",
+      "version": "38bf84a608c871f5b29cbfbc4476bff1bce9f0a1d1030bcc57bed72f5e186fa8",
+      "rawRows": 30,
+      "sourceSha256": "d0d667a12f61dc2b46415fb1ead096cfcef587121f742829dab96f927e41900b",
+      "dataItemsSha256": "0cf136c3f69e695d75f95c9c71284c5798621d2659c2a885d4a48e2f0d2281ff",
+      "differsFromEarlierLiveVersion": true,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "b255c7a8de8fc620e9d5f5eca43e4140",
+      "version": "cd713c6790c99aebd2cbc1abf604a16dc03422c268986a7e4e4476c22c189dac",
+      "rawRows": 30,
+      "sourceSha256": "c7fee249dc734769030da98221c1fb231c171b4583ae02c2c8d4cd221b92ab6e",
+      "dataItemsSha256": "b45ce02bde844477d1eb13175dd096bd666a9f77e2800b4ebb7a9cdaac5ab121",
+      "differsFromEarlierLiveVersion": true,
+      "httpMcpParity": true
+    }
+  ],
+  "providerRequests": 0,
+  "observationFreshness": "unqualified"
+}

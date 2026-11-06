@@ -1,0 +1,10 @@
+{
+  "instances": [
+    {
+      "state": "running",
+      "version": 89
+    }
+  ],
+  "observedAtUtc": "2026-11-06T22:04:12.710042+00:00",
+  "source": "native Wrangler containers instances; full private read retained"
+}

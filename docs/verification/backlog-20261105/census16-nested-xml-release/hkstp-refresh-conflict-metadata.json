@@ -1,0 +1,156 @@
+{
+  "scope": "Readonly metadata after HTTP409; original response body not retained",
+  "resource": {
+    "id": "df2492726bb048a59ad63da80a5295b6",
+    "datasetId": "hkstp-hkstp-hkstp-hksp-job-post",
+    "url": "https://opendata.hkstp.org/corporate/recruitment/v1/",
+    "format": "JSON",
+    "catalogue": "DATA.GOV.HK",
+    "aliases": [
+      {
+        "id": "341b71b8-bbea-4ba1-9b6b-74a4b46b2ce7",
+        "shared_id": "98ba79b6c80611edb8a80a58c0a84bb4",
+        "name": "Talent Pool and Recruitment",
+        "inLanguage": "en",
+        "format": "JSON"
+      }
+    ],
+    "sourceUrl": "https://data.gov.hk/en-data/dataset/hkstp-hkstp-hkstp-hksp-job-post",
+    "publicationDate": "2019-07-01",
+    "sourceModified": null,
+    "isApi": true,
+    "termsUrl": "https://data.gov.hk/en/terms-and-conditions",
+    "validation": {
+      "status": "queryable",
+      "reason": null,
+      "lastCheckedAt": 1794003681.0169973,
+      "lastValidatedAt": 1794003681.0169973,
+      "recordCount": 501,
+      "freshness": {
+        "lastValidatedAt": 1794003681.0169973,
+        "validationAgeSeconds": 42,
+        "cacheTtlSeconds": 300,
+        "cacheExpired": false,
+        "reviewIntervalSeconds": 300,
+        "nextReviewAt": 1794003981.0169973,
+        "reviewOverdue": false,
+        "policyVersion": "source-review-11",
+        "scope": "Source validation only; publication dates, reference periods and record observations are separate."
+      },
+      "semanticVerification": "not_performed"
+    },
+    "capabilities": {
+      "revision": "resource-capabilities-3",
+      "resourceId": "df2492726bb048a59ad63da80a5295b6",
+      "datasetId": "hkstp-hkstp-hkstp-hksp-job-post",
+      "representation": "JSON",
+      "readerFamily": "json",
+      "readerSupport": "accepted_selections_only",
+      "operations": {
+        "records": {
+          "state": "available",
+          "reason": "accepted_receipt_selections_only"
+        },
+        "text_search": {
+          "state": "available",
+          "reason": "accepted_receipt_selections_only"
+        },
+        "typed_comparison": {
+          "state": "requires_binding",
+          "reason": "inspect_native_types_before_comparison"
+        },
+        "nearby": {
+          "state": "requires_binding",
+          "reason": "no_qualified_point_binding"
+        }
+      },
+      "acceptedSelections": [
+        {
+          "receiptKey": null,
+          "representation": "JSON",
+          "readScope": "source_response",
+          "datasetCompleteness": "Not inferred from a file or a single API response.",
+          "unreadMemberCount": 0,
+          "schemaFingerprint": "cee0b1f6eafd6d3a60548665ea8c35ae36698b4d5d66db9ce367b000e4c56468",
+          "selection": {
+            "recordPath": "",
+            "sheet": "",
+            "layer": null
+          },
+          "status": "queryable",
+          "lastCheckedAt": 1794003681.0169973,
+          "lastValidatedAt": 1794003681.0169973,
+          "retrievedAt": 1794003681.0169973,
+          "readerRevision": "structured-reader-3",
+          "sourceContract": null,
+          "sourceResponseComplete": true,
+          "semanticBinding": null,
+          "typedComparisonFieldCount": 0
+        },
+        {
+          "receiptKey": null,
+          "representation": "JSON",
+          "readScope": "source_response_object",
+          "datasetCompleteness": "Not inferred from a file or a single API response.",
+          "unreadMemberCount": 0,
+          "schemaFingerprint": "73005f4a82cf1c4228cf2410d809b878ab237242113915d3298935799c08492f",
+          "selection": {
+            "recordPath": null,
+            "sheet": null,
+            "scope": "legacy_receipt_selection_not_fully_recorded"
+          },
+          "status": "queryable",
+          "lastCheckedAt": 1792158546.211185,
+          "lastValidatedAt": 1792158546.211185,
+          "retrievedAt": 1792158546.211185,
+          "readerRevision": null,
+          "sourceContract": null,
+          "sourceResponseComplete": true,
+          "semanticBinding": null,
+          "typedComparisonFieldCount": 0
+        }
+      ],
+      "fields": [],
+      "semanticBinding": null,
+      "entityKind": null,
+      "access": {
+        "status": "queryable",
+        "reason": null,
+        "lastCheckedAt": 1794003681.0169973
+      },
+      "observationTime": null,
+      "completeness": "per_receipt_selection_only",
+      "nextAction": {
+        "tool": "hk_resource_schema",
+        "arguments": {
+          "resourceId": "df2492726bb048a59ad63da80a5295b6"
+        }
+      },
+      "selections": [
+        {
+          "kind": "record_path",
+          "argument": "recordPath",
+          "options": [
+            {
+              "value": "",
+              "label": "",
+              "state": "unverified",
+              "nextAction": {
+                "tool": "hk_resource_schema",
+                "arguments": {
+                  "resourceId": "df2492726bb048a59ad63da80a5295b6",
+                  "recordPath": ""
+                }
+              }
+            }
+          ],
+          "totalOptions": 1,
+          "truncated": false,
+          "scope": "discovered_options_not_accepted_record_reads",
+          "checkedAt": 1794001360.5413432
+        }
+      ]
+    }
+  },
+  "sourceRequests": 0
+}

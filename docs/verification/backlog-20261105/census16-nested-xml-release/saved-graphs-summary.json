@@ -1,0 +1,77 @@
+{
+  "scope": "Saved receipt graph only; does not request providers or establish semantic/alternative equivalence. In-flight writes remain pending.",
+  "checkedAt": 1794001595.280382,
+  "archiveSha256": "348a370ca3ec3ecd1894ec0d4605be4283b28f19656ad9c35bd899c3d1b3ed6c",
+  "cohorts": {
+    "arcgis": {
+      "resources": 1148,
+      "states": {
+        "visited_with_failures": 158,
+        "visited": 990
+      },
+      "knownMissingOperations": 0,
+      "acceptedQuerySelections": 1410,
+      "truncatedResources": 0,
+      "errors": {
+        "SOURCE_TOO_LARGE": 35,
+        "ACCESS_RESTRICTED": 47,
+        "SOURCE_UNAVAILABLE": 71,
+        "SOURCE_TIMEOUT": 30,
+        "TimeoutError": 8,
+        "RESPONSE_TOO_LARGE": 2,
+        "SOURCE_API_ERROR": 1,
+        "SOURCE_CHANGED": 5
+      }
+    },
+    "wfs": {
+      "resources": 1120,
+      "states": {
+        "visited_with_failures": 72,
+        "visited": 34,
+        "pending": 1014
+      },
+      "knownMissingOperations": 1027,
+      "acceptedQuerySelections": 44,
+      "truncatedResources": 0,
+      "errors": {
+        "SOURCE_TOO_LARGE": 26,
+        "ACCESS_RESTRICTED": 64,
+        "SOURCE_UNAVAILABLE": 6,
+        "TimeoutError": 1
+      }
+    },
+    "workbook": {
+      "resources": 1310,
+      "states": {
+        "visited": 64,
+        "visited_with_failures": 42,
+        "pending": 1204
+      },
+      "knownMissingOperations": 1230,
+      "acceptedQuerySelections": 748,
+      "truncatedResources": 0,
+      "errors": {
+        "SOURCE_SCHEMA_CHANGED": 80,
+        "SOURCE_TOO_COMPLEX": 6,
+        "SOURCE_UNAVAILABLE": 1,
+        "ACCESS_RESTRICTED": 1
+      }
+    },
+    "reports": {
+      "resources": 162,
+      "states": {
+        "visited": 87,
+        "visited_with_failures": 1,
+        "pending": 74
+      },
+      "knownMissingOperations": 1460,
+      "acceptedQuerySelections": 4894,
+      "truncatedResources": 0,
+      "errors": {
+        "SOURCE_UNAVAILABLE": 1
+      }
+    }
+  },
+  "providerRequests": 0,
+  "fullProgrammeComplete": false
+}
