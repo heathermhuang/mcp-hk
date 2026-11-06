@@ -36,6 +36,7 @@ from .resource_stream import FileRows
 from .resource_formats import parse
 from .resource_serializations import read as read_serialization
 from . import published_files, hydro_requests, wind_csv, cyclone_list
+from . import census_xml_archives
 from .published_requests import (
     request_template,
     annotate_response,
@@ -827,6 +828,14 @@ class Resources:
                 "INVALID_QUERY", "WMS imagery is not a record reader", 422
             )
         profile = transport.profile(resource)
+        if census_xml_archives.profile(resource):
+            _, native_path = census_xml_archives.validate(record_path, sheet, layer)
+            if not native_path:
+                raise DomainError(
+                    "RECORD_PATH_REQUIRED",
+                    "Select a native archive member and XML group",
+                    400,
+                )
         if census_reports.location(resource["url"]) and (sheet or layer is not None):
             raise DomainError(
                 "INVALID_QUERY",
@@ -1454,6 +1463,9 @@ class Resources:
         file_scoped = published_files.selected(
             result.get("resource", {}).get("url", ""), record_path
         )
+        nested_scoped = census_xml_archives.selected(
+            result.get("resource", {}), record_path
+        )
         if file_scoped:
             groups = [
                 group
@@ -1465,12 +1477,13 @@ class Resources:
             bool(parameters)
             or result.get("selectionRequired") == "parameters"
             or file_scoped
+            or nested_scoped
         )
         if scoped:
             # These choices belong to this caller's explicit request. Never
             # publish parameter values or borrow choices from another context.
             for group in groups:
-                if file_scoped:
+                if file_scoped or nested_scoped:
                     group["scopedToRecordPath"] = record_path
                 else:
                     group["scopedToParameterNames"] = sorted(parameters or {})
@@ -1504,6 +1517,19 @@ class Resources:
         parameters=None,
     ):
         resource = self.catalogue.resource(resource_id)
+        if census_xml_archives.profile(resource):
+            _, native_path = census_xml_archives.validate(record_path, sheet, layer)
+            if parameters:
+                raise DomainError(
+                    "INVALID_QUERY", "Native XML files have no request parameters", 400
+                )
+            if not native_path:
+                async with self.review_slots if SOURCE_REVIEW.get() else self.slots:
+                    body, _, _, _ = await fetch(resource["url"])
+                    result = await asyncio.to_thread(
+                        census_xml_archives.choices, body, record_path
+                    )
+                return {"resource": resource, **result}
         if published_files.profile(resource["url"]) and not record_path:
             if sheet or layer is not None or parameters:
                 raise DomainError(
