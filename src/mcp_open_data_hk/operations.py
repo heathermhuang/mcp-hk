@@ -24,6 +24,7 @@ from .contracts import DomainError
 MAX_BACKUP = 150_000_000
 MAX_DATABASE = 500_000_000
 MAX_RESTORE = 750_000_000
+FAST_COMPRESSION_TARGET = 120_000_000
 refresh_lock = asyncio.Lock()
 checkpoint_lock = threading.Lock()
 
@@ -87,16 +88,28 @@ def checkpoint(database: str, compresslevel=6) -> tuple[Path, str]:
                     raise ValueError("Checkpoint integrity check failed")
             if raw.stat().st_size > MAX_DATABASE:
                 raise ValueError("Checkpoint exceeds restored database size limit")
-            with tarfile.open(packed, "w:gz", compresslevel=compresslevel) as archive:
-                archive.add(raw, arcname="database.sqlite3", recursive=False)
-                for capture in sorted((folder / "captures").glob("*.json")):
-                    if (
-                        re.fullmatch(r"[a-f0-9]{64}\.json", capture.name)
-                        and not capture.is_symlink()
-                    ):
+            captures = [
+                capture
+                for capture in sorted((folder / "captures").glob("*.json"))
+                if re.fullmatch(r"[a-f0-9]{64}\.json", capture.name)
+                and not capture.is_symlink()
+            ]
+
+            def pack(level):
+                with tarfile.open(packed, "w:gz", compresslevel=level) as archive:
+                    archive.add(raw, arcname="database.sqlite3", recursive=False)
+                    for capture in captures:
                         archive.add(
                             capture, arcname="captures/" + capture.name, recursive=False
                         )
+
+            pack(compresslevel)
+            if compresslevel == 1 and packed.stat().st_size > min(
+                FAST_COMPRESSION_TARGET, MAX_BACKUP
+            ):
+                # Recompress this same SQLite snapshot and capture set. A second
+                # backup could mix later live writes into the recovery point.
+                pack(6)
             if packed.stat().st_size > MAX_BACKUP:
                 raise ValueError("Checkpoint exceeds storage transfer limit")
             digest = hashlib.sha256(packed.read_bytes()).hexdigest()
