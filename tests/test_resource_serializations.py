@@ -34,6 +34,11 @@ def service(tmp_path):
             for rid, fmt, url in [
                 ("fsd", "XLSX", FSD),
                 ("aud", "JSON", AUD),
+                (
+                    "accounts",
+                    "JSON",
+                    "https://www.aud.gov.hk/datagovhk/accounts-certified.json",
+                ),
                 ("notifications", "JSON", NOTIFICATIONS),
                 ("unknown", "XLSX", FSD + "?download=1"),
                 ("archsd", "JSON", "https://www.archsd.gov.hk/tc/psi/tender.json"),
@@ -71,6 +76,15 @@ def service(tmp_path):
             "fixed_NotiList_jsonp_wrapper",
             [{"id": "007", "subject": "Raw notice"}],
         ),
+        (
+            "accounts",
+            b'{"Year":"2009-10","Accounts":"Original"},\n {"Year":"2024-25","Accounts":"Second"}',
+            "complete_top_level_comma_separated_json_object_sequence",
+            [
+                {"Year": "2009-10", "Accounts": "Original"},
+                {"Year": "2024-25", "Accounts": "Second"},
+            ],
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -107,6 +121,12 @@ async def test_flat_csv_has_no_workbook_or_record_path_selectors(service, monkey
         ("aud", b'{"id":1}{"id":2} trailing'),
         ("aud", b'{"id":1}{"id":2,"id":3}'),
         ("aud", b'{"id":1}{"id":NaN}'),
+        ("aud", b'{"id":1},{"id":2}'),
+        ("accounts", b'{"id":1},{"id":2},'),
+        ("accounts", b'{"id":1},,{"id":2}'),
+        ("accounts", b'{"id":1}{"id":2}'),
+        ("accounts", b'{"id":1},{"id":2} trailing'),
+        ("accounts", b'[{"id":1}{"id":2}]'),
         ("archsd", b'[{"id":1}{"id":2}]'),
         ("unknown", b"Period,Count\n2020,2\n"),
         ("notifications", b'Other({"notifications":[{"id":1}]});'),
@@ -160,6 +180,21 @@ async def test_sequence_keeps_the_existing_row_bound(service, monkeypatch):
     monkeypatch.setattr("mcp_open_data_hk.resources.fetch", fetch)
     with pytest.raises(DomainError, match="SOURCE_TOO_LARGE"):
         await service.resources.query("aud")
+
+
+@pytest.mark.asyncio
+async def test_accounts_standard_json_array_keeps_the_ordinary_reader(
+    service, monkeypatch
+):
+    body = b'[{"Year":"2009-10"},{"Year":"2024-25"}]'
+
+    async def fetch(url, *a, **kw):
+        return body, {}, url, 200
+
+    monkeypatch.setattr("mcp_open_data_hk.resources.fetch", fetch)
+    result = await service.resources.query("accounts")
+    assert result["data"]["items"] == [{"Year": "2009-10"}, {"Year": "2024-25"}]
+    assert "observedSerialization" not in result["schema"]
 
 
 @pytest.mark.asyncio
