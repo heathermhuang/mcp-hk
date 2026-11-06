@@ -13,6 +13,32 @@ TEMPLATE = (
     "https://current.hydro.gov.hk/data/static_geojson.php?time={time}&mode={mode}"
 )
 CLIENT = "https://current.hydro.gov.hk/_js/data_download.js"
+NOTICE = "https://current.hydro.gov.hk/main/disclaimer.php?lang=tc"
+DATASET = "hk-md-hydro-hong-kong-tidal-stream-prediction"
+# A reviewed reuse basis must be recorded in code before public record access.
+# Request parameters and environment variables cannot grant source permission.
+REUSE_AUTHORIZATION = None
+
+
+def reuse_hold(url, dataset_id=None):
+    if (
+        url.rstrip("/") not in PAGES and dataset_id != DATASET
+    ) or REUSE_AUTHORIZATION is not None:
+        return None
+    return {
+        "state": "pending_source_reuse_review",
+        "reason": "source_reuse_review_required",
+        "publisherNoticeUrl": NOTICE,
+        "catalogueTermsUrl": "https://data.gov.hk/en/terms-and-conditions",
+        "noticeSha256": "14a341a8e49c3f24d29431b8de964a399332ec68f54c4351b12991b75f740cc5",
+        "noticeReviewedOn": "2026-11-06",
+        "publisherCondition": (
+            "Noncommercial reproduction requires Marine Department attribution; "
+            "commercial use requires prior written authorization."
+        ),
+        "publicApiReuseBasis": "unverified",
+        "networkAccessAssessment": "not_assessed_by_reuse_policy",
+    }
 
 
 def timestamp(value):
@@ -78,6 +104,7 @@ def annotate(schema, parameters):
     schema.update(
         sourceInterface="published_map_prediction_snapshot",
         publishedClientUrl=CLIENT,
+        publisherNoticeUrl=NOTICE,
         advertisedCatalogueFormat="CSV",
         originalRepresentationEquivalence="unreviewed",
         navigationUse="Not to be used for navigation, as stated by the publisher.",

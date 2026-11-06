@@ -87,6 +87,8 @@ def request_requirements(url):
             interface="published_map_prediction_snapshot_not_period_csv",
             timeFormat="YYYYMMDDHHmmss; quarter hour; native timezone unreviewed",
             publishedClientUrl=hydro_requests.CLIENT,
+            publisherNoticeUrl=hydro_requests.NOTICE,
+            sourceReuseReview=hydro_requests.reuse_hold(spec),
             originalRepresentationEquivalence="unreviewed",
             navigationUse="Not to be used for navigation.",
         )
