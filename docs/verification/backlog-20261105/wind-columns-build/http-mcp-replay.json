@@ -1,0 +1,33 @@
+{
+  "scope": "Local HTTP/native MCP replay of complete captured publisher bodies against exact retained legacy variant metadata; not current hosted acceptance",
+  "results": [
+    {
+      "resourceId": "33f3a9904add55aff7648ccdab3bb0cf",
+      "rawRows": 30,
+      "httpMcpParity": true,
+      "version": "020d5123bf06e511320a684cb5a84518eade8101c992290d32fdeb2106d94080",
+      "sourceSha256": "f808d2c5aadc1d4146faf85ae1dec69640a6d6d47287d5e71d48cda0682c6804",
+      "timestampTimezoneQualification": "unreviewed_native_timestamp"
+    },
+    {
+      "resourceId": "50e7577f11d6aca1f57cd275dc60bfda",
+      "rawRows": 30,
+      "httpMcpParity": true,
+      "version": "d0d6d5a19c9ca30ee21e6ed6ed4b179d7a2c84c23a3d2484648978ad3d1452a2",
+      "sourceSha256": "49d3cf7f81cc40c248f9456dda317c83cc6f10a742c16b5abba4675364b52a1e",
+      "timestampTimezoneQualification": "unreviewed_native_timestamp"
+    },
+    {
+      "resourceId": "b255c7a8de8fc620e9d5f5eca43e4140",
+      "rawRows": 30,
+      "httpMcpParity": true,
+      "version": "f846fe1a27c63aa6c250e0adacb16b115d5e864ac3e496fb5dda72bf3f5271e2",
+      "sourceSha256": "ace15665da7292884914e90514f445f307c07b67117fcdf337692afe8080bda5",
+      "timestampTimezoneQualification": "unreviewed_native_timestamp"
+    }
+  ],
+  "oldVariantMetadataRetainedUnchanged": 9,
+  "historicalOverflowValuesRecovered": false,
+  "providerRequests": 0,
+  "fixtureReads": 3
+}

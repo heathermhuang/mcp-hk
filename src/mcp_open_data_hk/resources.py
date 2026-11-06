@@ -35,7 +35,7 @@ from .resource_fetch import fetch, fetch_file
 from .resource_stream import FileRows
 from .resource_formats import parse
 from .resource_serializations import read as read_serialization
-from . import published_files, hydro_requests
+from . import published_files, hydro_requests, wind_csv
 from .published_requests import (
     request_template,
     annotate_response,
@@ -867,7 +867,11 @@ class Resources:
         ttl = (
             profile.ttl
             if profile
-            else (300 if resource.get("isApi") or query_api else 86400)
+            else (
+                600
+                if wind_csv.profile(resource)
+                else (300 if resource.get("isApi") or query_api else 86400)
+            )
         )
         force_transport_read = bool(profile and profile.arrivals and require_fresh)
         if profile:
@@ -904,6 +908,9 @@ class Resources:
         previous_key = key if resource.get("format") == "CSV" else None
         if previous_key:
             key = hashlib.sha256(("csv-reader-2:" + previous_key).encode()).hexdigest()
+        if wind_csv.profile(resource):
+            previous_key = key
+            key = hashlib.sha256((wind_csv.REVISION + ":" + key).encode()).hexdigest()
         # Per-resource lock coalesces cache misses; locks contain no pending source I/O.
         if len(self.locks) > 1000:
             self.locks = {k: v for k, v in self.locks.items() if v.locked()}
@@ -1166,7 +1173,9 @@ class Resources:
                         else:
                             rows, schema = serialized
 
-                    annotate_source_contract(resource, rows, schema)
+                    await asyncio.to_thread(
+                        annotate_source_contract, resource, rows, schema
+                    )
                     qualify_observations(resource, rows, schema)
                     schema.update(extra)
                     annotate_response(resource["url"], schema, parameters)
