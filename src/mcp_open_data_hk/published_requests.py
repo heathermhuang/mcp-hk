@@ -3,6 +3,7 @@
 import math
 
 from .contracts import DomainError
+from . import geodetic_requests
 
 SPEC_PREFIX = "https://portal.csdi.gov.hk/csdi-webpage/apidoc/"
 LOCATION_SEARCH_SPEC = (
@@ -14,6 +15,10 @@ NEARBY_SPEC = SPEC_PREFIX + "SearchNearbyAPI"
 NUMBER_SEARCH_SPEC = SPEC_PREFIX + "LPPUNSearchAPI"
 LOT_INDEX_SPEC = SPEC_PREFIX + "LotIndexAPI"
 REQUESTS = {
+    **{
+        spec: geodetic_requests.SPEC + "/?inSys={inSys}"
+        for spec in geodetic_requests.SPECS
+    },
     LOCATION_SEARCH_SPEC: LOCATION_SEARCH_TEMPLATE,
     IDENTIFY_SPEC: (
         "https://www.map.gov.hk/gs/api/v1.0.0/identify?x={x}&y={y}&lang={lang}"
@@ -48,8 +53,14 @@ def request_template(url):
     return REQUESTS.get(url.rstrip("/"), url)
 
 
+def bind_request(url, parameters):
+    return geodetic_requests.request(url, parameters)
+
+
 def parameter_choices(url):
     spec = url.rstrip("/")
+    if spec in geodetic_requests.SPECS:
+        return {"inSys": list(geodetic_requests.SYSTEMS)}
     if spec in {IDENTIFY_SPEC, NEARBY_SPEC}:
         return {"lang": ["en", "zh"]}
     if spec == LOT_INDEX_SPEC:
@@ -68,6 +79,8 @@ def request_requirements(url):
         "sourceSpecificationUrl": spec,
         "scope": "explicit_parameter_response_not_full_inventory",
     }
+    if spec in geodetic_requests.SPECS:
+        result.update(geodetic_requests.requirements())
     if spec in {IDENTIFY_SPEC, NEARBY_SPEC, LOT_INDEX_SPEC}:
         result.update(inputCoordinateReferenceSystem="HK80", inputCoordinateUnits="m")
     if spec == LOT_INDEX_SPEC:
@@ -110,6 +123,8 @@ def validate_parameters(url, parameters):
 
 
 def annotate_response(url, schema):
+    if url.rstrip("/") in geodetic_requests.SPECS:
+        geodetic_requests.validate_response(schema)
     if request_template(url) != url:
         schema.update(
             scope="parameter_scoped_source_response",

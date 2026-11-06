@@ -41,6 +41,7 @@ from .published_requests import (
     parameter_choices,
     non_record_interface,
     request_requirements,
+    bind_request,
 )
 from .resource_codec import (
     typed_filters as decode_filters,
@@ -106,6 +107,9 @@ def source_parameters(url):
 
 
 def template_url(url, parameters):
+    bound = bind_request(url, parameters)
+    if bound is not None:
+        return bound
     specification = url
     url = request_template(url)
     if any(c in urlsplit(url).netloc for c in ("{", "}", "<", ">")):
