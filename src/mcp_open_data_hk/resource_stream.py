@@ -14,6 +14,64 @@ from .resource_fields import add_nested, nested_schema, scalar_kind
 from .resource_formats import table, safe_json
 
 
+def object_array_paths(path):
+    """Inspect complete JSON without materializing records or choosing an array."""
+    stack, paths = [], []
+    unavailable = 0
+    with path.open("rb") as source:
+        if source.read(3) != b"\xef\xbb\xbf":
+            source.seek(0)
+        for index, (_, event, value) in enumerate(ijson.parse(source)):
+            if index % 4096 == 0:
+                time.sleep(0)
+            if event in {"start_map", "start_array"}:
+                parent = stack[-1] if stack else None
+                location = None
+                if parent is None:
+                    location = []
+                elif parent["kind"] == "start_map" and parent["path"] is not None:
+                    location = parent["path"] + [parent["key"]]
+                if event == "start_array" and location:
+                    if (
+                        all(
+                            key
+                            and not key.isdigit()
+                            and not any(c in key for c in "/.~")
+                            for key in location
+                        )
+                        and len("/".join(location)) <= 300
+                    ):
+                        paths.append("/".join(location))
+                    else:
+                        unavailable += 1
+                    if len(paths) + unavailable > 1000:
+                        raise DomainError(
+                            "SOURCE_TOO_COMPLEX", "JSON path budget exceeded", 422
+                        )
+                stack.append(
+                    {"kind": event, "path": location, "key": None, "keys": set()}
+                )
+                if len(stack) > 30:
+                    raise DomainError(
+                        "SOURCE_TOO_COMPLEX", "JSON depth budget exceeded", 422
+                    )
+            elif event == "map_key":
+                frame = stack[-1]
+                if value in frame["keys"]:
+                    raise DomainError(
+                        "INVALID_SOURCE", "Duplicate JSON object key", 422
+                    )
+                frame["keys"].add(value)
+                frame["key"] = value
+                if len(frame["keys"]) > 1000:
+                    raise DomainError(
+                        "SOURCE_TOO_COMPLEX", "JSON field budget exceeded", 422
+                    )
+            elif event in {"end_map", "end_array"}:
+                stack.pop()
+    return paths, unavailable
+
+
 class FileRows:
     def __init__(self, path, fmt, record_path=""):
         self.path = path
@@ -29,12 +87,21 @@ class FileRows:
             self.fmt = "GEOJSON" if self.fmt == "GEOJSON" else "JSON"
             if self.fmt == "GEOJSON":
                 self.record_path = "features"
-            elif not self.record_path and not sample.lstrip().startswith(b"["):
-                raise DomainError(
+            elif not self.record_path and not sample.removeprefix(
+                b"\xef\xbb\xbf"
+            ).lstrip().startswith(b"["):
+                try:
+                    paths, unavailable = object_array_paths(path)
+                finally:
+                    self.close()
+                error = DomainError(
                     "RECORD_PATH_REQUIRED",
                     "Select an array recordPath for this large JSON object",
                     400,
                 )
+                error.record_paths = paths
+                error.unselectable_paths = unavailable
+                raise error
             if any(
                 p.isdigit() or "." in p or "~" in p for p in self.record_path.split("/")
             ):

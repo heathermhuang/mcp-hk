@@ -1300,6 +1300,23 @@ class Resources:
             )
             return await self._selection_response(resource_id, result, parameters)
         except DomainError as exc:
+            if exc.code == "RECORD_PATH_REQUIRED" and hasattr(exc, "record_paths"):
+                return await self._selection_response(
+                    resource_id,
+                    {
+                        "resource": self.catalogue.resource(resource_id),
+                        "selectionRequired": "recordPath",
+                        "schema": {
+                            "format": "JSON",
+                            "availableRecordPaths": exc.record_paths,
+                            "unselectableRecordPathCount": exc.unselectable_paths,
+                            "scope": "discovered_source_arrays_not_accepted_records",
+                        },
+                        "recordCount": None,
+                        "structuredQueryable": False,
+                    },
+                    parameters,
+                )
             if exc.code == "SHEET_REQUIRED" and getattr(exc, "sheets", None):
                 return await self._selection_response(
                     resource_id,

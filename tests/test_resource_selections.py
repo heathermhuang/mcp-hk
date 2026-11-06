@@ -27,11 +27,90 @@ def service(tmp_path):
                 "termsUrl": "https://example.gov.hk/terms",
                 "catalogue": "DATA.GOV.HK",
             }
-            for fmt in ["XLSX", "WFS", "ARCGIS"]
+            for fmt in ["XLSX", "WFS", "ARCGIS", "JSON"]
         ],
         {},
     )
     return service
+
+
+@pytest.mark.asyncio
+async def test_streamed_json_discovers_explicit_paths_then_queries_selected_records(
+    service, monkeypatch, tmp_path
+):
+    import json
+
+    from mcp_open_data_hk.contracts import DomainError
+
+    body = json.dumps(
+        {"data": {"records": [{"id": "001", "tags": ["a"]}]}, "other": []}
+    ).encode()
+    calls = []
+
+    async def fetch(*args, **kwargs):
+        raise DomainError("SOURCE_TOO_LARGE", "Use the bounded file reader", 422)
+
+    async def fetch_file(url, *args, **kwargs):
+        target = tmp_path / (str(len(calls)) + ".json")
+        target.write_bytes(body)
+        calls.append(target)
+        return target, {}, url, 200
+
+    monkeypatch.setattr("mcp_open_data_hk.resources.fetch", fetch)
+    monkeypatch.setattr("mcp_open_data_hk.resources.fetch_file", fetch_file)
+    result = await service.resources.schema("JSON")
+    assert len(calls) == 1 and not calls[0].exists()
+    assert result["selectionRequired"] == "recordPath"
+    assert result["recordCount"] is None and not result["structuredQueryable"]
+    group = result["selections"][0]
+    assert [o["value"] for o in group["options"]] == ["data/records", "other"]
+    assert all(o["state"] == "unverified" for o in group["options"])
+    assert service.resources.catalogue.check("JSON")["status"] == "needs_selection"
+    arguments = group["options"][0]["nextAction"]["arguments"]
+    selected = await service.resources.query(
+        arguments["resourceId"], record_path=arguments["recordPath"], limit=1
+    )
+    assert selected["meta"]["total"] == 1
+    assert selected["data"]["items"] == [{"id": "001", "tags": ["a"]}]
+    assert len(calls) == 2 and all(not p.exists() for p in calls)
+
+
+def test_streamed_json_discovery_excludes_unaddressable_and_record_internal_arrays(
+    tmp_path,
+):
+    import json
+
+    from mcp_open_data_hk.resource_stream import object_array_paths
+    from mcp_open_data_hk.resource_selections import describe
+
+    body = {"data": [{"tags": [1]}], "bad.key": [], "0": [], "a/b": []}
+    body.update({"table" + str(i): [] for i in range(101)})
+    target = tmp_path / "choices.json"
+    target.write_text(json.dumps(body))
+    paths, unavailable = object_array_paths(target)
+    assert unavailable == 3 and len(paths) == 102
+    assert paths[0] == "data" and "data/tags" not in paths
+    group = describe("JSON", {"schema": {"availableRecordPaths": paths}})[0]
+    assert group["totalOptions"] == 102 and group["truncated"]
+    assert len(group["options"]) == 100
+
+
+@pytest.mark.parametrize(
+    "body",
+    [b'{"data":[],"data":[]}', b'{"data":[],"tail":', b'{"x":' * 31 + b"0" + b"}" * 31],
+)
+def test_streamed_json_discovery_validates_the_entire_document(tmp_path, body):
+    import ijson
+
+    from mcp_open_data_hk.contracts import DomainError
+    from mcp_open_data_hk.resource_stream import FileRows
+
+    target = tmp_path / "invalid.json"
+    target.write_bytes(body)
+    with pytest.raises((DomainError, ijson.JSONError)) as failure:
+        FileRows(target, "JSON")
+    assert not hasattr(failure.value, "record_paths")
+    assert not target.exists()
 
 
 @pytest.mark.asyncio

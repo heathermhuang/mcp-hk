@@ -1,0 +1,94 @@
+{
+  "nativeSourceDenialsRetried": 0,
+  "operations": [
+    {
+      "resourceId": "58a0ee104c6370237447b7b9515a901b",
+      "operation": "query",
+      "selection": {
+        "recordPath": "SEV_R_4_01/EST/Raw_est_n"
+      },
+      "previousReceiptSha256": "5a17ae8ccbc8d811d11a29ffe5ff0f4f002c28360bb9617e167a69ed8ffa4d16",
+      "historyFile": "history/5a17ae8ccbc8d811d11a29ffe5ff0f4f002c28360bb9617e167a69ed8ffa4d16-58a0ee104c6370237447b7b9515a901b-5fa08fc861613cde-query.json.gz",
+      "httpStatus": 200,
+      "error": null
+    },
+    {
+      "resourceId": "59993fce63a69268c6d88385a6db1981",
+      "operation": "schema",
+      "selection": {
+        "recordPath": "GHS_R_5_03/UDE/Prop_1dp_%_n"
+      },
+      "previousReceiptSha256": "61e4c9a9cd6d1b4d7dabb97d5936278f3efef8dd571cad09a1398765dd21f32a",
+      "historyFile": "history/61e4c9a9cd6d1b4d7dabb97d5936278f3efef8dd571cad09a1398765dd21f32a-59993fce63a69268c6d88385a6db1981-9ee18ca4d2a1f956-schema.json.gz",
+      "httpStatus": 200,
+      "error": null
+    },
+    {
+      "resourceId": "63b192bf2209378e56ded17157946dbc",
+      "operation": "query",
+      "selection": {
+        "recordPath": "DI_R_5_02/DI_OUTFLOW/Raw_B_1dp_hkd_d"
+      },
+      "previousReceiptSha256": "c84d5a8161cbdedfa7ed51b960d8ed9e11f3fb9d8c5ba910e16ff3fdf0c61ed4",
+      "historyFile": "history/c84d5a8161cbdedfa7ed51b960d8ed9e11f3fb9d8c5ba910e16ff3fdf0c61ed4-63b192bf2209378e56ded17157946dbc-e029af0b2444b26a-query.json.gz",
+      "httpStatus": 200,
+      "error": null
+    },
+    {
+      "resourceId": "8acf0f9023b739235f234f94f3026a8e",
+      "operation": "query",
+      "selection": {
+        "recordPath": "GHS_R_5_03/UDR/Rate_1dp_%_n"
+      },
+      "previousReceiptSha256": "f2d0bf3fdab13ae2cf4304403d2b4359dfece4429e90fdc9cdad940d2b250f81",
+      "historyFile": "history/f2d0bf3fdab13ae2cf4304403d2b4359dfece4429e90fdc9cdad940d2b250f81-8acf0f9023b739235f234f94f3026a8e-95dfa7a918c7b0be-query.json.gz",
+      "httpStatus": 200,
+      "error": null
+    },
+    {
+      "resourceId": "8acf0f9023b739235f234f94f3026a8e",
+      "operation": "query",
+      "selection": {
+        "recordPath": "GHS_R_5_03/UDE/Prop_1dp_%_n"
+      },
+      "previousReceiptSha256": "aeac853b59d19e61101470a45e56043c5f7035a2a0afcdb0ad76392cbccbd037",
+      "historyFile": "history/aeac853b59d19e61101470a45e56043c5f7035a2a0afcdb0ad76392cbccbd037-8acf0f9023b739235f234f94f3026a8e-9ee18ca4d2a1f956-query.json.gz",
+      "httpStatus": 200,
+      "error": null
+    },
+    {
+      "resourceId": "c089609a69f7dc2b0eed269fec166e9c",
+      "operation": "schema",
+      "selection": {
+        "recordPath": "DI_R_5_02/DI_OUTFLOW/Raw_B_1dp_hkd_d"
+      },
+      "previousReceiptSha256": "34f624ba1f562dd11ff57de19f5690e60ebc0221786042cc2dd1009936a1a000",
+      "historyFile": "history/34f624ba1f562dd11ff57de19f5690e60ebc0221786042cc2dd1009936a1a000-c089609a69f7dc2b0eed269fec166e9c-e029af0b2444b26a-schema.json.gz",
+      "httpStatus": 200,
+      "error": null
+    },
+    {
+      "resourceId": "c4ff6c9034a10269a63775786bdde0c7",
+      "operation": "schema",
+      "selection": {
+        "recordPath": "GHS_R_7_31"
+      },
+      "previousReceiptSha256": "8eb61a3ed11deb7e5d6088716c3dcd94299fcd0909cb18ea795f3ca23e74a871",
+      "historyFile": "history/8eb61a3ed11deb7e5d6088716c3dcd94299fcd0909cb18ea795f3ca23e74a871-c4ff6c9034a10269a63775786bdde0c7-155531b0f44006d0-schema.json.gz",
+      "httpStatus": 200,
+      "error": null
+    },
+    {
+      "resourceId": "c4ff6c9034a10269a63775786bdde0c7",
+      "operation": "schema",
+      "selection": {
+        "recordPath": "GHS_R_7_32"
+      },
+      "previousReceiptSha256": "c8aaa35fe3bcbbd518c78f69983983fac36b147cf928129a510be63f684eb45e",
+      "historyFile": "history/c8aaa35fe3bcbbd518c78f69983983fac36b147cf928129a510be63f684eb45e-c4ff6c9034a10269a63775786bdde0c7-2c103cf2bfe0a609-schema.json.gz",
+      "httpStatus": 200,
+      "error": null
+    }
+  ],
+  "scope": "Exact gateway-recovery operations rechecked once after actual health/readiness passed; prior receipts retained by checksum"
+}
