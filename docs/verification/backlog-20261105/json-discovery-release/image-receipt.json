@@ -1,0 +1,8 @@
+{
+  "sourceCommit": "d76b1d6a62e98dae01d29ce0f70bebdc2d9b71fc",
+  "imageDigest": "sha256:95aa019a66769eb2e6b3aaff4d29a44ab98675e8b5de192b018421b127ae64c3",
+  "pushedWith": "wrangler4.158 existing OAuth",
+  "newCredentials": false,
+  "dependencyChanges": false,
+  "builtRuntimeCheck": "built-runtime-check.json"
+}

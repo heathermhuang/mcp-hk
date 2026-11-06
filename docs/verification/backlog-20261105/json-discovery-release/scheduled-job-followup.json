@@ -1,0 +1,35 @@
+{
+  "scope": "Read-only observation of the exact native restaurant event preserved across the resource-trigger pause; no operator refresh or schedule was added",
+  "scheduledAt": 1793930435353,
+  "observations": [
+    {
+      "observedAtUtc": "2026-11-06T02:13:46.598157+00:00",
+      "pack": "restaurants",
+      "scheduledAt": 1793930435353,
+      "state": "pending",
+      "maintenanceLeaseActive": false,
+      "maintenanceStatus": "success",
+      "maintenanceReason": "backup"
+    },
+    {
+      "observedAtUtc": "2026-11-06T02:17:17.668290+00:00",
+      "pack": "restaurants",
+      "scheduledAt": 1793930435353,
+      "state": "pending",
+      "maintenanceLeaseActive": true,
+      "maintenanceStatus": "success",
+      "maintenanceReason": "backup"
+    },
+    {
+      "observedAtUtc": "2026-11-06T02:19:18.244705+00:00",
+      "pack": "restaurants",
+      "scheduledAt": 1793930435353,
+      "state": "success",
+      "maintenanceLeaseActive": false,
+      "maintenanceStatus": "success",
+      "maintenanceReason": "restaurants"
+    }
+  ],
+  "finalState": "success",
+  "terminal": true
+}

@@ -1,5 +1,23 @@
 # Remaining-backlog implementation releases — 6 November 2026
 
+PR #152 is deployed at `d76b1d6a62e98dae01d29ce0f70bebdc2d9b71fc` with all five
+exact-main CI groups passed. Worker `52d10b2c-4923-4ce7-950b-268d13e8de40`,
+application/running-instance version 77 and actual controller/backend adoption
+were verified. Nine previously dead-ended JSON resources now expose explicit
+array choices; all 13 selected raw-array queries passed HTTP/native MCP parity,
+including `Header`/`Counts` metadata arrays. No semantic or representation-
+equivalence approval is implied. Five internal rechecks succeeded; four WFS
+selections became exact 403 holds without denial retries.
+
+The fresh 111,156,515-byte archive restored 318,255,104 SQLite / 349,399,549 total
+bytes. Full integrity, old facts and all 13 new JSON variant facts/choices passed;
+restored old/new HTTP/native MCP checks made zero provider calls. All five
+schedules were independently verified restored and the owned slot was released.
+The native pending daily-job follow-up and exact receipts are in
+`json-discovery-release/`. Wider qualification remains open.
+
+## Earlier scoped-action release
+
 PR #149 is deployed at `72913ccfc3194766cf13e4cd080a318e51a3b2bd` after all five
 exact-main CI groups passed. Cloudflare version
 `16d401f8-180a-4fed-9a73-110b3a55f803` adopted application version 76 and image

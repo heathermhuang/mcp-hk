@@ -1,0 +1,530 @@
+{
+  "scope": "Exact raw source-array query qualification. Data/Counts and housing-language representations retain their distinct published paths; counts are source rows, not unique datasets, workers, homes or transactions. No semantic normalization or cross-representation equivalence is approved.",
+  "resourcesAttempted": 9,
+  "advertisedArraysQueried": 13,
+  "successfulCompleteHttpArrayQueries": 13,
+  "truncatedChoiceGroups": 0,
+  "unselectableObjectKeyPaths": 0,
+  "recordBodiesPublished": false,
+  "semanticBindingsAdded": 0,
+  "resources": [
+    {
+      "resourceId": "47adb6bfd0d5722b5c32f0a59cae0a74",
+      "datasetId": "hk-dpo-datagovhk1-open-dataset-list",
+      "discoveryHttpStatus": 200,
+      "choices": [
+        {
+          "kind": "record_path",
+          "argument": "recordPath",
+          "options": [
+            {
+              "value": "Data",
+              "label": "Data",
+              "state": "unverified",
+              "nextAction": {
+                "tool": "hk_resource_schema",
+                "arguments": {
+                  "resourceId": "47adb6bfd0d5722b5c32f0a59cae0a74",
+                  "recordPath": "Data"
+                }
+              }
+            },
+            {
+              "value": "Counts",
+              "label": "Counts",
+              "state": "unverified",
+              "nextAction": {
+                "tool": "hk_resource_schema",
+                "arguments": {
+                  "resourceId": "47adb6bfd0d5722b5c32f0a59cae0a74",
+                  "recordPath": "Counts"
+                }
+              }
+            }
+          ],
+          "totalOptions": 2,
+          "truncated": false,
+          "scope": "discovered_options_not_accepted_record_reads",
+          "checkedAt": 1793929543.6168194
+        }
+      ],
+      "unselectableRecordPathCount": 0,
+      "queries": [
+        {
+          "selection": {
+            "recordPath": "Counts"
+          },
+          "httpStatus": 200,
+          "checkedAt": 1793929698.342397,
+          "total": 125,
+          "version": "3fc859e52e6b4aa5683a87a90d60416f03655920fc0fd0e5bd98369a410eb9fc",
+          "sourceResponseComplete": true,
+          "returnedItems": 1,
+          "dataItemsSha256": "34264d02761477e6f4bdbd2d2723af29da776e21654840c950454b55adc25c51",
+          "receiptSha256": "7c9b8dc05c29d32bd7312b56d87d420b28b1738c1018fb1e0625e0e56b4dcc32",
+          "error": null
+        },
+        {
+          "selection": {
+            "recordPath": "Data"
+          },
+          "httpStatus": 200,
+          "checkedAt": 1793929691.4641411,
+          "total": 46410,
+          "version": "0140b037650f9ace123a2ab46c3b719671c2c592cdebec89a52c1d3ee562d646",
+          "sourceResponseComplete": true,
+          "returnedItems": 1,
+          "dataItemsSha256": "984734145a776f851e69acff6402254166ccd0f3c68a7261cc93e456d0386107",
+          "receiptSha256": "24d92bf438b8485f59289e7c9eca8fecbfb0404d02c66495dcbc8518dba26432",
+          "error": null
+        }
+      ]
+    },
+    {
+      "resourceId": "7056e159c1a969cc04f6bd7354b9c186",
+      "datasetId": "hk-dpo-datagovhk1-open-dataset-list",
+      "discoveryHttpStatus": 200,
+      "choices": [
+        {
+          "kind": "record_path",
+          "argument": "recordPath",
+          "options": [
+            {
+              "value": "Data",
+              "label": "Data",
+              "state": "unverified",
+              "nextAction": {
+                "tool": "hk_resource_schema",
+                "arguments": {
+                  "resourceId": "7056e159c1a969cc04f6bd7354b9c186",
+                  "recordPath": "Data"
+                }
+              }
+            },
+            {
+              "value": "Counts",
+              "label": "Counts",
+              "state": "unverified",
+              "nextAction": {
+                "tool": "hk_resource_schema",
+                "arguments": {
+                  "resourceId": "7056e159c1a969cc04f6bd7354b9c186",
+                  "recordPath": "Counts"
+                }
+              }
+            }
+          ],
+          "totalOptions": 2,
+          "truncated": false,
+          "scope": "discovered_options_not_accepted_record_reads",
+          "checkedAt": 1793929547.8379788
+        }
+      ],
+      "unselectableRecordPathCount": 0,
+      "queries": [
+        {
+          "selection": {
+            "recordPath": "Counts"
+          },
+          "httpStatus": 200,
+          "checkedAt": 1793929717.1721,
+          "total": 125,
+          "version": "e6096c286a55257529987fdc0072cab43770a7fb63f1e4d937ada588962423b6",
+          "sourceResponseComplete": true,
+          "returnedItems": 1,
+          "dataItemsSha256": "e87bad833af6179212bb70e5fe2ae52feeb735734c0b033c83669c012bad7a8b",
+          "receiptSha256": "3fd12023e74e985ab993623e3e0656e0d4eca8595d1d48256826130bdada5368",
+          "error": null
+        },
+        {
+          "selection": {
+            "recordPath": "Data"
+          },
+          "httpStatus": 200,
+          "checkedAt": 1793929711.573786,
+          "total": 46410,
+          "version": "0155a046abf2d99460324464117a565f195f895d75e59d2d0b3abdc7a7392d3c",
+          "sourceResponseComplete": true,
+          "returnedItems": 1,
+          "dataItemsSha256": "5603cf9789e401f7a14cc5b42c13a7c967d7c1a2699bf22087f0221c37f59ce9",
+          "receiptSha256": "61e8c3ef2a6be92b0461500a9f669d335136690f11c54b32aa335310935b0a39",
+          "error": null
+        }
+      ]
+    },
+    {
+      "resourceId": "c7f0cc1d2581c8cfced0fd9a105dbc5f",
+      "datasetId": "hk-dpo-datagovhk1-open-dataset-list",
+      "discoveryHttpStatus": 200,
+      "choices": [
+        {
+          "kind": "record_path",
+          "argument": "recordPath",
+          "options": [
+            {
+              "value": "Data",
+              "label": "Data",
+              "state": "unverified",
+              "nextAction": {
+                "tool": "hk_resource_schema",
+                "arguments": {
+                  "resourceId": "c7f0cc1d2581c8cfced0fd9a105dbc5f",
+                  "recordPath": "Data"
+                }
+              }
+            },
+            {
+              "value": "Counts",
+              "label": "Counts",
+              "state": "unverified",
+              "nextAction": {
+                "tool": "hk_resource_schema",
+                "arguments": {
+                  "resourceId": "c7f0cc1d2581c8cfced0fd9a105dbc5f",
+                  "recordPath": "Counts"
+                }
+              }
+            }
+          ],
+          "totalOptions": 2,
+          "truncated": false,
+          "scope": "discovered_options_not_accepted_record_reads",
+          "checkedAt": 1793929552.8006275
+        }
+      ],
+      "unselectableRecordPathCount": 0,
+      "queries": [
+        {
+          "selection": {
+            "recordPath": "Counts"
+          },
+          "httpStatus": 200,
+          "checkedAt": 1793929735.5647202,
+          "total": 125,
+          "version": "c5849cf9de73df0f9184b6af49e338e4aacf55cf713be956c19601ce433121f5",
+          "sourceResponseComplete": true,
+          "returnedItems": 1,
+          "dataItemsSha256": "f53f538764d9c16463f6c04d9c4c433efc67c9dd42202bb455388e3534f7b1c7",
+          "receiptSha256": "f09c6d042875b2fda799b991a87a8d04f0fbdd186dac73c5f59c55af42d3b50b",
+          "error": null
+        },
+        {
+          "selection": {
+            "recordPath": "Data"
+          },
+          "httpStatus": 200,
+          "checkedAt": 1793929729.1679318,
+          "total": 46410,
+          "version": "2dfb101a91f91aa793fdbbc028e1516c1ee83b327f920896a9bd625e4a751b3c",
+          "sourceResponseComplete": true,
+          "returnedItems": 1,
+          "dataItemsSha256": "767950ee0329344fc6e331d71a89be88b4153ad84454f704e93ee63d978c9504",
+          "receiptSha256": "49e3ef4a5ba2525e51ecd3c2c06c570b13712b8ffe0023d33f68c24e8187c892",
+          "error": null
+        }
+      ]
+    },
+    {
+      "resourceId": "f8a148608b10575bc948785935dcb381",
+      "datasetId": "hk-emsd-emsd1-registered-electrical-workers",
+      "discoveryHttpStatus": 200,
+      "choices": [
+        {
+          "kind": "record_path",
+          "argument": "recordPath",
+          "options": [
+            {
+              "value": "Header",
+              "label": "Header",
+              "state": "unverified",
+              "nextAction": {
+                "tool": "hk_resource_schema",
+                "arguments": {
+                  "resourceId": "f8a148608b10575bc948785935dcb381",
+                  "recordPath": "Header"
+                }
+              }
+            },
+            {
+              "value": "Data",
+              "label": "Data",
+              "state": "unverified",
+              "nextAction": {
+                "tool": "hk_resource_schema",
+                "arguments": {
+                  "resourceId": "f8a148608b10575bc948785935dcb381",
+                  "recordPath": "Data"
+                }
+              }
+            }
+          ],
+          "totalOptions": 2,
+          "truncated": false,
+          "scope": "discovered_options_not_accepted_record_reads",
+          "checkedAt": 1793929565.0019212
+        }
+      ],
+      "unselectableRecordPathCount": 0,
+      "queries": [
+        {
+          "selection": {
+            "recordPath": "Data"
+          },
+          "httpStatus": 200,
+          "checkedAt": 1793929775.161132,
+          "total": 83871,
+          "version": "99477909c1b1a7c48c4053e28d0752282ee186d133b7da42afac803f489ebc7e",
+          "sourceResponseComplete": true,
+          "returnedItems": 1,
+          "dataItemsSha256": "f5a636e35a6b9427538b69a0ddceed0157521f29d0bc5af4cfd7e82c1369b65b",
+          "receiptSha256": "66f6cb164a9c0700c59ecdb1adb7a052e7e493718d2ce7d2e4db482c61f61616",
+          "error": null
+        },
+        {
+          "selection": {
+            "recordPath": "Header"
+          },
+          "httpStatus": 200,
+          "checkedAt": 1793929750.577306,
+          "total": 52,
+          "version": "1a0452ed17572058eeecf98411c74dfd23e1d12ae17b7393cdf49c05d1936cba",
+          "sourceResponseComplete": true,
+          "returnedItems": 1,
+          "dataItemsSha256": "cbfdf30e3f3c41a2425c82f83b80ceae0940d080a9d0eb80a2537df3da826a03",
+          "receiptSha256": "0b076a6df3e1258e4b3fc4cc76f31f67ecaf64ab2631c2bd0bb3cae02cebb93f",
+          "error": null
+        }
+      ]
+    },
+    {
+      "resourceId": "197d0908dd7d4c5e9332cf30201f43b8",
+      "datasetId": "hk-hb-lph-housing-stock",
+      "discoveryHttpStatus": 200,
+      "choices": [
+        {
+          "kind": "record_path",
+          "argument": "recordPath",
+          "options": [
+            {
+              "value": "data",
+              "label": "data",
+              "state": "unverified",
+              "nextAction": {
+                "tool": "hk_resource_schema",
+                "arguments": {
+                  "resourceId": "197d0908dd7d4c5e9332cf30201f43b8",
+                  "recordPath": "data"
+                }
+              }
+            }
+          ],
+          "totalOptions": 1,
+          "truncated": false,
+          "scope": "discovered_options_not_accepted_record_reads",
+          "checkedAt": 1793929571.2412832
+        }
+      ],
+      "unselectableRecordPathCount": 0,
+      "queries": [
+        {
+          "selection": {
+            "recordPath": "data"
+          },
+          "httpStatus": 200,
+          "checkedAt": 1793929786.943774,
+          "total": 28951,
+          "version": "5691544f4c717003dbb807a4a0465b5dd5aa52d8842a360f51aed312cbfddc24",
+          "sourceResponseComplete": true,
+          "returnedItems": 1,
+          "dataItemsSha256": "184b65f3c16c3e3eef79cef9b8c2d6f0656c0856092c08ee7c78cdc64da65414",
+          "receiptSha256": "a17edeea9e40e730a8ed2aee3db8fc6a1a812069d148b1186cb191a4b1c20e9b",
+          "error": null
+        }
+      ]
+    },
+    {
+      "resourceId": "a37a1224b11b97fb6a50478c686ad676",
+      "datasetId": "hk-hb-lph-housing-stock",
+      "discoveryHttpStatus": 200,
+      "choices": [
+        {
+          "kind": "record_path",
+          "argument": "recordPath",
+          "options": [
+            {
+              "value": "records",
+              "label": "records",
+              "state": "unverified",
+              "nextAction": {
+                "tool": "hk_resource_schema",
+                "arguments": {
+                  "resourceId": "a37a1224b11b97fb6a50478c686ad676",
+                  "recordPath": "records"
+                }
+              }
+            }
+          ],
+          "totalOptions": 1,
+          "truncated": false,
+          "scope": "discovered_options_not_accepted_record_reads",
+          "checkedAt": 1793929577.8257086
+        }
+      ],
+      "unselectableRecordPathCount": 0,
+      "queries": [
+        {
+          "selection": {
+            "recordPath": "records"
+          },
+          "httpStatus": 200,
+          "checkedAt": 1793929797.5262258,
+          "total": 28951,
+          "version": "bacba7a286df7b624b352918a63098a27f039586266f9d0cab50c130a115c93c",
+          "sourceResponseComplete": true,
+          "returnedItems": 1,
+          "dataItemsSha256": "5c76311f8d84f6624a3ec386730293569588b4c68e6510d143f8423605a201fc",
+          "receiptSha256": "602ede3ce57721eac6a3db1d479da75615b24252097ae871913f3f5d89b71c13",
+          "error": null
+        }
+      ]
+    },
+    {
+      "resourceId": "b70dee34679a99f5ee80500c99c8fc37",
+      "datasetId": "hk-housing-tpssale-tpssale",
+      "discoveryHttpStatus": 200,
+      "choices": [
+        {
+          "kind": "record_path",
+          "argument": "recordPath",
+          "options": [
+            {
+              "value": "records",
+              "label": "records",
+              "state": "unverified",
+              "nextAction": {
+                "tool": "hk_resource_schema",
+                "arguments": {
+                  "resourceId": "b70dee34679a99f5ee80500c99c8fc37",
+                  "recordPath": "records"
+                }
+              }
+            }
+          ],
+          "totalOptions": 1,
+          "truncated": false,
+          "scope": "discovered_options_not_accepted_record_reads",
+          "checkedAt": 1793929594.999609
+        }
+      ],
+      "unselectableRecordPathCount": 0,
+      "queries": [
+        {
+          "selection": {
+            "recordPath": "records"
+          },
+          "httpStatus": 200,
+          "checkedAt": 1793929831.970363,
+          "total": 157523,
+          "version": "cb10748ad6a3b19e71462f1afbb1a81e8874cc54b78100a91dd36a521355b014",
+          "sourceResponseComplete": true,
+          "returnedItems": 1,
+          "dataItemsSha256": "23f03854cc810ad076077a13ea3f3b0277c6f0cee5d321fbeda74ed6163d8b41",
+          "receiptSha256": "e9aa90d4115e37d5ffae051a4d93a402846fe72e6a023ceb53f8e331668b1364",
+          "error": null
+        }
+      ]
+    },
+    {
+      "resourceId": "db2e1ff5271c63d39203e56246bf5492",
+      "datasetId": "hk-housing-tpssale-tpssale",
+      "discoveryHttpStatus": 200,
+      "choices": [
+        {
+          "kind": "record_path",
+          "argument": "recordPath",
+          "options": [
+            {
+              "value": "data",
+              "label": "data",
+              "state": "unverified",
+              "nextAction": {
+                "tool": "hk_resource_schema",
+                "arguments": {
+                  "resourceId": "db2e1ff5271c63d39203e56246bf5492",
+                  "recordPath": "data"
+                }
+              }
+            }
+          ],
+          "totalOptions": 1,
+          "truncated": false,
+          "scope": "discovered_options_not_accepted_record_reads",
+          "checkedAt": 1793929610.437178
+        }
+      ],
+      "unselectableRecordPathCount": 0,
+      "queries": [
+        {
+          "selection": {
+            "recordPath": "data"
+          },
+          "httpStatus": 200,
+          "checkedAt": 1793929874.553878,
+          "total": 157523,
+          "version": "829f79b698ebdae91c0e256317ef6d08b3856661236a08599223d03c7f6318df",
+          "sourceResponseComplete": true,
+          "returnedItems": 1,
+          "dataItemsSha256": "8b01c760c4107b6fd901567b748718dff77311d507a4d661d721b1ce29a6d728",
+          "receiptSha256": "b2f0e3e039c46318e7f40b9bde55219e4540f709ed34ad1f0849f80223b34512",
+          "error": null
+        }
+      ]
+    },
+    {
+      "resourceId": "fc168082612a922e9d028467d27fba29",
+      "datasetId": "hk-housing-tpssale-tpssale",
+      "discoveryHttpStatus": 200,
+      "choices": [
+        {
+          "kind": "record_path",
+          "argument": "recordPath",
+          "options": [
+            {
+              "value": "records",
+              "label": "records",
+              "state": "unverified",
+              "nextAction": {
+                "tool": "hk_resource_schema",
+                "arguments": {
+                  "resourceId": "fc168082612a922e9d028467d27fba29",
+                  "recordPath": "records"
+                }
+              }
+            }
+          ],
+          "totalOptions": 1,
+          "truncated": false,
+          "scope": "discovered_options_not_accepted_record_reads",
+          "checkedAt": 1793929623.137943
+        }
+      ],
+      "unselectableRecordPathCount": 0,
+      "queries": [
+        {
+          "selection": {
+            "recordPath": "records"
+          },
+          "httpStatus": 200,
+          "checkedAt": 1793929910.5468202,
+          "total": 157523,
+          "version": "ea9b4a8c4820581ee2baa1d2bf9b62bfbc7f294e1b4606e377bb7549ca567e93",
+          "sourceResponseComplete": true,
+          "returnedItems": 1,
+          "dataItemsSha256": "56ceac437ed2a4596a10b8d0f5c860d8915404a5602005d5271b2cdb308ea1fa",
+          "receiptSha256": "d2cb6e5882f80c19b3a89ebb26ac9c9d6f6e0428307c12749d86723fe4cc82c4",
+          "error": null
+        }
+      ]
+    }
+  ]
+}

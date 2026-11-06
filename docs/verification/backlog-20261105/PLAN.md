@@ -76,13 +76,15 @@ dataset/task acceptance. Maintain original source fields and missing-evidence ho
 - [ ] B5: NLB complete joined comparison and source/client proof.
 - [ ] B6: PR/CI/merge/deployment/HTTP/MCP/fresh restore/schedules complete.
 
-**First unfinished package: remaining B1 selected reads over the complete
-271-resource discovery ledger and the report/raw-workbook cohorts, plus any newly
-demonstrated shared reader gaps.** Releases at `a687580`, `ced4b81` and `ad69dc0`
-passed actual clients and fresh isolated recovery; see `RELEASED.md`,
-`repair-release/` and `wfs-release/`. The exact WFS format and KMB 11C investigations
-are resolved as accepted selections or evidenced capacity/mapping holds. This
-does not finish the wider B1–B5 scope.
+**First unfinished package: the wider frozen ArcGIS/WFS/workbook alternatives and
+issue-report selections, remaining demonstrated reader/task gaps and evidence-
+supported semantic tasks.** The original primary exposed graph has been attempted;
+that does not finish the complete frozen inventory. PR #152 adds actual query
+proof for 13 raw arrays across nine residual JSON resources, while the explicit
+84-sheet workbook cohort has actual query-operation evidence. These increments,
+actual clients and fresh recovery are recorded in `RELEASED.md` and
+`json-discovery-release/`. Exact source, internal capacity and semantic holds
+remain separate.
 This checklist remains open until every unblocked work package is finished. One
 cohort, a PR or a successful deployment does not complete the full backlog.
 
