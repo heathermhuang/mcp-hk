@@ -1,0 +1,11 @@
+{
+  "attempted": 9,
+  "httpStatuses": {
+    "502": 4,
+    "200": 5
+  },
+  "sourceErrors": {
+    "ACCESS_RESTRICTED": 4
+  },
+  "nativeSourceDenialsRetried": 0
+}

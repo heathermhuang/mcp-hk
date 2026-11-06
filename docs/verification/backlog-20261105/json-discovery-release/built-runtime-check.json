@@ -1,0 +1,9 @@
+{
+  "sourceCommit": "d76b1d6a62e98dae01d29ce0f70bebdc2d9b71fc",
+  "localImageId": "sha256:ca0ca18aabfbe064729053f22c4ec3009028bd3d7bffb041d5e8c085619c3420",
+  "scope": "Exact built Linux runtime image; network disabled",
+  "explicitPathDiscovery": true,
+  "selectedRecordValuesPreserved": true,
+  "temporaryFilesClosed": true,
+  "checkedAtUtc": "2026-11-06T01:14:38.535161+00:00"
+}

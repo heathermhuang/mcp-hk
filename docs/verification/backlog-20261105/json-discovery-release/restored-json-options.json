@@ -1,0 +1,157 @@
+{
+  "scope": "Fresh accepted checkpoint restored in isolation; JSON choice metadata through actual local HTTP/native FastMCP resource listing. Large source records are not claimed as offline cached.",
+  "providerRequests": 0,
+  "acceptedJsonVariantFacts": [
+    {
+      "resourceId": "a37a1224b11b97fb6a50478c686ad676",
+      "selection": {
+        "recordPath": "records"
+      },
+      "version": "bacba7a286df7b624b352918a63098a27f039586266f9d0cab50c130a115c93c",
+      "total": 28951
+    },
+    {
+      "resourceId": "c7f0cc1d2581c8cfced0fd9a105dbc5f",
+      "selection": {
+        "recordPath": "Data"
+      },
+      "version": "2dfb101a91f91aa793fdbbc028e1516c1ee83b327f920896a9bd625e4a751b3c",
+      "total": 46410
+    },
+    {
+      "resourceId": "7056e159c1a969cc04f6bd7354b9c186",
+      "selection": {
+        "recordPath": "Data"
+      },
+      "version": "0155a046abf2d99460324464117a565f195f895d75e59d2d0b3abdc7a7392d3c",
+      "total": 46410
+    },
+    {
+      "resourceId": "db2e1ff5271c63d39203e56246bf5492",
+      "selection": {
+        "recordPath": "data"
+      },
+      "version": "829f79b698ebdae91c0e256317ef6d08b3856661236a08599223d03c7f6318df",
+      "total": 157523
+    },
+    {
+      "resourceId": "7056e159c1a969cc04f6bd7354b9c186",
+      "selection": {
+        "recordPath": "Counts"
+      },
+      "version": "e6096c286a55257529987fdc0072cab43770a7fb63f1e4d937ada588962423b6",
+      "total": 125
+    },
+    {
+      "resourceId": "fc168082612a922e9d028467d27fba29",
+      "selection": {
+        "recordPath": "records"
+      },
+      "version": "ea9b4a8c4820581ee2baa1d2bf9b62bfbc7f294e1b4606e377bb7549ca567e93",
+      "total": 157523
+    },
+    {
+      "resourceId": "b70dee34679a99f5ee80500c99c8fc37",
+      "selection": {
+        "recordPath": "records"
+      },
+      "version": "cb10748ad6a3b19e71462f1afbb1a81e8874cc54b78100a91dd36a521355b014",
+      "total": 157523
+    },
+    {
+      "resourceId": "c7f0cc1d2581c8cfced0fd9a105dbc5f",
+      "selection": {
+        "recordPath": "Counts"
+      },
+      "version": "c5849cf9de73df0f9184b6af49e338e4aacf55cf713be956c19601ce433121f5",
+      "total": 125
+    },
+    {
+      "resourceId": "197d0908dd7d4c5e9332cf30201f43b8",
+      "selection": {
+        "recordPath": "data"
+      },
+      "version": "5691544f4c717003dbb807a4a0465b5dd5aa52d8842a360f51aed312cbfddc24",
+      "total": 28951
+    },
+    {
+      "resourceId": "47adb6bfd0d5722b5c32f0a59cae0a74",
+      "selection": {
+        "recordPath": "Counts"
+      },
+      "version": "3fc859e52e6b4aa5683a87a90d60416f03655920fc0fd0e5bd98369a410eb9fc",
+      "total": 125
+    },
+    {
+      "resourceId": "f8a148608b10575bc948785935dcb381",
+      "selection": {
+        "recordPath": "Header"
+      },
+      "version": "1a0452ed17572058eeecf98411c74dfd23e1d12ae17b7393cdf49c05d1936cba",
+      "total": 52
+    },
+    {
+      "resourceId": "47adb6bfd0d5722b5c32f0a59cae0a74",
+      "selection": {
+        "recordPath": "Data"
+      },
+      "version": "0140b037650f9ace123a2ab46c3b719671c2c592cdebec89a52c1d3ee562d646",
+      "total": 46410
+    },
+    {
+      "resourceId": "f8a148608b10575bc948785935dcb381",
+      "selection": {
+        "recordPath": "Data"
+      },
+      "version": "99477909c1b1a7c48c4053e28d0752282ee186d133b7da42afac803f489ebc7e",
+      "total": 83871
+    }
+  ],
+  "results": [
+    {
+      "resourceId": "47adb6bfd0d5722b5c32f0a59cae0a74",
+      "httpMcpOptionsParity": true,
+      "choices": 2
+    },
+    {
+      "resourceId": "7056e159c1a969cc04f6bd7354b9c186",
+      "httpMcpOptionsParity": true,
+      "choices": 2
+    },
+    {
+      "resourceId": "c7f0cc1d2581c8cfced0fd9a105dbc5f",
+      "httpMcpOptionsParity": true,
+      "choices": 2
+    },
+    {
+      "resourceId": "f8a148608b10575bc948785935dcb381",
+      "httpMcpOptionsParity": true,
+      "choices": 2
+    },
+    {
+      "resourceId": "197d0908dd7d4c5e9332cf30201f43b8",
+      "httpMcpOptionsParity": true,
+      "choices": 1
+    },
+    {
+      "resourceId": "a37a1224b11b97fb6a50478c686ad676",
+      "httpMcpOptionsParity": true,
+      "choices": 1
+    },
+    {
+      "resourceId": "b70dee34679a99f5ee80500c99c8fc37",
+      "httpMcpOptionsParity": true,
+      "choices": 1
+    },
+    {
+      "resourceId": "db2e1ff5271c63d39203e56246bf5492",
+      "httpMcpOptionsParity": true,
+      "choices": 1
+    },
+    {
+      "resourceId": "fc168082612a922e9d028467d27fba29",
+      "httpMcpOptionsParity": true,
+      "choices": 1
+    }
+  ]
+}

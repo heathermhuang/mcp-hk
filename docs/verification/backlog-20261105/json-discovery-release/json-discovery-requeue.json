@@ -1,0 +1,51 @@
+{
+  "reason": "Actual new-image adoption and health/readiness verified; changed streamed JSON discovery implementation. Source denials excluded.",
+  "operations": [
+    {
+      "resourceId": "197d0908dd7d4c5e9332cf30201f43b8",
+      "oldReceiptSha256": "0260e45245e33dde8eb62fc8968ffbf97213b3b00fa9bdae9ab1c8f2eee27432",
+      "historyFile": "history/0260e45245e33dde8eb62fc8968ffbf97213b3b00fa9bdae9ab1c8f2eee27432-197d0908dd7d4c5e9332cf30201f43b8-options.json.gz"
+    },
+    {
+      "resourceId": "47adb6bfd0d5722b5c32f0a59cae0a74",
+      "oldReceiptSha256": "f95c408d0fb5334dcbac0a92dfcbbb4b6c8f6e076f732cd47ac0d056af8b5cf9",
+      "historyFile": "history/f95c408d0fb5334dcbac0a92dfcbbb4b6c8f6e076f732cd47ac0d056af8b5cf9-47adb6bfd0d5722b5c32f0a59cae0a74-options.json.gz"
+    },
+    {
+      "resourceId": "7056e159c1a969cc04f6bd7354b9c186",
+      "oldReceiptSha256": "2c492e17f5716e6545eca62f9749fe0341d85d4a78c6c7d3cf593c3cd01fa212",
+      "historyFile": "history/2c492e17f5716e6545eca62f9749fe0341d85d4a78c6c7d3cf593c3cd01fa212-7056e159c1a969cc04f6bd7354b9c186-options.json.gz"
+    },
+    {
+      "resourceId": "a37a1224b11b97fb6a50478c686ad676",
+      "oldReceiptSha256": "66ebe195b115089b17f25c961dbd41876bf902251fa2788ecb1f9cacefb58601",
+      "historyFile": "history/66ebe195b115089b17f25c961dbd41876bf902251fa2788ecb1f9cacefb58601-a37a1224b11b97fb6a50478c686ad676-options.json.gz"
+    },
+    {
+      "resourceId": "b70dee34679a99f5ee80500c99c8fc37",
+      "oldReceiptSha256": "68ca28d16b838334bbacaf843b181cadb6cc144070e934deabb26b8ad423e93c",
+      "historyFile": "history/68ca28d16b838334bbacaf843b181cadb6cc144070e934deabb26b8ad423e93c-b70dee34679a99f5ee80500c99c8fc37-options.json.gz"
+    },
+    {
+      "resourceId": "c7f0cc1d2581c8cfced0fd9a105dbc5f",
+      "oldReceiptSha256": "3e06801790e09a66c124d6efe88ffa06f45cdebd909e2d49e72a7faa78436b31",
+      "historyFile": "history/3e06801790e09a66c124d6efe88ffa06f45cdebd909e2d49e72a7faa78436b31-c7f0cc1d2581c8cfced0fd9a105dbc5f-options.json.gz"
+    },
+    {
+      "resourceId": "db2e1ff5271c63d39203e56246bf5492",
+      "oldReceiptSha256": "911813df46ab4b3da0ebadfebb45a14b721b4e709d503b19767f377407750991",
+      "historyFile": "history/911813df46ab4b3da0ebadfebb45a14b721b4e709d503b19767f377407750991-db2e1ff5271c63d39203e56246bf5492-options.json.gz"
+    },
+    {
+      "resourceId": "f8a148608b10575bc948785935dcb381",
+      "oldReceiptSha256": "813e813b69de9b3dac3d0195608fe294e4f001c611de2c64c516ef5d1d4a4ec6",
+      "historyFile": "history/813e813b69de9b3dac3d0195608fe294e4f001c611de2c64c516ef5d1d4a4ec6-f8a148608b10575bc948785935dcb381-options.json.gz"
+    },
+    {
+      "resourceId": "fc168082612a922e9d028467d27fba29",
+      "oldReceiptSha256": "a9ff66fcccb8c36ebeb76d3f8ceada8d86c99e28919e356b98f6b3b0ea90bd1c",
+      "historyFile": "history/a9ff66fcccb8c36ebeb76d3f8ceada8d86c99e28919e356b98f6b3b0ea90bd1c-fc168082612a922e9d028467d27fba29-options.json.gz"
+    }
+  ],
+  "nativeSourceDenialsRetried": 0
+}

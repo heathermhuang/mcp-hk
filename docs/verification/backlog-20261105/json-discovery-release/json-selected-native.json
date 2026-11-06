@@ -1,0 +1,148 @@
+{
+  "scope": "Actual native MCP queries pinned to successful HTTP selected-array versions; record bodies omitted",
+  "results": [
+    {
+      "resourceId": "197d0908dd7d4c5e9332cf30201f43b8",
+      "selection": {
+        "recordPath": "data"
+      },
+      "httpVersion": "5691544f4c717003dbb807a4a0465b5dd5aa52d8842a360f51aed312cbfddc24",
+      "httpTotal": 28951,
+      "httpMcpParity": true,
+      "returnedItems": 1,
+      "dataItemsSha256": "184b65f3c16c3e3eef79cef9b8c2d6f0656c0856092c08ee7c78cdc64da65414"
+    },
+    {
+      "resourceId": "47adb6bfd0d5722b5c32f0a59cae0a74",
+      "selection": {
+        "recordPath": "Counts"
+      },
+      "httpVersion": "3fc859e52e6b4aa5683a87a90d60416f03655920fc0fd0e5bd98369a410eb9fc",
+      "httpTotal": 125,
+      "httpMcpParity": true,
+      "returnedItems": 1,
+      "dataItemsSha256": "34264d02761477e6f4bdbd2d2723af29da776e21654840c950454b55adc25c51"
+    },
+    {
+      "resourceId": "47adb6bfd0d5722b5c32f0a59cae0a74",
+      "selection": {
+        "recordPath": "Data"
+      },
+      "httpVersion": "0140b037650f9ace123a2ab46c3b719671c2c592cdebec89a52c1d3ee562d646",
+      "httpTotal": 46410,
+      "httpMcpParity": true,
+      "returnedItems": 1,
+      "dataItemsSha256": "984734145a776f851e69acff6402254166ccd0f3c68a7261cc93e456d0386107"
+    },
+    {
+      "resourceId": "7056e159c1a969cc04f6bd7354b9c186",
+      "selection": {
+        "recordPath": "Counts"
+      },
+      "httpVersion": "e6096c286a55257529987fdc0072cab43770a7fb63f1e4d937ada588962423b6",
+      "httpTotal": 125,
+      "httpMcpParity": true,
+      "returnedItems": 1,
+      "dataItemsSha256": "e87bad833af6179212bb70e5fe2ae52feeb735734c0b033c83669c012bad7a8b"
+    },
+    {
+      "resourceId": "7056e159c1a969cc04f6bd7354b9c186",
+      "selection": {
+        "recordPath": "Data"
+      },
+      "httpVersion": "0155a046abf2d99460324464117a565f195f895d75e59d2d0b3abdc7a7392d3c",
+      "httpTotal": 46410,
+      "httpMcpParity": true,
+      "returnedItems": 1,
+      "dataItemsSha256": "5603cf9789e401f7a14cc5b42c13a7c967d7c1a2699bf22087f0221c37f59ce9"
+    },
+    {
+      "resourceId": "a37a1224b11b97fb6a50478c686ad676",
+      "selection": {
+        "recordPath": "records"
+      },
+      "httpVersion": "bacba7a286df7b624b352918a63098a27f039586266f9d0cab50c130a115c93c",
+      "httpTotal": 28951,
+      "httpMcpParity": true,
+      "returnedItems": 1,
+      "dataItemsSha256": "5c76311f8d84f6624a3ec386730293569588b4c68e6510d143f8423605a201fc"
+    },
+    {
+      "resourceId": "b70dee34679a99f5ee80500c99c8fc37",
+      "selection": {
+        "recordPath": "records"
+      },
+      "httpVersion": "cb10748ad6a3b19e71462f1afbb1a81e8874cc54b78100a91dd36a521355b014",
+      "httpTotal": 157523,
+      "httpMcpParity": true,
+      "returnedItems": 1,
+      "dataItemsSha256": "23f03854cc810ad076077a13ea3f3b0277c6f0cee5d321fbeda74ed6163d8b41"
+    },
+    {
+      "resourceId": "c7f0cc1d2581c8cfced0fd9a105dbc5f",
+      "selection": {
+        "recordPath": "Counts"
+      },
+      "httpVersion": "c5849cf9de73df0f9184b6af49e338e4aacf55cf713be956c19601ce433121f5",
+      "httpTotal": 125,
+      "httpMcpParity": true,
+      "returnedItems": 1,
+      "dataItemsSha256": "f53f538764d9c16463f6c04d9c4c433efc67c9dd42202bb455388e3534f7b1c7"
+    },
+    {
+      "resourceId": "c7f0cc1d2581c8cfced0fd9a105dbc5f",
+      "selection": {
+        "recordPath": "Data"
+      },
+      "httpVersion": "2dfb101a91f91aa793fdbbc028e1516c1ee83b327f920896a9bd625e4a751b3c",
+      "httpTotal": 46410,
+      "httpMcpParity": true,
+      "returnedItems": 1,
+      "dataItemsSha256": "767950ee0329344fc6e331d71a89be88b4153ad84454f704e93ee63d978c9504"
+    },
+    {
+      "resourceId": "db2e1ff5271c63d39203e56246bf5492",
+      "selection": {
+        "recordPath": "data"
+      },
+      "httpVersion": "829f79b698ebdae91c0e256317ef6d08b3856661236a08599223d03c7f6318df",
+      "httpTotal": 157523,
+      "httpMcpParity": true,
+      "returnedItems": 1,
+      "dataItemsSha256": "8b01c760c4107b6fd901567b748718dff77311d507a4d661d721b1ce29a6d728"
+    },
+    {
+      "resourceId": "f8a148608b10575bc948785935dcb381",
+      "selection": {
+        "recordPath": "Data"
+      },
+      "httpVersion": "99477909c1b1a7c48c4053e28d0752282ee186d133b7da42afac803f489ebc7e",
+      "httpTotal": 83871,
+      "httpMcpParity": true,
+      "returnedItems": 1,
+      "dataItemsSha256": "f5a636e35a6b9427538b69a0ddceed0157521f29d0bc5af4cfd7e82c1369b65b"
+    },
+    {
+      "resourceId": "f8a148608b10575bc948785935dcb381",
+      "selection": {
+        "recordPath": "Header"
+      },
+      "httpVersion": "1a0452ed17572058eeecf98411c74dfd23e1d12ae17b7393cdf49c05d1936cba",
+      "httpTotal": 52,
+      "httpMcpParity": true,
+      "returnedItems": 1,
+      "dataItemsSha256": "cbfdf30e3f3c41a2425c82f83b80ceae0940d080a9d0eb80a2537df3da826a03"
+    },
+    {
+      "resourceId": "fc168082612a922e9d028467d27fba29",
+      "selection": {
+        "recordPath": "records"
+      },
+      "httpVersion": "ea9b4a8c4820581ee2baa1d2bf9b62bfbc7f294e1b4606e377bb7549ca567e93",
+      "httpTotal": 157523,
+      "httpMcpParity": true,
+      "returnedItems": 1,
+      "dataItemsSha256": "56ceac437ed2a4596a10b8d0f5c860d8915404a5602005d5271b2cdb308ea1fa"
+    }
+  ]
+}

@@ -1,0 +1,130 @@
+{
+  "changedCondition": "Verified new image adoption, actual health/readiness, resource cron paused and bulk source writers stopped; one exact recheck only",
+  "nativeSourceDenialsRetried": 0,
+  "operations": [
+    {
+      "resourceId": "a4c404a35ab93c2386054a731b6d4765",
+      "operation": "query",
+      "selection": {
+        "recordPath": "csdi:Rural_plantation"
+      },
+      "previousReceiptSha256": "7d77fef3d1eacb47e5287726f7da0f4b8664a467087a98949b0e69935c5a8879",
+      "historyFile": "history/7d77fef3d1eacb47e5287726f7da0f4b8664a467087a98949b0e69935c5a8879-a4c404a35ab93c2386054a731b6d4765-45dfcc1f88046620-query.json.gz",
+      "httpStatus": 502,
+      "total": null,
+      "error": {
+        "code": "ACCESS_RESTRICTED",
+        "message": "Source returned HTTP 403",
+        "requestId": "7c4d8c75b29244e89c94fee5f165b369"
+      }
+    },
+    {
+      "resourceId": "a4c404a35ab93c2386054a731b6d4765",
+      "operation": "query",
+      "selection": {
+        "recordPath": "csdi:Other_urban_area"
+      },
+      "previousReceiptSha256": "82e629826813cc182f423d02a0132c53094cbbd977c591d3888d19be38e2c25a",
+      "historyFile": "history/82e629826813cc182f423d02a0132c53094cbbd977c591d3888d19be38e2c25a-a4c404a35ab93c2386054a731b6d4765-6de65a5b4703b8bd-query.json.gz",
+      "httpStatus": 502,
+      "total": null,
+      "error": {
+        "code": "ACCESS_RESTRICTED",
+        "message": "Source returned HTTP 403",
+        "requestId": "e569d9770276462da4975d39829a023f"
+      }
+    },
+    {
+      "resourceId": "a4c404a35ab93c2386054a731b6d4765",
+      "operation": "query",
+      "selection": {
+        "recordPath": "csdi:Natural_watercourse"
+      },
+      "previousReceiptSha256": "7e6471a50ccb3a1c4a7d98c9c9b323d68efdf320603623a900baaadd0c1adeea",
+      "historyFile": "history/7e6471a50ccb3a1c4a7d98c9c9b323d68efdf320603623a900baaadd0c1adeea-a4c404a35ab93c2386054a731b6d4765-756f57e7bfb91001-query.json.gz",
+      "httpStatus": 502,
+      "total": null,
+      "error": {
+        "code": "ACCESS_RESTRICTED",
+        "message": "Source returned HTTP 403",
+        "requestId": "768ee7005b2e491abc6a72033f9e02ee"
+      }
+    },
+    {
+      "resourceId": "a4c404a35ab93c2386054a731b6d4765",
+      "operation": "query",
+      "selection": {
+        "recordPath": "csdi:Reservoirs"
+      },
+      "previousReceiptSha256": "816d039f069a51b5c3f826354fdb49d7a97f00ba7804811c6b6d52efd118a58b",
+      "historyFile": "history/816d039f069a51b5c3f826354fdb49d7a97f00ba7804811c6b6d52efd118a58b-a4c404a35ab93c2386054a731b6d4765-e71f2a87f53b99f4-query.json.gz",
+      "httpStatus": 502,
+      "total": null,
+      "error": {
+        "code": "ACCESS_RESTRICTED",
+        "message": "Source returned HTTP 403",
+        "requestId": "4c128048f4c64b9896597e61717d8607"
+      }
+    },
+    {
+      "resourceId": "07a569710cb71ebf192575f88c4882a8",
+      "operation": "query",
+      "selection": {
+        "recordPath": "WAGE_R_4_06/RIPCP/Raw_1dp_idx_n"
+      },
+      "previousReceiptSha256": "7842f4fadc872ce3536fcd2db89f60d27994eeeddee1674dabbade51819c91e1",
+      "historyFile": "history/7842f4fadc872ce3536fcd2db89f60d27994eeeddee1674dabbade51819c91e1-07a569710cb71ebf192575f88c4882a8-3963a3ac4786d193-query.json.gz",
+      "httpStatus": 200,
+      "total": 60,
+      "error": null
+    },
+    {
+      "resourceId": "07a569710cb71ebf192575f88c4882a8",
+      "operation": "schema",
+      "selection": {
+        "recordPath": "WAGE_R_1_02_H"
+      },
+      "previousReceiptSha256": "2e3e3d39b77d3119a40fc1f590c9c20127c66e1f97daad56b93b21c898b0a800",
+      "historyFile": "history/2e3e3d39b77d3119a40fc1f590c9c20127c66e1f97daad56b93b21c898b0a800-07a569710cb71ebf192575f88c4882a8-3a8cb7e7957e3415-schema.json.gz",
+      "httpStatus": 200,
+      "total": null,
+      "error": null
+    },
+    {
+      "resourceId": "07a569710cb71ebf192575f88c4882a8",
+      "operation": "query",
+      "selection": {
+        "recordPath": "WAGE_R_4_07/RIPCP_SA/QoQ_1dp_%_s"
+      },
+      "previousReceiptSha256": "b8be3709ea31d0fffcd126f9eedf805fdeed79d885c0b1dbb3f6c446588f7800",
+      "historyFile": "history/b8be3709ea31d0fffcd126f9eedf805fdeed79d885c0b1dbb3f6c446588f7800-07a569710cb71ebf192575f88c4882a8-4e35844d8a827055-query.json.gz",
+      "httpStatus": 200,
+      "total": 5,
+      "error": null
+    },
+    {
+      "resourceId": "07a569710cb71ebf192575f88c4882a8",
+      "operation": "query",
+      "selection": {
+        "recordPath": "WAGE_R_4_06/RIPCP/YoY_1dp_%_s"
+      },
+      "previousReceiptSha256": "298356290ec4aaf7c6ebc47f0b0f9be49cc667abdd999ecfe14d7e97feff4d0d",
+      "historyFile": "history/298356290ec4aaf7c6ebc47f0b0f9be49cc667abdd999ecfe14d7e97feff4d0d-07a569710cb71ebf192575f88c4882a8-9247412bfd654a4c-query.json.gz",
+      "httpStatus": 200,
+      "total": 60,
+      "error": null
+    },
+    {
+      "resourceId": "d730f09170dd81c48fc409ef84e53ece",
+      "operation": "query",
+      "selection": {
+        "recordPath": "SEV_R_6_05/PE_SA/QoQ_1dp_%_s"
+      },
+      "previousReceiptSha256": "2a5f157af0e2662286f4dfc3df8dd34b5edec2e7bc71f5324cb11113aac87f4b",
+      "historyFile": "history/2a5f157af0e2662286f4dfc3df8dd34b5edec2e7bc71f5324cb11113aac87f4b-d730f09170dd81c48fc409ef84e53ece-49627b4ef00487d4-query.json.gz",
+      "httpStatus": 200,
+      "total": 40,
+      "error": null
+    }
+  ]
+}

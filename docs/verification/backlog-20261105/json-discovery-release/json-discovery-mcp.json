@@ -1,0 +1,41 @@
+{
+  "resourceId": "47adb6bfd0d5722b5c32f0a59cae0a74",
+  "actualHttpMcpOptionParity": true,
+  "metadataOnly": true,
+  "selections": [
+    {
+      "kind": "record_path",
+      "argument": "recordPath",
+      "options": [
+        {
+          "value": "Data",
+          "label": "Data",
+          "state": "unverified",
+          "nextAction": {
+            "tool": "hk_resource_schema",
+            "arguments": {
+              "resourceId": "47adb6bfd0d5722b5c32f0a59cae0a74",
+              "recordPath": "Data"
+            }
+          }
+        },
+        {
+          "value": "Counts",
+          "label": "Counts",
+          "state": "unverified",
+          "nextAction": {
+            "tool": "hk_resource_schema",
+            "arguments": {
+              "resourceId": "47adb6bfd0d5722b5c32f0a59cae0a74",
+              "recordPath": "Counts"
+            }
+          }
+        }
+      ],
+      "totalOptions": 2,
+      "truncated": false,
+      "scope": "discovered_options_not_accepted_record_reads",
+      "checkedAt": 1793929628.518405
+    }
+  ]
+}

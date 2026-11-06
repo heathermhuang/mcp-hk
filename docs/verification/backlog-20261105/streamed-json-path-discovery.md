@@ -18,8 +18,9 @@ Metadata remains unverified and does not create accepted record variants.
 A separate local attempt to inspect the official catalogue source stopped at the
 existing `UNSAFE_SOURCE` network guard. It was not bypassed. Tests use a small
 synthetic structural reproduction of the demonstrated reader branch; these are
-not claimed as captured official records. Actual post-release source qualification
-and both-client verification remain required.
+not claimed as captured official records. Actual post-release qualification subsequently passed all 13 advertised arrays
+through HTTP/native MCP, plus fresh isolated recovery. See
+`json-discovery-release/` for the independently recorded release evidence.
 
 Separately, all 84 explicitly published historical workbook sheets now have actual
 HTTP query receipts with complete-source schema, integer total and one returned
