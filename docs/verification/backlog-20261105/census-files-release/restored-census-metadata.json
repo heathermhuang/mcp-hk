@@ -1,0 +1,539 @@
+{
+  "scope": "Exact accepted file/sheet metadata and root choices in fresh isolated restore; not a claim that all source rows fit the bounded offline cache",
+  "providerRequests": 0,
+  "acceptedScopeMetadata": [
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "recordPath": "file:DCCA_21C.xlsx"
+      },
+      "version": "aa6f862ceb4cb64ebdea3733c5e04888d1f078152629a33d24a7997b67002387",
+      "rawRows": 511,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "recordPath": "file:DCCA_21C.zip"
+      },
+      "version": "f158fec879e77e18aaa4bbd5bf880883380ad7150e7bc5c67686fe50d723800e",
+      "rawRows": 511,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "recordPath": "file:DC_21C.xlsx"
+      },
+      "version": "a1b1d4f13bc5ad178f37d65d078bbb72d51c16a4393ec6982505ccc5bc850028",
+      "rawRows": 75,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "recordPath": "file:DC_21C.zip"
+      },
+      "version": "9e075657e4933f5a05ecb2256cc04d94728fd650ef18f16ad14727da218c9600",
+      "rawRows": 75,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "sheet": "WholeTerritory",
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "version": "8425dfb53a84fe4cff7ff8a4ce55ff79b7bc2e795f5eaba2f42dae30c5585814",
+      "rawRows": 47,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "sheet": "DCD",
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "version": "8425dfb53a84fe4cff7ff8a4ce55ff79b7bc2e795f5eaba2f42dae30c5585814",
+      "rawRows": 65,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "sheet": "LSUG",
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "version": "8425dfb53a84fe4cff7ff8a4ce55ff79b7bc2e795f5eaba2f42dae30c5585814",
+      "rawRows": 1795,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "sheet": "HousingMarketArea",
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "version": "8425dfb53a84fe4cff7ff8a4ce55ff79b7bc2e795f5eaba2f42dae30c5585814",
+      "rawRows": 222,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "sheet": "BuildingGroup",
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "version": "8425dfb53a84fe4cff7ff8a4ce55ff79b7bc2e795f5eaba2f42dae30c5585814",
+      "rawRows": 3373,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "sheet": "IP Rights Notice",
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "version": "8425dfb53a84fe4cff7ff8a4ce55ff79b7bc2e795f5eaba2f42dae30c5585814",
+      "rawRows": 13,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "recordPath": "file:HMA_BG_21C.zip"
+      },
+      "version": "25ecf5e46d8b43d21e011b4c249b85f9f1cc834e71b3c31e9b7e4b594f5221c9",
+      "rawRows": 5515,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "recordPath": "file:LSUG_21C.xlsx"
+      },
+      "version": "a49a18cc131f093b0bb05b4afb6b3994e7e6d286d2b5b64b90a18771b91c407a",
+      "rawRows": 1779,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "recordPath": "file:LSUG_21C.zip"
+      },
+      "version": "8a35d811a1fcca6da287994a84e2b99080b0f734b6e142c9a96af142a58389f5",
+      "rawRows": 1779,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "recordPath": "file:LTPUG_21C.xlsx"
+      },
+      "version": "fe94d59dbec3ac299a6ced30411c5f06e4f129757d4011eb6e0d9bf0f4d1af71",
+      "rawRows": 218,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "recordPath": "file:LTPUG_21C.zip"
+      },
+      "version": "71418b0325bcc0eba2a9f4605c9b03842ed03d6e165fb96bd97bc0efdc39cf67",
+      "rawRows": 218,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "recordPath": "file:SSUG_21C.xlsx"
+      },
+      "version": "8a2a9c78cf2a7382183ea11770b4c8ab0e2428275560a993d8b81dc6263091b1",
+      "rawRows": 2353,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "recordPath": "file:SSUG_21C.zip"
+      },
+      "version": "b2a2889c0d1e137b28e31138decfa7e4c8edc2018a516bf910e380632176447b",
+      "rawRows": 2353,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "recordPath": "file:STPUG_21C.xlsx"
+      },
+      "version": "7d7d36b18ff815105ef18ae9de7e79cadab05d3baafdff94c77721e08fc5f96c",
+      "rawRows": 272,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "recordPath": "file:STPUG_21C.zip"
+      },
+      "version": "cafe526626538036d01ef5b8cf6a1d3049e2d9aac0cb996ce6eea4f505060752",
+      "rawRows": 272,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "recordPath": "file:DCCA_21C.xlsx"
+      },
+      "version": "aa6f862ceb4cb64ebdea3733c5e04888d1f078152629a33d24a7997b67002387",
+      "rawRows": 511,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "recordPath": "file:DCCA_21C.zip"
+      },
+      "version": "f158fec879e77e18aaa4bbd5bf880883380ad7150e7bc5c67686fe50d723800e",
+      "rawRows": 511,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "recordPath": "file:DC_21C.xlsx"
+      },
+      "version": "a1b1d4f13bc5ad178f37d65d078bbb72d51c16a4393ec6982505ccc5bc850028",
+      "rawRows": 75,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "recordPath": "file:DC_21C.zip"
+      },
+      "version": "9e075657e4933f5a05ecb2256cc04d94728fd650ef18f16ad14727da218c9600",
+      "rawRows": 75,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "sheet": "WholeTerritory",
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "version": "8425dfb53a84fe4cff7ff8a4ce55ff79b7bc2e795f5eaba2f42dae30c5585814",
+      "rawRows": 47,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "sheet": "DCD",
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "version": "8425dfb53a84fe4cff7ff8a4ce55ff79b7bc2e795f5eaba2f42dae30c5585814",
+      "rawRows": 65,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "sheet": "LSUG",
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "version": "8425dfb53a84fe4cff7ff8a4ce55ff79b7bc2e795f5eaba2f42dae30c5585814",
+      "rawRows": 1795,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "sheet": "HousingMarketArea",
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "version": "8425dfb53a84fe4cff7ff8a4ce55ff79b7bc2e795f5eaba2f42dae30c5585814",
+      "rawRows": 222,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "sheet": "BuildingGroup",
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "version": "8425dfb53a84fe4cff7ff8a4ce55ff79b7bc2e795f5eaba2f42dae30c5585814",
+      "rawRows": 3373,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "sheet": "IP Rights Notice",
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "version": "8425dfb53a84fe4cff7ff8a4ce55ff79b7bc2e795f5eaba2f42dae30c5585814",
+      "rawRows": 13,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "recordPath": "file:HMA_BG_21C.zip"
+      },
+      "version": "25ecf5e46d8b43d21e011b4c249b85f9f1cc834e71b3c31e9b7e4b594f5221c9",
+      "rawRows": 5515,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "recordPath": "file:LSUG_21C.xlsx"
+      },
+      "version": "a49a18cc131f093b0bb05b4afb6b3994e7e6d286d2b5b64b90a18771b91c407a",
+      "rawRows": 1779,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "recordPath": "file:LSUG_21C.zip"
+      },
+      "version": "8a35d811a1fcca6da287994a84e2b99080b0f734b6e142c9a96af142a58389f5",
+      "rawRows": 1779,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "recordPath": "file:LTPUG_21C.xlsx"
+      },
+      "version": "fe94d59dbec3ac299a6ced30411c5f06e4f129757d4011eb6e0d9bf0f4d1af71",
+      "rawRows": 218,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "recordPath": "file:LTPUG_21C.zip"
+      },
+      "version": "71418b0325bcc0eba2a9f4605c9b03842ed03d6e165fb96bd97bc0efdc39cf67",
+      "rawRows": 218,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "recordPath": "file:SSUG_21C.xlsx"
+      },
+      "version": "8a2a9c78cf2a7382183ea11770b4c8ab0e2428275560a993d8b81dc6263091b1",
+      "rawRows": 2353,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "recordPath": "file:SSUG_21C.zip"
+      },
+      "version": "b2a2889c0d1e137b28e31138decfa7e4c8edc2018a516bf910e380632176447b",
+      "rawRows": 2353,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "recordPath": "file:STPUG_21C.xlsx"
+      },
+      "version": "7d7d36b18ff815105ef18ae9de7e79cadab05d3baafdff94c77721e08fc5f96c",
+      "rawRows": 272,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "recordPath": "file:STPUG_21C.zip"
+      },
+      "version": "cafe526626538036d01ef5b8cf6a1d3049e2d9aac0cb996ce6eea4f505060752",
+      "rawRows": 272,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "recordPath": "file:DCCA_21C.xlsx"
+      },
+      "version": "aa6f862ceb4cb64ebdea3733c5e04888d1f078152629a33d24a7997b67002387",
+      "rawRows": 511,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "recordPath": "file:DCCA_21C.zip"
+      },
+      "version": "f158fec879e77e18aaa4bbd5bf880883380ad7150e7bc5c67686fe50d723800e",
+      "rawRows": 511,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "recordPath": "file:DC_21C.xlsx"
+      },
+      "version": "a1b1d4f13bc5ad178f37d65d078bbb72d51c16a4393ec6982505ccc5bc850028",
+      "rawRows": 75,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "recordPath": "file:DC_21C.zip"
+      },
+      "version": "9e075657e4933f5a05ecb2256cc04d94728fd650ef18f16ad14727da218c9600",
+      "rawRows": 75,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "sheet": "WholeTerritory",
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "version": "8425dfb53a84fe4cff7ff8a4ce55ff79b7bc2e795f5eaba2f42dae30c5585814",
+      "rawRows": 47,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "sheet": "DCD",
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "version": "8425dfb53a84fe4cff7ff8a4ce55ff79b7bc2e795f5eaba2f42dae30c5585814",
+      "rawRows": 65,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "sheet": "LSUG",
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "version": "8425dfb53a84fe4cff7ff8a4ce55ff79b7bc2e795f5eaba2f42dae30c5585814",
+      "rawRows": 1795,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "sheet": "HousingMarketArea",
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "version": "8425dfb53a84fe4cff7ff8a4ce55ff79b7bc2e795f5eaba2f42dae30c5585814",
+      "rawRows": 222,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "sheet": "BuildingGroup",
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "version": "8425dfb53a84fe4cff7ff8a4ce55ff79b7bc2e795f5eaba2f42dae30c5585814",
+      "rawRows": 3373,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "sheet": "IP Rights Notice",
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "version": "8425dfb53a84fe4cff7ff8a4ce55ff79b7bc2e795f5eaba2f42dae30c5585814",
+      "rawRows": 13,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "recordPath": "file:HMA_BG_21C.zip"
+      },
+      "version": "25ecf5e46d8b43d21e011b4c249b85f9f1cc834e71b3c31e9b7e4b594f5221c9",
+      "rawRows": 5515,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "recordPath": "file:LSUG_21C.xlsx"
+      },
+      "version": "a49a18cc131f093b0bb05b4afb6b3994e7e6d286d2b5b64b90a18771b91c407a",
+      "rawRows": 1779,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "recordPath": "file:LSUG_21C.zip"
+      },
+      "version": "8a35d811a1fcca6da287994a84e2b99080b0f734b6e142c9a96af142a58389f5",
+      "rawRows": 1779,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "recordPath": "file:LTPUG_21C.xlsx"
+      },
+      "version": "fe94d59dbec3ac299a6ced30411c5f06e4f129757d4011eb6e0d9bf0f4d1af71",
+      "rawRows": 218,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "recordPath": "file:LTPUG_21C.zip"
+      },
+      "version": "71418b0325bcc0eba2a9f4605c9b03842ed03d6e165fb96bd97bc0efdc39cf67",
+      "rawRows": 218,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "recordPath": "file:SSUG_21C.xlsx"
+      },
+      "version": "8a2a9c78cf2a7382183ea11770b4c8ab0e2428275560a993d8b81dc6263091b1",
+      "rawRows": 2353,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "recordPath": "file:SSUG_21C.zip"
+      },
+      "version": "b2a2889c0d1e137b28e31138decfa7e4c8edc2018a516bf910e380632176447b",
+      "rawRows": 2353,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "recordPath": "file:STPUG_21C.xlsx"
+      },
+      "version": "7d7d36b18ff815105ef18ae9de7e79cadab05d3baafdff94c77721e08fc5f96c",
+      "rawRows": 272,
+      "acceptedMetadataRecovered": true
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "recordPath": "file:STPUG_21C.zip"
+      },
+      "version": "cafe526626538036d01ef5b8cf6a1d3049e2d9aac0cb996ce6eea4f505060752",
+      "rawRows": 272,
+      "acceptedMetadataRecovered": true
+    }
+  ],
+  "notSimultaneouslyRetained": [],
+  "sourceHoldsFromHostedVerification": []
+}

@@ -1,0 +1,10 @@
+{
+  "scope": "Fresh accepted checkpoint restored in isolation; explicit lookup response and missing-context isolation through HTTP/native MCP",
+  "resourceId": "01d13836b343a057c89bf7f3dcb2abb7",
+  "httpMcpParity": true,
+  "sourceMatches": 27,
+  "version": "c570524b4717c88f9e22c6a0bdc01d2457b3577ed9b991e1255017e36ac95cb5",
+  "publicCallerValuesPublished": false,
+  "nativeCoordinatesQualified": false,
+  "providerRequests": 0
+}

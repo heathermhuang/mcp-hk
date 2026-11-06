@@ -1,0 +1,102 @@
+{
+  "scope": "Two exact file links published by the captured Census 2021 district-profile page; no original XML representation equivalence or semantic acceptance",
+  "results": [
+    {
+      "publishedUrl": "https://www.census2021.gov.hk/doc/DC_21C.zip",
+      "format": "ZIP",
+      "checkedAtUtc": "2026-11-06T09:36:41.524598+00:00",
+      "httpStatus": 200,
+      "bytes": 21026,
+      "sha256": "9e075657e4933f5a05ecb2256cc04d94728fd650ef18f16ad14727da218c9600",
+      "responseUrl": "https://www.census2021.gov.hk/doc/DC_21C.zip",
+      "contentType": "application/zip",
+      "archiveMemberCount": 1,
+      "expandedBytes": 78163,
+      "memberNames": [
+        "DC_21C.CSV"
+      ],
+      "parserState": "success",
+      "rows": 75,
+      "fields": [
+        "\u5340\u8b70\u6703\u5206\u5340\uff08\u5206\u7d44)",
+        "\u5340\u8b70\u6703\u5206\u5340",
+        "\u5340\u8b70\u6703\u5206\u5340\uff08\u82f1\u6587\u540d\u7a31)",
+        "\u5340\u8b70\u6703\u5206\u5340\uff08\u4e2d\u6587\u540d\u7a31)",
+        "\u7e3d\u4eba\u53e3",
+        "_column_6",
+        "_column_7",
+        "\u6027\u5225\u6bd4\u7387\uff08\u5373\u7537\u6027\u6578\u76ee\u8207\u6bcf\u5343\u540d\u5973\u6027\u76f8\u5c0d\u7684\u6bd4\u7387\uff09",
+        "_column_9",
+        "_column_10",
+        "_column_11",
+        "_column_12"
+      ],
+      "schemaSummary": {
+        "format": "ZIP",
+        "scope": "supported_archive_members",
+        "availableSheets": null,
+        "availableRecordPaths": [
+          ""
+        ],
+        "archiveMembers": [
+          {
+            "name": "DC_21C.CSV",
+            "format": "CSV",
+            "recordCount": 75
+          }
+        ]
+      }
+    },
+    {
+      "publishedUrl": "https://www.census2021.gov.hk/doc/DC_21C.xlsx",
+      "format": "XLSX",
+      "checkedAtUtc": "2026-11-06T09:36:44.890005+00:00",
+      "httpStatus": 200,
+      "bytes": 76097,
+      "sha256": "a1b1d4f13bc5ad178f37d65d078bbb72d51c16a4393ec6982505ccc5bc850028",
+      "responseUrl": "https://www.census2021.gov.hk/doc/DC_21C.xlsx",
+      "contentType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "archiveMemberCount": 12,
+      "expandedBytes": 467910,
+      "memberNames": [
+        "[Content_Types].xml",
+        "_rels/.rels",
+        "xl/workbook.xml",
+        "xl/_rels/workbook.xml.rels",
+        "xl/worksheets/sheet1.xml",
+        "xl/theme/theme1.xml",
+        "xl/styles.xml",
+        "xl/sharedStrings.xml",
+        "xl/worksheets/_rels/sheet1.xml.rels",
+        "xl/printerSettings/printerSettings1.bin",
+        "docProps/core.xml",
+        "docProps/app.xml"
+      ],
+      "parserState": "success",
+      "rows": 75,
+      "fields": [
+        "\u5340\u8b70\u6703\u5206\u5340\n\uff08\u5206\u7d44)",
+        "\u5340\u8b70\u6703\u5206\u5340",
+        "\u5340\u8b70\u6703\u5206\u5340\uff08\u82f1\u6587\u540d\u7a31)",
+        "\u5340\u8b70\u6703\u5206\u5340\uff08\u4e2d\u6587\u540d\u7a31)",
+        "\u7e3d\u4eba\u53e3",
+        "\u6309\u6027\u5225\u5283\u5206\u7684\u4eba\u53e3",
+        "_column_7",
+        "\u6027\u5225\u6bd4\u7387\uff08\u5373\u7537\u6027\u6578\u76ee\u8207\u6bcf\u5343\u540d\u5973\u6027\u76f8\u5c0d\u7684\u6bd4\u7387\uff09",
+        "\u6309\u5e74\u9f61\u7d44\u5225\u5283\u5206\u7684\u4eba\u53e3",
+        "_column_10",
+        "_column_11",
+        "_column_12"
+      ],
+      "schemaSummary": {
+        "format": "XLSX",
+        "scope": null,
+        "availableSheets": [
+          "DCD"
+        ],
+        "availableRecordPaths": null,
+        "archiveMembers": null
+      }
+    }
+  ]
+}

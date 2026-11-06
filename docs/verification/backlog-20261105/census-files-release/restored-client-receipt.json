@@ -1,0 +1,44 @@
+{
+  "scope": "actual fresh accepted production checkpoint restored in isolation; old and new local HTTP/native FastMCP reads",
+  "providerRequests": 0,
+  "pointManifest": "cb5e3a1d1827b25e6a2f7549db9639ee0aa542fb9657e44b1b00613a18f4aa9f",
+  "results": [
+    {
+      "legacyHttpPath": "/api/v1/restaurants?limit=1",
+      "passed": true
+    },
+    {
+      "legacyHttpPath": "/api/v1/districts",
+      "passed": true
+    },
+    {
+      "resourceId": "2c5d0afb1ffb7ec9b27de104cd7e3767",
+      "httpMcpParity": true,
+      "matched": 1,
+      "sourceRows": 45
+    },
+    {
+      "resourceId": "395d43bfacb4461f6774f7d14e22c7db",
+      "httpMcpParity": true,
+      "matched": 1,
+      "sourceRows": 95
+    },
+    {
+      "resourceId": "368c1b639641cbdb729b8ec9ea4ad865",
+      "httpMcpParity": true,
+      "matched": 1,
+      "sourceRows": 184
+    },
+    {
+      "resourceId": "b6c922aee8773b1418f41cdaa9d31987",
+      "httpMcpParity": true,
+      "matched": 1,
+      "sourceRows": 18
+    },
+    {
+      "resourceId": "9029de2e8cc6895c67902c44b1296d32",
+      "rows": 56,
+      "rawObsValueRetainedAsString": true
+    }
+  ]
+}

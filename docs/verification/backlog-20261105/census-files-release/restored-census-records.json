@@ -1,0 +1,26 @@
+{
+  "scope": "Two exact raw file record scopes restored; other accepted file metadata checked separately, not claimed as a complete offline row replica",
+  "providerRequests": 0,
+  "results": [
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "recordPath": "file:DC_21C.zip"
+      },
+      "version": "9e075657e4933f5a05ecb2256cc04d94728fd650ef18f16ad14727da218c9600",
+      "rawRows": 75,
+      "dataItemsSha256": "0bc311d221775f247d6dc7166ebab85a05a8a73503d8843b6e9486f7792df08a",
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "recordPath": "file:DC_21C.xlsx"
+      },
+      "version": "a1b1d4f13bc5ad178f37d65d078bbb72d51c16a4393ec6982505ccc5bc850028",
+      "rawRows": 75,
+      "dataItemsSha256": "8ee787cd6f7366f350c801f524a8424a91e8a97b51884a8c50739bd9d7265e40",
+      "httpMcpParity": true
+    }
+  ]
+}
