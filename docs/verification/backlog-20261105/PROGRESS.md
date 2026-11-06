@@ -1,45 +1,103 @@
-# Backlog execution checkpoint
+# Backlog execution checkpoint — 7 November 2026
 
-The complete objective remains open. Current work: finish the saved explicit
-selection/report graphs and investigate demonstrated reader failures, retaining
-individual source, capacity, parameter and semantic holds. The pre-integration
-narrative is preserved in [pre-integration-progress.md](pre-integration-progress.md).
+The complete objective remains open. Planning covers every frozen candidate;
+qualification continues through the existing finite source lanes. The named point,
+workbook and bounded bus-comparison implementations have released evidence. Wider
+source graphs, demonstrated task/reader gaps and independently supported semantics
+remain unfinished. Earlier progress is retained in Git history and
+[pre-integration-progress.md](pre-integration-progress.md).
 
-## Verified releases
+## Current deployed evidence
 
-Releases `a687580`, `ced4b81` and `ad69dc0` passed their exact-head checks, actual
-HTTP/native MCP regressions and fresh accepted checkpoint recovery. The latest
-verified release includes three planning WFS selections (16 / 2,179 / 1,324 source
-features), with the two remaining exact WFS capacity holds retained. All five
-original schedules were restored and independently read back. Source snapshots,
-client results, recovery and operational receipts are in [RELEASED.md](RELEASED.md).
+Runtime commit `7cb7aed5a83a62f18f127c8770d36bbedbf25e15`, application/running
+instance version 87, passed all five exact-main CI workflows, actual controller and
+image adoption, hosted HTTP/native MCP checks and fresh isolated recovery.
+[The release receipt](cyclone-list-release/release-receipt.json) records the immutable
+archive checksum: 121,970,117 archive / 363,311,104 SQLite / 394,466,387 total restored
+bytes. All five original schedules were restored and independently read back;
+final health passed, the owned release slot closed and both source lanes resumed.
+The restore's client checks made zero provider attempts. This is recovery of dated
+accepted facts; expired arrivals are not presented as current service.
 
-KMB route 103 verifies through the published same-stop label. KMB 11C's matching
-boarding pole is 44.55 m from the TD reference and remains outside the unchanged
-35 m gate. NLB's actual comparison cohort passed; broader calendar/walking/fastest
-arrival claims remain unverified. Workbook reads retain original grids and values.
+Later releases are distinguished from the earlier release history in
+[RELEASED.md](RELEASED.md). Shared framing, selected Census files, recycling, HKSTP,
+wind and the exact cyclone XML list have their own hosted/recovery receipts. Hydro
+records remain denied pending reuse clarification; the separate cyclone GML
+placeholder remains unqualified.
 
-## Exact remaining work
+## Package status and acceptance boundaries
 
-[execution-plan.json.gz](execution-plan.json.gz) plans all 5,584 frozen family
-candidates and all 1,653 residual groups, covering 8,324 unique resource identifiers.
-The [execution-plan notes](execution-plan.md) explain its dated evidence and next
-steps. These are overlapping native representations and task routes, not distinct
-new government datasets or acceptance counts.
+| Package | Evidence-backed state | Remaining work |
+|---|---|---|
+| B0 — ledger/capacity | Frozen plan, measured lossless storage repair and repeated accepted restores | Keep measuring later checkpoints; unchanged bulk/hard limits still apply. |
+| B1 — explicit selections | Saved original ArcGIS, WFS, workbook and report graphs are being qualified | Finish every unblocked choice; retain exact failures and unknown branches. |
+| B2 — reader/task gaps | Released repairs and individual source/task evidence are linked in RELEASED.md | Remaining demonstrated gaps need exact fixtures/contracts; source refusal is not empty data. |
+| B3 — reviewed semantics/tasks | Four named new point bindings and all 83 remaining named workbook sheets have released source/client evidence | Further B1 tasks require independent dictionaries; raw grids do not establish normalized observations. |
+| B4 — KMB/LWB join | Bounded implementation, source specifications and actual HTTP/MCP comparison cohorts are released | KMB 11C stays mapping-held; calendar/global-earliest/walking/fastest claims remain unqualified. |
+| B5 — NLB join | V2 native route-ID expansion, ordered/repeated-stop checks and comparison cohort are released | Individual unsupported or ambiguous source scopes stay held; no guessed calendar or V1 fallback. |
+| B6 — integration/release/recovery | Released increments have exact-head CI, actual clients, fresh recovery and schedule proof | Final programme acceptance waits for all remaining unblocked B1–B3 work. |
 
-The saved graph checkpoint after the two 400-request invocations has 69 primary
-resources and 153 report resources with pending work. It records 69 / 2,558 known
-missing operations respectively; further discovery can expose more choices. Full
-per-resource scopes, failures and truncated-option indicators are retained in
-[selection-graph-checkpoint.json.gz](selection-graph-checkpoint.json.gz).
+[Transport checkpoint](transport-package-checkpoint.json) links current implementation
+hashes and dated hosted evidence. The version-87 KMB cohort checked all four
+reference candidates in 40 source lookups: 1, 103 and 11K passed, while 11C retained
+its exact mapping failure; no candidates were silently unchecked. Its observed
+44.55 m boarding-pole distance exceeds the unchanged 35 m gate. NLB checked all 11
+expanded candidates in seven lookups, with six accepted arrival checks and five
+verified reverse-order exclusions. The prior LWB hosted cohort checked all six
+candidates in 13 lookups; its source availability was not rechecked for this
+reconciliation. These are bounded reference cohorts, not whole-network acceptance.
+Full candidate processing precedes the presentation limit; incomplete coverage
+stays visible. Service types, native flags, namespace/direction and repeated visits
+retain their implementation and source-specification checks.
 
-The 1,623 dated Census adapter-task matches and 147 exact decoded-response holds
-are documented in [census-task-audit.md](census-task-audit.md). They do not establish
-original workbook-file equivalence or newly current upstream availability.
+The point binding manifest remains
+`cb5e3a1d1827b25e6a2f7549db9639ee0aa542fb9657e44b1b00613a18f4aa9f`:
+45 ambulance-depot, 95 fire-station, 184 library and 18 museum source features, with
+existing clinic/school bindings preserved. These are version-scoped source features,
+not unique facilities, open-now service, emergency routing or walking directions.
+All 84 named workbook choices have dated raw-grid query evidence; periods, values
+and footnotes are not silently normalized.
 
-The merged qualifier queries each accepted selection before sibling selections
-can evict it. Executions resume the same receipts; verified later release results
-supersede old failures with every original receipt retained in history. Two lanes
-use at least 2.2 seconds between requests to stay below the existing shared API
-limit. Recovery ceilings, source/scan slots, variant retention and row cache limits
-remain unchanged. No new service, schedule, credential or paid evaluation was added.
+## Exact remaining graph work
+
+[execution-plan.json.gz](execution-plan.json.gz) preserves the complete original
+5,584 family memberships and 1,653 residual groups, covering 8,324 unique resource
+IDs. Its states are dated planning routes, not current acceptance totals. The
+frozen native denominator remains 5,048 datasets and 64,012 resource URLs.
+
+The bounded read-only [saved graph checkpoint](cyclone-list-release/saved-graphs-summary.json)
+recorded 1,156 accepted ArcGIS query selections, 44 WFS selections, 671 non-report
+workbook selections and 3,952 report selections. Known missing operations were
+219 / 1,027 / 1,217 / 1,565 respectively. The checkpoint's timestamp is authoritative;
+subsequent lane responses continue to advance it. Unknown graph branches may
+expose more choices. Counts are overlapping raw operations, not unique datasets,
+entities or semantic gains. [Exact saved frontiers](cyclone-list-release/saved-frontiers.json)
+are dated continuation pointers, not newly attempted operations.
+
+The two finite lanes reuse saved failures and enforce at least three seconds
+between resource requests. They retain their existing request ceilings and saved
+journals; a new window needs a terminal prior window, exact unsaved scope and fresh
+capacity evidence. Existing global source/scan slots, daily/request budgets,
+50 variants/resource, 1 MB option metadata and 4 MB row cache remain unchanged.
+The bulk archive guard is 130 MB; hard archive/SQLite/total restore limits remain
+150/500/750 MB. No new service, scheduler, credential or paid evaluation was added.
+
+## Retained exact holds
+
+- The [Census task audit](census-task-audit.md) links 1,623 dated exact API-table
+  tasks and 147 unresolved 8 MB decoded-response holds. It establishes no original
+  workbook-file equivalence or newly current source availability.
+- Hydro's [reuse hold](hydro-reuse-hold/) still needs owner clarification. No public
+  records were activated. Published builder protocols, source errors, access denials,
+  drawing-only workbooks and unsupported semantics retain their exact evidence;
+  missing proof is not permission to invent defaults or bypass a source boundary.
+- The two [exact missing CSDI references](cyclone-list-release/csdi-exact-missing-reference-review.json)
+  returned metadata HTTP 404 once. Replacement IDs remain unverified; this does not
+  prove worldwide dataset absence. Catalogue discovery links are not record acceptance.
+- HKMA's exact HTTP 405, individual source/body/option-size holds, malformed sources
+  and GML empty-placeholder uncertainty remain separate. Saved receipts are preserved;
+  unchanged failures are not retried through another endpoint or request identity.
+
+The next work is the existing wider frozen qualification lanes and the exact
+unblocked task/reader/semantic frontiers they demonstrate. This checkpoint does not
+mark the complete programme finished.

@@ -1,0 +1,336 @@
+{
+  "scope": "Dated actual-client evidence for released bounded comparison implementation; no whole-network, current-calendar, walking, globally earliest or fastest-arrival qualification",
+  "liveReleaseCommit": "7cb7aed5a83a62f18f127c8770d36bbedbf25e15",
+  "applicationVersion": 87,
+  "releaseVerifiedAtUtc": "2026-11-06T19:05:47.336689+00:00",
+  "sourceReceiptSha256": "0265258ddeab48a68c0e18783c4762d4fbfe6b877ea4ee1633a4e80486d3551b",
+  "transportSourceHashes": {
+    "src/mcp_open_data_hk/transport_joins.py": "0d48d14d3e3f61440a14f537a0cde81c438cf487342a463fba88a00ca07fc034",
+    "src/mcp_open_data_hk/transport_search.py": "f03d9c5dbf44af2274711aa87c37641c5cbd118f61f64837aee94c7dea8bf57b"
+  },
+  "lastTransportChange": "c37514d7defff3e8ac7f2d6c455f65443141acce",
+  "liveHttpMcpCohorts": [
+    {
+      "operator": "CTB",
+      "selection": {
+        "origin": "261",
+        "destination": "249",
+        "operator": "CTB",
+        "limit": 5
+      },
+      "http": {
+        "coverage": {
+          "candidate": 4,
+          "eligible": 4,
+          "eligibilityUnknown": 0,
+          "verifiedNotServingOrder": 0,
+          "acceptedArrivalChecks": 4,
+          "checked": 4,
+          "failed": 0,
+          "unchecked": 0,
+          "uncheckedReasons": {},
+          "sourceRequests": 12,
+          "requestLimit": 64,
+          "deadlineSeconds": 45,
+          "referenceIndexStale": false,
+          "complete": true,
+          "eligibilityMeaning": "Verified current operator boarding/alighting occurrence; service calendars remain unknown."
+        },
+        "departureComparison": {
+          "scope": "earliest_reported_departure_among_checked_candidates",
+          "earliestPredictedAt": null,
+          "allReferenceCandidatesChecked": true,
+          "globallyEarliest": false,
+          "serviceCalendarsVerified": false,
+          "walkingFeasibilityVerified": false,
+          "fastestArrivalVerified": false
+        }
+      },
+      "mcp": {
+        "coverage": {
+          "candidate": 4,
+          "eligible": 4,
+          "eligibilityUnknown": 0,
+          "verifiedNotServingOrder": 0,
+          "acceptedArrivalChecks": 4,
+          "checked": 4,
+          "failed": 0,
+          "unchecked": 0,
+          "uncheckedReasons": {},
+          "sourceRequests": 12,
+          "requestLimit": 64,
+          "deadlineSeconds": 45,
+          "referenceIndexStale": false,
+          "complete": true,
+          "eligibilityMeaning": "Verified current operator boarding/alighting occurrence; service calendars remain unknown."
+        },
+        "departureComparison": {
+          "scope": "earliest_reported_departure_among_checked_candidates",
+          "earliestPredictedAt": null,
+          "allReferenceCandidatesChecked": true,
+          "globallyEarliest": false,
+          "serviceCalendarsVerified": false,
+          "walkingFeasibilityVerified": false,
+          "fastestArrivalVerified": false
+        }
+      },
+      "httpChoices": [
+        {
+          "route": "12M",
+          "arrivalStatus": "live",
+          "operatorNamespace": "ctb"
+        },
+        {
+          "route": "13",
+          "arrivalStatus": "live",
+          "operatorNamespace": "ctb"
+        },
+        {
+          "route": "12",
+          "arrivalStatus": "live",
+          "operatorNamespace": "ctb"
+        }
+      ]
+    },
+    {
+      "operator": "KMB",
+      "selection": {
+        "origin": "4001",
+        "destination": "4003",
+        "operator": "KMB",
+        "limit": 5
+      },
+      "http": {
+        "coverage": {
+          "candidate": 4,
+          "eligible": 3,
+          "eligibilityUnknown": 1,
+          "verifiedNotServingOrder": 0,
+          "acceptedArrivalChecks": 3,
+          "checked": 4,
+          "failed": 1,
+          "unchecked": 0,
+          "uncheckedReasons": {},
+          "sourceRequests": 40,
+          "requestLimit": 64,
+          "deadlineSeconds": 45,
+          "referenceIndexStale": false,
+          "complete": false,
+          "eligibilityMeaning": "Verified current operator boarding/alighting occurrence; service calendars remain unknown."
+        },
+        "departureComparison": {
+          "scope": "earliest_reported_departure_among_checked_candidates",
+          "earliestPredictedAt": null,
+          "allReferenceCandidatesChecked": false,
+          "globallyEarliest": false,
+          "serviceCalendarsVerified": false,
+          "walkingFeasibilityVerified": false,
+          "fastestArrivalVerified": false
+        }
+      },
+      "mcp": {
+        "coverage": {
+          "candidate": 4,
+          "eligible": 3,
+          "eligibilityUnknown": 1,
+          "verifiedNotServingOrder": 0,
+          "acceptedArrivalChecks": 3,
+          "checked": 4,
+          "failed": 1,
+          "unchecked": 0,
+          "uncheckedReasons": {},
+          "sourceRequests": 40,
+          "requestLimit": 64,
+          "deadlineSeconds": 45,
+          "referenceIndexStale": false,
+          "complete": false,
+          "eligibilityMeaning": "Verified current operator boarding/alighting occurrence; service calendars remain unknown."
+        },
+        "departureComparison": {
+          "scope": "earliest_reported_departure_among_checked_candidates",
+          "earliestPredictedAt": null,
+          "allReferenceCandidatesChecked": false,
+          "globallyEarliest": false,
+          "serviceCalendarsVerified": false,
+          "walkingFeasibilityVerified": false,
+          "fastestArrivalVerified": false
+        }
+      },
+      "httpChoices": [
+        {
+          "route": "1",
+          "arrivalStatus": "live",
+          "operatorNamespace": "kmb"
+        },
+        {
+          "route": "103",
+          "arrivalStatus": "live",
+          "operatorNamespace": "kmb"
+        },
+        {
+          "route": "11C",
+          "arrivalStatus": "unavailable",
+          "operatorNamespace": "kmb"
+        },
+        {
+          "route": "11K",
+          "arrivalStatus": "live",
+          "operatorNamespace": "kmb"
+        }
+      ]
+    },
+    {
+      "operator": "NLB",
+      "selection": {
+        "origin": "12000",
+        "destination": "11000",
+        "operator": "NLB",
+        "limit": 5
+      },
+      "http": {
+        "coverage": {
+          "candidate": 11,
+          "eligible": 6,
+          "eligibilityUnknown": 0,
+          "verifiedNotServingOrder": 5,
+          "acceptedArrivalChecks": 6,
+          "checked": 11,
+          "failed": 0,
+          "unchecked": 0,
+          "uncheckedReasons": {},
+          "sourceRequests": 7,
+          "requestLimit": 64,
+          "deadlineSeconds": 45,
+          "referenceIndexStale": false,
+          "complete": true,
+          "eligibilityMeaning": "Verified current operator boarding/alighting occurrence; service calendars remain unknown."
+        },
+        "departureComparison": {
+          "scope": "earliest_reported_departure_among_checked_candidates",
+          "earliestPredictedAt": null,
+          "allReferenceCandidatesChecked": true,
+          "globallyEarliest": false,
+          "serviceCalendarsVerified": false,
+          "walkingFeasibilityVerified": false,
+          "fastestArrivalVerified": false
+        }
+      },
+      "mcp": {
+        "coverage": {
+          "candidate": 11,
+          "eligible": 6,
+          "eligibilityUnknown": 0,
+          "verifiedNotServingOrder": 5,
+          "acceptedArrivalChecks": 6,
+          "checked": 11,
+          "failed": 0,
+          "unchecked": 0,
+          "uncheckedReasons": {},
+          "sourceRequests": 7,
+          "requestLimit": 64,
+          "deadlineSeconds": 45,
+          "referenceIndexStale": false,
+          "complete": true,
+          "eligibilityMeaning": "Verified current operator boarding/alighting occurrence; service calendars remain unknown."
+        },
+        "departureComparison": {
+          "scope": "earliest_reported_departure_among_checked_candidates",
+          "earliestPredictedAt": null,
+          "allReferenceCandidatesChecked": true,
+          "globallyEarliest": false,
+          "serviceCalendarsVerified": false,
+          "walkingFeasibilityVerified": false,
+          "fastestArrivalVerified": false
+        }
+      },
+      "httpChoices": [
+        {
+          "route": "1",
+          "arrivalStatus": "ineligible",
+          "operatorNamespace": "nlb"
+        },
+        {
+          "route": "1",
+          "arrivalStatus": "live",
+          "operatorNamespace": "nlb"
+        },
+        {
+          "route": "N1",
+          "arrivalStatus": "live",
+          "operatorNamespace": "nlb"
+        },
+        {
+          "route": "1",
+          "arrivalStatus": "ineligible",
+          "operatorNamespace": "nlb"
+        },
+        {
+          "route": "1",
+          "arrivalStatus": "ineligible",
+          "operatorNamespace": "nlb"
+        }
+      ]
+    }
+  ],
+  "priorLwbHostedReceipt": {
+    "path": "hkma-release/lwb-client-summary.json",
+    "sha256": "0cf15432087c0669cfd121efcbfe5f7163c6d306b4daff510d8d9cbe8aa786c3",
+    "selection": {
+      "origin": "6080",
+      "destination": "873",
+      "operator": "LWB",
+      "limit": 5
+    },
+    "httpCoverage": {
+      "candidate": 6,
+      "eligible": 6,
+      "eligibilityUnknown": 0,
+      "verifiedNotServingOrder": 0,
+      "acceptedArrivalChecks": 6,
+      "checked": 6,
+      "failed": 0,
+      "unchecked": 0,
+      "uncheckedReasons": {},
+      "sourceRequests": 13,
+      "requestLimit": 64,
+      "deadlineSeconds": 45,
+      "referenceIndexStale": false,
+      "complete": true,
+      "eligibilityMeaning": "Verified current operator boarding/alighting occurrence; service calendars remain unknown."
+    },
+    "mcpCoverage": {
+      "candidate": 6,
+      "eligible": 6,
+      "eligibilityUnknown": 0,
+      "verifiedNotServingOrder": 0,
+      "acceptedArrivalChecks": 6,
+      "checked": 6,
+      "failed": 0,
+      "unchecked": 0,
+      "uncheckedReasons": {},
+      "sourceRequests": 13,
+      "requestLimit": 64,
+      "deadlineSeconds": 45,
+      "referenceIndexStale": false,
+      "complete": true,
+      "eligibilityMeaning": "Verified current operator boarding/alighting occurrence; service calendars remain unknown."
+    },
+    "currentSourceAvailabilityRechecked": false
+  },
+  "recovery": {
+    "receipt": "cyclone-list-release/post-restore-receipt.json",
+    "archiveSha256": "d5122bfaa2c094e47ec1f387efc1f1a38ebc31a8001031884cc7683f2f657076",
+    "providerRequests": 0,
+    "meaning": "Accepted packs and indexes recover; expired ETA observations are not current transport service."
+  },
+  "remainingExactMappingHold": {
+    "operator": "KMB",
+    "route": "11C",
+    "referenceBoardStop": "4001",
+    "observedDistanceM": 44.55,
+    "unchangedGateM": 35,
+    "qualification": "TRANSPORT_MAPPING_UNVERIFIED"
+  },
+  "newSourceRequests": 0,
+  "newSourceOrSemanticApprovals": 0
+}

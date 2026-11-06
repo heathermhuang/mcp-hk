@@ -72,8 +72,8 @@ dataset/task acceptance. Maintain original source fields and missing-evidence ho
 - [ ] B1: every explicit-selection candidate has accepted scope or exact unresolved reason.
 - [ ] B2: all demonstrated shared reader defects repaired; individual source/task holds retained.
 - [ ] B3: independent new bindings and additional workbook/task evidence.
-- [ ] B4: KMB/LWB complete joined comparison and source/client proof.
-- [ ] B5: NLB complete joined comparison and source/client proof.
+- [x] B4: bounded KMB/LWB joined comparison implemented and released with source/client proof; exact KMB 11C mapping hold retained (see `transport-package-checkpoint.json`).
+- [x] B5: native V2 NLB joined comparison implemented and released with source/client proof; source/calendar ambiguity retained (see `transport-package-checkpoint.json`).
 - [ ] B6: PR/CI/merge/deployment/HTTP/MCP/fresh restore/schedules complete.
 
 **First unfinished package: the wider frozen ArcGIS/WFS/workbook alternatives and
