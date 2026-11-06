@@ -38,6 +38,10 @@ AUD_URLS = {
     ]
 }
 NOTIFICATIONS = "https://ogcmn.one.gov.hk/ogcmn/service/list/catwc/OGCMN*"
+TID_URLS = {
+    "https://www.tid.gov.hk/service/utf/messageFromUs" + language + ".do"
+    for language in ["En", "Tc", "Sc"]
+}
 
 
 def object_sequence(body):
@@ -92,9 +96,19 @@ def read(resource, body, record_path="", sheet="", layer=None):
             invalid("Expected the complete published NotiList JSONP wrapper")
         decoded = match[1].encode()
         kind = "fixed_NotiList_jsonp_wrapper"
+    elif url in TID_URLS and fmt == "XML":
+        trimmed = body.lstrip(b" \t\r\n")
+        kind = "tid_xml_DATA_document"
+        if trimmed != body and trimmed.startswith(b"<?xml"):
+            decoded = trimmed
+            kind = "xml_declaration_after_whitespace_prefix"
+        if sheet or layer is not None:
+            invalid("This XML response has no workbook/map selectors", "INVALID_QUERY")
     if kind is None:
         return None
     rows, schema = parse(decoded, actual_format, record_path, sheet)
+    if url in TID_URLS and schema.get("rootTag") != "DATA":
+        invalid("Expected the published TID DATA XML root")
     if url == NOTIFICATIONS:
         container = schema.get("sourceContext", {}).get("notifications")
         if not isinstance(container, dict) or "sourceArrayLength" not in container:
