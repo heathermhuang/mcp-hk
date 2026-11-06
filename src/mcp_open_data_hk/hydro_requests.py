@@ -39,6 +39,10 @@ def validate_body(body):
         object_pairs_hook=no_duplicates,
         parse_constant=lambda _: invalid("Nonfinite JSON number"),
     )
+    if isinstance(value, dict) and (
+        value.get("success") is False or value.get("error")
+    ):
+        invalid("Hydro source reported a failure", "SOURCE_API_ERROR")
     if (
         not isinstance(value, dict)
         or value.get("type") != "FeatureCollection"

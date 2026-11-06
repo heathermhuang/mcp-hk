@@ -150,3 +150,27 @@ def test_only_the_three_inspected_original_interfaces_are_bound():
     for page in PAGES:
         assert source_parameters(page) == ["mode", "time"]
     assert source_parameters(PAGE.replace("lang=tc", "lang=other")) == []
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        {
+            "type": "FeatureCollection",
+            "features": [],
+            "error": {"message": "Source unavailable"},
+        },
+        {"type": "FeatureCollection", "features": [FEATURE], "success": False},
+    ],
+)
+@pytest.mark.asyncio
+async def test_explicit_source_failures_are_rejected_before_feature_acceptance(
+    service, monkeypatch, value
+):
+    async def fetch(url, *args, **kwargs):
+        return json.dumps(value).encode(), {}, url, 200
+
+    monkeypatch.setattr("mcp_open_data_hk.resources.fetch", fetch)
+    with pytest.raises(DomainError) as error:
+        await service.resources.query("hydro", parameters=PARAMETERS)
+    assert error.value.code == "SOURCE_API_ERROR"
