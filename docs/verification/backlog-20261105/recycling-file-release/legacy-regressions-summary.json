@@ -1,0 +1,10 @@
+{
+  "points": 4,
+  "resources": 2,
+  "busOperators": [
+    "CTB",
+    "KMB",
+    "NLB"
+  ],
+  "failures": []
+}

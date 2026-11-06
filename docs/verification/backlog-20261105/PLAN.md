@@ -162,3 +162,8 @@ pages. `census-files-release/` records every observed original file/sheet scope,
 remaining reasons and bounded restore coverage. Raw table/grid acceptance does
 not establish statistical observations or XML/language/file equivalence. Interactive
 builder, wider graph, schema/capacity/source and semantic work remain open.
+
+PR #167 connects the exact recycling index to its explicitly selected published
+CSV, with source/client/recovery evidence in `recycling-file-release/`. It adds no
+geographic binding or current-service qualification. Wider frozen, builder,
+source/schema/capacity and independently supported semantic work remains open.
