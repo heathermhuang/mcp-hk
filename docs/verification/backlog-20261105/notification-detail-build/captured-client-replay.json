@@ -1,0 +1,20 @@
+{
+  "scope": "Captured actual detail and list bodies through local HTTP/native MCP; no public runtime adoption or alert-currentness claim",
+  "resourceId": "1a4d8dd19c1d4469bac87ab932e682f4",
+  "parameters": {
+    "notification-id": "15634681"
+  },
+  "rawRows": 1,
+  "fields": 10,
+  "sourceSha256": "a7c13808f22d8581497982bd125e0abab0beade950d697142ed971bbe3b20259",
+  "httpMcpParity": true,
+  "metadataRequiresPublishedId": true,
+  "listRegressionRawRows": 10,
+  "listHttpMcpParity": true,
+  "fixtureReads": 2,
+  "providerRequests": 0,
+  "secondaryLinksFollowed": 0,
+  "messageStringsPreserved": true,
+  "timestampUnitQualification": "unreviewed_list_detail_dictionary_unit_difference",
+  "activeAlertQualification": false
+}

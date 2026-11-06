@@ -1,0 +1,20 @@
+{
+  "resourceId": "1a4d8dd19c1d4469bac87ab932e682f4",
+  "datasetId": "hk-dpo-mobileapps-govhk-notifications",
+  "originalSourceTemplate": "https://ogcmn.one.gov.hk/ogcmn/service/noti/detail/{notification-id}",
+  "dictionaryUrl": "https://www.gov.hk/en/about/govdirectory/mobileapps/psi/iamsmart_newsandalerts/datasets/iAMSmartNews%26AlertsDataSpec.pdf",
+  "dictionarySha256": "df615c484d77894892972d2e1a077443104860982ebc542d6268b5e034a1e9f0",
+  "publisherDefines": [
+    "Caller supplies the original notification ID from the list.",
+    "Detail returns native ID, three subject strings, three message strings, schedule/expiry integers and source ID.",
+    "Message fields carry structured text, image and link content."
+  ],
+  "observedFraming": "Complete fixed NotiDetail JSONP wrapper, not ordinary JSON",
+  "dictionaryPage2VisuallyReviewed": true,
+  "timestampQualification": "The list section states milliseconds, while the detail section states microseconds; observed detail integers are retained without unit conversion or currentness inference.",
+  "singlePilotSourceStatusWrites": 0,
+  "pilotConcurrencyIncident": "One direct detail pilot overlapped the two existing lanes; no more live source tests before pausing a lane. Subsequent implementation and replay are offline.",
+  "productionAdoption": "pending",
+  "newSemanticApproval": false,
+  "adapterPolicy": "Preserve message strings; do not render content or fetch secondary links."
+}

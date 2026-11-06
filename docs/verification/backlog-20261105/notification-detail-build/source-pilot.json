@@ -1,0 +1,16 @@
+{
+  "resourceId": "1a4d8dd19c1d4469bac87ab932e682f4",
+  "sourceTemplate": "https://ogcmn.one.gov.hk/ogcmn/service/noti/detail/{notification-id}",
+  "sourceId": 15634681,
+  "idBasis": "Actual first ID from preserved original published list body",
+  "listBodySha256": "6deb09536e65c3caecc9b538ec77e9f23b5a622cde501015e22abebd57de9abe",
+  "requestedUrl": "https://ogcmn.one.gov.hk/ogcmn/service/noti/detail/15634681",
+  "checkedAtUtc": "2026-11-06T19:35:38.276658+00:00",
+  "sourceRequests": 1,
+  "sourceStatusWrites": 0,
+  "httpStatus": 200,
+  "sourceBytes": 1058,
+  "sourceSha256": "a7c13808f22d8581497982bd125e0abab0beade950d697142ed971bbe3b20259",
+  "contentType": null,
+  "finalUrl": "https://ogcmn.one.gov.hk/ogcmn/service/noti/detail/15634681"
+}
