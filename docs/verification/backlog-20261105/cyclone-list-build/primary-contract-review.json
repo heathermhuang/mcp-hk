@@ -1,0 +1,31 @@
+{
+  "scope": "Primary documentation review only; no source status, schema or empty-data approval written",
+  "xmlList": {
+    "resourceId": "39679b6dc72e96e66bf48c6d85e1afce",
+    "dictionaryUrl": "https://www.weather.gov.hk/wxinfo/currwx/HKO_TCTrackInfo_DataDictionary_en.pdf",
+    "dictionarySha256": "7b29b0cc362b0c2e3007ef2703251546af84042f37723b55a79bc76c00b76d9a",
+    "relevantPageVisuallyVerified": 2,
+    "publishedEmptyRule": "TropicalCyclone items are absent from TropicalCycloneList when HKO issues no forecast track",
+    "allowedMeaning": "This source list has no entries; no global cyclone-absence or safety claim",
+    "declaredFields": [
+      "TropicalCycloneID",
+      "TropicalCycloneChineseName",
+      "TropicalCycloneEnglishName",
+      "TropicalCycloneURL"
+    ],
+    "next": "Implement exact-root/element validation and declared-schema empty/nonempty compatibility, retain raw IDs/text, reject errors and unknown children"
+  },
+  "gmlTrack": {
+    "resourceId": "3e0c3d70efce844e1b2a7cd764136708",
+    "emptySerializationMeaning": "unverified",
+    "referenceSystemFromMetadata": "EPSG:4326",
+    "metadataUpdate": "as needed",
+    "publishedSpecification": "https://www.hko.gov.hk/weatherAPI/hko_data/csdi/sds/tc.html",
+    "next": "Inspect exact linked spatial-data specification before accepting any placeholder or inferring zero tracks",
+    "spatialSpecificationFetched": true,
+    "spatialSpecificationSha256": "09065f425ad99ff4575a099c383adda26545823e6f9fec2f4f659b799e862327",
+    "spatialSpecificationFinding": "Defines past/analysis/forecast fields; no empty-placeholder rule found. Keep current empty GML serialization unqualified."
+  },
+  "providerDataRequests": 0,
+  "sourceStatusWrites": 0
+}

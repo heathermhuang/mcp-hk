@@ -6,7 +6,7 @@ import re
 from pathlib import Path
 
 from .contracts import DomainError
-from . import hydro_requests
+from . import hydro_requests, cyclone_list
 from .resource_formats import MAX_ROWS, invalid, no_duplicates, parse, text
 
 FSD_PREFIX = "http://www.hkfsd.gov.hk/datagovhk/datasets/"
@@ -86,6 +86,8 @@ def object_sequence(body, comma_separated=False):
 def read(resource, body, record_path="", sheet="", layer=None):
     if isinstance(body, Path):
         return None
+    if cyclone_list.profile(resource):
+        return cyclone_list.read(body, record_path, sheet, layer)
     url, fmt = resource["url"], resource["format"]
     kind = None
     decoded = body
