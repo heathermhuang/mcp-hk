@@ -1,0 +1,13 @@
+{
+  "scope": "Offline lookup of the exact failed selected request in the checksum-verified pre-deploy restore; cache/variant retention limits remain",
+  "resourceId": "b6cf78d638f6ae7791210502b5cad212",
+  "selection": {
+    "recordPath": "AST_R_3_LANDFRE/OE/YoY_1dp_%_s"
+  },
+  "failedAtEpoch": 1793977925.574434,
+  "failedReceiptSha256": "f2c59263b1f68d99703fc6ba656f7f1683781ff813af91f3850691c7d6dd8056",
+  "matchesInRestoredVariants": [],
+  "providerRequests": 0,
+  "statusWrites": 0,
+  "absenceDoesNotProveRequestStage": "A missing scope can reflect existing bounded retention; no root-cause inference from absence"
+}

@@ -1,0 +1,13 @@
+{
+  "resourceId": "df2492726bb048a59ad63da80a5295b6",
+  "selection": {},
+  "checkedAtUtc": "2026-11-06T15:51:29.034700+00:00",
+  "httpStatus": 200,
+  "scope": "Original raw recruitment records only; active vacancy, identity and eligibility unreviewed",
+  "httpMcpParity": true,
+  "rawRows": 501,
+  "version": "34fb8006cb9d0e43cf1cb8d6e1c3a772488d3f70abde9b1287661e5312d450ea",
+  "sourceSha256": "34fb8006cb9d0e43cf1cb8d6e1c3a772488d3f70abde9b1287661e5312d450ea",
+  "observedSerialization": "hkstp_recruitment_array_in_json_string",
+  "dataItemsSha256": "2b84dbd6a98b4db6417401e0032863cb85313bdc771fec6413355d440532d98e"
+}

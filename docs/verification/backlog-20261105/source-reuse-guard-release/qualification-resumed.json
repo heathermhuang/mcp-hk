@@ -1,0 +1,15 @@
+{
+  "atUtc": "2026-11-06T15:58:49.910423+00:00",
+  "lanes": [
+    {
+      "lane": "arcgis_workbooks",
+      "state": "resumed_same_validated_process",
+      "pid": 67670
+    },
+    {
+      "lane": "reports_wfs",
+      "state": "already_terminal",
+      "progressState": "stopped_at_observed_operator_or_capacity_boundary"
+    }
+  ]
+}
