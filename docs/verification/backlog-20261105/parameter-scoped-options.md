@@ -17,7 +17,10 @@ Regressions execute a generated action through native MCP, verify the same
 parameter context for parameterized workbook sheet selection, prove that public
 options remain unchanged without the supplied values, and reject ignored
 parameters without a provider request. Actual deployed action-following and fresh
-recovery remain release gates for this fix.
+recovery passed in release `72913cc`. Actual caller actions and restored replay
+preserved parameters; missing-context requests returned no cached choices; the
+public option table was unchanged and restored provider requests were zero.
+See `RELEASED.md` and `scoped-actions-release/`.
 
 The separate airport read used the original published URI with the explicit date
 `2026-11-05` and fixed passenger/departure/English flags. Actual HTTP and native MCP

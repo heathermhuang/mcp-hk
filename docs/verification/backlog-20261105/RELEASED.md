@@ -1,5 +1,32 @@
 # Remaining-backlog implementation releases — 6 November 2026
 
+PR #149 is deployed at `72913ccfc3194766cf13e4cd080a318e51a3b2bd` after all five
+exact-main CI groups passed. Cloudflare version
+`16d401f8-180a-4fed-9a73-110b3a55f803` adopted application version 76 and image
+`sha256:00808841e15e46566f9da03068a092545695ac108128d575d1880d5fa4c1e4b2`.
+Actual HTTP schema actions retained the explicit date; following the generated
+action through native MCP succeeded. Missing-parameter requests in both clients
+returned no borrowed choices or implicit date. Existing client regressions passed.
+
+The fresh accepted archive
+`3228a2966c8e8871f3e1206a813f695414a7fa0299d07d7f91c9b458d0921de7`
+restored 314,945,536 SQLite bytes / 346,089,981 total bytes from a 108,947,899-byte
+archive. Integrity, source metadata, captures/registry, packs, inventory generations,
+six bindings, 84 workbook choices and prior WFS/HKMA facts passed. Actual restored
+HTTP/native MCP action-following and old/new reads made zero provider requests;
+public options stayed unchanged and contained no caller parameter values.
+An earlier accepted checkpoint was retained when its short-lived context expired
+before replay; the successful sequence refreshed accepted contexts and ran backup,
+immutable retrieval, restore and replay together without timestamp edits.
+
+The ArcGIS qualifier was stopped only after a saved response and resumed as the
+same validated process after recovery. All five original schedules were restored
+and independently read back; final controller/backend health passed and the owned
+slot was released. Broader qualification remains open. Exact receipts are in
+`scoped-actions-release/`.
+
+## Earlier HKMA release
+
 PR #148 is deployed at `b53ae1039642e22908ef9fe5e6da2a93bc4139cf`. All five
 exact-main CI groups and the full local checks passed. Cloudflare version
 `acac20f5-b1d0-4be6-a991-8fdcac57dd2a` adopted application version 75 and image

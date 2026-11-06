@@ -1,0 +1,8 @@
+{
+  "scope": "Fresh post-quiescence accepted pre-release checkpoint, immutable native R2 retrieval and isolated restore",
+  "archiveSha256": "71163bbb4a058258013f8cf6a73098fc87507eb85e47810d0828465e275d620f",
+  "archiveBytes": 109308799,
+  "restoredDatabaseBytes": 315305984,
+  "totalRestoredBytes": 346450429,
+  "integrity": "ok"
+}
