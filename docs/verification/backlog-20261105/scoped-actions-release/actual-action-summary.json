@@ -1,0 +1,9 @@
+{
+  "checkedAtUtc": "2026-11-05T23:55:18.225166+00:00",
+  "scope": "actual deployed parameter-context action-following; historical raw date groups only",
+  "resourceId": "09a0ff52d3ca25dfcaef1b584bebc49c",
+  "actionContextPreserved": true,
+  "httpMcpMissingContextIsolation": true,
+  "implicitDateChosen": false,
+  "rawDateGroupRecords": 2
+}
