@@ -1,0 +1,9 @@
+{
+  "scope": "fresh accepted checkpoint restored in isolation; caller-scoped action replay and public option-cache isolation",
+  "httpMcpActionFollowed": true,
+  "rawDateGroupRecords": 2,
+  "noImplicitDateOrBorrowedChoices": true,
+  "publicOptionsPreserved": true,
+  "callerParameterValuesPublishedInSharedOptions": false,
+  "providerRequests": 0
+}

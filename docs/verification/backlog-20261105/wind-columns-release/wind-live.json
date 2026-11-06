@@ -1,0 +1,47 @@
+{
+  "scope": "Actual raw provisional CSV operation; not station inventory, timezone or current-observation qualification",
+  "results": [
+    {
+      "resourceId": "33f3a9904add55aff7648ccdab3bb0cf",
+      "selection": {},
+      "httpStatus": 200,
+      "checkedAtUtc": "2026-11-06T18:00:40.251061+00:00",
+      "httpMcpParity": true,
+      "rawRows": 30,
+      "version": "ea9a985971dba25b65fd452dd42f469933b8f1dcc0e793f42045734b30a79884",
+      "sourceSha256": "998355df9c07c68126a7e6ec1f61a5b25060984f5ee5cf5985b6823c7830b44f",
+      "dataItemsSha256": "b227e96ed587df220d14157458665e04baac32077fe13b4501206c137d168773",
+      "cacheTTLSeconds": 600,
+      "provisional": true,
+      "timestampTimezoneQualification": "unreviewed_native_timestamp"
+    },
+    {
+      "resourceId": "50e7577f11d6aca1f57cd275dc60bfda",
+      "selection": {},
+      "httpStatus": 200,
+      "checkedAtUtc": "2026-11-06T18:00:44.002129+00:00",
+      "httpMcpParity": true,
+      "rawRows": 30,
+      "version": "4900d5976275a764c47f874805517900ceafb7a799b09d8d51b8ac152df91a9f",
+      "sourceSha256": "b216d15d3059e550c20f5a0e85d9f7e591a41e3a9ada5fa7870c445f566da58c",
+      "dataItemsSha256": "fb95126a11d8fa9f0a2e27e932abf39c77ef4422eb37466138e09a82e034632b",
+      "cacheTTLSeconds": 600,
+      "provisional": true,
+      "timestampTimezoneQualification": "unreviewed_native_timestamp"
+    },
+    {
+      "resourceId": "b255c7a8de8fc620e9d5f5eca43e4140",
+      "selection": {},
+      "httpStatus": 200,
+      "checkedAtUtc": "2026-11-06T18:00:47.533937+00:00",
+      "httpMcpParity": true,
+      "rawRows": 30,
+      "version": "439feee4653c2c8ce56cb5c920f0bcc31b6b9fd73de3d48e3813dab8a730e620",
+      "sourceSha256": "fde821f779872c25f39a63c51c5ee7af2e6f31d6a768960b554bfee41d12ec5d",
+      "dataItemsSha256": "0e193fe46ec3e7be0c46fa86b05203f29c86a119090738dea55b0455e2ab89bf",
+      "cacheTTLSeconds": 600,
+      "provisional": true,
+      "timestampTimezoneQualification": "unreviewed_native_timestamp"
+    }
+  ]
+}

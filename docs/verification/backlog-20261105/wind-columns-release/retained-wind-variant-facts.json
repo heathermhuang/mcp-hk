@@ -1,0 +1,22 @@
+{
+  "scope": "Exact pre/post checksum-verified immutable restores; preserve source schema/version/count facts under existing retention, no inference about unavailable historical values",
+  "results": [
+    {
+      "resourceId": "33f3a9904add55aff7648ccdab3bb0cf",
+      "preExistingVariantSchemaAndVersionFactsRetained": 3,
+      "sourceBodyValuesRecovered": false
+    },
+    {
+      "resourceId": "50e7577f11d6aca1f57cd275dc60bfda",
+      "preExistingVariantSchemaAndVersionFactsRetained": 3,
+      "sourceBodyValuesRecovered": false
+    },
+    {
+      "resourceId": "b255c7a8de8fc620e9d5f5eca43e4140",
+      "preExistingVariantSchemaAndVersionFactsRetained": 3,
+      "sourceBodyValuesRecovered": false
+    }
+  ],
+  "providerRequests": 0,
+  "sourceStatusWrites": 0
+}

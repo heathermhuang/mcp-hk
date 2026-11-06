@@ -1,0 +1,29 @@
+{
+  "results": [
+    {
+      "resourceId": "33f3a9904add55aff7648ccdab3bb0cf",
+      "version": "3886696db93e2ca6733e5ba61df710ea78e0d726bcca69a4ecae091b900cc0d6",
+      "rawRows": 30,
+      "sourceSha256": "ddcae751313acb4414d3eb4ebf4b1401f069e9ba8752bd49f9323a5861878d64",
+      "dataItemsSha256": "abffd367d96038198529f07b1064b780b6d5f8a838fee5772765bff794aa6c90",
+      "differsFromEarlierLiveVersion": true
+    },
+    {
+      "resourceId": "50e7577f11d6aca1f57cd275dc60bfda",
+      "version": "1b52fc6446e19128ae98510343fba59e518d117ddd83605df310eeda74bfac3b",
+      "rawRows": 30,
+      "sourceSha256": "0ebc476d0965cf33989bbfcddd820f2d21e087fc58cd4daa0db209f156b802cf",
+      "dataItemsSha256": "2b73fbde1a5a116792cb0293fa06762def6713e7f43bfb5daac4c503d02b38bd",
+      "differsFromEarlierLiveVersion": true
+    },
+    {
+      "resourceId": "b255c7a8de8fc620e9d5f5eca43e4140",
+      "version": "894699f49da60bff061bd12bba134d8109297171bcca32d0a90456d8bc43d60a",
+      "rawRows": 30,
+      "sourceSha256": "a3ad82fd1333214bf7d65659b86c4c14bbb1802929d0f8edac9b7b7de3de333c",
+      "dataItemsSha256": "4fb91472fdad3c0d7db1a8193f49f735b36c891a990d19683a64a21873b79d48",
+      "differsFromEarlierLiveVersion": true
+    }
+  ],
+  "timestampsModified": false
+}

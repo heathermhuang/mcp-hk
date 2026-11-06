@@ -1,0 +1,12 @@
+{
+  "resourceId": "09a0ff52d3ca25dfcaef1b584bebc49c",
+  "operation": "schema",
+  "parameters": {
+    "date": "2026-11-05"
+  },
+  "httpStatus": 409,
+  "bodyPreservedByOriginalHelper": false,
+  "noAutomaticRetry": true,
+  "legacyPointsResourcesBusesPassed": true,
+  "next": "Inspect metadata and provider-supported date contract; retain first failure before any changed-scope check"
+}

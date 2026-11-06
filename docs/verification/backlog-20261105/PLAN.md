@@ -186,3 +186,5 @@ including failures, remain immutable and are reused. A gateway recovery label
 can cover transport or non-JSON backend failures; it does not prove a restart or
 restore. Correlation metadata supports investigation without changing source
 requests, identity, quotas, retry policy or acceptance criteria.
+
+PR #176 repairs the three documented wind CSV layouts with hosted/fresh recovery proof in `wind-columns-release/`. Native provisional flags remain, old generated overflow metadata is retained, and no timezone, unique station or current-observation qualification is granted. Hydro's rights hold and the complete wider programme stay open.

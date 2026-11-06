@@ -1,0 +1,142 @@
+{
+  "items": [
+    {
+      "id": "09a0ff52d3ca25dfcaef1b584bebc49c",
+      "datasetId": "aahk-team1-flight-info",
+      "url": "https://www.hongkongairport.com/flightinfo-rest/rest/flights/past?date=<date>&lang=en&cargo=false&arrival=false",
+      "format": "JSON",
+      "catalogue": "DATA.GOV.HK",
+      "aliases": [
+        {
+          "id": "8f41b55c-a2ef-4963-bb25-96d8b21f3db4",
+          "shared_id": "3bcbb44adae611eba36b0a58c0a807df",
+          "name": "Flight schedule information of Hong Kong International Airport (Historical).",
+          "inLanguage": "en, zh-Hant, zh-Hans",
+          "format": "JSON"
+        }
+      ],
+      "sourceUrl": "https://data.gov.hk/en-data/dataset/aahk-team1-flight-info",
+      "publicationDate": "2019-06-26",
+      "sourceModified": null,
+      "isApi": true,
+      "termsUrl": "https://data.gov.hk/en/terms-and-conditions",
+      "validation": {
+        "status": "schema_drift",
+        "reason": "SCHEMA_DRIFT",
+        "lastCheckedAt": 1793987550.2854526,
+        "lastValidatedAt": 1793980610.6947632,
+        "recordCount": 2,
+        "freshness": {
+          "lastValidatedAt": 1793980610.6947632,
+          "validationAgeSeconds": 7084,
+          "cacheTtlSeconds": 300,
+          "cacheExpired": true,
+          "reviewIntervalSeconds": 21600,
+          "nextReviewAt": 1794002210.6947632,
+          "reviewOverdue": false,
+          "policyVersion": "source-review-11",
+          "scope": "Source validation only; publication dates, reference periods and record observations are separate."
+        },
+        "semanticVerification": "not_performed"
+      },
+      "capabilities": {
+        "revision": "resource-capabilities-3",
+        "resourceId": "09a0ff52d3ca25dfcaef1b584bebc49c",
+        "datasetId": "aahk-team1-flight-info",
+        "representation": "JSON",
+        "readerFamily": "json",
+        "readerSupport": "accepted_selections_only",
+        "operations": {
+          "records": {
+            "state": "held",
+            "reason": "SCHEMA_DRIFT"
+          },
+          "text_search": {
+            "state": "held",
+            "reason": "SCHEMA_DRIFT"
+          },
+          "typed_comparison": {
+            "state": "requires_binding",
+            "reason": "inspect_native_types_before_comparison"
+          },
+          "nearby": {
+            "state": "requires_binding",
+            "reason": "no_qualified_point_binding"
+          }
+        },
+        "acceptedSelections": [
+          {
+            "receiptKey": null,
+            "representation": "JSON",
+            "readScope": "source_response",
+            "datasetCompleteness": "Not inferred from a file or a single API response.",
+            "unreadMemberCount": 0,
+            "schemaFingerprint": "7037bce93b6bfa26e77ce2b1fd06e618602e6896e682364cc55c2a7b15a8fc6c",
+            "selection": {
+              "recordPath": "",
+              "sheet": "",
+              "layer": null,
+              "parameterNames": [
+                "date"
+              ],
+              "parameterValues": "not_disclosed"
+            },
+            "status": "schema_drift",
+            "lastCheckedAt": 1793987550.2861555,
+            "lastValidatedAt": 1793980610.6947632,
+            "retrievedAt": 1793960089.5788631,
+            "readerRevision": "structured-reader-3",
+            "sourceContract": null,
+            "sourceResponseComplete": true,
+            "semanticBinding": null,
+            "typedComparisonFieldCount": 0
+          }
+        ],
+        "fields": [],
+        "semanticBinding": null,
+        "entityKind": null,
+        "access": {
+          "status": "schema_drift",
+          "reason": "SCHEMA_DRIFT",
+          "lastCheckedAt": 1793987550.2854526
+        },
+        "observationTime": null,
+        "completeness": "per_receipt_selection_only",
+        "nextAction": {
+          "tool": "hk_resource_schema",
+          "arguments": {
+            "resourceId": "09a0ff52d3ca25dfcaef1b584bebc49c"
+          }
+        },
+        "selections": [
+          {
+            "kind": "record_path",
+            "argument": "recordPath",
+            "options": [
+              {
+                "value": "",
+                "label": "",
+                "state": "unverified",
+                "nextAction": {
+                  "tool": "hk_resource_schema",
+                  "arguments": {
+                    "resourceId": "09a0ff52d3ca25dfcaef1b584bebc49c",
+                    "recordPath": ""
+                  }
+                }
+              }
+            ],
+            "totalOptions": 1,
+            "truncated": false,
+            "scope": "discovered_options_not_accepted_record_reads",
+            "checkedAt": 1793919046.6543846
+          }
+        ]
+      }
+    }
+  ],
+  "total": 1,
+  "offset": 0,
+  "nextOffset": null,
+  "generation": "e10744696ea04c6fad6e96d13c0199d4"
+}
