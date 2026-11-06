@@ -34,7 +34,14 @@ from .resource_fields import selected, MISSING, inspect_nested
 from .resource_fetch import fetch, fetch_file
 from .resource_stream import FileRows
 from .resource_formats import parse
-from .published_requests import request_template, annotate_response
+from .published_requests import (
+    request_template,
+    annotate_response,
+    validate_parameters,
+    parameter_choices,
+    non_record_interface,
+    request_requirements,
+)
 from .resource_codec import (
     typed_filters as decode_filters,
     presentation as present,
@@ -99,6 +106,7 @@ def source_parameters(url):
 
 
 def template_url(url, parameters):
+    specification = url
     url = request_template(url)
     if any(c in urlsplit(url).netloc for c in ("{", "}", "<", ">")):
         raise DomainError("UNSAFE_SOURCE", "Source host cannot be parameterised", 422)
@@ -132,6 +140,8 @@ def template_url(url, parameters):
                 "Source parameters must be nonempty strings up to 200 characters",
                 400,
             )
+    validate_parameters(specification, parameters)
+    for name, value in parameters.items():
         url = url.replace("{" + name + "}", quote(value, safe="")).replace(
             "<" + name + ">", quote(value, safe="")
         )
@@ -775,6 +785,12 @@ class Resources:
             "parameterNames": sorted(parameters or {}),
         }
         resource = self.catalogue.resource(resource_id)
+        if non_record_interface(resource["url"]):
+            raise DomainError(
+                "NON_RECORD_REPRESENTATION",
+                "This specification describes map tiles/styles, not a record interface",
+                422,
+            )
         access_protocol = protocol(resource)
         pinned_type = pinned_feature_type(resource)
         if pinned_type:
@@ -1402,6 +1418,18 @@ class Resources:
         if parameters and not transport.profile(resource):
             # Discovery shortcuts must not silently ignore undeclared arguments.
             template_url(resource["url"], parameters)
+        interface = non_record_interface(resource["url"])
+        if interface:
+            if record_path or sheet or layer is not None:
+                raise DomainError(
+                    "INVALID_QUERY", "Map specifications have no record selectors", 400
+                )
+            return {
+                "resource": resource,
+                "sourceInterface": interface,
+                "recordCount": None,
+                "structuredQueryable": False,
+            }
         if census_reports.location(resource["url"]) and (sheet or layer is not None):
             raise DomainError(
                 "INVALID_QUERY",
@@ -1441,6 +1469,16 @@ class Resources:
                 "resource": resource,
                 "selectionRequired": "parameters",
                 "parameters": required,
+                **(
+                    {"sourceRequest": request_requirements(resource["url"])}
+                    if request_requirements(resource["url"])
+                    else {}
+                ),
+                **(
+                    {"parameterChoices": parameter_choices(resource["url"])}
+                    if parameter_choices(resource["url"])
+                    else {}
+                ),
                 **({"transport": profile.describe()} if profile else {}),
                 "recordCount": None,
                 "structuredQueryable": False,
