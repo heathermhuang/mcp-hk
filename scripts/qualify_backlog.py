@@ -15,6 +15,7 @@ import urllib.error
 import urllib.request
 
 from mcp_open_data_hk.census_reports import location
+from mcp_open_data_hk import census_xml_archives
 
 RESPONSE_CONTEXT_HEADERS = (
     "cf-ray",
@@ -22,6 +23,17 @@ RESPONSE_CONTEXT_HEADERS = (
     "x-mcp-release",
     "retry-after",
     "content-type",
+)
+FILE_SOURCE_FAILURES = frozenset(
+    {
+        "ACCESS_RESTRICTED",
+        "SOURCE_UNAVAILABLE",
+        "SOURCE_TIMEOUT",
+        "SOURCE_HTTP_ERROR",
+        "SOURCE_NOT_FOUND",
+        "SOURCE_REDIRECT_LIMIT",
+        "UNSAFE_SOURCE",
+    }
 )
 
 
@@ -42,6 +54,29 @@ def response_context(response):
     return result
 
 
+def native_xml(candidate):
+    return census_xml_archives.profile(
+        {
+            "datasetId": candidate.get("datasetId"),
+            "url": candidate.get("sourceUrl"),
+            "format": candidate.get("format"),
+        }
+    )
+
+
+def leaf_selection(candidate, selection):
+    if "layer" in selection or "sheet" in selection:
+        return True
+    if "recordPath" not in selection:
+        return False
+    if native_xml(candidate):
+        return bool(census_xml_archives.selector(selection["recordPath"])[1])
+    return (
+        not location(candidate["sourceUrl"])
+        or len(selection["recordPath"].split("/")) == 3
+    )
+
+
 def candidates(manifest):
     """Prioritize uncovered selection cohorts without dropping other candidates."""
     rows = [
@@ -49,6 +84,7 @@ def candidates(manifest):
         for c in manifest["familyCandidates"]
         if c["lastStatus"] == "needs_selection"
         or (c["lastStatus"] == "needs_adapter" and location(c["sourceUrl"]))
+        or (c["lastStatus"] in {"unsupported", "needs_adapter"} and native_xml(c))
     ]
     return sorted(
         rows,
@@ -89,17 +125,7 @@ def main(args):
                 query = args.receipts / (rid + "-" + key + "-query.json.gz")
                 # A prior query already attempted this exact selection. Reuse
                 # failures too, rather than retrying through another endpoint.
-                leaf = (
-                    "layer" in selection
-                    or "sheet" in selection
-                    or (
-                        "recordPath" in selection
-                        and (
-                            not location(candidate["sourceUrl"])
-                            or len(selection["recordPath"].split("/")) == 3
-                        )
-                    )
-                )
+                leaf = leaf_selection(candidate, selection)
                 if query.exists() or (getattr(args, "query_options", False) and leaf):
                     task = (query, "query", selection)
             if immediate:
@@ -196,6 +222,29 @@ def main(args):
                 )
                 time.sleep(1.1)
             value = receipt["response"]
+            if (
+                native_xml(candidate)
+                and receipt["httpStatus"] != 200
+                and (value.get("error") or {}).get("code") in FILE_SOURCE_FAILURES
+            ):
+                # Every member fetch uses the same original file URL. A sibling
+                # selector cannot retry a recorded whole-file source failure.
+                print(
+                    json.dumps(
+                        {
+                            "resourceId": rid,
+                            "state": "source_file_hold",
+                            "status": receipt["httpStatus"],
+                            "operation": operation,
+                            "selection": selection,
+                            "error": value["error"],
+                            "requests": used,
+                            "unvisitedChoicesHeldByFileFailure": True,
+                        }
+                    ),
+                    flush=True,
+                )
+                break
             if operation == "query" and receipt["httpStatus"] == 200:
                 if not (
                     value.get("schema", {}).get("sourceResponseComplete") is True

@@ -291,3 +291,113 @@ def test_response_context_omits_unbounded_and_control_character_values():
         headers={"cf-ray": "x" * 257, "x-request-id": "a\r\nb"}
     )
     assert module.response_context(response) == {}
+
+
+def test_native_xml_graph_discovers_files_before_queries_and_keeps_saved_failures(
+    tmp_path, monkeypatch
+):
+    from mcp_open_data_hk import census_xml_archives
+
+    spec = importlib.util.spec_from_file_location(
+        "qualify_native_xml", Path(__file__).parents[1] / "scripts/qualify_backlog.py"
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    did, url = next(iter(census_xml_archives.SOURCES.items()))
+    candidate = {
+        "resourceId": "xml",
+        "datasetId": did,
+        "family": "xml",
+        "format": "XML",
+        "sourceUrl": url,
+        "lastStatus": "unsupported",
+        "acceptedSameDatasetAlternatives": [],
+    }
+    manifest = tmp_path / "manifest.json.gz"
+    manifest.write_bytes(
+        gzip.compress(json.dumps({"familyCandidates": [candidate]}).encode())
+    )
+    assert (
+        module.candidates(
+            {"familyCandidates": [{**candidate, "lastStatus": "restricted"}]}
+        )
+        == []
+    )
+    assert (
+        module.candidates(
+            {"familyCandidates": [{**candidate, "lastStatus": "unavailable"}]}
+        )
+        == []
+    )
+    requests = []
+
+    def request(req, timeout):
+        query = json.loads(req.data)
+        operation = req.full_url.rsplit("/", 1)[1]
+        path = query.get("recordPath", "")
+        requests.append((operation, path))
+        if not path:
+            assert operation == "schema"
+            paths = ["file:F101s.zip", "file:F102s.zip"]
+        elif "/" not in path:
+            assert operation == "schema"
+            paths = [path + "/Observation", path + "/Class_code"]
+        else:
+            assert operation == "query" and query["requireFresh"] is True
+            paths = None
+        value = (
+            {
+                "selections": [
+                    {
+                        "argument": "recordPath",
+                        "options": [
+                            {
+                                "value": p,
+                                "nextAction": {
+                                    "arguments": {"resourceId": "xml", "recordPath": p}
+                                },
+                            }
+                            for p in paths
+                        ],
+                    }
+                ]
+            }
+            if paths
+            else {
+                "schema": {"sourceResponseComplete": True},
+                "meta": {"total": 1},
+                "data": {"items": [{"raw": path}]},
+            }
+        )
+        response = io.BytesIO(json.dumps(value).encode())
+        response.code = 200
+        if path == "file:F101s.zip/Class_code":
+            response = io.BytesIO(
+                json.dumps({"error": {"code": "SOURCE_UNAVAILABLE"}}).encode()
+            )
+            response.code = 502
+        return response
+
+    monkeypatch.setattr(module.urllib.request, "urlopen", request)
+    monkeypatch.setattr(module.time, "sleep", lambda _: None)
+    args = argparse.Namespace(
+        manifest=manifest,
+        receipts=tmp_path / "receipts",
+        family=None,
+        read_options=True,
+        query_options=True,
+        requests=20,
+    )
+    module.main(args)
+    assert len(requests) == 5
+    assert sum(op == "query" for op, _ in requests) == 2
+    assert not any(
+        op == "query" and path.startswith("file:F102s.zip/") for op, path in requests
+    )
+    failures = [
+        json.load(gzip.open(p, "rt")) for p in args.receipts.glob("*-query.json.gz")
+    ]
+    assert sum(x["httpStatus"] == 502 for x in failures) == 1
+    requests.clear()
+    module.main(args)
+    assert not requests
