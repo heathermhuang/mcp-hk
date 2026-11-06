@@ -60,6 +60,23 @@ def main(args):
                 operation,
                 selection,
             )
+            if operation == "schema" and selection and not task[0].exists():
+                query = args.receipts / (rid + "-" + key + "-query.json.gz")
+                # A prior query already attempted this exact selection. Reuse
+                # failures too, rather than retrying through another endpoint.
+                leaf = (
+                    "layer" in selection
+                    or "sheet" in selection
+                    or (
+                        "recordPath" in selection
+                        and (
+                            not location(candidate["sourceUrl"])
+                            or len(selection["recordPath"].split("/")) == 3
+                        )
+                    )
+                )
+                if query.exists() or (getattr(args, "query_options", False) and leaf):
+                    task = (query, "query", selection)
             if immediate:
                 tasks.insert(0, task)
             else:
@@ -152,6 +169,17 @@ def main(args):
                 )
                 time.sleep(1.1)
             value = receipt["response"]
+            if operation == "query" and receipt["httpStatus"] == 200:
+                if not (
+                    value.get("schema", {}).get("sourceResponseComplete") is True
+                    and type(value.get("meta", {}).get("total")) is int
+                    and value["meta"]["total"] >= 0
+                    and isinstance(value.get("data", {}).get("items"), list)
+                    and len(value["data"]["items"]) == min(value["meta"]["total"], 1)
+                ):
+                    raise ValueError(
+                        "Query receipt lacks selected schema/count evidence"
+                    )
             if (
                 operation == "schema"
                 and args.read_options
@@ -194,6 +222,11 @@ if __name__ == "__main__":
     parser.add_argument("--requests", type=int, default=12)
     parser.add_argument("--family", choices=["arcgis", "wfs", "workbook"])
     parser.add_argument("--read-options", action="store_true")
+    parser.add_argument(
+        "--query-options",
+        action="store_true",
+        help="Qualify published leaf choices with query's schema/count/data response, avoiding a duplicate full read",
+    )
     args = parser.parse_args()
     if not 1 <= args.requests <= 1000:
         parser.error("--requests must be 1..1000")
