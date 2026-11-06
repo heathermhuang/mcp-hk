@@ -1,0 +1,28 @@
+{
+  "scope": "Local HTTP/native MCP replay of exact dated 07:26 UTC captured publisher bytes; fixture replay, no current hosted acceptance claim",
+  "providerRequests": 0,
+  "fixtureReads": 3,
+  "results": [
+    {
+      "resourceId": "1cefa98483583d4ab9235f8764187d5f",
+      "rows": 516,
+      "httpMcpParity": true,
+      "sourceSha256": "72f9c978f5df8eec2c737a47a3141f29bb5dcb79ff193045ae6a9d14fce6e840",
+      "serialization": "complete_top_level_json_object_sequence"
+    },
+    {
+      "resourceId": "1e6a30329eb17f70afdd8ba409cbd051",
+      "rows": 25,
+      "httpMcpParity": true,
+      "sourceSha256": "212b9595b388bef8c6591daec9348d4874a83b6b02aa9a0acd4a2574dca6f54d",
+      "serialization": "flat_csv_advertised_as_xlsx"
+    },
+    {
+      "resourceId": "4c2d28574d52c5fc4804943be6c76e78",
+      "rows": 10,
+      "httpMcpParity": true,
+      "sourceSha256": "1264b92b06c112bf9eae03cafe1a6975a0a2022e018e84a11ce098a9398d30ce",
+      "serialization": "fixed_NotiList_jsonp_wrapper"
+    }
+  ]
+}

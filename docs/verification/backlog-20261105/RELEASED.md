@@ -1,5 +1,13 @@
 # Remaining-backlog implementation releases — 6 November 2026
 
+PRs #159–#161 are deployed at `ffe09b2b6ac33390d2355e8626cc2b7db396baac` with exact-main CI,
+actual controller/image/instance adoption, hosted HTTP/native MCP and fresh isolated
+recovery. 26 new raw scopes passed; 3 retain individual unresolved reasons.
+No new semantic binding is accepted. See [reader contracts release](reader-contracts-release/README.md).
+The full frozen programme remains open.
+
+## Earlier published-interface release
+
 PR #157 is deployed at `f45aa00d1ce48707a83b7455c44b32e678294f2b` with exact-main CI,
 actual controller/container adoption and HTTP/native MCP parity for four published
 request interfaces. Vector-map styles remain nonrecord metadata. Fresh isolated

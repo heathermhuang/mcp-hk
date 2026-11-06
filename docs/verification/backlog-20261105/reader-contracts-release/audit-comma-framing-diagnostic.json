@@ -1,0 +1,10 @@
+{
+  "scope": "Offline strict framing diagnostic of the single captured original response; no source acceptance or provider call",
+  "resourceId": "656fde3a4a402d2e33d856f2619a9ec3",
+  "sourceSha256": "b93b1345d3bd9a1cac5d486a0dcabb0905247434f47ead08178afd7f5f56a51d",
+  "strictObjects": 1337,
+  "allBytesConsumed": true,
+  "separator": "comma between complete top-level objects, without enclosing array",
+  "classification": "internal_reader_framing_gap",
+  "providerRequests": 0
+}
