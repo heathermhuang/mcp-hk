@@ -34,6 +34,7 @@ from .resource_fields import selected, MISSING, inspect_nested
 from .resource_fetch import fetch, fetch_file
 from .resource_stream import FileRows
 from .resource_formats import parse
+from .published_requests import request_template, annotate_response
 from .resource_codec import (
     typed_filters as decode_filters,
     presentation as present,
@@ -87,6 +88,7 @@ def bracket_parameter(pair):
 
 
 def source_parameters(url):
+    url = request_template(url)
     names = {a or b for a, b in re.findall(r"\{([^{}]+)\}|<([^<>]+)>", url)}
     names.update(
         name
@@ -97,6 +99,7 @@ def source_parameters(url):
 
 
 def template_url(url, parameters):
+    url = request_template(url)
     if any(c in urlsplit(url).netloc for c in ("{", "}", "<", ">")):
         raise DomainError("UNSAFE_SOURCE", "Source host cannot be parameterised", 422)
     names = set(source_parameters(url))
@@ -830,7 +833,12 @@ class Resources:
             raise DomainError(
                 "INVALID_QUERY", "Selector does not apply to this representation", 400
             )
-        ttl = profile.ttl if profile else (300 if resource.get("isApi") else 86400)
+        query_api = request_template(resource["url"]) != resource["url"]
+        ttl = (
+            profile.ttl
+            if profile
+            else (300 if resource.get("isApi") or query_api else 86400)
+        )
         force_transport_read = bool(profile and profile.arrivals and require_fresh)
         if profile:
             require_fresh = require_fresh or profile.arrivals
@@ -1108,6 +1116,7 @@ class Resources:
                     annotate_source_contract(resource, rows, schema)
                     qualify_observations(resource, rows, schema)
                     schema.update(extra)
+                    annotate_response(resource["url"], schema)
                     schema["sourceTransport"] = headers.get(
                         "_mcp_source_transport", "direct"
                     )
