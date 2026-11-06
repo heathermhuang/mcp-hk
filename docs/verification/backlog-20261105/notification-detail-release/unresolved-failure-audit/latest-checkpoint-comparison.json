@@ -1,0 +1,327 @@
+{
+  "scope": "Read-only latest accepted-checkpoint comparison for the frozen 451 unresolved-cause routes; latest check is not whole-resource coverage",
+  "acceptedCheckpointArchiveSha256": "bedd08ce92ee3028e00596398c75c963b258ed8d7a1c1eaa6284f5991e917e92",
+  "resources": 451,
+  "latestStatusCounts": [
+    [
+      "unavailable",
+      "SOURCE_UNAVAILABLE",
+      239
+    ],
+    [
+      "unavailable",
+      "SOURCE_NOT_FOUND",
+      25
+    ],
+    [
+      "unavailable",
+      "SOURCE_HTTP_ERROR",
+      180
+    ],
+    [
+      "restricted",
+      "ACCESS_RESTRICTED",
+      3
+    ],
+    [
+      "unavailable",
+      "SOURCE_API_ERROR",
+      1
+    ],
+    [
+      "queryable",
+      null,
+      2
+    ],
+    [
+      "unavailable",
+      "SOURCE_TIMEOUT",
+      1
+    ]
+  ],
+  "changedLatestChecks": [
+    {
+      "resourceId": "12019ca183944b9efc2c5c59f4160389",
+      "sourceHost": "api.hkma.gov.hk",
+      "frozen": {
+        "status": "unavailable",
+        "reason": "SOURCE_UNAVAILABLE",
+        "checked": 1793867274.1482747,
+        "validated": null
+      },
+      "latest": {
+        "checked": 1793963587.2960598,
+        "validated": null,
+        "status": "unavailable",
+        "reason": "SOURCE_HTTP_ERROR"
+      }
+    },
+    {
+      "resourceId": "2487d03fa89fd1d843b2733e5748fc6f",
+      "sourceHost": "portal.csdi.gov.hk",
+      "frozen": {
+        "status": "unavailable",
+        "reason": "SOURCE_TIMEOUT",
+        "checked": 1793906690.3217285,
+        "validated": null
+      },
+      "latest": {
+        "checked": 1793921434.7932174,
+        "validated": null,
+        "status": "restricted",
+        "reason": "ACCESS_RESTRICTED"
+      }
+    },
+    {
+      "resourceId": "33cea9a2e73cf52444b023ffc4b2a98e",
+      "sourceHost": "portal.csdi.gov.hk",
+      "frozen": {
+        "status": "unavailable",
+        "reason": "SOURCE_UNAVAILABLE",
+        "checked": 1793909869.7991958,
+        "validated": null
+      },
+      "latest": {
+        "checked": 1793928226.0965223,
+        "validated": null,
+        "status": "restricted",
+        "reason": "ACCESS_RESTRICTED"
+      }
+    },
+    {
+      "resourceId": "8615b670d55ac9ee122a8e72183fad0a",
+      "sourceHost": "xpms.hyd.gov.hk",
+      "frozen": {
+        "status": "unavailable",
+        "reason": "SOURCE_HTTP_ERROR",
+        "checked": 1793867900.0886328,
+        "validated": 1792799612.399335
+      },
+      "latest": {
+        "checked": 1793963334.90464,
+        "validated": 1793963334.90464,
+        "status": "queryable",
+        "reason": null
+      }
+    },
+    {
+      "resourceId": "9d75ed1979961493efca4e55e87a8e84",
+      "sourceHost": "xpms.hyd.gov.hk",
+      "frozen": {
+        "status": "unavailable",
+        "reason": "SOURCE_HTTP_ERROR",
+        "checked": 1793867897.0174823,
+        "validated": 1792799612.3764002
+      },
+      "latest": {
+        "checked": 1793963334.0110612,
+        "validated": 1793963334.0110612,
+        "status": "queryable",
+        "reason": null
+      }
+    },
+    {
+      "resourceId": "a8241f0bb0b42d0b70db57a0449fe64c",
+      "sourceHost": "api.hkma.gov.hk",
+      "frozen": {
+        "status": "unavailable",
+        "reason": "SOURCE_UNAVAILABLE",
+        "checked": 1793867274.9008756,
+        "validated": null
+      },
+      "latest": {
+        "checked": 1793963590.703813,
+        "validated": null,
+        "status": "unavailable",
+        "reason": "SOURCE_HTTP_ERROR"
+      }
+    },
+    {
+      "resourceId": "ec485f07bf1cd8781eb5cecd8ab328f0",
+      "sourceHost": "portal.csdi.gov.hk",
+      "frozen": {
+        "status": "unavailable",
+        "reason": "SOURCE_TIMEOUT",
+        "checked": 1793906564.9019344,
+        "validated": null
+      },
+      "latest": {
+        "checked": 1793921432.1733456,
+        "validated": null,
+        "status": "restricted",
+        "reason": "ACCESS_RESTRICTED"
+      }
+    }
+  ],
+  "resourcesWithAcceptedVariants": [
+    {
+      "resourceId": "2916ea4e8cbad7b36d39abfc8ecde985",
+      "datasetId": "hk-hyd-xpmsteam-xpms-data",
+      "sourceHost": "xpms.hyd.gov.hk",
+      "acceptedVariantScopes": [
+        {
+          "version": "1c0deb207b0325c4bbd5e83c39064d2c1efee3c564f667662ff5a503340d14b9",
+          "rows": 92,
+          "selection": {},
+          "sourceResponseComplete": true
+        }
+      ],
+      "wholeResourceQualified": false
+    },
+    {
+      "resourceId": "47ca30302ee8c42cd9221a8d59147e4e",
+      "datasetId": "hk-fsd-fsd1-fsdaedapi",
+      "sourceHost": "es.hkfsd.gov.hk",
+      "acceptedVariantScopes": [
+        {
+          "version": "38b9b48b4857d5e8d22b3da910716d1479838ff591877adc56f1649e350f2ed3",
+          "rows": 4681,
+          "selection": {},
+          "sourceResponseComplete": true
+        },
+        {
+          "version": "e4a613acd34b0f39c11facc1673e7b5de7cf7026627a03a0c3116cff5545f58c",
+          "rows": 4684,
+          "selection": {},
+          "sourceResponseComplete": true
+        }
+      ],
+      "wholeResourceQualified": false
+    },
+    {
+      "resourceId": "5007f7933e55f480838cf355b7ce432a",
+      "datasetId": "hk-hyd-xpmsteam-xpms-data",
+      "sourceHost": "xpms.hyd.gov.hk",
+      "acceptedVariantScopes": [
+        {
+          "version": "2d13490b56f60894c17adba3b70a0e5eee81f582c065607bd087c14db5f32dd3",
+          "rows": 510,
+          "selection": {},
+          "sourceResponseComplete": true
+        }
+      ],
+      "wholeResourceQualified": false
+    },
+    {
+      "resourceId": "8615b670d55ac9ee122a8e72183fad0a",
+      "datasetId": "hk-hyd-xpmsteam-xpms-data",
+      "sourceHost": "xpms.hyd.gov.hk",
+      "acceptedVariantScopes": [
+        {
+          "version": "1e7c69a19b2fdb3d2cb83cbfe41c5259b98c9940faff7d6912ddf26c0aaa6fb5",
+          "rows": 267,
+          "selection": {
+            "recordPath": "",
+            "sheet": "",
+            "layer": null,
+            "parameterNames": []
+          },
+          "sourceResponseComplete": true
+        },
+        {
+          "version": "4154cc7b7177014fe242c8d297680db0cc189299df3493a06602c1b20745db13",
+          "rows": 290,
+          "selection": {},
+          "sourceResponseComplete": true
+        }
+      ],
+      "wholeResourceQualified": false
+    },
+    {
+      "resourceId": "8e4b55c8803277a7e109d007bfac4d98",
+      "datasetId": "hk-hyd-xpmsteam-xpms-data",
+      "sourceHost": "xpms.hyd.gov.hk",
+      "acceptedVariantScopes": [
+        {
+          "version": "012ae7cd3e117c6cd69ae41fcec20f0ed3264c034c28786bbfa350d995ec8dd8",
+          "rows": 2167,
+          "selection": {},
+          "sourceResponseComplete": true
+        }
+      ],
+      "wholeResourceQualified": false
+    },
+    {
+      "resourceId": "8ec4392ff216ea1ed0a97e210455ae62",
+      "datasetId": "hkstp-hkstp-hkstp-company-directory",
+      "sourceHost": "opendata.hkstp.org",
+      "acceptedVariantScopes": [
+        {
+          "version": "0b5c6284f9f9e26388e31faa7bb8317d855553c3d8ed1b2b77e82acfdfab96da",
+          "rows": 1734,
+          "selection": {},
+          "sourceResponseComplete": true
+        }
+      ],
+      "wholeResourceQualified": false
+    },
+    {
+      "resourceId": "9d75ed1979961493efca4e55e87a8e84",
+      "datasetId": "hk-hyd-xpmsteam-xpms-data",
+      "sourceHost": "xpms.hyd.gov.hk",
+      "acceptedVariantScopes": [
+        {
+          "version": "ad5f968a4d57a6db2130822b6e810224340bbf3946b1693d07a675a58ba526b9",
+          "rows": 139,
+          "selection": {
+            "recordPath": "",
+            "sheet": "",
+            "layer": null,
+            "parameterNames": []
+          },
+          "sourceResponseComplete": true
+        },
+        {
+          "version": "10ef4c1136ba03f57bd5c44b0e04635109d3d4fa12d63ab1103558c45d8ef04f",
+          "rows": 120,
+          "selection": {},
+          "sourceResponseComplete": true
+        }
+      ],
+      "wholeResourceQualified": false
+    },
+    {
+      "resourceId": "d2df27964bf6e8d642341d7409eb871c",
+      "datasetId": "hk-fsd-fsd1-fsdaedapi",
+      "sourceHost": "es.hkfsd.gov.hk",
+      "acceptedVariantScopes": [
+        {
+          "version": "e5e6a4ccdd3babf01944a9efe762ed78038f67338fbf59203ec0cc427a005cb5",
+          "rows": 4681,
+          "selection": {},
+          "sourceResponseComplete": true
+        },
+        {
+          "version": "32961cbec6d313ee1e00d0927b8f6709ce655d12303521946f1bb8e8ab7c8cbd",
+          "rows": 4684,
+          "selection": {},
+          "sourceResponseComplete": true
+        }
+      ],
+      "wholeResourceQualified": false
+    },
+    {
+      "resourceId": "fd04ba9876ef90d738cca62d5f01f9e2",
+      "datasetId": "hk-fsd-fsd1-fsdaedapi",
+      "sourceHost": "es.hkfsd.gov.hk",
+      "acceptedVariantScopes": [
+        {
+          "version": "7fe77704a7f462d7316fef38bbf22b72040b5d3418fd7e0e52f86f7e8d30224b",
+          "rows": 4681,
+          "selection": {},
+          "sourceResponseComplete": true
+        },
+        {
+          "version": "c7ae2e46513a530c2ad94f4fb8230516fccfacef872db551534d29cfd66afc57",
+          "rows": 4684,
+          "selection": {},
+          "sourceResponseComplete": true
+        }
+      ],
+      "wholeResourceQualified": false
+    }
+  ],
+  "sourceRequests": 0,
+  "sourceStatusWrites": 0,
+  "semanticApprovalGenerated": false
+}

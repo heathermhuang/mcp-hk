@@ -1,0 +1,22 @@
+{
+  "resourceId": "59a9eb26d741141f5a4d675ee17f701c",
+  "selection": {
+    "recordPath": "csdi:RVD028"
+  },
+  "observedHttpStatus": 502,
+  "currentMetadataReason": "SOURCE_UNAVAILABLE",
+  "currentRecordsState": "held",
+  "firstErrorResponseBodyCaptured": false,
+  "exactTransportFailureCause": "not_recovered",
+  "sourceRequestRetried": false,
+  "httpMcpMetadataParity": true,
+  "priorRecordCount": 22,
+  "sourceCodeUnchanged": {
+    "src/mcp_open_data_hk/resource_fetch.py": "eb03ed7349df7068ad13ca4615d49564d5ab655fc99448795bf805db9c477d3b",
+    "src/mcp_open_data_hk/resource_protocols.py": "cd4ae7761cc6e2bd44eab5201a587a7d154f25364f8955a68243ab8bdd335ed4",
+    "src/mcp_open_data_hk/resources.py": "9cb10e5bd033c4fc5462daf02fdc2ac437285edd65a6f0e1679924dca1a3c197"
+  },
+  "notificationProfileApplies": false,
+  "originalFailedReceipt": "receipt-observed-rvd-502.json",
+  "wholeProviderFailureClaimed": false
+}

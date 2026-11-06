@@ -1,0 +1,11 @@
+{
+  "state": "paused_at_operator_gate",
+  "lane": "arcgis_workbooks",
+  "pid": 54887,
+  "log": "/private/tmp/mcp-hk-frozen-lanes-20261106/arcgis_workbooks/011-arcgis.log",
+  "lastObservation": {
+    "operatorGate": "release_slot",
+    "resourceHttpAttemptMade": false
+  },
+  "pausedAtEpoch": 1793995046.879849
+}

@@ -1,0 +1,195 @@
+{
+  "checkedAtUtc": "2026-11-06T19:30:07.913647+00:00",
+  "scope": "Read-only reconciliation of frozen unresolved-cause routes against existing scoped HTTP receipts; no new source request or source-status write",
+  "frozenUnresolvedResources": 451,
+  "resourcesWithExplicitSavedErrors": 10,
+  "resourcesWithoutSuchReceipts": 441,
+  "sourceRequests": 0,
+  "sourceStatusWrites": 0,
+  "messageCounts": {
+    "Source returned HTTP 403": 3,
+    "Source connection timed out": 7
+  },
+  "results": [
+    {
+      "resourceId": "2487d03fa89fd1d843b2733e5748fc6f",
+      "datasetId": "csdi:hyd_rcd_1632210918434_60749",
+      "sourceHost": "portal.csdi.gov.hk",
+      "operation": "schema",
+      "selection": {
+        "layer": 0
+      },
+      "qualificationHttpStatus": 502,
+      "checkedAt": 1793921434.871944,
+      "error": {
+        "code": "ACCESS_RESTRICTED",
+        "message": "Source returned HTTP 403",
+        "requestId": "a77ddf7975044149a1aff3ae92711bfe"
+      },
+      "receiptPath": "/private/tmp/mcp-hk-backlog-acceptance-a687580/2487d03fa89fd1d843b2733e5748fc6f-debcc270f0a13ab5-schema.json.gz",
+      "receiptSha256": "4cadc33206b115d7bf4278682c52fb18752059f76298bcdcb65192dea318f8cb"
+    },
+    {
+      "resourceId": "33cea9a2e73cf52444b023ffc4b2a98e",
+      "datasetId": "csdi:pland_rcd_1634022783366_65050",
+      "sourceHost": "portal.csdi.gov.hk",
+      "operation": "schema",
+      "selection": {},
+      "qualificationHttpStatus": 502,
+      "checkedAt": 1793909622.905838,
+      "error": {
+        "code": "ACCESS_RESTRICTED",
+        "message": "Source returned HTTP 403",
+        "requestId": "50d6d230274e475585829d318d3c94fb"
+      },
+      "receiptPath": "/private/tmp/mcp-hk-backlog-acceptance-a687580/33cea9a2e73cf52444b023ffc4b2a98e-options.json.gz",
+      "receiptSha256": "66269b01b91522d8f8b988486ca28bf619e3209fb7a82f917898650aa7db13df"
+    },
+    {
+      "resourceId": "52b4dbee2153dd12ed26a15d0648fe8c",
+      "datasetId": "csdi:censtatd_rcd_1635931180148_90380",
+      "sourceHost": "portal.csdi.gov.hk",
+      "operation": "schema",
+      "selection": {
+        "recordPath": "csdi:STPUG_06BC"
+      },
+      "qualificationHttpStatus": 502,
+      "checkedAt": 1793909392.030953,
+      "error": {
+        "code": "SOURCE_UNAVAILABLE",
+        "message": "Source connection timed out",
+        "requestId": "6b7501e542b842939d40ad48a37bad45"
+      },
+      "receiptPath": "/private/tmp/mcp-hk-backlog-acceptance-a687580/52b4dbee2153dd12ed26a15d0648fe8c-f1b21fa133da3ef6-schema.json.gz",
+      "receiptSha256": "9290236833a1809e0c6fac0a63932801cd23ffb8dbd69e6490ab9e87fbab87e0"
+    },
+    {
+      "resourceId": "7b337257b79ea0805a01da0963575233",
+      "datasetId": "csdi:td_rcd_1638844988873_41214",
+      "sourceHost": "portal.csdi.gov.hk",
+      "operation": "schema",
+      "selection": {
+        "recordPath": "csdi:FB_ROUTE_LINE"
+      },
+      "qualificationHttpStatus": 502,
+      "checkedAt": 1793909733.327221,
+      "error": {
+        "code": "SOURCE_UNAVAILABLE",
+        "message": "Source connection timed out",
+        "requestId": "a2767a98bb1f457b92cd4feda207ef02"
+      },
+      "receiptPath": "/private/tmp/mcp-hk-backlog-acceptance-a687580/7b337257b79ea0805a01da0963575233-bdbbe2353ffc4108-schema.json.gz",
+      "receiptSha256": "317ad1c60fee8299f5d899540ce3ee97e0d476699b30d801f8996935ef91c5be"
+    },
+    {
+      "resourceId": "910fbed1c721c87c129ce7958cbefd1b",
+      "datasetId": "csdi:pland_rcd_1634281887222_15002",
+      "sourceHost": "portal.csdi.gov.hk",
+      "operation": "schema",
+      "selection": {
+        "layer": 0
+      },
+      "qualificationHttpStatus": 502,
+      "checkedAt": 1793906909.5406342,
+      "error": {
+        "code": "SOURCE_UNAVAILABLE",
+        "message": "Source connection timed out",
+        "requestId": "9421cf008d854a638ada7e175794cf61"
+      },
+      "receiptPath": "/private/tmp/mcp-hk-backlog-acceptance-a687580/910fbed1c721c87c129ce7958cbefd1b-debcc270f0a13ab5-schema.json.gz",
+      "receiptSha256": "e33c70c77958c1514d9c4f80beda313eda47444379de37ed1942c9b5007204f9"
+    },
+    {
+      "resourceId": "a75dcddfc904f4215099610c645842b8",
+      "datasetId": "csdi:rvd_rcd_1631762126297_43900",
+      "sourceHost": "portal.csdi.gov.hk",
+      "operation": "query",
+      "selection": {
+        "layer": 0
+      },
+      "qualificationHttpStatus": 502,
+      "checkedAt": 1793907441.70207,
+      "error": {
+        "code": "SOURCE_UNAVAILABLE",
+        "message": "Source connection timed out",
+        "requestId": "31b3bbe760964ee0b15f16e806aab28b"
+      },
+      "receiptPath": "/private/tmp/mcp-hk-backlog-acceptance-a687580/a75dcddfc904f4215099610c645842b8-debcc270f0a13ab5-query.json.gz",
+      "receiptSha256": "da31eeb587d203c2160ad4c7d43c4ebf0136bdd35fed1bc75d0bf3bfb6676d52"
+    },
+    {
+      "resourceId": "c3c7189a7ce39159a49538aec6f26077",
+      "datasetId": "csdi:rvd_rcd_1632384520666_13070",
+      "sourceHost": "portal.csdi.gov.hk",
+      "operation": "query",
+      "selection": {
+        "layer": 0
+      },
+      "qualificationHttpStatus": 502,
+      "checkedAt": 1793907532.2751172,
+      "error": {
+        "code": "SOURCE_UNAVAILABLE",
+        "message": "Source connection timed out",
+        "requestId": "2655405b2f414f26879a38f35149360e"
+      },
+      "receiptPath": "/private/tmp/mcp-hk-backlog-acceptance-a687580/c3c7189a7ce39159a49538aec6f26077-debcc270f0a13ab5-query.json.gz",
+      "receiptSha256": "cb40bdd4fcfb8b52bba29e79bd9b1211516c6c2551c8df4d5166e392537cc097"
+    },
+    {
+      "resourceId": "cb9b63c53bda76b41367261a95938248",
+      "datasetId": "csdi:rvd_rcd_1631695369038_14075",
+      "sourceHost": "portal.csdi.gov.hk",
+      "operation": "query",
+      "selection": {
+        "layer": 0
+      },
+      "qualificationHttpStatus": 502,
+      "checkedAt": 1793907408.957294,
+      "error": {
+        "code": "SOURCE_UNAVAILABLE",
+        "message": "Source connection timed out",
+        "requestId": "22e03605f0984912bdce492768eebb52"
+      },
+      "receiptPath": "/private/tmp/mcp-hk-backlog-acceptance-a687580/cb9b63c53bda76b41367261a95938248-debcc270f0a13ab5-query.json.gz",
+      "receiptSha256": "a4ca8b8547cb6fccdd1d97ebb848974932edc90a6f8ed4bc9dd8143db7ab30f6"
+    },
+    {
+      "resourceId": "ec485f07bf1cd8781eb5cecd8ab328f0",
+      "datasetId": "csdi:hyd_rcd_1632210213867_60179",
+      "sourceHost": "portal.csdi.gov.hk",
+      "operation": "schema",
+      "selection": {
+        "layer": 0
+      },
+      "qualificationHttpStatus": 502,
+      "checkedAt": 1793921432.2594602,
+      "error": {
+        "code": "ACCESS_RESTRICTED",
+        "message": "Source returned HTTP 403",
+        "requestId": "e9854bc5142042c1b4ef192f299e72d9"
+      },
+      "receiptPath": "/private/tmp/mcp-hk-backlog-acceptance-a687580/ec485f07bf1cd8781eb5cecd8ab328f0-debcc270f0a13ab5-schema.json.gz",
+      "receiptSha256": "433c0651892dfd10451760ce4b69a0b043f27afecd52c727046dbde109baa0dd"
+    },
+    {
+      "resourceId": "ef7b400636200be96e4e6ffe1f4ca98c",
+      "datasetId": "csdi:censtatd_rcd_1635930411785_22089",
+      "sourceHost": "portal.csdi.gov.hk",
+      "operation": "schema",
+      "selection": {
+        "recordPath": "csdi:SSBG_01C"
+      },
+      "qualificationHttpStatus": 502,
+      "checkedAt": 1793909359.544511,
+      "error": {
+        "code": "SOURCE_UNAVAILABLE",
+        "message": "Source connection timed out",
+        "requestId": "ce04d8e4792d4d8f9a785a0f951b29f0"
+      },
+      "receiptPath": "/private/tmp/mcp-hk-backlog-acceptance-a687580/ef7b400636200be96e4e6ffe1f4ca98c-638c90f381a7f56b-schema.json.gz",
+      "receiptSha256": "cd1182d24326331431f7d713c574893b9d5aa36a942100f25f2c6a748eb7d2f0"
+    }
+  ],
+  "acceptanceChanged": false,
+  "unknownCausesResolvedByInference": false
+}

@@ -1,0 +1,16 @@
+{
+  "observedAtUtc": "2026-11-06T20:15:20.754596+00:00",
+  "originalReceiptSha256": "36c92157e3c8b14ae7b5573e57b831c4937aee91607ef189f10769b725200f53",
+  "pointsPassed": 4,
+  "resourcesPassed": 1,
+  "busComparisons": 3,
+  "failedObservations": [
+    {
+      "resourceId": "59a9eb26d741141f5a4d675ee17f701c",
+      "phase": "resource",
+      "error": "Server error '502 Bad Gateway' for url 'https://mcp.hk/api/v1/resources/59a9eb26d741141f5a4d675ee17f701c/query'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/502"
+    }
+  ],
+  "firstResponseBodyCaptured": false,
+  "sourceRetries": 0
+}

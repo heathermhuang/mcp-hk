@@ -1,0 +1,11 @@
+{
+  "state": "paused_at_operator_gate",
+  "lane": "reports_wfs",
+  "pid": 47691,
+  "log": "/private/tmp/mcp-hk-frozen-lanes-20261106/reports_wfs/013-reports.log",
+  "lastObservation": {
+    "operatorGate": "release_slot",
+    "resourceHttpAttemptMade": false
+  },
+  "pausedAtEpoch": 1793995047.126567
+}

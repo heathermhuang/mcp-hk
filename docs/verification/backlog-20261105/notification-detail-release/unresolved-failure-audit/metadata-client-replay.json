@@ -1,0 +1,117 @@
+{
+  "scope": "Actual HTTP/native MCP catalogue metadata in isolated copy of the latest accepted checkpoint; retained acceptance metadata is separate from raw-record availability",
+  "checkpointArchiveSha256": "bedd08ce92ee3028e00596398c75c963b258ed8d7a1c1eaa6284f5991e917e92",
+  "sourceDatabaseSha256": "43bc2f9c28060f91428a5876323e2ac8b673ba52ed9027561df2b4f6d919b726",
+  "providerRequests": 0,
+  "results": [
+    {
+      "resourceId": "2916ea4e8cbad7b36d39abfc8ecde985",
+      "datasetId": "hk-hyd-xpmsteam-xpms-data",
+      "httpMcpMetadataParity": true,
+      "retainedAcceptedVariants": 1,
+      "recordCapability": {
+        "state": "held",
+        "reason": "SOURCE_HTTP_ERROR"
+      },
+      "recordQueryPerformed": false,
+      "recordAvailabilityClaimed": false
+    },
+    {
+      "resourceId": "5007f7933e55f480838cf355b7ce432a",
+      "datasetId": "hk-hyd-xpmsteam-xpms-data",
+      "httpMcpMetadataParity": true,
+      "retainedAcceptedVariants": 1,
+      "recordCapability": {
+        "state": "held",
+        "reason": "SOURCE_HTTP_ERROR"
+      },
+      "recordQueryPerformed": false,
+      "recordAvailabilityClaimed": false
+    },
+    {
+      "resourceId": "8615b670d55ac9ee122a8e72183fad0a",
+      "datasetId": "hk-hyd-xpmsteam-xpms-data",
+      "httpMcpMetadataParity": true,
+      "retainedAcceptedVariants": 2,
+      "recordCapability": {
+        "state": "available",
+        "reason": "accepted_receipt_selections_only"
+      },
+      "recordQueryPerformed": false,
+      "recordAvailabilityClaimed": false
+    },
+    {
+      "resourceId": "8e4b55c8803277a7e109d007bfac4d98",
+      "datasetId": "hk-hyd-xpmsteam-xpms-data",
+      "httpMcpMetadataParity": true,
+      "retainedAcceptedVariants": 1,
+      "recordCapability": {
+        "state": "held",
+        "reason": "SOURCE_HTTP_ERROR"
+      },
+      "recordQueryPerformed": false,
+      "recordAvailabilityClaimed": false
+    },
+    {
+      "resourceId": "9d75ed1979961493efca4e55e87a8e84",
+      "datasetId": "hk-hyd-xpmsteam-xpms-data",
+      "httpMcpMetadataParity": true,
+      "retainedAcceptedVariants": 2,
+      "recordCapability": {
+        "state": "available",
+        "reason": "accepted_receipt_selections_only"
+      },
+      "recordQueryPerformed": false,
+      "recordAvailabilityClaimed": false
+    },
+    {
+      "resourceId": "47ca30302ee8c42cd9221a8d59147e4e",
+      "datasetId": "hk-fsd-fsd1-fsdaedapi",
+      "httpMcpMetadataParity": true,
+      "retainedAcceptedVariants": 2,
+      "recordCapability": {
+        "state": "held",
+        "reason": "SOURCE_UNAVAILABLE"
+      },
+      "recordQueryPerformed": false,
+      "recordAvailabilityClaimed": false
+    },
+    {
+      "resourceId": "d2df27964bf6e8d642341d7409eb871c",
+      "datasetId": "hk-fsd-fsd1-fsdaedapi",
+      "httpMcpMetadataParity": true,
+      "retainedAcceptedVariants": 2,
+      "recordCapability": {
+        "state": "held",
+        "reason": "SOURCE_UNAVAILABLE"
+      },
+      "recordQueryPerformed": false,
+      "recordAvailabilityClaimed": false
+    },
+    {
+      "resourceId": "fd04ba9876ef90d738cca62d5f01f9e2",
+      "datasetId": "hk-fsd-fsd1-fsdaedapi",
+      "httpMcpMetadataParity": true,
+      "retainedAcceptedVariants": 2,
+      "recordCapability": {
+        "state": "held",
+        "reason": "SOURCE_UNAVAILABLE"
+      },
+      "recordQueryPerformed": false,
+      "recordAvailabilityClaimed": false
+    },
+    {
+      "resourceId": "8ec4392ff216ea1ed0a97e210455ae62",
+      "datasetId": "hkstp-hkstp-hkstp-company-directory",
+      "httpMcpMetadataParity": true,
+      "retainedAcceptedVariants": 1,
+      "recordCapability": {
+        "state": "held",
+        "reason": "SOURCE_UNAVAILABLE"
+      },
+      "recordQueryPerformed": false,
+      "recordAvailabilityClaimed": false
+    }
+  ],
+  "newSourceAcceptance": 0
+}

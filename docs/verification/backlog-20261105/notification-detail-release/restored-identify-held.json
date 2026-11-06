@@ -1,0 +1,20 @@
+{
+  "resourceId": "18e150f1f3e1fbe6f0171cdb5fe947d9",
+  "scope": "Retained dated Identify metadata and current exact source hold; no current record-availability claim",
+  "httpMcpMetadataParity": true,
+  "providerRequests": 0,
+  "sourceHoldPreserved": true,
+  "records": {
+    "state": "held",
+    "reason": "SOURCE_UNAVAILABLE"
+  },
+  "retainedVariantFacts": [
+    {
+      "key": "7582df6a00bffdfd9b328f32217c713a65f0c66d5032c33ed43fc24d307f9686",
+      "version": "20675f1569e2c74e0755c67650cdca435d00fd47c0e03bd968bf75a615c3c18e",
+      "schemaHash": "f1f69e677fe975027e1d78225594998cc51ed927d85ec73ed646cbe6433a6580",
+      "rows": 2
+    }
+  ],
+  "recordsRecovered": false
+}
