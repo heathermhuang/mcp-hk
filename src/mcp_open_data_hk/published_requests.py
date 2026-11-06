@@ -3,7 +3,7 @@
 import math
 
 from .contracts import DomainError
-from . import geodetic_requests
+from . import geodetic_requests, hydro_requests
 
 SPEC_PREFIX = "https://portal.csdi.gov.hk/csdi-webpage/apidoc/"
 LOCATION_SEARCH_SPEC = (
@@ -15,6 +15,7 @@ NEARBY_SPEC = SPEC_PREFIX + "SearchNearbyAPI"
 NUMBER_SEARCH_SPEC = SPEC_PREFIX + "LPPUNSearchAPI"
 LOT_INDEX_SPEC = SPEC_PREFIX + "LotIndexAPI"
 REQUESTS = {
+    hydro_requests.PAGE: hydro_requests.TEMPLATE,
     **{
         spec: geodetic_requests.SPEC + "/?inSys={inSys}"
         for spec in geodetic_requests.SPECS
@@ -59,6 +60,8 @@ def bind_request(url, parameters):
 
 def parameter_choices(url):
     spec = url.rstrip("/")
+    if spec == hydro_requests.PAGE:
+        return {"mode": ["A"]}
     if spec in geodetic_requests.SPECS:
         return {"inSys": list(geodetic_requests.SYSTEMS)}
     if spec in {IDENTIFY_SPEC, NEARBY_SPEC}:
@@ -79,6 +82,14 @@ def request_requirements(url):
         "sourceSpecificationUrl": spec,
         "scope": "explicit_parameter_response_not_full_inventory",
     }
+    if spec == hydro_requests.PAGE:
+        result.update(
+            interface="published_map_prediction_snapshot_not_period_csv",
+            timeFormat="YYYYMMDDHHmmss; quarter hour; native timezone unreviewed",
+            publishedClientUrl=hydro_requests.CLIENT,
+            originalRepresentationEquivalence="unreviewed",
+            navigationUse="Not to be used for navigation.",
+        )
     if spec in geodetic_requests.SPECS:
         result.update(geodetic_requests.requirements())
     if spec in {IDENTIFY_SPEC, NEARBY_SPEC, LOT_INDEX_SPEC}:
@@ -95,6 +106,8 @@ def validate_parameters(url, parameters):
     for name, choices in parameter_choices(url).items():
         if parameters[name] not in choices:
             raise DomainError("INVALID_QUERY", "Unsupported published " + name, 400)
+    if spec == hydro_requests.PAGE:
+        hydro_requests.validate_parameters(parameters)
     names = (
         ["x", "y"]
         if spec in {IDENTIFY_SPEC, NEARBY_SPEC}
@@ -122,7 +135,7 @@ def validate_parameters(url, parameters):
             )
 
 
-def annotate_response(url, schema):
+def annotate_response(url, schema, parameters=None):
     if url.rstrip("/") in geodetic_requests.SPECS:
         geodetic_requests.validate_response(schema)
     if request_template(url) != url:
@@ -143,3 +156,5 @@ def annotate_response(url, schema):
             schema["requestCoordinateReferenceSystem"] = "HK80"
         if url.rstrip("/") == NEARBY_SPEC:
             schema["sourceDeclaredSearchDistanceM"] = 1000
+        if url.rstrip("/") == hydro_requests.PAGE:
+            hydro_requests.annotate(schema, parameters)

@@ -1,0 +1,14 @@
+{
+  "scope": "Local HTTP/native MCP replay of exact captured Hydro snapshot bytes; fixture replay, no current hosted acceptance claim",
+  "providerRequests": 0,
+  "fixtureReads": 1,
+  "results": [
+    {
+      "resourceId": "35f4fa534d677141e2d81d8c15b34287",
+      "rows": 1158,
+      "httpMcpParity": true,
+      "sourceSha256": "9e8648180811982a1d40205f34dd48cc13ba591462748221ea877f2d00ba4b9b",
+      "serialization": "hydro_published_map_prediction_snapshot"
+    }
+  ]
+}
