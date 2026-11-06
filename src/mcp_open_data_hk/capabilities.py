@@ -10,6 +10,7 @@ from .resource_fields import field_catalogue
 from .source_contracts import typed_bindings
 from .spatial_profiles import accepted_binding, profile_for, dataset_kind
 from .resource_protocols import protocol, HKMA_PAGING_CONTRACT
+from .hydro_requests import reuse_hold
 
 REVISION = "resource-capabilities-3"
 OPERATIONS = ("records", "text_search", "typed_comparison", "nearby")
@@ -80,6 +81,7 @@ def project(resource, check=None, receipts=(), schema=None):
     check = check or {}
     status = check.get("status") or "pending"
     access = family(resource)
+    source_reuse = reuse_hold(resource.get("url", ""), resource.get("datasetId"))
     accepted = []
     hkma = urlsplit(resource.get("url", "")).hostname == "api.hkma.gov.hk"
     has_typed_fields = False
@@ -175,6 +177,10 @@ def project(resource, check=None, receipts=(), schema=None):
             state if spatial_binding.get("state") == "available" else "held",
             spatial_binding.get("reason") or "accepted_reviewed_point_binding",
         )
+    if source_reuse:
+        operations = {
+            name: operation("held", source_reuse["reason"]) for name in OPERATIONS
+        }
     fields = []
     if schema is not None:
         for field in schema.get("fields", []) + schema.get("queryFields", []):
@@ -190,7 +196,10 @@ def project(resource, check=None, receipts=(), schema=None):
                 or field["name"] in typed_bindings(schema)
             ):
                 operators += ["lt", "lte", "gt", "gte", "between", "order"]
-                operations["typed_comparison"] = operation(state, reason)
+                operations["typed_comparison"] = operation(
+                    "held" if source_reuse else state,
+                    source_reuse["reason"] if source_reuse else reason,
+                )
             fields.append({**field, "operators": operators})
     return {
         "revision": REVISION,
@@ -213,6 +222,7 @@ def project(resource, check=None, receipts=(), schema=None):
             "reason": check.get("reason"),
             "lastCheckedAt": check.get("checked"),
         },
+        **({"sourceReuseReview": source_reuse} if source_reuse else {}),
         "observationTime": None,
         "completeness": (
             "per_receipt_selection_only"
@@ -227,16 +237,22 @@ def project(resource, check=None, receipts=(), schema=None):
 
 
 def summary(counts, dataset_id=None):
+    source_reuse = reuse_hold("", dataset_id)
     return {
         "revision": REVISION,
         "records": operation(
-            "available" if counts.get("queryable") else "held",
+            "available" if counts.get("queryable") and not source_reuse else "held",
             (
-                "inspect_representation_and_selection_receipts"
-                if counts.get("queryable")
-                else "no_accepted_record_capability"
+                source_reuse["reason"]
+                if source_reuse
+                else (
+                    "inspect_representation_and_selection_receipts"
+                    if counts.get("queryable")
+                    else "no_accepted_record_capability"
+                )
             ),
         ),
+        **({"sourceReuseReview": source_reuse} if source_reuse else {}),
         "semanticBinding": None,
         "entityKind": dataset_kind(dataset_id),
     }

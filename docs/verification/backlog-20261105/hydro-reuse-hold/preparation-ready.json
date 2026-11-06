@@ -1,0 +1,11 @@
+{
+  "sourceCommit": "968740750e466a472b71d3b25de29a154282aad7",
+  "codePrs": [
+    170,
+    172
+  ],
+  "allFiveExactMainChecksPassed": true,
+  "offlineSmokePassed": true,
+  "reproducedErrorEnvelopeFixedBeforeDeployment": true,
+  "unusedEarlierImageActivated": false
+}

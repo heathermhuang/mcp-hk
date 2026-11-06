@@ -169,3 +169,10 @@ geographic binding or current-service qualification. Wider frozen, builder,
 source/schema/capacity and independently supported semantic work remains open.
 
 PR #168 repairs the exact HKSTP JSON-string framing and has hosted/fresh recovery evidence in `hkstp-string-release/`. It introduces no active-vacancy or semantic qualification. Exact diagnostic/source/capacity reasons, wider frozen graphs and supported semantics remain open; the separate Hydro snapshot PR #170 is not deployed by this release.
+
+Hydro PRs #170/#172 are merged but not deployed. The endpoint notice and broader
+catalogue terms leave this public API's reuse basis unverified; source authorization
+or a supported noncommercial scope is pending owner clarification. The aborted R15
+rollout restored the original five schedules and existing version 84 without code
+activation. `hydro-reuse-hold/` records the evidence and fail-closed policy. The
+other frozen source graphs and supported tasks remain open.

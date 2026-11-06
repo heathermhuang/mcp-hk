@@ -1,0 +1,8 @@
+{
+  "scope": "Local regression proof, no provider attempt",
+  "beforeFixAcceptedRows": 0,
+  "afterFixCode": "SOURCE_API_ERROR",
+  "providerRequests": 0,
+  "focusedTestsPassed": 86,
+  "productionChanged": false
+}

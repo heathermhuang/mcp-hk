@@ -36,3 +36,8 @@ Focused reader checks cover all three interfaces and malformed/wrong-time respon
 The mandatory full push-hook and exact-head CI remain gates. Hosted acceptance and fresh recovery are
 pending. Source metadata and fixture evidence do not establish current production
 availability or navigational/semantic readiness.
+
+Public record access is now held by the [source reuse review](../hydro-reuse-hold/README.md).
+The earlier raw-response fixture proof establishes parser behavior only. It does
+not approve redistribution, and the current default HTTP/MCP policy blocks records
+before provider or cache access. No Hydro image was activated.

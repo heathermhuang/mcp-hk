@@ -1,0 +1,18 @@
+{
+  "scope": "Public Hydro record activation only; dataset-specific public API reuse basis is unresolved",
+  "sourceNoticeUrl": "https://current.hydro.gov.hk/main/disclaimer.php?lang=tc",
+  "sourceNoticeSha256": "14a341a8e49c3f24d29431b8de964a399332ec68f54c4351b12991b75f740cc5",
+  "retrievedAtUtc": "2026-11-06T14:26:09.693224+00:00",
+  "publisherStatement": "Noncommercial reproduction with Marine Department attribution; commercial use requires prior written authorization.",
+  "dataGovTermsUrl": "https://data.gov.hk/en/terms-and-conditions",
+  "dataGovDatasetUrl": "https://data.gov.hk/en-data/dataset/hk-md-hydro-hong-kong-tidal-stream-prediction",
+  "dataGovMetadataLicenceId": null,
+  "dataGovMetadataLicenceTitle": null,
+  "operatorAuthorizationEvidenceFoundInRepository": false,
+  "ownerClarificationPending": true,
+  "publicActivationHeld": true,
+  "sourceRecordsAlreadyActivated": false,
+  "otherFrozenProgrammeWorkRemainsAuthorized": true,
+  "catalogueTermsAndEndpointNoticeDiffer": true,
+  "licenceMetadataBasis": "R14 immutable inventory restore; not proof that authorization does not exist"
+}

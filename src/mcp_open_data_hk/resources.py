@@ -35,7 +35,7 @@ from .resource_fetch import fetch, fetch_file
 from .resource_stream import FileRows
 from .resource_formats import parse
 from .resource_serializations import read as read_serialization
-from . import published_files
+from . import published_files, hydro_requests
 from .published_requests import (
     request_template,
     annotate_response,
@@ -791,6 +791,12 @@ class Resources:
             "parameterNames": sorted(parameters or {}),
         }
         resource = self.catalogue.resource(resource_id)
+        if hydro_requests.reuse_hold(resource["url"], resource.get("datasetId")):
+            raise DomainError(
+                "SOURCE_REUSE_REVIEW_REQUIRED",
+                "Public Hydro record access is held until its source reuse basis is verified",
+                422,
+            )
         if non_record_interface(resource["url"]):
             raise DomainError(
                 "NON_RECORD_REPRESENTATION",
@@ -1489,6 +1495,19 @@ class Resources:
         if parameters and not transport.profile(resource):
             # Discovery shortcuts must not silently ignore undeclared arguments.
             template_url(resource["url"], parameters)
+        reuse = hydro_requests.reuse_hold(resource["url"], resource.get("datasetId"))
+        if reuse:
+            if record_path or sheet or layer is not None:
+                raise DomainError(
+                    "INVALID_QUERY", "Selector does not apply to this source", 400
+                )
+            return {
+                "resource": resource,
+                "sourceReuseReview": reuse,
+                "sourceRequest": request_requirements(resource["url"]),
+                "recordCount": None,
+                "structuredQueryable": False,
+            }
         interface = non_record_interface(resource["url"])
         if interface:
             if record_path or sheet or layer is not None:
