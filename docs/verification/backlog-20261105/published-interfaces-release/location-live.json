@@ -1,0 +1,23 @@
+{
+  "scope": "Actual HTTP/native MCP canary of the exact published parameterized lookup; source matches only, not unique places or qualified coordinates",
+  "resourceId": "01d13836b343a057c89bf7f3dcb2abb7",
+  "parameters": {
+    "q": "cultural centre"
+  },
+  "checkedAtUtc": "2026-11-06T06:57:45.559800+00:00",
+  "missingInputHttpMcpNoBorrowedChoices": true,
+  "queryHttpStatus": 200,
+  "httpMcpDataParity": true,
+  "callerActionContextPreserved": true,
+  "publicChoicesContainCallerValue": false,
+  "totalSourceMatches": 27,
+  "version": "c570524b4717c88f9e22c6a0bdc01d2457b3577ed9b991e1255017e36ac95cb5",
+  "returnedItems": 2,
+  "dataItemsSha256": "09492d7405fc23d4d245ab023b3b887df1740abf9bd096e63a8f4cf01af95762",
+  "nearbyAvailable": false,
+  "nativeCoordinatesQualified": false,
+  "semanticBindingsAdded": 0,
+  "originalResourceUrl": "https://portal.csdi.gov.hk/csdi-webpage/apidoc/LocationSearchAPI",
+  "responseUrl": "https://www.map.gov.hk/gs/api/v1.0.0/locationSearch?q=cultural%20centre",
+  "recordBodiesPublished": false
+}

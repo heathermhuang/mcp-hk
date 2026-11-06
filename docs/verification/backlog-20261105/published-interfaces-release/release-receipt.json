@@ -1,0 +1,248 @@
+{
+  "releasedCommit": "f45aa00d1ce48707a83b7455c44b32e678294f2b",
+  "codePrs": [
+    157
+  ],
+  "cloudflareVersionId": "87e28278-bd9e-47dd-a7d6-130c1454f223",
+  "containerImageDigest": "sha256:48ce637115bd674c04dbb2b9437b9e6954a8842af593f0e8548d93e7de99c633",
+  "containerApplicationVersion": 79,
+  "runningInstance": {
+    "instances": [
+      {
+        "state": "running",
+        "version": 79
+      }
+    ],
+    "source": "native Wrangler containers instances read; full private receipt retained"
+  },
+  "verifiedAtUtc": "2026-11-06T07:00:59.360124+00:00",
+  "actualPublishedInterfaces": {
+    "scope": "Actual hosted exact published-request canaries; raw response scopes only, no geographic or identity qualification; record bodies omitted",
+    "recordInterfaces": [
+      {
+        "resourceId": "18e150f1f3e1fbe6f0171cdb5fe947d9",
+        "parameters": {
+          "x": "835665",
+          "y": "817198",
+          "lang": "en"
+        },
+        "checkedAtUtc": "2026-11-06T06:56:07.642335+00:00",
+        "requiredInputHttpMcpParity": true,
+        "queryHttpStatus": 200,
+        "httpMcpDataParity": true,
+        "totalSourceRows": 2,
+        "returnedItems": 1,
+        "version": "20675f1569e2c74e0755c67650cdca435d00fd47c0e03bd968bf75a615c3c18e",
+        "dataItemsSha256": "015c6f332f9c0ab6499e338bbf9d2fce742dd6c37735c7acce4e824d95958695",
+        "nativeCoordinatesQualified": false,
+        "wholeInventoryQualified": false
+      },
+      {
+        "resourceId": "8249e3d730a8f969980548f55fd79d86",
+        "parameters": {
+          "x": "835665",
+          "y": "817198",
+          "lang": "en"
+        },
+        "checkedAtUtc": "2026-11-06T06:56:12.048465+00:00",
+        "requiredInputHttpMcpParity": true,
+        "queryHttpStatus": 200,
+        "httpMcpDataParity": true,
+        "totalSourceRows": 1760,
+        "returnedItems": 1,
+        "version": "1a42839d2861bb0898d0428d9f70f03980c603792bf823a1b6008dd1836f4fb3",
+        "dataItemsSha256": "269df071f5c48f88a700b894b586db88d5f18868d9dedf1459e369ba78dde04c",
+        "nativeCoordinatesQualified": false,
+        "wholeInventoryQualified": false
+      },
+      {
+        "resourceId": "6dcc39e9b683a2f8b1e38ae2e4cd6488",
+        "parameters": {
+          "DataType": "gla",
+          "text": "GLA-HK 836"
+        },
+        "checkedAtUtc": "2026-11-06T06:56:16.492579+00:00",
+        "requiredInputHttpMcpParity": true,
+        "queryHttpStatus": 200,
+        "httpMcpDataParity": true,
+        "totalSourceRows": 1,
+        "returnedItems": 1,
+        "version": "6831887885b368b98e859d5518af3ea5ba32fe3a70ea149e222aeed94d3fea57",
+        "dataItemsSha256": "fcb30f6f5b36bc38da88a3509e3d1c5b5c1cd479f6a4af889a7eb5aa4ce14093",
+        "nativeCoordinatesQualified": false,
+        "wholeInventoryQualified": false
+      },
+      {
+        "resourceId": "7825a371cda35083cb7e0e3a40294a01",
+        "parameters": {
+          "LIT": "lot",
+          "hk80MinX": "839363",
+          "hk80MinY": "816910",
+          "hk80MaxX": "839603",
+          "hk80MaxY": "817103"
+        },
+        "checkedAtUtc": "2026-11-06T06:56:20.352325+00:00",
+        "requiredInputHttpMcpParity": true,
+        "queryHttpStatus": 200,
+        "httpMcpDataParity": true,
+        "totalSourceRows": 1,
+        "returnedItems": 1,
+        "version": "263b1191383814f2549f8890d5301f20fd9b275acccf8abd9cd34e98260b6b82",
+        "dataItemsSha256": "7d0f0142391ab75ecf7f0e6ab97a8691e88f3bcab3197a517927e435aaa808c5",
+        "nativeCoordinatesQualified": false,
+        "wholeInventoryQualified": false
+      }
+    ],
+    "mapInterfaces": [
+      {
+        "resourceId": "30b638ab333c60296dfcd6ace9578b80",
+        "metadataHttpMcpParity": true,
+        "recordQueryRejected": true,
+        "sourceInterface": {
+          "kind": "vector_tiles_and_map_styles",
+          "responseFormats": [
+            "PBF vector tiles",
+            "JSON presentation style"
+          ],
+          "recordQuerySupported": false,
+          "sourceSpecificationUrl": "https://portal.csdi.gov.hk/csdi-webpage/apidoc/VectorMapAPI"
+        }
+      },
+      {
+        "resourceId": "999d814248ffdd57ca4ab01355b44397",
+        "metadataHttpMcpParity": true,
+        "recordQueryRejected": true,
+        "sourceInterface": {
+          "kind": "vector_tiles_and_map_styles",
+          "responseFormats": [
+            "PBF vector tiles",
+            "JSON presentation style"
+          ],
+          "recordQuerySupported": false,
+          "sourceSpecificationUrl": "https://portal.csdi.gov.hk/csdi-webpage/apidoc/VectorMapLabelAPI"
+        }
+      }
+    ]
+  },
+  "existingHttpMcpRegressionsPassed": true,
+  "callerScopedHistoricalActionAndMissingInputIsolationPassed": true,
+  "freshAcceptedRestore": {
+    "freshAcceptedArchiveSha256": "356d7c749a354a8106cb43f9b09d25b34c1a172f0c8dab906d64d5774268da22",
+    "archiveBytes": 114699416,
+    "databaseBytes": 330653696,
+    "captureBytes": 31155283,
+    "totalRestoredBytes": 361808979,
+    "integrity": "ok",
+    "baseAndTransportPacks": {
+      "population": 18,
+      "restaurants": 17296,
+      "transport": 62147
+    },
+    "sourceRegistryRecovered": true,
+    "nativeDatasetCount": 5048,
+    "activePreviousInventoryGenerations": 2,
+    "typedWorkbookOptions": 84,
+    "restoredPointBindings": [
+      {
+        "profileId": "ambulance-depot-feature-points-1",
+        "profileFingerprint": "2c46fabf80af8cc3a3d0393686a235d06912d5e189e2d773b6cf71771aae3fc8",
+        "sourceRows": 45
+      },
+      {
+        "profileId": "dh-clinic-feature-points-1",
+        "profileFingerprint": "d716d17e076adb0b4ee07a65c5ad00ea528ef66e0d4e03fb7b3d7f980b16ad26",
+        "sourceRows": 200
+      },
+      {
+        "profileId": "edb-school-record-points-1",
+        "profileFingerprint": "3263fce4baca106524b171f54228a7a425ea6e41232178ced42020ac063df2f9",
+        "sourceRows": 3496
+      },
+      {
+        "profileId": "fire-station-feature-points-1",
+        "profileFingerprint": "abfc4aa277d11dcb73d7eef77ab5233abab1e8ab310cde70451eedc2915928e1",
+        "sourceRows": 95
+      },
+      {
+        "profileId": "library-feature-points-1",
+        "profileFingerprint": "e75d4ced7e1654371ee3c563964d03d60bed7184a606b548e736b29c9caabc40",
+        "sourceRows": 184
+      },
+      {
+        "profileId": "museum-feature-points-1",
+        "profileFingerprint": "33282724e064947f6af7a4706ee355b7bcbafd6a900b18d31aa3b26fe408a524",
+        "sourceRows": 18
+      }
+    ],
+    "boundsUnchanged": {
+      "archive": 150000000,
+      "database": 500000000,
+      "totalRestored": 750000000
+    },
+    "preExistingHkmaVariantsPreserved": 34,
+    "repairedWfsMetadataPreserved": [
+      {
+        "resourceId": "f517af5f1721b0896cca46a0dec103f3",
+        "recordPath": "APP_AMEND_CSDI:AMEND_CRT",
+        "rows": 16,
+        "version": "a319b26570ac108c88c30d35e383beafecb7bb6d9289574d9589828cb093e95e"
+      },
+      {
+        "resourceId": "f517af5f1721b0896cca46a0dec103f3",
+        "recordPath": "APP_AMEND_CSDI:AMEND_PAST",
+        "rows": 1324,
+        "version": "b2405c33276b1778f811e6d2061553caaa1d75d5866605111fe7ba5ca569d534"
+      },
+      {
+        "resourceId": "f517af5f1721b0896cca46a0dec103f3",
+        "recordPath": "APP_AMEND_CSDI:APP_CRT",
+        "rows": 2179,
+        "version": "a1ad694683ffd139806bbde2d25ce013451ba32af21b872eba97cbc2abb92a7f"
+      }
+    ]
+  },
+  "restoredPublishedInterfaces": {
+    "scope": "Fresh accepted archive restored in isolation; successful explicit raw response scopes and nonrecord metadata only. Source holds remain held.",
+    "providerRequests": 0,
+    "acceptedScopes": [
+      {
+        "resourceId": "18e150f1f3e1fbe6f0171cdb5fe947d9",
+        "httpMcpParity": true,
+        "total": 2,
+        "version": "20675f1569e2c74e0755c67650cdca435d00fd47c0e03bd968bf75a615c3c18e",
+        "missingInputIsolated": true
+      },
+      {
+        "resourceId": "8249e3d730a8f969980548f55fd79d86",
+        "httpMcpParity": true,
+        "total": 1760,
+        "version": "1a42839d2861bb0898d0428d9f70f03980c603792bf823a1b6008dd1836f4fb3",
+        "missingInputIsolated": true
+      },
+      {
+        "resourceId": "6dcc39e9b683a2f8b1e38ae2e4cd6488",
+        "httpMcpParity": true,
+        "total": 1,
+        "version": "6831887885b368b98e859d5518af3ea5ba32fe3a70ea149e222aeed94d3fea57",
+        "missingInputIsolated": true
+      },
+      {
+        "resourceId": "7825a371cda35083cb7e0e3a40294a01",
+        "httpMcpParity": true,
+        "total": 1,
+        "version": "263b1191383814f2549f8890d5301f20fd9b275acccf8abd9cd34e98260b6b82",
+        "missingInputIsolated": true
+      }
+    ],
+    "sourceHolds": [],
+    "nonrecordMaps": 2
+  },
+  "allRestoredProviderRequests": 0,
+  "allFiveSchedulesVerified": true,
+  "prePauseNativeReadVerified": true,
+  "postPauseNativeReadVerified": true,
+  "fixedRecoveryLimitsUnchanged": true,
+  "newSemanticBindings": 0,
+  "wholeRemainingBacklogComplete": false,
+  "firstUnfinished": "Remaining frozen selection graphs, exact reader/schema/capacity/task investigations and evidence-supported semantic work."
+}

@@ -1,5 +1,14 @@
 # Remaining-backlog implementation releases — 6 November 2026
 
+PR #157 is deployed at `f45aa00d1ce48707a83b7455c44b32e678294f2b` with exact-main CI,
+actual controller/container adoption and HTTP/native MCP parity for four published
+request interfaces. Vector-map styles remain nonrecord metadata. Fresh isolated
+recovery passed with zero provider requests, and all five schedules were verified.
+No new semantic binding is accepted. See [published interfaces release](published-interfaces-release/README.md).
+The complete frozen programme remains open.
+
+## Earlier combined checkpoint/lookup release
+
 PRs #154/#155 are deployed at `fc71d10ee602cf539ee399fa47fef29441723056`, with
 all five exact-main CI groups passed. Worker `f36c1d43-5c8e-4a4a-ba35-a484ff830e8d`,
 application/running-instance version 78 and actual controller/backend adoption

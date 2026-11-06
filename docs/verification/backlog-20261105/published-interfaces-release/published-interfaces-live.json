@@ -1,0 +1,108 @@
+{
+  "scope": "Actual hosted exact published-request canaries; raw response scopes only, no geographic or identity qualification; record bodies omitted",
+  "recordInterfaces": [
+    {
+      "resourceId": "18e150f1f3e1fbe6f0171cdb5fe947d9",
+      "parameters": {
+        "x": "835665",
+        "y": "817198",
+        "lang": "en"
+      },
+      "checkedAtUtc": "2026-11-06T06:56:07.642335+00:00",
+      "requiredInputHttpMcpParity": true,
+      "queryHttpStatus": 200,
+      "httpMcpDataParity": true,
+      "totalSourceRows": 2,
+      "returnedItems": 1,
+      "version": "20675f1569e2c74e0755c67650cdca435d00fd47c0e03bd968bf75a615c3c18e",
+      "dataItemsSha256": "015c6f332f9c0ab6499e338bbf9d2fce742dd6c37735c7acce4e824d95958695",
+      "nativeCoordinatesQualified": false,
+      "wholeInventoryQualified": false
+    },
+    {
+      "resourceId": "8249e3d730a8f969980548f55fd79d86",
+      "parameters": {
+        "x": "835665",
+        "y": "817198",
+        "lang": "en"
+      },
+      "checkedAtUtc": "2026-11-06T06:56:12.048465+00:00",
+      "requiredInputHttpMcpParity": true,
+      "queryHttpStatus": 200,
+      "httpMcpDataParity": true,
+      "totalSourceRows": 1760,
+      "returnedItems": 1,
+      "version": "1a42839d2861bb0898d0428d9f70f03980c603792bf823a1b6008dd1836f4fb3",
+      "dataItemsSha256": "269df071f5c48f88a700b894b586db88d5f18868d9dedf1459e369ba78dde04c",
+      "nativeCoordinatesQualified": false,
+      "wholeInventoryQualified": false
+    },
+    {
+      "resourceId": "6dcc39e9b683a2f8b1e38ae2e4cd6488",
+      "parameters": {
+        "DataType": "gla",
+        "text": "GLA-HK 836"
+      },
+      "checkedAtUtc": "2026-11-06T06:56:16.492579+00:00",
+      "requiredInputHttpMcpParity": true,
+      "queryHttpStatus": 200,
+      "httpMcpDataParity": true,
+      "totalSourceRows": 1,
+      "returnedItems": 1,
+      "version": "6831887885b368b98e859d5518af3ea5ba32fe3a70ea149e222aeed94d3fea57",
+      "dataItemsSha256": "fcb30f6f5b36bc38da88a3509e3d1c5b5c1cd479f6a4af889a7eb5aa4ce14093",
+      "nativeCoordinatesQualified": false,
+      "wholeInventoryQualified": false
+    },
+    {
+      "resourceId": "7825a371cda35083cb7e0e3a40294a01",
+      "parameters": {
+        "LIT": "lot",
+        "hk80MinX": "839363",
+        "hk80MinY": "816910",
+        "hk80MaxX": "839603",
+        "hk80MaxY": "817103"
+      },
+      "checkedAtUtc": "2026-11-06T06:56:20.352325+00:00",
+      "requiredInputHttpMcpParity": true,
+      "queryHttpStatus": 200,
+      "httpMcpDataParity": true,
+      "totalSourceRows": 1,
+      "returnedItems": 1,
+      "version": "263b1191383814f2549f8890d5301f20fd9b275acccf8abd9cd34e98260b6b82",
+      "dataItemsSha256": "7d0f0142391ab75ecf7f0e6ab97a8691e88f3bcab3197a517927e435aaa808c5",
+      "nativeCoordinatesQualified": false,
+      "wholeInventoryQualified": false
+    }
+  ],
+  "mapInterfaces": [
+    {
+      "resourceId": "30b638ab333c60296dfcd6ace9578b80",
+      "metadataHttpMcpParity": true,
+      "recordQueryRejected": true,
+      "sourceInterface": {
+        "kind": "vector_tiles_and_map_styles",
+        "responseFormats": [
+          "PBF vector tiles",
+          "JSON presentation style"
+        ],
+        "recordQuerySupported": false,
+        "sourceSpecificationUrl": "https://portal.csdi.gov.hk/csdi-webpage/apidoc/VectorMapAPI"
+      }
+    },
+    {
+      "resourceId": "999d814248ffdd57ca4ab01355b44397",
+      "metadataHttpMcpParity": true,
+      "recordQueryRejected": true,
+      "sourceInterface": {
+        "kind": "vector_tiles_and_map_styles",
+        "responseFormats": [
+          "PBF vector tiles",
+          "JSON presentation style"
+        ],
+        "recordQuerySupported": false,
+        "sourceSpecificationUrl": "https://portal.csdi.gov.hk/csdi-webpage/apidoc/VectorMapLabelAPI"
+      }
+    }
+  ]
+}
