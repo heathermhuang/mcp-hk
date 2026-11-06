@@ -1,5 +1,12 @@
 # Remaining-backlog implementation releases — 6 November 2026
 
+PR #167 is deployed at `ab3662d97ee6e9acbde216a75c519284c125eba9` with exact-main CI,
+actual adoption, hosted HTTP/native MCP and fresh isolated recovery of 9,735
+raw recycling rows. Coordinates/identity/current service remain unreviewed. See
+[recycling file release](recycling-file-release/README.md). The full programme remains open.
+
+## Earlier Census file release
+
 PR #164 is deployed at `a7ad82d521afa11b08c19375aaf880cc055ab311` with exact-main CI,
 actual adoption, individual hosted Census file/sheet checks and fresh isolated
 recovery. 57 scopes passed; 0 retain explicit unresolved reasons.

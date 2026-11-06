@@ -1,0 +1,144 @@
+{
+  "releasedCommit": "ab3662d97ee6e9acbde216a75c519284c125eba9",
+  "codePrs": [
+    167
+  ],
+  "cloudflareVersionId": "cbf0c0a9-724d-4e19-b461-c55bc347f5b1",
+  "containerImageDigest": "sha256:88a5d5ebe4e363a365abdc84e9fcfb1c496919fc91276366f719e4e23f4fd9ab",
+  "containerApplicationVersion": 83,
+  "runningInstance": {
+    "instances": [
+      {
+        "state": "running",
+        "version": 83
+      }
+    ],
+    "observedAtUtc": "2026-11-06T12:39:30.274739+00:00",
+    "source": "native Wrangler containers instances; full private read retained"
+  },
+  "verifiedAtUtc": "2026-11-06T12:50:59.621000+00:00",
+  "legacyHttpMcpRegressionsPassed": true,
+  "recyclingHosted": {
+    "resourceId": "bba25323baf621535677e9a743b0923b",
+    "selection": {
+      "recordPath": "file:wasteless260708.csv"
+    },
+    "checkedAtUtc": "2026-11-06T12:42:48.923104+00:00",
+    "httpStatus": 200,
+    "rawRows": 9735,
+    "version": "5429fc3b16c3c3ba700a3d2cc35d8c9bd330265929fa35281a432f1ce0b23832",
+    "sourceSha256": "62c7700f319d1ecfa744627246c01e840a3807a71f9f25184636af3b91f31753",
+    "dataItemsSha256": "ed6aac770cea7a60b2395797a520f8d2d1aa8ed4f0b036b9c99e7055bbd6a65c",
+    "publishedFile": {
+      "selection": "file:wasteless260708.csv",
+      "sourcePageUrl": "https://www.wastereduction.gov.hk/zh-hk/resources-centre/recyclable-collection-points-dataset",
+      "sourcePageSha256": "236b49f10a5483802754ca4fe3569c87e33c867e92f0e7805902687782aae334",
+      "publishedUrl": "https://www.wastereduction.gov.hk/sites/default/files/wasteless260708.csv"
+    },
+    "httpMcpParity": true
+  },
+  "sharedCensusRegression": {
+    "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+    "selection": {
+      "recordPath": "file:DC_21C.zip",
+      "limit": 1
+    },
+    "rawRows": 75,
+    "version": "9e075657e4933f5a05ecb2256cc04d94728fd650ef18f16ad14727da218c9600",
+    "httpMcpParity": true
+  },
+  "freshAcceptedRestore": {
+    "freshAcceptedArchiveSha256": "52970ac8f46c6ff4913c5e3c35c27ecbf250cf78ff9761745ad4f6c9064ab9b8",
+    "archiveBytes": 116555695,
+    "databaseBytes": 333041664,
+    "captureBytes": 31155283,
+    "totalRestoredBytes": 364196947,
+    "integrity": "ok",
+    "baseAndTransportPacks": {
+      "population": 18,
+      "restaurants": 17296,
+      "transport": 62147
+    },
+    "sourceRegistryRecovered": true,
+    "nativeDatasetCount": 5048,
+    "activePreviousInventoryGenerations": 2,
+    "typedWorkbookOptions": 84,
+    "restoredPointBindings": [
+      {
+        "profileId": "ambulance-depot-feature-points-1",
+        "profileFingerprint": "2c46fabf80af8cc3a3d0393686a235d06912d5e189e2d773b6cf71771aae3fc8",
+        "sourceRows": 45
+      },
+      {
+        "profileId": "dh-clinic-feature-points-1",
+        "profileFingerprint": "d716d17e076adb0b4ee07a65c5ad00ea528ef66e0d4e03fb7b3d7f980b16ad26",
+        "sourceRows": 200
+      },
+      {
+        "profileId": "edb-school-record-points-1",
+        "profileFingerprint": "3263fce4baca106524b171f54228a7a425ea6e41232178ced42020ac063df2f9",
+        "sourceRows": 3496
+      },
+      {
+        "profileId": "fire-station-feature-points-1",
+        "profileFingerprint": "abfc4aa277d11dcb73d7eef77ab5233abab1e8ab310cde70451eedc2915928e1",
+        "sourceRows": 95
+      },
+      {
+        "profileId": "library-feature-points-1",
+        "profileFingerprint": "e75d4ced7e1654371ee3c563964d03d60bed7184a606b548e736b29c9caabc40",
+        "sourceRows": 184
+      },
+      {
+        "profileId": "museum-feature-points-1",
+        "profileFingerprint": "33282724e064947f6af7a4706ee355b7bcbafd6a900b18d31aa3b26fe408a524",
+        "sourceRows": 18
+      }
+    ],
+    "boundsUnchanged": {
+      "archive": 150000000,
+      "database": 500000000,
+      "totalRestored": 750000000
+    },
+    "preExistingHkmaVariantsPreserved": 35,
+    "repairedWfsMetadataPreserved": [
+      {
+        "resourceId": "f517af5f1721b0896cca46a0dec103f3",
+        "recordPath": "APP_AMEND_CSDI:AMEND_CRT",
+        "rows": 16,
+        "version": "a319b26570ac108c88c30d35e383beafecb7bb6d9289574d9589828cb093e95e"
+      },
+      {
+        "resourceId": "f517af5f1721b0896cca46a0dec103f3",
+        "recordPath": "APP_AMEND_CSDI:AMEND_PAST",
+        "rows": 1324,
+        "version": "b2405c33276b1778f811e6d2061553caaa1d75d5866605111fe7ba5ca569d534"
+      },
+      {
+        "resourceId": "f517af5f1721b0896cca46a0dec103f3",
+        "recordPath": "APP_AMEND_CSDI:APP_CRT",
+        "rows": 2179,
+        "version": "a1ad694683ffd139806bbde2d25ce013451ba32af21b872eba97cbc2abb92a7f"
+      }
+    ]
+  },
+  "recyclingRecovered": {
+    "scope": "Exact selected original recycling rows restored; no geographic/identity/current-service qualification",
+    "resourceId": "bba25323baf621535677e9a743b0923b",
+    "selection": {
+      "recordPath": "file:wasteless260708.csv"
+    },
+    "rawRows": 9735,
+    "version": "5429fc3b16c3c3ba700a3d2cc35d8c9bd330265929fa35281a432f1ce0b23832",
+    "sourceSha256": "62c7700f319d1ecfa744627246c01e840a3807a71f9f25184636af3b91f31753",
+    "httpMcpParity": true,
+    "providerRequests": 0
+  },
+  "allRestoredProviderRequests": 0,
+  "allFiveSchedulesVerified": true,
+  "newNativeInventoryEntries": 0,
+  "newSemanticBindings": 0,
+  "coordinateIdentityAndCurrentServiceQualification": "unreviewed",
+  "wholeRemainingBacklogComplete": false,
+  "firstUnfinished": "Wider frozen graphs, Census builder/native task schemas, exact source/schema/capacity investigations and supported semantics."
+}
