@@ -1,0 +1,6 @@
+{
+  "scope": "Local replay helper failure before any source access; original fixture matched the HTML page rather than its bound snapshot URL",
+  "providerRequests": 0,
+  "readerState": [],
+  "correction": "Match the exact independently captured snapshot URL and preserve this failed local store"
+}

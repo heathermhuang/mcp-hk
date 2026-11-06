@@ -6,6 +6,7 @@ import re
 from pathlib import Path
 
 from .contracts import DomainError
+from . import hydro_requests
 from .resource_formats import MAX_ROWS, invalid, no_duplicates, parse, text
 
 FSD_PREFIX = "http://www.hkfsd.gov.hk/datagovhk/datasets/"
@@ -89,6 +90,7 @@ def read(resource, body, record_path="", sheet="", layer=None):
     kind = None
     decoded = body
     actual_format = fmt
+    prediction_time = None
     if url in FSD_URLS and fmt == "XLSX" and not body.startswith(b"PK"):
         if sheet or record_path or layer is not None:
             raise DomainError(
@@ -97,6 +99,9 @@ def read(resource, body, record_path="", sheet="", layer=None):
                 400,
             )
         kind, actual_format = "flat_csv_advertised_as_xlsx", "CSV"
+    elif url in hydro_requests.PAGES and fmt == "CSV":
+        prediction_time = hydro_requests.validate_body(body)
+        kind, actual_format = "hydro_published_map_prediction_snapshot", "GEOJSON"
     elif url in AUD_URLS and fmt == "JSON":
         comma_separated = url.endswith("/accounts-certified.json")
         decoded = object_sequence(body, comma_separated)
@@ -159,6 +164,8 @@ def read(resource, body, record_path="", sheet="", layer=None):
         sourceResponseBytes=len(body),
         sourceFramingFullyConsumed=True,
     )
+    if url in hydro_requests.PAGES:
+        schema["observedPredictionTime"] = prediction_time
     if url == NOTIFICATIONS:
         schema["rowMeaning"] = (
             "Original published notice; schedule and expiry values are retained, "

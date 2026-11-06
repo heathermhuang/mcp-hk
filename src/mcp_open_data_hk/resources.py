@@ -1163,7 +1163,7 @@ class Resources:
                     annotate_source_contract(resource, rows, schema)
                     qualify_observations(resource, rows, schema)
                     schema.update(extra)
-                    annotate_response(resource["url"], schema)
+                    annotate_response(resource["url"], schema, parameters)
                     schema["sourceTransport"] = headers.get(
                         "_mcp_source_transport", "direct"
                     )
