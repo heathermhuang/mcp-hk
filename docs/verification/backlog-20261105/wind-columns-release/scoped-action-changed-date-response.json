@@ -1,0 +1,382 @@
+{
+  "checkedAtUtc": "2026-11-06T17:56:42.104192+00:00",
+  "scope": "actual deployed parameter-context action-following; historical raw date groups only",
+  "resourceId": "09a0ff52d3ca25dfcaef1b584bebc49c",
+  "selection": {
+    "date": "2026-11-06"
+  },
+  "schemaHttpStatus": 200,
+  "schemaResponse": {
+    "resource": {
+      "id": "09a0ff52d3ca25dfcaef1b584bebc49c",
+      "datasetId": "aahk-team1-flight-info",
+      "url": "https://www.hongkongairport.com/flightinfo-rest/rest/flights/past?date=<date>&lang=en&cargo=false&arrival=false",
+      "format": "JSON",
+      "catalogue": "DATA.GOV.HK",
+      "aliases": [
+        {
+          "id": "8f41b55c-a2ef-4963-bb25-96d8b21f3db4",
+          "shared_id": "3bcbb44adae611eba36b0a58c0a807df",
+          "name": "Flight schedule information of Hong Kong International Airport (Historical).",
+          "inLanguage": "en, zh-Hant, zh-Hans",
+          "format": "JSON"
+        }
+      ],
+      "sourceUrl": "https://data.gov.hk/en-data/dataset/aahk-team1-flight-info",
+      "publicationDate": "2019-06-26",
+      "sourceModified": null,
+      "isApi": true,
+      "termsUrl": "https://data.gov.hk/en/terms-and-conditions"
+    },
+    "dataset": {
+      "id": "aahk-team1-flight-info",
+      "catalogue": "DATA.GOV.HK",
+      "nativeId": "67342bae-3fc4-470b-895b-cd707f8f9ab9",
+      "title": "Flight Information",
+      "description": "Flight Information",
+      "provider": "Airport Authority Hong Kong",
+      "providerType": "unclassified",
+      "providerClassificationEvidence": "Conservative provider-name rules; unresolved statutory/public bodies are unclassified.",
+      "sourceUrl": "https://data.gov.hk/en-data/dataset/aahk-team1-flight-info",
+      "dictionary": "https://www.hongkongairport.com/iwov-resources/misc/opendata/Flight_Information_DataSpec_en.pdf",
+      "updateCadence": "Daily (updated to previous calendar day)",
+      "metadataModified": "2021-07-02T03:33:14.581271",
+      "licence": {
+        "id": null,
+        "title": null,
+        "termsUrl": "https://data.gov.hk/en/terms-and-conditions"
+      },
+      "referencePeriod": null,
+      "capabilities": {
+        "revision": "resource-capabilities-3",
+        "records": {
+          "state": "available",
+          "reason": "inspect_representation_and_selection_receipts"
+        },
+        "semanticBinding": null,
+        "entityKind": null
+      }
+    },
+    "schema": {
+      "format": "JSON",
+      "recordPath": null,
+      "sheet": null,
+      "normalization": "Source values retained; no inferred units or reference periods.",
+      "encoding": "utf-8-sig",
+      "availableRecordPaths": [
+        ""
+      ],
+      "nativeTemporalFields": {},
+      "fields": [
+        {
+          "name": "arrival",
+          "types": [
+            "boolean"
+          ],
+          "scalarKinds": [
+            "boolean"
+          ],
+          "missingCount": 0,
+          "absentCount": 0,
+          "nullCount": 0,
+          "unit": null
+        },
+        {
+          "name": "cargo",
+          "types": [
+            "boolean"
+          ],
+          "scalarKinds": [
+            "boolean"
+          ],
+          "missingCount": 0,
+          "absentCount": 0,
+          "nullCount": 0,
+          "unit": null
+        },
+        {
+          "name": "date",
+          "types": [
+            "string"
+          ],
+          "scalarKinds": [
+            "string"
+          ],
+          "missingCount": 0,
+          "absentCount": 0,
+          "nullCount": 0,
+          "unit": null
+        },
+        {
+          "name": "lastUpdatedTime",
+          "types": [
+            "string"
+          ],
+          "scalarKinds": [
+            "string"
+          ],
+          "missingCount": 0,
+          "absentCount": 0,
+          "nullCount": 0,
+          "unit": null
+        },
+        {
+          "name": "list",
+          "types": [
+            "array"
+          ],
+          "scalarKinds": [],
+          "missingCount": 0,
+          "absentCount": 0,
+          "nullCount": 0,
+          "unit": null
+        }
+      ],
+      "queryFields": [],
+      "profileRowCount": 2,
+      "sourceTransport": "direct",
+      "readerRevision": "structured-reader-3",
+      "sourceResponseComplete": true,
+      "sourceSelection": {
+        "recordPath": "",
+        "sheet": "",
+        "layer": null,
+        "parameterNames": [
+          "date"
+        ]
+      },
+      "cacheTTLSeconds": 300,
+      "scope": "source_response",
+      "datasetCompleteness": "Not inferred from a file or a single API response.",
+      "resolvedSourceUrl": "https://www.hongkongairport.com/flightinfo-rest/rest/flights/past?date=2026-11-06&lang=en&cargo=false&arrival=false"
+    },
+    "capabilities": {
+      "revision": "resource-capabilities-3",
+      "resourceId": "09a0ff52d3ca25dfcaef1b584bebc49c",
+      "datasetId": "aahk-team1-flight-info",
+      "representation": "JSON",
+      "readerFamily": "json",
+      "readerSupport": "accepted_selections_only",
+      "operations": {
+        "records": {
+          "state": "available",
+          "reason": "accepted_receipt_selections_only"
+        },
+        "text_search": {
+          "state": "available",
+          "reason": "accepted_receipt_selections_only"
+        },
+        "typed_comparison": {
+          "state": "requires_binding",
+          "reason": "inspect_native_types_before_comparison"
+        },
+        "nearby": {
+          "state": "requires_binding",
+          "reason": "no_qualified_point_binding"
+        }
+      },
+      "acceptedSelections": [
+        {
+          "receiptKey": null,
+          "representation": "JSON",
+          "readScope": "source_response",
+          "datasetCompleteness": "Not inferred from a file or a single API response.",
+          "unreadMemberCount": 0,
+          "schemaFingerprint": "7037bce93b6bfa26e77ce2b1fd06e618602e6896e682364cc55c2a7b15a8fc6c",
+          "selection": {
+            "recordPath": "",
+            "sheet": "",
+            "layer": null,
+            "parameterNames": [
+              "date"
+            ],
+            "parameterValues": "not_disclosed"
+          },
+          "status": "queryable",
+          "lastCheckedAt": 1793987802.6713765,
+          "lastValidatedAt": 1793987802.6713765,
+          "retrievedAt": 1793987802.6713765,
+          "readerRevision": "structured-reader-3",
+          "sourceContract": null,
+          "sourceResponseComplete": true,
+          "semanticBinding": null,
+          "typedComparisonFieldCount": 0
+        }
+      ],
+      "fields": [
+        {
+          "name": "arrival",
+          "types": [
+            "boolean"
+          ],
+          "scalarKinds": [
+            "boolean"
+          ],
+          "missingCount": 0,
+          "absentCount": 0,
+          "nullCount": 0,
+          "unit": null,
+          "operators": [
+            "eq"
+          ]
+        },
+        {
+          "name": "cargo",
+          "types": [
+            "boolean"
+          ],
+          "scalarKinds": [
+            "boolean"
+          ],
+          "missingCount": 0,
+          "absentCount": 0,
+          "nullCount": 0,
+          "unit": null,
+          "operators": [
+            "eq"
+          ]
+        },
+        {
+          "name": "date",
+          "types": [
+            "string"
+          ],
+          "scalarKinds": [
+            "string"
+          ],
+          "missingCount": 0,
+          "absentCount": 0,
+          "nullCount": 0,
+          "unit": null,
+          "operators": [
+            "eq",
+            "contains"
+          ]
+        },
+        {
+          "name": "lastUpdatedTime",
+          "types": [
+            "string"
+          ],
+          "scalarKinds": [
+            "string"
+          ],
+          "missingCount": 0,
+          "absentCount": 0,
+          "nullCount": 0,
+          "unit": null,
+          "operators": [
+            "eq",
+            "contains"
+          ]
+        },
+        {
+          "name": "list",
+          "types": [
+            "array"
+          ],
+          "scalarKinds": [],
+          "missingCount": 0,
+          "absentCount": 0,
+          "nullCount": 0,
+          "unit": null,
+          "operators": [
+            "eq"
+          ]
+        }
+      ],
+      "semanticBinding": null,
+      "entityKind": null,
+      "access": {
+        "status": "queryable",
+        "reason": null,
+        "lastCheckedAt": 1793987802.6713765
+      },
+      "observationTime": null,
+      "completeness": "per_receipt_selection_only",
+      "nextAction": {
+        "tool": "hk_resource_schema",
+        "arguments": {
+          "resourceId": "09a0ff52d3ca25dfcaef1b584bebc49c"
+        }
+      }
+    },
+    "quality": {
+      "level": "raw_source",
+      "semanticVerification": "not_performed",
+      "qualification": null,
+      "spatialQualification": null,
+      "completeness": {
+        "rowCount": 2,
+        "fieldsWithAbsentValues": 0,
+        "fieldsWithNullValues": 0,
+        "scope": "All parsed rows of the selected source representation, before query filters/projection; not dataset or entity completeness."
+      },
+      "headerVerified": null,
+      "hasPositionalColumns": false,
+      "fieldUnitsAnnotated": false,
+      "sourceResponseScope": "source_response",
+      "note": "A parsed source response is not a verified analytical table. Preserve source grain, units, dates and qualifications."
+    },
+    "observationFreshness": null,
+    "validationFreshness": {
+      "lastValidatedAt": 1793987802.6713765,
+      "validationAgeSeconds": 0,
+      "cacheTtlSeconds": 300,
+      "cacheExpired": false,
+      "reviewIntervalSeconds": 21600,
+      "nextReviewAt": 1794009402.6713765,
+      "reviewOverdue": false,
+      "policyVersion": "source-review-11",
+      "scope": "Source validation only; publication dates, reference periods and record observations are separate."
+    },
+    "provenance": [
+      {
+        "sourceUrl": "https://www.hongkongairport.com/flightinfo-rest/rest/flights/past?date=2026-11-06&lang=en&cargo=false&arrival=false",
+        "originalResourceUrl": "https://www.hongkongairport.com/flightinfo-rest/rest/flights/past?date=<date>&lang=en&cargo=false&arrival=false",
+        "catalogueUrl": "https://data.gov.hk/en-data/dataset/aahk-team1-flight-info",
+        "attribution": "Airport Authority Hong Kong / DATA.GOV.HK",
+        "termsUrl": "https://data.gov.hk/en/terms-and-conditions",
+        "retrievedAt": 1793987802.6713765,
+        "observedAt": null,
+        "lastCheckedAt": 1793987802.6713765,
+        "lastValidatedAt": 1793987802.6713765,
+        "publicationDate": "2019-06-26",
+        "referencePeriod": null,
+        "contentHash": "f41f51cf07ecc0f648b8dbd6bd2a060aa8a12b2944840f73ffc73064ded721da",
+        "stale": false
+      }
+    ],
+    "warnings": [],
+    "recordCount": 2,
+    "selections": [
+      {
+        "kind": "record_path",
+        "argument": "recordPath",
+        "options": [
+          {
+            "value": "",
+            "label": "",
+            "state": "unverified",
+            "nextAction": {
+              "tool": "hk_resource_schema",
+              "arguments": {
+                "resourceId": "09a0ff52d3ca25dfcaef1b584bebc49c",
+                "recordPath": "",
+                "parameters": {
+                  "date": "2026-11-06"
+                }
+              }
+            }
+          }
+        ],
+        "totalOptions": 1,
+        "truncated": false,
+        "scope": "discovered_options_not_accepted_record_reads",
+        "scopedToParameterNames": [
+          "date"
+        ]
+      }
+    ]
+  }
+}

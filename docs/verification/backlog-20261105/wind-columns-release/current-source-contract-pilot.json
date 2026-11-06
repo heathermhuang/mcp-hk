@@ -1,0 +1,42 @@
+{
+  "scope": "One exact current provider body per original wind URL; local contract pilot, not hosted release acceptance",
+  "results": [
+    {
+      "sourceUrl": "https://data.weather.gov.hk/weatherAPI/hko_data/regional-weather/latest_10min_wind.csv",
+      "checkedAtUtc": "2026-11-06T17:08:54.727368+00:00",
+      "logicalFetchCalls": 1,
+      "productionStatusWrites": 0,
+      "httpStatus": 200,
+      "sourceSha256": "ba00ee03f480c5dd51102273af2817dba916e42ef390fae9f20aa5b3079149e2",
+      "bytes": 1227,
+      "rawRows": 30,
+      "contract": "hko-wind-five-columns-1",
+      "contractAccepted": true
+    },
+    {
+      "sourceUrl": "https://data.weather.gov.hk/weatherAPI/hko_data/regional-weather/latest_10min_wind_sc.csv",
+      "checkedAtUtc": "2026-11-06T17:08:57.945587+00:00",
+      "logicalFetchCalls": 1,
+      "productionStatusWrites": 0,
+      "httpStatus": 200,
+      "sourceSha256": "5e4c1364c39dccad7003fa6ccee9548a0bab38565fe965cc9e728e2fb9531e57",
+      "bytes": 1137,
+      "rawRows": 30,
+      "contract": "hko-wind-five-columns-1",
+      "contractAccepted": true
+    },
+    {
+      "sourceUrl": "https://data.weather.gov.hk/weatherAPI/hko_data/regional-weather/latest_10min_wind_uc.csv",
+      "checkedAtUtc": "2026-11-06T17:09:01.155026+00:00",
+      "logicalFetchCalls": 1,
+      "productionStatusWrites": 0,
+      "httpStatus": 200,
+      "sourceSha256": "56f88e67f89f1ea59754a10e81873d9c4159d77e93386341b17c56c0f3a2adc2",
+      "bytes": 1137,
+      "rawRows": 30,
+      "contract": "hko-wind-five-columns-1",
+      "contractAccepted": true
+    }
+  ],
+  "automaticRetries": 0
+}

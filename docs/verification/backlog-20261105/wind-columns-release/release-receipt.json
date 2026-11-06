@@ -1,0 +1,373 @@
+{
+  "releasedCommit": "2ac73249b2427849f6afb178baf04685b2b88b75",
+  "codePrs": [
+    176
+  ],
+  "cloudflareVersionId": "8d9cf720-ed5d-44ab-8710-cde39707f63b",
+  "containerImageDigest": "sha256:d675bdc14c4f3f2ea93fb835d5647b517d5fe36acc6a419e8814b4062f21ab8f",
+  "containerApplicationVersion": 86,
+  "runningInstance": {
+    "instances": [
+      {
+        "state": "running",
+        "version": 86
+      }
+    ],
+    "observedAtUtc": "2026-11-06T17:50:43.212981+00:00",
+    "source": "native Wrangler containers instances; full private read retained"
+  },
+  "verifiedAtUtc": "2026-11-06T18:13:41.231972+00:00",
+  "legacyHttpMcpRegressionsPassed": true,
+  "recyclingHosted": {
+    "resourceId": "bba25323baf621535677e9a743b0923b",
+    "selection": {
+      "recordPath": "file:wasteless260708.csv"
+    },
+    "checkedAtUtc": "2026-11-06T18:00:18.519618+00:00",
+    "httpStatus": 200,
+    "rawRows": 9735,
+    "version": "5429fc3b16c3c3ba700a3d2cc35d8c9bd330265929fa35281a432f1ce0b23832",
+    "sourceSha256": "62c7700f319d1ecfa744627246c01e840a3807a71f9f25184636af3b91f31753",
+    "dataItemsSha256": "ed6aac770cea7a60b2395797a520f8d2d1aa8ed4f0b036b9c99e7055bbd6a65c",
+    "publishedFile": {
+      "selection": "file:wasteless260708.csv",
+      "sourcePageUrl": "https://www.wastereduction.gov.hk/zh-hk/resources-centre/recyclable-collection-points-dataset",
+      "sourcePageSha256": "236b49f10a5483802754ca4fe3569c87e33c867e92f0e7805902687782aae334",
+      "publishedUrl": "https://www.wastereduction.gov.hk/sites/default/files/wasteless260708.csv"
+    },
+    "httpMcpParity": true
+  },
+  "sharedCensusRegression": {
+    "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+    "selection": {
+      "recordPath": "file:DC_21C.zip",
+      "limit": 1
+    },
+    "rawRows": 75,
+    "version": "9e075657e4933f5a05ecb2256cc04d94728fd650ef18f16ad14727da218c9600",
+    "httpMcpParity": true
+  },
+  "freshAcceptedRestore": {
+    "freshAcceptedArchiveSha256": "3982d377b35c9998736a361fa1bbfcfd9038f8bdb37b19947c20362791333a84",
+    "archiveBytes": 121508046,
+    "databaseBytes": 362704896,
+    "captureBytes": 31155283,
+    "totalRestoredBytes": 393860179,
+    "integrity": "ok",
+    "baseAndTransportPacks": {
+      "population": 18,
+      "restaurants": 17296,
+      "transport": 62147
+    },
+    "sourceRegistryRecovered": true,
+    "nativeDatasetCount": 5048,
+    "activePreviousInventoryGenerations": 2,
+    "typedWorkbookOptions": 84,
+    "restoredPointBindings": [
+      {
+        "profileId": "ambulance-depot-feature-points-1",
+        "profileFingerprint": "2c46fabf80af8cc3a3d0393686a235d06912d5e189e2d773b6cf71771aae3fc8",
+        "sourceRows": 45
+      },
+      {
+        "profileId": "dh-clinic-feature-points-1",
+        "profileFingerprint": "d716d17e076adb0b4ee07a65c5ad00ea528ef66e0d4e03fb7b3d7f980b16ad26",
+        "sourceRows": 200
+      },
+      {
+        "profileId": "edb-school-record-points-1",
+        "profileFingerprint": "3263fce4baca106524b171f54228a7a425ea6e41232178ced42020ac063df2f9",
+        "sourceRows": 3496
+      },
+      {
+        "profileId": "fire-station-feature-points-1",
+        "profileFingerprint": "abfc4aa277d11dcb73d7eef77ab5233abab1e8ab310cde70451eedc2915928e1",
+        "sourceRows": 95
+      },
+      {
+        "profileId": "library-feature-points-1",
+        "profileFingerprint": "e75d4ced7e1654371ee3c563964d03d60bed7184a606b548e736b29c9caabc40",
+        "sourceRows": 184
+      },
+      {
+        "profileId": "museum-feature-points-1",
+        "profileFingerprint": "33282724e064947f6af7a4706ee355b7bcbafd6a900b18d31aa3b26fe408a524",
+        "sourceRows": 18
+      }
+    ],
+    "boundsUnchanged": {
+      "archive": 150000000,
+      "database": 500000000,
+      "totalRestored": 750000000
+    },
+    "preExistingHkmaVariantsPreserved": 38,
+    "repairedWfsMetadataPreserved": [
+      {
+        "resourceId": "f517af5f1721b0896cca46a0dec103f3",
+        "recordPath": "APP_AMEND_CSDI:AMEND_CRT",
+        "rows": 16,
+        "version": "a319b26570ac108c88c30d35e383beafecb7bb6d9289574d9589828cb093e95e"
+      },
+      {
+        "resourceId": "f517af5f1721b0896cca46a0dec103f3",
+        "recordPath": "APP_AMEND_CSDI:AMEND_PAST",
+        "rows": 1324,
+        "version": "b2405c33276b1778f811e6d2061553caaa1d75d5866605111fe7ba5ca569d534"
+      },
+      {
+        "resourceId": "f517af5f1721b0896cca46a0dec103f3",
+        "recordPath": "APP_AMEND_CSDI:APP_CRT",
+        "rows": 2179,
+        "version": "a1ad694683ffd139806bbde2d25ce013451ba32af21b872eba97cbc2abb92a7f"
+      }
+    ]
+  },
+  "recyclingRecovered": {
+    "scope": "Exact selected original recycling rows restored; no geographic/identity/current-service qualification",
+    "resourceId": "bba25323baf621535677e9a743b0923b",
+    "selection": {
+      "recordPath": "file:wasteless260708.csv"
+    },
+    "rawRows": 9735,
+    "version": "5429fc3b16c3c3ba700a3d2cc35d8c9bd330265929fa35281a432f1ce0b23832",
+    "sourceSha256": "62c7700f319d1ecfa744627246c01e840a3807a71f9f25184636af3b91f31753",
+    "httpMcpParity": true,
+    "providerRequests": 0
+  },
+  "hkstpHosted": {
+    "resourceId": "df2492726bb048a59ad63da80a5295b6",
+    "selection": {},
+    "checkedAtUtc": "2026-11-06T18:00:25.968637+00:00",
+    "httpStatus": 200,
+    "scope": "Original raw recruitment records only; active vacancy, identity and eligibility unreviewed",
+    "httpMcpParity": true,
+    "rawRows": 501,
+    "version": "591aafc02bcecc836f3bef94e135218de4542f703266351996e19ac08623b9d8",
+    "sourceSha256": "591aafc02bcecc836f3bef94e135218de4542f703266351996e19ac08623b9d8",
+    "observedSerialization": "standard_json",
+    "dataItemsSha256": "2b84dbd6a98b4db6417401e0032863cb85313bdc771fec6413355d440532d98e"
+  },
+  "hkstpRecovered": {
+    "scope": "Exact selected original hkstp rows restored; no active-vacancy/identity/eligibility qualification",
+    "resourceId": "df2492726bb048a59ad63da80a5295b6",
+    "selection": {},
+    "rawRows": 501,
+    "version": "591aafc02bcecc836f3bef94e135218de4542f703266351996e19ac08623b9d8",
+    "sourceSha256": "591aafc02bcecc836f3bef94e135218de4542f703266351996e19ac08623b9d8",
+    "httpMcpParity": true,
+    "providerRequests": 0
+  },
+  "hydroPublicHold": {
+    "scope": "Actual hosted public metadata and record-denial parity; this does not grant source reuse permission",
+    "checkedAtUtc": "2026-11-06T18:00:38.620283+00:00",
+    "results": [
+      {
+        "resourceId": "35f4fa534d677141e2d81d8c15b34287",
+        "metadataHttpMcpParity": true,
+        "recordHttpStatus": 422,
+        "recordCode": "SOURCE_REUSE_REVIEW_REQUIRED",
+        "nativeMcpRecordHold": true,
+        "sourceReuseReview": {
+          "state": "pending_source_reuse_review",
+          "reason": "source_reuse_review_required",
+          "publisherNoticeUrl": "https://current.hydro.gov.hk/main/disclaimer.php?lang=tc",
+          "catalogueTermsUrl": "https://data.gov.hk/en/terms-and-conditions",
+          "noticeSha256": "14a341a8e49c3f24d29431b8de964a399332ec68f54c4351b12991b75f740cc5",
+          "noticeReviewedOn": "2026-11-06",
+          "publisherCondition": "Noncommercial reproduction requires Marine Department attribution; commercial use requires prior written authorization.",
+          "publicApiReuseBasis": "unverified",
+          "networkAccessAssessment": "not_assessed_by_reuse_policy"
+        },
+        "recordAccessActivated": false
+      },
+      {
+        "resourceId": "496eac1466714b914d558cb375de4aef",
+        "metadataHttpMcpParity": true,
+        "recordHttpStatus": 422,
+        "recordCode": "SOURCE_REUSE_REVIEW_REQUIRED",
+        "nativeMcpRecordHold": true,
+        "sourceReuseReview": {
+          "state": "pending_source_reuse_review",
+          "reason": "source_reuse_review_required",
+          "publisherNoticeUrl": "https://current.hydro.gov.hk/main/disclaimer.php?lang=tc",
+          "catalogueTermsUrl": "https://data.gov.hk/en/terms-and-conditions",
+          "noticeSha256": "14a341a8e49c3f24d29431b8de964a399332ec68f54c4351b12991b75f740cc5",
+          "noticeReviewedOn": "2026-11-06",
+          "publisherCondition": "Noncommercial reproduction requires Marine Department attribution; commercial use requires prior written authorization.",
+          "publicApiReuseBasis": "unverified",
+          "networkAccessAssessment": "not_assessed_by_reuse_policy"
+        },
+        "recordAccessActivated": false
+      },
+      {
+        "resourceId": "be00600cbb0603b25c064daa0129813b",
+        "metadataHttpMcpParity": true,
+        "recordHttpStatus": 422,
+        "recordCode": "SOURCE_REUSE_REVIEW_REQUIRED",
+        "nativeMcpRecordHold": true,
+        "sourceReuseReview": {
+          "state": "pending_source_reuse_review",
+          "reason": "source_reuse_review_required",
+          "publisherNoticeUrl": "https://current.hydro.gov.hk/main/disclaimer.php?lang=tc",
+          "catalogueTermsUrl": "https://data.gov.hk/en/terms-and-conditions",
+          "noticeSha256": "14a341a8e49c3f24d29431b8de964a399332ec68f54c4351b12991b75f740cc5",
+          "noticeReviewedOn": "2026-11-06",
+          "publisherCondition": "Noncommercial reproduction requires Marine Department attribution; commercial use requires prior written authorization.",
+          "publicApiReuseBasis": "unverified",
+          "networkAccessAssessment": "not_assessed_by_reuse_policy"
+        },
+        "recordAccessActivated": false
+      }
+    ],
+    "HydroDataActivation": false
+  },
+  "hydroHoldRecovered": {
+    "scope": "Isolated restored metadata and record-denial parity; no source permission or raw data activation",
+    "checkedAtUtc": "2026-11-06T18:12:28.997783+00:00",
+    "results": [
+      {
+        "resourceId": "35f4fa534d677141e2d81d8c15b34287",
+        "metadataHttpMcpParity": true,
+        "recordHttpStatus": 422,
+        "recordCode": "SOURCE_REUSE_REVIEW_REQUIRED",
+        "nativeMcpRecordHold": true,
+        "sourceReuseReview": {
+          "state": "pending_source_reuse_review",
+          "reason": "source_reuse_review_required",
+          "publisherNoticeUrl": "https://current.hydro.gov.hk/main/disclaimer.php?lang=tc",
+          "catalogueTermsUrl": "https://data.gov.hk/en/terms-and-conditions",
+          "noticeSha256": "14a341a8e49c3f24d29431b8de964a399332ec68f54c4351b12991b75f740cc5",
+          "noticeReviewedOn": "2026-11-06",
+          "publisherCondition": "Noncommercial reproduction requires Marine Department attribution; commercial use requires prior written authorization.",
+          "publicApiReuseBasis": "unverified",
+          "networkAccessAssessment": "not_assessed_by_reuse_policy"
+        },
+        "recordAccessActivated": false
+      },
+      {
+        "resourceId": "496eac1466714b914d558cb375de4aef",
+        "metadataHttpMcpParity": true,
+        "recordHttpStatus": 422,
+        "recordCode": "SOURCE_REUSE_REVIEW_REQUIRED",
+        "nativeMcpRecordHold": true,
+        "sourceReuseReview": {
+          "state": "pending_source_reuse_review",
+          "reason": "source_reuse_review_required",
+          "publisherNoticeUrl": "https://current.hydro.gov.hk/main/disclaimer.php?lang=tc",
+          "catalogueTermsUrl": "https://data.gov.hk/en/terms-and-conditions",
+          "noticeSha256": "14a341a8e49c3f24d29431b8de964a399332ec68f54c4351b12991b75f740cc5",
+          "noticeReviewedOn": "2026-11-06",
+          "publisherCondition": "Noncommercial reproduction requires Marine Department attribution; commercial use requires prior written authorization.",
+          "publicApiReuseBasis": "unverified",
+          "networkAccessAssessment": "not_assessed_by_reuse_policy"
+        },
+        "recordAccessActivated": false
+      },
+      {
+        "resourceId": "be00600cbb0603b25c064daa0129813b",
+        "metadataHttpMcpParity": true,
+        "recordHttpStatus": 422,
+        "recordCode": "SOURCE_REUSE_REVIEW_REQUIRED",
+        "nativeMcpRecordHold": true,
+        "sourceReuseReview": {
+          "state": "pending_source_reuse_review",
+          "reason": "source_reuse_review_required",
+          "publisherNoticeUrl": "https://current.hydro.gov.hk/main/disclaimer.php?lang=tc",
+          "catalogueTermsUrl": "https://data.gov.hk/en/terms-and-conditions",
+          "noticeSha256": "14a341a8e49c3f24d29431b8de964a399332ec68f54c4351b12991b75f740cc5",
+          "noticeReviewedOn": "2026-11-06",
+          "publisherCondition": "Noncommercial reproduction requires Marine Department attribution; commercial use requires prior written authorization.",
+          "publicApiReuseBasis": "unverified",
+          "networkAccessAssessment": "not_assessed_by_reuse_policy"
+        },
+        "recordAccessActivated": false
+      }
+    ],
+    "HydroDataActivation": false,
+    "providerRequests": 0
+  },
+  "HydroDataActivation": false,
+  "sourceReuseClarificationPending": true,
+  "windHosted": [
+    {
+      "resourceId": "33f3a9904add55aff7648ccdab3bb0cf",
+      "selection": {},
+      "httpStatus": 200,
+      "checkedAtUtc": "2026-11-06T18:00:40.251061+00:00",
+      "httpMcpParity": true,
+      "rawRows": 30,
+      "version": "ea9a985971dba25b65fd452dd42f469933b8f1dcc0e793f42045734b30a79884",
+      "sourceSha256": "998355df9c07c68126a7e6ec1f61a5b25060984f5ee5cf5985b6823c7830b44f",
+      "dataItemsSha256": "b227e96ed587df220d14157458665e04baac32077fe13b4501206c137d168773",
+      "cacheTTLSeconds": 600,
+      "provisional": true,
+      "timestampTimezoneQualification": "unreviewed_native_timestamp"
+    },
+    {
+      "resourceId": "50e7577f11d6aca1f57cd275dc60bfda",
+      "selection": {},
+      "httpStatus": 200,
+      "checkedAtUtc": "2026-11-06T18:00:44.002129+00:00",
+      "httpMcpParity": true,
+      "rawRows": 30,
+      "version": "4900d5976275a764c47f874805517900ceafb7a799b09d8d51b8ac152df91a9f",
+      "sourceSha256": "b216d15d3059e550c20f5a0e85d9f7e591a41e3a9ada5fa7870c445f566da58c",
+      "dataItemsSha256": "fb95126a11d8fa9f0a2e27e932abf39c77ef4422eb37466138e09a82e034632b",
+      "cacheTTLSeconds": 600,
+      "provisional": true,
+      "timestampTimezoneQualification": "unreviewed_native_timestamp"
+    },
+    {
+      "resourceId": "b255c7a8de8fc620e9d5f5eca43e4140",
+      "selection": {},
+      "httpStatus": 200,
+      "checkedAtUtc": "2026-11-06T18:00:47.533937+00:00",
+      "httpMcpParity": true,
+      "rawRows": 30,
+      "version": "439feee4653c2c8ce56cb5c920f0bcc31b6b9fd73de3d48e3813dab8a730e620",
+      "sourceSha256": "fde821f779872c25f39a63c51c5ee7af2e6f31d6a768960b554bfee41d12ec5d",
+      "dataItemsSha256": "0e193fe46ec3e7be0c46fa86b05203f29c86a119090738dea55b0455e2ab89bf",
+      "cacheTTLSeconds": 600,
+      "provisional": true,
+      "timestampTimezoneQualification": "unreviewed_native_timestamp"
+    }
+  ],
+  "windRecovered": [
+    {
+      "resourceId": "33f3a9904add55aff7648ccdab3bb0cf",
+      "version": "3886696db93e2ca6733e5ba61df710ea78e0d726bcca69a4ecae091b900cc0d6",
+      "rawRows": 30,
+      "sourceSha256": "ddcae751313acb4414d3eb4ebf4b1401f069e9ba8752bd49f9323a5861878d64",
+      "dataItemsSha256": "abffd367d96038198529f07b1064b780b6d5f8a838fee5772765bff794aa6c90",
+      "differsFromEarlierLiveVersion": true,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "50e7577f11d6aca1f57cd275dc60bfda",
+      "version": "1b52fc6446e19128ae98510343fba59e518d117ddd83605df310eeda74bfac3b",
+      "rawRows": 30,
+      "sourceSha256": "0ebc476d0965cf33989bbfcddd820f2d21e087fc58cd4daa0db209f156b802cf",
+      "dataItemsSha256": "2b73fbde1a5a116792cb0293fa06762def6713e7f43bfb5daac4c503d02b38bd",
+      "differsFromEarlierLiveVersion": true,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "b255c7a8de8fc620e9d5f5eca43e4140",
+      "version": "894699f49da60bff061bd12bba134d8109297171bcca32d0a90456d8bc43d60a",
+      "rawRows": 30,
+      "sourceSha256": "a3ad82fd1333214bf7d65659b86c4c14bbb1802929d0f8edac9b7b7de3de333c",
+      "dataItemsSha256": "4fb91472fdad3c0d7db1a8193f49f735b36c891a990d19683a64a21873b79d48",
+      "differsFromEarlierLiveVersion": true,
+      "httpMcpParity": true
+    }
+  ],
+  "windObservationFreshness": "unqualified",
+  "allRestoredProviderRequests": 0,
+  "allFiveSchedulesVerified": true,
+  "newNativeInventoryEntries": 0,
+  "newSemanticBindings": 0,
+  "coordinateIdentityAndCurrentServiceQualification": "unreviewed",
+  "activeVacancyAndEligibilityQualification": "unreviewed",
+  "wholeRemainingBacklogComplete": false,
+  "firstUnfinished": "Wider frozen graphs, Census builder/native task schemas, exact source/schema/capacity investigations and supported semantics."
+}
