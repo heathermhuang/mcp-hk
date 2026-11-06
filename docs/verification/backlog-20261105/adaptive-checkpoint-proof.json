@@ -1,0 +1,22 @@
+{
+  "scope": "Patched adaptive checkpoint on the same immutable production restore; offline only",
+  "passes": [
+    {
+      "level": 1,
+      "archiveBytes": 123625937
+    },
+    {
+      "level": 6,
+      "archiveBytes": 113729911
+    }
+  ],
+  "archiveBytes": 113729911,
+  "sha256": "064a66d337fc5c9dda77d8621819d408b13ebc7a3f54482a49dc0b5619e6b6f7",
+  "databaseBytes": 328445952,
+  "allTableRowsByteEquivalent": true,
+  "tablesCompared": 36,
+  "allTableProofSha256": "c90fbbd03b7ed703a6449f03bb5eda0dd4688ec99ae262cb5f73c51d20f98be3",
+  "localSeconds": 11.08,
+  "providerRequests": 0,
+  "deployedChanges": 0
+}

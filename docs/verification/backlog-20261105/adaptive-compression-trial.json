@@ -1,0 +1,36 @@
+{
+  "scope": "Offline compression-only comparison on a fixed immutable accepted checkpoint; local timings are not deployed CPU/latency",
+  "originalArchiveBytes": 123506840,
+  "trials": [
+    {
+      "compressionLevel": 1,
+      "archiveBytes": 123625933,
+      "localSeconds": 5.538,
+      "sha256": "7f9fb1123b1458970fa0befb07f00e2180e8b4930fff0ee90881cd57aef5234f"
+    },
+    {
+      "compressionLevel": 6,
+      "archiveBytes": 113729890,
+      "localSeconds": 7.226,
+      "sha256": "87570a5a18c407dc21afc6fcd88f90ee5091ef8f4f314885ce5b7e9a6ed74125"
+    },
+    {
+      "compressionLevel": 9,
+      "archiveBytes": 112635443,
+      "localSeconds": 10.59,
+      "sha256": "ef2994c8f1d2b9f24fe4a93a34fc9f1b7f144e5451b827a78fcfd9168a7a7c9d"
+    }
+  ],
+  "best": {
+    "compressionLevel": 9,
+    "archiveBytes": 112635443,
+    "localSeconds": 10.59,
+    "sha256": "ef2994c8f1d2b9f24fe4a93a34fc9f1b7f144e5451b827a78fcfd9168a7a7c9d"
+  },
+  "allTableRowsByteEquivalent": true,
+  "tablesCompared": 36,
+  "restoredDatabaseBytes": 328445952,
+  "providerRequests": 0,
+  "deployedChanges": 0,
+  "allTableProofSha256": "c90fbbd03b7ed703a6449f03bb5eda0dd4688ec99ae262cb5f73c51d20f98be3"
+}

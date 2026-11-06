@@ -3,6 +3,7 @@ import io
 import json
 import tarfile
 import time
+from contextlib import contextmanager
 
 import pytest
 from fastapi.testclient import TestClient
@@ -52,6 +53,69 @@ def test_corrupt_backup_preserves_existing_database(operational):
     with pytest.raises(ValueError, match="checksum"):
         restore(path.read_bytes(), "0" * 64, operational.path)
     assert operational.active("restaurants") == before
+
+
+def test_fast_checkpoint_recompresses_same_snapshot_before_transfer_limit(
+    operational, tmp_path, monkeypatch
+):
+    from mcp_open_data_hk import operations
+
+    captures = tmp_path / "source" / "captures"
+    data = json.dumps({"source": "public fixture " * 100000}).encode()
+    (captures / (hashlib.sha256(data).hexdigest() + ".json")).write_bytes(data)
+    original_names = {p.name for p in captures.glob("*.json")}
+    fast, _ = checkpoint(operational.path, compresslevel=1)
+    strong, _ = checkpoint(operational.path, compresslevel=6)
+    limit = (fast.stat().st_size + strong.stat().st_size) // 2
+    assert strong.stat().st_size < limit < fast.stat().st_size
+    monkeypatch.setattr(operations, "FAST_COMPRESSION_TARGET", limit)
+    monkeypatch.setattr(operations, "MAX_BACKUP", limit)
+    original_open = tarfile.open
+    levels = []
+
+    @contextmanager
+    def concurrent_write(*args, **kwargs):
+        with original_open(*args, **kwargs) as archive:
+            yield archive
+        if kwargs.get("mode") == "w:gz" or (len(args) > 1 and args[1] == "w:gz"):
+            levels.append(kwargs["compresslevel"])
+            if len(levels) == 1:
+                operational.publish(
+                    "restaurants",
+                    [{"id": "later-live-write", "latitude": 22.4, "longitude": 114.2}],
+                    operational.active("restaurants"),
+                )
+                later = b'{"later":"capture"}'
+                (captures / (hashlib.sha256(later).hexdigest() + ".json")).write_bytes(
+                    later
+                )
+
+    monkeypatch.setattr(operations.tarfile, "open", concurrent_write)
+    packed, digest = checkpoint(operational.path, compresslevel=1)
+    assert levels == [1, 6]
+    assert packed.stat().st_size <= limit
+    target = tmp_path / "adaptive-restored" / "app.sqlite3"
+    restore(packed.read_bytes(), digest, str(target))
+    assert Store(str(target)).snapshot("restaurants")[1][0]["id"] == "test-licence"
+    assert {
+        p.name for p in (target.parent / "captures").glob("*.json")
+    } == original_names
+    assert operational.snapshot("restaurants")[1][0]["id"] == "later-live-write"
+
+
+def test_recompression_cannot_bypass_transfer_limit_or_remove_accepted_archive(
+    operational, monkeypatch
+):
+    from mcp_open_data_hk import operations
+
+    accepted, digest = checkpoint(operational.path)
+    active = operational.active("restaurants")
+    monkeypatch.setattr(operations, "MAX_BACKUP", 1)
+    with pytest.raises(ValueError, match="storage transfer limit"):
+        checkpoint(operational.path, compresslevel=1)
+    assert accepted.exists()
+    assert hashlib.sha256(accepted.read_bytes()).hexdigest() == digest
+    assert operational.active("restaurants") == active
 
 
 def test_archive_path_traversal_is_rejected(tmp_path):
