@@ -1,0 +1,140 @@
+{
+  "scope": "Actual hosted schema requests before repair; no selected records accepted",
+  "operations": [
+    {
+      "resourceId": "197d0908dd7d4c5e9332cf30201f43b8",
+      "datasetId": "hk-hb-lph-housing-stock",
+      "operation": "schema",
+      "selection": {},
+      "checkedAt": 1793926675.830687,
+      "httpStatus": 400,
+      "response": {
+        "error": {
+          "code": "RECORD_PATH_REQUIRED",
+          "message": "Select an array recordPath for this large JSON object",
+          "requestId": "5fc62ded85cc4e04b3bd6e9cb33323f6"
+        }
+      }
+    },
+    {
+      "resourceId": "47adb6bfd0d5722b5c32f0a59cae0a74",
+      "datasetId": "hk-dpo-datagovhk1-open-dataset-list",
+      "operation": "schema",
+      "selection": {},
+      "checkedAt": 1793926648.9927318,
+      "httpStatus": 400,
+      "response": {
+        "error": {
+          "code": "RECORD_PATH_REQUIRED",
+          "message": "Select an array recordPath for this large JSON object",
+          "requestId": "0c86d2afedfa42e6bba75cba42fee770"
+        }
+      }
+    },
+    {
+      "resourceId": "7056e159c1a969cc04f6bd7354b9c186",
+      "datasetId": "hk-dpo-datagovhk1-open-dataset-list",
+      "operation": "schema",
+      "selection": {},
+      "checkedAt": 1793926656.259407,
+      "httpStatus": 400,
+      "response": {
+        "error": {
+          "code": "RECORD_PATH_REQUIRED",
+          "message": "Select an array recordPath for this large JSON object",
+          "requestId": "543847c12d6849ca9f3cedbe20c0e63f"
+        }
+      }
+    },
+    {
+      "resourceId": "a37a1224b11b97fb6a50478c686ad676",
+      "datasetId": "hk-hb-lph-housing-stock",
+      "operation": "schema",
+      "selection": {},
+      "checkedAt": 1793926680.042026,
+      "httpStatus": 400,
+      "response": {
+        "error": {
+          "code": "RECORD_PATH_REQUIRED",
+          "message": "Select an array recordPath for this large JSON object",
+          "requestId": "f73827ae604e4dd493ddadb8dc339e3c"
+        }
+      }
+    },
+    {
+      "resourceId": "b70dee34679a99f5ee80500c99c8fc37",
+      "datasetId": "hk-housing-tpssale-tpssale",
+      "operation": "schema",
+      "selection": {},
+      "checkedAt": 1793926691.166924,
+      "httpStatus": 400,
+      "response": {
+        "error": {
+          "code": "RECORD_PATH_REQUIRED",
+          "message": "Select an array recordPath for this large JSON object",
+          "requestId": "e291e76bb75047bfb7eba57e082305b4"
+        }
+      }
+    },
+    {
+      "resourceId": "c7f0cc1d2581c8cfced0fd9a105dbc5f",
+      "datasetId": "hk-dpo-datagovhk1-open-dataset-list",
+      "operation": "schema",
+      "selection": {},
+      "checkedAt": 1793926660.6491818,
+      "httpStatus": 400,
+      "response": {
+        "error": {
+          "code": "RECORD_PATH_REQUIRED",
+          "message": "Select an array recordPath for this large JSON object",
+          "requestId": "fd0df568cc7d4e59a3ad2a4619fc4c6b"
+        }
+      }
+    },
+    {
+      "resourceId": "db2e1ff5271c63d39203e56246bf5492",
+      "datasetId": "hk-housing-tpssale-tpssale",
+      "operation": "schema",
+      "selection": {},
+      "checkedAt": 1793926704.8451352,
+      "httpStatus": 400,
+      "response": {
+        "error": {
+          "code": "RECORD_PATH_REQUIRED",
+          "message": "Select an array recordPath for this large JSON object",
+          "requestId": "dcf29ae7567a457aa92f92ddee212cbd"
+        }
+      }
+    },
+    {
+      "resourceId": "f8a148608b10575bc948785935dcb381",
+      "datasetId": "hk-emsd-emsd1-registered-electrical-workers",
+      "operation": "schema",
+      "selection": {},
+      "checkedAt": 1793926664.953782,
+      "httpStatus": 400,
+      "response": {
+        "error": {
+          "code": "RECORD_PATH_REQUIRED",
+          "message": "Select an array recordPath for this large JSON object",
+          "requestId": "6bea5b37598d4809b35a19e7c77584d0"
+        }
+      }
+    },
+    {
+      "resourceId": "fc168082612a922e9d028467d27fba29",
+      "datasetId": "hk-housing-tpssale-tpssale",
+      "operation": "schema",
+      "selection": {},
+      "checkedAt": 1793926711.428239,
+      "httpStatus": 400,
+      "response": {
+        "error": {
+          "code": "RECORD_PATH_REQUIRED",
+          "message": "Select an array recordPath for this large JSON object",
+          "requestId": "7aaf14ad31944309828dde7b4d6cde36"
+        }
+      }
+    }
+  ]
+}
