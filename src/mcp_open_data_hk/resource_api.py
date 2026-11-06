@@ -240,7 +240,7 @@ def register_mcp(server, current):
         requireFresh: bool = False,
         parameters: dict[str, str] | None = None,
     ) -> dict:
-        """Read actual source fields and required settings. Transport feeds return required line/station, route/stop or direction parameters before querying; use their exact names. Workbooks may require sheet; ArcGIS may require layer."""
+        """Read actual source fields and required settings. Transport feeds return required line/station, route/stop or direction parameters before querying; use their exact names. Workbooks may require sheet; ArcGIS may require layer. Published-file indexes return recordPath choices; keep that file choice when following the returned sheet actions."""
         return await current().resources.schema(
             resourceId, recordPath, sheet, layer, requireFresh, parameters
         )
