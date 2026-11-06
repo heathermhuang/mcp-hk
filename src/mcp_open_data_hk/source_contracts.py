@@ -4,6 +4,7 @@ from urllib.parse import parse_qs, urlsplit
 from datetime import date
 
 from .contracts import DomainError
+from . import wind_csv
 
 HKO_WARNING = "hko-rhrread-warning-1"
 HKO_CURRENT = "hko-rhrread-2"
@@ -45,6 +46,7 @@ def typed_bindings(schema):
 
 
 def annotate(resource, rows, schema):
+    wind_csv.annotate(resource, rows, schema)
     url = urlsplit(resource["url"])
     if (
         resource.get("datasetId") != "hk-hko-rss-current-weather-report"
@@ -100,6 +102,8 @@ def comparable_fields(schema, contract=None):
         else {}
     )
     for field in schema.get("fields", []):
+        if contract == wind_csv.REVISION and wind_csv.legacy_overflow(schema, field):
+            continue
         types = [t for t in field["types"] if t != "null"]
         if (
             contract in {HKO_WARNING, HKO_CURRENT}

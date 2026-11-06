@@ -1,0 +1,252 @@
+{
+  "scope": "Offline retained source layout only; no approval, provider call or source status write",
+  "results": [
+    {
+      "resourceId": "33f3a9904add55aff7648ccdab3bb0cf",
+      "retainedStatus": "schema_drift",
+      "retainedReason": "SCHEMA_DRIFT",
+      "sourceColumns": [
+        {
+          "name": "日期時間",
+          "sourceHeader": "日期時間",
+          "columnIndex": 1
+        },
+        {
+          "name": "自動氣象站",
+          "sourceHeader": "自動氣象站",
+          "columnIndex": 2
+        },
+        {
+          "name": "十分鐘平均風向（方位點）",
+          "sourceHeader": "十分鐘平均風向（方位點）",
+          "columnIndex": 3
+        },
+        {
+          "name": "十分鐘平均風速（公里/小時）",
+          "sourceHeader": "十分鐘平均風速（公里/小時）",
+          "columnIndex": 4
+        },
+        {
+          "name": "十分鐘最高陣風風速（公里/小時）",
+          "sourceHeader": "十分鐘最高陣風風速（公里/小時）",
+          "columnIndex": 5
+        },
+        {
+          "name": "_column_6",
+          "sourceHeader": null,
+          "columnIndex": 6
+        }
+      ],
+      "fields": [
+        {
+          "name": "_column_6",
+          "types": [
+            "null",
+            "string"
+          ],
+          "missingCount": 27
+        },
+        {
+          "name": "十分鐘平均風向（方位點）",
+          "types": [
+            "string"
+          ],
+          "missingCount": 0
+        },
+        {
+          "name": "十分鐘平均風速（公里/小時）",
+          "types": [
+            "string"
+          ],
+          "missingCount": 0
+        },
+        {
+          "name": "十分鐘最高陣風風速（公里/小時）",
+          "types": [
+            "string"
+          ],
+          "missingCount": 0
+        },
+        {
+          "name": "日期時間",
+          "types": [
+            "string"
+          ],
+          "missingCount": 0
+        },
+        {
+          "name": "自動氣象站",
+          "types": [
+            "string"
+          ],
+          "missingCount": 0
+        }
+      ]
+    },
+    {
+      "resourceId": "50e7577f11d6aca1f57cd275dc60bfda",
+      "retainedStatus": "schema_drift",
+      "retainedReason": "SCHEMA_DRIFT",
+      "sourceColumns": [
+        {
+          "name": "日期时间",
+          "sourceHeader": "日期时间",
+          "columnIndex": 1
+        },
+        {
+          "name": "自动气象站",
+          "sourceHeader": "自动气象站",
+          "columnIndex": 2
+        },
+        {
+          "name": "十分钟平均风向（方位点）",
+          "sourceHeader": "十分钟平均风向（方位点）",
+          "columnIndex": 3
+        },
+        {
+          "name": "十分钟平均风速（公里/小时）",
+          "sourceHeader": "十分钟平均风速（公里/小时）",
+          "columnIndex": 4
+        },
+        {
+          "name": "十分钟最高阵风风速（公里/小时）",
+          "sourceHeader": "十分钟最高阵风风速（公里/小时）",
+          "columnIndex": 5
+        },
+        {
+          "name": "_column_6",
+          "sourceHeader": null,
+          "columnIndex": 6
+        }
+      ],
+      "fields": [
+        {
+          "name": "_column_6",
+          "types": [
+            "null",
+            "string"
+          ],
+          "missingCount": 25
+        },
+        {
+          "name": "十分钟平均风向（方位点）",
+          "types": [
+            "string"
+          ],
+          "missingCount": 0
+        },
+        {
+          "name": "十分钟平均风速（公里/小时）",
+          "types": [
+            "string"
+          ],
+          "missingCount": 0
+        },
+        {
+          "name": "十分钟最高阵风风速（公里/小时）",
+          "types": [
+            "string"
+          ],
+          "missingCount": 0
+        },
+        {
+          "name": "日期时间",
+          "types": [
+            "string"
+          ],
+          "missingCount": 0
+        },
+        {
+          "name": "自动气象站",
+          "types": [
+            "string"
+          ],
+          "missingCount": 0
+        }
+      ]
+    },
+    {
+      "resourceId": "b255c7a8de8fc620e9d5f5eca43e4140",
+      "retainedStatus": "schema_drift",
+      "retainedReason": "SCHEMA_DRIFT",
+      "sourceColumns": [
+        {
+          "name": "Date time",
+          "sourceHeader": "Date time",
+          "columnIndex": 1
+        },
+        {
+          "name": "Automatic Weather Station",
+          "sourceHeader": "Automatic Weather Station",
+          "columnIndex": 2
+        },
+        {
+          "name": "10-Minute Mean Wind Direction(Compass points)",
+          "sourceHeader": "10-Minute Mean Wind Direction(Compass points)",
+          "columnIndex": 3
+        },
+        {
+          "name": "10-Minute Mean Speed(km/hour)",
+          "sourceHeader": "10-Minute Mean Speed(km/hour)",
+          "columnIndex": 4
+        },
+        {
+          "name": "10-Minute Maximum Gust(km/hour)",
+          "sourceHeader": "10-Minute Maximum Gust(km/hour)",
+          "columnIndex": 5
+        },
+        {
+          "name": "_column_6",
+          "sourceHeader": null,
+          "columnIndex": 6
+        }
+      ],
+      "fields": [
+        {
+          "name": "10-Minute Maximum Gust(km/hour)",
+          "types": [
+            "string"
+          ],
+          "missingCount": 0
+        },
+        {
+          "name": "10-Minute Mean Speed(km/hour)",
+          "types": [
+            "string"
+          ],
+          "missingCount": 0
+        },
+        {
+          "name": "10-Minute Mean Wind Direction(Compass points)",
+          "types": [
+            "string"
+          ],
+          "missingCount": 0
+        },
+        {
+          "name": "Automatic Weather Station",
+          "types": [
+            "string"
+          ],
+          "missingCount": 0
+        },
+        {
+          "name": "Date time",
+          "types": [
+            "string"
+          ],
+          "missingCount": 0
+        },
+        {
+          "name": "_column_6",
+          "types": [
+            "null",
+            "string"
+          ],
+          "missingCount": 27
+        }
+      ]
+    }
+  ],
+  "providerRequests": 0
+}

@@ -1,0 +1,37 @@
+{
+  "scope": "Complete saved source replay against current official dictionary, no current hosted claim",
+  "results": [
+    {
+      "resourceId": "33f3a9904add55aff7648ccdab3bb0cf",
+      "sourceUrl": "https://data.weather.gov.hk/weatherAPI/hko_data/regional-weather/latest_10min_wind_uc.csv",
+      "sourceSha256": "f808d2c5aadc1d4146faf85ae1dec69640a6d6d47287d5e71d48cda0682c6804",
+      "rawRows": 30,
+      "fivePublishedColumns": true,
+      "rawValuesUnchanged": true,
+      "legacyOnlyGeneratedOverflowExcludedFromComparison": true,
+      "contract": "hko-wind-five-columns-1"
+    },
+    {
+      "resourceId": "50e7577f11d6aca1f57cd275dc60bfda",
+      "sourceUrl": "https://data.weather.gov.hk/weatherAPI/hko_data/regional-weather/latest_10min_wind_sc.csv",
+      "sourceSha256": "49d3cf7f81cc40c248f9456dda317c83cc6f10a742c16b5abba4675364b52a1e",
+      "rawRows": 30,
+      "fivePublishedColumns": true,
+      "rawValuesUnchanged": true,
+      "legacyOnlyGeneratedOverflowExcludedFromComparison": true,
+      "contract": "hko-wind-five-columns-1"
+    },
+    {
+      "resourceId": "b255c7a8de8fc620e9d5f5eca43e4140",
+      "sourceUrl": "https://data.weather.gov.hk/weatherAPI/hko_data/regional-weather/latest_10min_wind.csv",
+      "sourceSha256": "ace15665da7292884914e90514f445f307c07b67117fcdf337692afe8080bda5",
+      "rawRows": 30,
+      "fivePublishedColumns": true,
+      "rawValuesUnchanged": true,
+      "legacyOnlyGeneratedOverflowExcludedFromComparison": true,
+      "contract": "hko-wind-five-columns-1"
+    }
+  ],
+  "providerRequests": 0,
+  "sourceStatusWrites": 0
+}
