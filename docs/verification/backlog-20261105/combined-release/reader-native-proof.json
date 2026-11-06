@@ -1,0 +1,200 @@
+{
+  "scope": "Actual HTTP/native MCP query proof for newly readable diagnostic roots; raw source scopes only, no semantic or distinct-dataset gain approval; record bodies omitted",
+  "results": [
+    {
+      "resourceId": "11e76b42bb9390f649cbbd40bc095df9",
+      "selection": {},
+      "checkedAtUtc": "2026-11-06T03:25:00.667132+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "total": 1071,
+      "version": "77e8808c950802b993f4d6e8b73704c60a9d2a550bae6f304b26bd6976a0ba60",
+      "scope": "complete_file",
+      "returnedItems": 1,
+      "dataItemsSha256": "ca8274029865d679dd37501bd41d0da3ca2e593134fe7b8faf43301a3aaa9b52"
+    },
+    {
+      "resourceId": "1ab00b0edf14d8c6ebd52ad06bf18cb3",
+      "selection": {},
+      "checkedAtUtc": "2026-11-06T03:25:04.369034+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "total": 1071,
+      "version": "65960b201194a9cac4412509de617296d25456272bd144f2a3d0e887e29808d4",
+      "scope": "complete_file",
+      "returnedItems": 1,
+      "dataItemsSha256": "b29fb66074e8eea56b5af9acff418fed0d55b4556b2d241ea9d351c2f184be5e"
+    },
+    {
+      "resourceId": "21c625710f50e09cdfe17e48b3d4b7bf",
+      "selection": {},
+      "checkedAtUtc": "2026-11-06T03:25:07.531837+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "total": 1,
+      "version": "29cd217349465dcbc99f496f7a459606116a7bd6e23b198a99b7e1c4c811fad9",
+      "scope": "source_response_object",
+      "returnedItems": 1,
+      "dataItemsSha256": "358bd27e67f56866e1a61cf1b860aa51b60d60a4c00245aa7da2916e0d68489c"
+    },
+    {
+      "resourceId": "2b83464739467cf53b3d7f1ddf3eb6ec",
+      "selection": {},
+      "checkedAtUtc": "2026-11-06T03:25:10.833975+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "total": 30,
+      "version": "da1e72f77c4b82442c15cf9e592924b92a8f8415c4cf4da1335c016ff6f1a095",
+      "scope": "complete_file",
+      "returnedItems": 1,
+      "dataItemsSha256": "c496fefdfc49cb6e3ec78ca5977146aafccfb6837c74eda959093042a4085128"
+    },
+    {
+      "resourceId": "45f75a703fe5e2fdc05a0e35dde0c338",
+      "selection": {},
+      "checkedAtUtc": "2026-11-06T03:25:14.129220+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "total": 27,
+      "version": "b9c85917934788fdcc12fe53d78cc2a4f8d9f9efc69da890b73bcf086ad655fc",
+      "scope": "complete_file",
+      "returnedItems": 1,
+      "dataItemsSha256": "f79af616f479de54b8e1ada0b0316601c75ce0baf4ff312da52193ceb9df382a"
+    },
+    {
+      "resourceId": "8b03d12d911e6ac6c0574cdb77fc71c0",
+      "selection": {},
+      "checkedAtUtc": "2026-11-06T03:25:17.411579+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "total": 3,
+      "version": "029c21707047009b3a70ca96b56157e2f2b8e2f63cece69716243c114a6886a6",
+      "scope": "complete_file",
+      "returnedItems": 1,
+      "dataItemsSha256": "eafb21e13bba5679aef743acc350709c7439f1121224a987929aae420e24e431"
+    },
+    {
+      "resourceId": "93962a58cdd448fc7907556bfdc0749b",
+      "selection": {},
+      "checkedAtUtc": "2026-11-06T03:25:21.224813+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "total": 591,
+      "version": "59afca67e9f3a13542a57dc8c3c5d0d62c165b04a434908a205ff9d2612417c4",
+      "scope": "source_response",
+      "returnedItems": 1,
+      "dataItemsSha256": "cf25fe8ea2f6fae472941ff29f30999ebdc96d3e90500e39af442e0f5943a776"
+    },
+    {
+      "resourceId": "a5805f8458c6c83777edb6fd8d23649d",
+      "selection": {},
+      "checkedAtUtc": "2026-11-06T03:25:24.965492+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "total": 27,
+      "version": "16a8cfd1978ebe5b8fd26d3186c48257229aeb9e4657ce2ca3f3eacdfd04f0f0",
+      "scope": "complete_file",
+      "returnedItems": 1,
+      "dataItemsSha256": "f79af616f479de54b8e1ada0b0316601c75ce0baf4ff312da52193ceb9df382a"
+    },
+    {
+      "resourceId": "cb7027451b2ee8cc0c21e58d32aefac5",
+      "selection": {},
+      "checkedAtUtc": "2026-11-06T03:25:28.215010+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "total": 18,
+      "version": "3ed4357138ab5e129241bd41314736c4f8a8af86a1f5c6caecf303c990e65013",
+      "scope": "complete_file",
+      "returnedItems": 1,
+      "dataItemsSha256": "a4010206862fdb1df8ab90539a153326fce0b5c5a530a5fae46df74b32207f4f"
+    },
+    {
+      "resourceId": "d3e57933677a798eb8ce819fc2e7f7f5",
+      "selection": {},
+      "checkedAtUtc": "2026-11-06T03:25:31.603733+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "total": 31,
+      "version": "303c8effdbebfb98f98b594194a57f72d378418954436e7b006cbee8ff99f868",
+      "scope": "complete_file",
+      "returnedItems": 1,
+      "dataItemsSha256": "bec3d906a4bdd48cd0504f6afd8adc516dff449feb778654f12c6a6806682c4f"
+    },
+    {
+      "resourceId": "d52356ecbd7e894f04ad60dae715c9d0",
+      "selection": {},
+      "checkedAtUtc": "2026-11-06T03:25:35.347660+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "total": 27,
+      "version": "a6573888f0e59559332fd20a4c9aad56317721d74b077ac2fdb308f4c79236bc",
+      "scope": "complete_file",
+      "returnedItems": 1,
+      "dataItemsSha256": "6a5f42f98be523bbe70dfe075ed4177f6fd0a0b8296a05361482d71c11e5d491"
+    },
+    {
+      "resourceId": "e71955d18de4f4097ca2aaac01d5375c",
+      "selection": {},
+      "checkedAtUtc": "2026-11-06T03:25:38.802951+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "total": 51,
+      "version": "658b03fcb873f1c09db12f88db828119340b50ed223a045202a18c704803463e",
+      "scope": "complete_file",
+      "returnedItems": 1,
+      "dataItemsSha256": "73f271fc8afa77610028fe10205e3a3c95b731882103d48f1479df32b899baeb"
+    },
+    {
+      "resourceId": "f18ec5fa01db6fe226f051b74b3d2b65",
+      "selection": {},
+      "checkedAtUtc": "2026-11-06T03:25:42.233554+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "total": 18,
+      "version": "4d98e43e0cc0e2dd0b240e24118b08125f34a4b7ead11f0d23315e7cd8b70daf",
+      "scope": "complete_file",
+      "returnedItems": 1,
+      "dataItemsSha256": "a4010206862fdb1df8ab90539a153326fce0b5c5a530a5fae46df74b32207f4f"
+    },
+    {
+      "resourceId": "f5f6071dc9c331c51a15940840d98abb",
+      "selection": {},
+      "checkedAtUtc": "2026-11-06T03:25:45.569356+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "total": 3,
+      "version": "696f11013e3fa9ce004677a25cdebb8a1af51241175fe1c24d1a5b232a6f74fe",
+      "scope": "complete_file",
+      "returnedItems": 1,
+      "dataItemsSha256": "0319eae68c09a94478c430a4ef521d556ea335a3edcc6c10c9858904be0e12ae"
+    },
+    {
+      "resourceId": "f9ce8154be440d27d716714428e7f602",
+      "selection": {},
+      "checkedAtUtc": "2026-11-06T03:25:49.025507+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "total": 59,
+      "version": "17f9c4eb8967aefa50a3d096936b196c46c8e1deb41b19a791d98b7c2d7d650f",
+      "scope": "complete_file",
+      "returnedItems": 1,
+      "dataItemsSha256": "110d3fccd03ab7a69464a6bb7521e85868fd7674d37fdb729d69a440b82775f9"
+    }
+  ],
+  "successfulHttpScopesExpected": 15,
+  "successfulHttpScopesAllMatched": true,
+  "heldHttpQueryAttempts": [
+    {
+      "resourceId": "b4fce60c11e1393cfe075fc035ba8558",
+      "selection": {},
+      "httpStatus": 422,
+      "error": {
+        "code": "RESPONSE_TOO_LARGE",
+        "message": "Select a narrower recordPath, fewer fields or a smaller page",
+        "requestId": "6c4d08115c2d4e9b950931c0a40e6e6e"
+      },
+      "total": null
+    }
+  ]
+}

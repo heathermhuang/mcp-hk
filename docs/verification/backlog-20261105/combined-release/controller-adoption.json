@@ -1,0 +1,33 @@
+{
+  "observations": [
+    {
+      "observedAtUtc": "2026-11-06T04:59:26.929590+00:00",
+      "controllerNow": 1793941166848,
+      "workerRelease": "d76b1d6a62e98dae01d29ce0f70bebdc2d9b71fc",
+      "maintenanceLeaseClear": false,
+      "seedLeaseClear": true
+    },
+    {
+      "observedAtUtc": "2026-11-06T05:15:56.655587+00:00",
+      "controllerNow": 1793942156616,
+      "workerRelease": "d76b1d6a62e98dae01d29ce0f70bebdc2d9b71fc",
+      "maintenanceLeaseClear": true,
+      "seedLeaseClear": true
+    },
+    {
+      "observedAtUtc": "2026-11-06T05:18:17.650228+00:00",
+      "controllerNow": 1793942297612,
+      "workerRelease": "d76b1d6a62e98dae01d29ce0f70bebdc2d9b71fc",
+      "maintenanceLeaseClear": true,
+      "seedLeaseClear": true
+    },
+    {
+      "observedAtUtc": "2026-11-06T05:19:20.319071+00:00",
+      "controllerNow": 1793942360272,
+      "workerRelease": "fc71d10ee602cf539ee399fa47fef29441723056",
+      "maintenanceLeaseClear": true,
+      "seedLeaseClear": true
+    }
+  ],
+  "additionalDeploymentOrForcedRestart": false
+}

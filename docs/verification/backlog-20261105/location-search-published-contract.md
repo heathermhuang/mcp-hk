@@ -29,6 +29,6 @@ caller-scoped actions and are not stored in shared selection options.
 Tests cover exact URL binding/escaping, zero-call missing-input discovery,
 source-context isolation after accepted queries, unchanged native coordinates,
 held proximity, and preservation of an upstream denial through later metadata
-requests. Actual hosted HTTP/native MCP canary, fresh recovery and source access
-are still required before production qualification. No alternative host, header,
+requests. Actual hosted HTTP/native MCP canary and fresh recovery subsequently passed
+for `fc71d10`, with 27 raw source matches; see `combined-release/`. No alternative host, header,
 proxy, credential or source-denial retry is authorized by this contract.

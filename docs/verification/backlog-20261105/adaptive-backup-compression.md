@@ -26,5 +26,6 @@ all 36 tables byte-equivalently; see `adaptive-checkpoint-proof.json`.
 A regression adds a live database write and capture after the first archive, then
 proves the fallback restores the original consistent snapshot under a transfer
 ceiling the fast archive cannot meet. Another proves an oversized fallback still
-fails closed and retains the previous accepted archive. Required full checks,
-actual deployment timing and fresh post-deploy recovery remain release gates.
+fails closed and retains the previous accepted archive. Required checks and fresh post-deploy recovery subsequently passed for
+`fc71d10`; see `combined-release/`. Natural maintenance-checkpoint observations
+remain distinct from manual level-6 backup evidence.
