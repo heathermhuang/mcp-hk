@@ -176,3 +176,11 @@ or a supported noncommercial scope is pending owner clarification. The aborted R
 rollout restored the original five schedules and existing version 84 without code
 activation. `hydro-reuse-hold/` records the evidence and fail-closed policy. The
 other frozen source graphs and supported tasks remain open.
+
+Qualification receipts now retain a bounded allowlist of response correlation
+headers (Cloudflare ray, request/release IDs, retry delay and content type).
+Authorization, cookies and redirect locations are excluded. Existing receipts,
+including failures, remain immutable and are reused. A gateway recovery label
+can cover transport or non-JSON backend failures; it does not prove a restart or
+restore. Correlation metadata supports investigation without changing source
+requests, identity, quotas, retry policy or acceptance criteria.
