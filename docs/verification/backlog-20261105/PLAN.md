@@ -135,3 +135,10 @@ schema receipts retain their normal flow, and existing query receipts—includin
 failures—are reused across modes without retrying a known failure through another
 endpoint. Query proof requires the complete-source schema, integer total and the
 expected bounded data item count.
+
+PR #157 repairs four further exact published request contracts and distinguishes
+both vector-map style specifications from record interfaces. Actual scoped HTTP/
+native MCP and fresh isolated recovery proof are in `published-interfaces-release/`.
+These are raw parameter-scoped responses; no new semantics or whole-inventory
+qualification is counted. Remaining frozen graphs and exact reader/task issues
+continue from saved receipts, with source and capacity holds preserved.

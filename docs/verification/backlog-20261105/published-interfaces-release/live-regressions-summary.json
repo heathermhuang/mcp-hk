@@ -1,0 +1,11 @@
+{
+  "scope": "actual production public HTTP and native FastMCP",
+  "points": 4,
+  "resourceReads": 2,
+  "busOperators": [
+    "CTB",
+    "KMB",
+    "NLB"
+  ],
+  "failures": []
+}
