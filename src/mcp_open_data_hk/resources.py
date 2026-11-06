@@ -35,6 +35,7 @@ from .resource_fetch import fetch, fetch_file
 from .resource_stream import FileRows
 from .resource_formats import parse
 from .resource_serializations import read as read_serialization
+from . import published_files
 from .published_requests import (
     request_template,
     annotate_response,
@@ -836,6 +837,7 @@ class Resources:
                 sheet
                 and resource["format"]
                 not in {"XLS", "XLSX", "XLSM", "ZIP", "GTFS", "KMZ"}
+                and not published_files.selected(resource["url"], record_path)
             )
             or (
                 record_path
@@ -961,6 +963,18 @@ class Resources:
                     url = template_url(url, parameters or {})
                 extra = {}
                 async with self.review_slots if SOURCE_REVIEW.get() else self.slots:
+                    if published_files.profile(resource["url"]):
+                        url, fmt, file_context = await published_files.request(
+                            resource["url"], record_path, fetch
+                        )
+                        extra.update(file_context)
+                        if layer is not None or (sheet and fmt != "XLSX"):
+                            raise DomainError(
+                                "INVALID_QUERY",
+                                "Selector does not apply to the selected published file",
+                                400,
+                            )
+                        record_path = ""
                     if access_protocol not in {"WFS", "WMS"} and (
                         "featureserver" in url.lower()
                         or "mapserver" in url.lower()
@@ -1194,6 +1208,11 @@ class Resources:
                 code = (
                     exc.code if isinstance(exc, DomainError) else "SOURCE_PARSE_ERROR"
                 )
+                if (
+                    published_files.profile(resource["url"])
+                    and code in resource_selections.SELECTION_ERRORS
+                ):
+                    raise
                 status = (
                     "needs_adapter"
                     if code in {"SOURCE_PARSE_ERROR", "SOURCE_SCHEMA_CHANGED"}
@@ -1339,7 +1358,9 @@ class Resources:
             result = await self._schema(
                 resource_id, record_path, sheet, layer, require_fresh, parameters
             )
-            return await self._selection_response(resource_id, result, parameters)
+            return await self._selection_response(
+                resource_id, result, parameters, record_path
+            )
         except DomainError as exc:
             if exc.code == "RECORD_PATH_REQUIRED" and hasattr(exc, "record_paths"):
                 return await self._selection_response(
@@ -1357,6 +1378,7 @@ class Resources:
                         "structuredQueryable": False,
                     },
                     parameters,
+                    record_path,
                 )
             if exc.code == "SHEET_REQUIRED" and getattr(exc, "sheets", None):
                 return await self._selection_response(
@@ -1370,6 +1392,7 @@ class Resources:
                         "structuredQueryable": False,
                     },
                     parameters,
+                    record_path,
                 )
             if (
                 exc.code not in resource_selections.SELECTION_ERRORS
@@ -1395,19 +1418,40 @@ class Resources:
                 422,
             ) from None
 
-    async def _selection_response(self, resource_id, result, parameters=None):
+    async def _selection_response(
+        self, resource_id, result, parameters=None, record_path=""
+    ):
         groups = resource_selections.describe(resource_id, result)
-        scoped = bool(parameters) or result.get("selectionRequired") == "parameters"
+        file_scoped = published_files.selected(
+            result.get("resource", {}).get("url", ""), record_path
+        )
+        if file_scoped:
+            groups = [
+                group
+                for group in groups
+                if group["kind"] != "record_path"
+                or any(option["value"] for option in group["options"])
+            ]
+        scoped = (
+            bool(parameters)
+            or result.get("selectionRequired") == "parameters"
+            or file_scoped
+        )
         if scoped:
             # These choices belong to this caller's explicit request. Never
             # publish parameter values or borrow choices from another context.
             for group in groups:
-                group["scopedToParameterNames"] = sorted(parameters or {})
+                if file_scoped:
+                    group["scopedToRecordPath"] = record_path
+                else:
+                    group["scopedToParameterNames"] = sorted(parameters or {})
                 for option in group["options"]:
                     if parameters:
                         option["nextAction"]["arguments"]["parameters"] = dict(
                             parameters
                         )
+                    if file_scoped:
+                        option["nextAction"]["arguments"]["recordPath"] = record_path
             result["selections"] = groups
         elif groups:
             await asyncio.to_thread(self.catalogue.record_options, resource_id, groups)
@@ -1431,6 +1475,16 @@ class Resources:
         parameters=None,
     ):
         resource = self.catalogue.resource(resource_id)
+        if published_files.profile(resource["url"]) and not record_path:
+            if sheet or layer is not None or parameters:
+                raise DomainError(
+                    "INVALID_QUERY",
+                    "Select a published file before its workbook sheet",
+                    400,
+                )
+            async with self.review_slots if SOURCE_REVIEW.get() else self.slots:
+                result = await published_files.schema(resource["url"], fetch)
+            return {"resource": resource, **result}
         if parameters and not transport.profile(resource):
             # Discovery shortcuts must not silently ignore undeclared arguments.
             template_url(resource["url"], parameters)
