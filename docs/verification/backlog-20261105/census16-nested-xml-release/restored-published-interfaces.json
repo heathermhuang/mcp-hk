@@ -1,0 +1,51 @@
+{
+  "scope": "Fresh accepted archive restored in isolation; successful explicit raw response scopes and nonrecord metadata only. Source holds remain held.",
+  "providerRequests": 0,
+  "acceptedScopes": [
+    {
+      "resourceId": "8249e3d730a8f969980548f55fd79d86",
+      "httpMcpParity": true,
+      "total": 1760,
+      "version": "39b2d1d70145b134f163d681861f59a31588d2c0243225b4fe1b96a999ce339a",
+      "missingInputIsolated": true
+    },
+    {
+      "resourceId": "6dcc39e9b683a2f8b1e38ae2e4cd6488",
+      "httpMcpParity": true,
+      "total": 1,
+      "version": "6831887885b368b98e859d5518af3ea5ba32fe3a70ea149e222aeed94d3fea57",
+      "missingInputIsolated": true
+    },
+    {
+      "resourceId": "7825a371cda35083cb7e0e3a40294a01",
+      "httpMcpParity": true,
+      "total": 1,
+      "version": "320680502454914826c1bcfca3ad755d4cfb7032e492f30d4c92ea98999698dd",
+      "missingInputIsolated": true
+    }
+  ],
+  "sourceHolds": [
+    {
+      "resourceId": "18e150f1f3e1fbe6f0171cdb5fe947d9",
+      "parameters": {
+        "x": "835665",
+        "y": "817198",
+        "lang": "en"
+      },
+      "queryHttpStatus": null,
+      "recordQuerySkippedKnownFailure": true,
+      "httpMcpDataParity": false,
+      "httpMcpMetadataParity": true,
+      "hold": {
+        "code": "PRIOR_SOURCE_FAILURE_NOT_RETRIED",
+        "priorHttpStatus": 502,
+        "currentMetadataRecords": {
+          "state": "held",
+          "reason": "SOURCE_UNAVAILABLE"
+        }
+      },
+      "providerFailureNotEmptyData": true
+    }
+  ],
+  "nonrecordMaps": 2
+}

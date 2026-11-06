@@ -1,0 +1,21 @@
+{
+  "resourceId": "39679b6dc72e96e66bf48c6d85e1afce",
+  "legacyVariantMetadataRetained": 2,
+  "facts": [
+    {
+      "key": "08502a1e30595920186fe287d97f88421122fd01eef325d195305aaf5ddb91b1",
+      "hash": "181585f15824ec2e0ad92c4189c5f996eb99679fdc24120dfcb2b637e51c1ba0",
+      "schema_hash": "c1665c00059d09dfd3d0dcbc720b11a9b47f36a28f758aa7fe2462568d923cc2",
+      "rows": 1
+    },
+    {
+      "key": "7e64c527a933479593d0f9780d16157e9c665734ec0b1d8c40909ea4378dc172",
+      "hash": "ae592b7afea0e305ef9916d7a1cf0ad37a01d5749308687445dada9cf35fd15c",
+      "schema_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "rows": 0
+    }
+  ],
+  "unchangedVersionSchemaHashAndCount": true,
+  "providerRequests": 0,
+  "oldRecordsRecovered": false
+}

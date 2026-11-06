@@ -1,0 +1,14 @@
+{
+  "resourceId": "1a4d8dd19c1d4469bac87ab932e682f4",
+  "parameters": {
+    "notification-id": "15634681"
+  },
+  "version": "a7c13808f22d8581497982bd125e0abab0beade950d697142ed971bbe3b20259",
+  "rawRows": 1,
+  "sourceSha256": "a7c13808f22d8581497982bd125e0abab0beade950d697142ed971bbe3b20259",
+  "dataItemsSha256": "60ba5d3580deb5f8e406eb8931d47a48df77224708ff7e0edb063137b180057a",
+  "differsFromEarlierLiveVersion": false,
+  "httpMcpParity": true,
+  "providerRequests": 0,
+  "activeAlertQualification": false
+}

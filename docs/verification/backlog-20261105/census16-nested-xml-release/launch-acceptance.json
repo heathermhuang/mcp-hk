@@ -1,0 +1,185 @@
+{
+  "verdict": "PASS_FOR_SUPPORTED_FROZEN_LAUNCH_SCOPE",
+  "acceptanceKind": "Operator actual-client and recovery acceptance; independent customer adoption/search indexing not claimed",
+  "checkedAtUtc": "2026-11-06T22:28:47.937205+00:00",
+  "release": {
+    "commit": "910c117c0eac22ed4122fa88ea22d0727052713f",
+    "workerVersion": "763099e6-459b-459a-9785-00968c74407d",
+    "applicationVersion": 89,
+    "imageDigest": "sha256:62d84d79baac30179dfb41b964806a80205cd106968ea660db7039e60e0e85ef"
+  },
+  "journeys": [
+    {
+      "journey": "Public discovery and connection instructions",
+      "result": "PASS",
+      "evidence": [
+        "launch-public-discovery.json",
+        "main-ci.json"
+      ],
+      "detail": "Six production discovery/guide routes and local assets returned200 at exact release; server card and connect guide match tested Streamable HTTP /mcp endpoint. Rendered journeys reuse unchanged-candidate CI."
+    },
+    {
+      "journey": "Native MCP access",
+      "result": "PASS",
+      "evidence": [
+        "census-live.json",
+        "notification-live.json",
+        "restored-census.json"
+      ],
+      "detail": "Actual unauthenticated public native FastMCP calls matched HTTP data for selected scopes; fresh restored calls passed without providers."
+    },
+    {
+      "journey": "HTTP data access",
+      "result": "PASS",
+      "evidence": [
+        "census-live.json",
+        "recycling-live.json",
+        "hkstp-live.json",
+        "wind-live.json"
+      ],
+      "detail": "Selected raw HTTP datasets passed; source-byte identity, parameters and returned counts remain explicit. Catalogue coverage is not universal query access."
+    },
+    {
+      "journey": "Existing nearby journeys",
+      "result": "PASS",
+      "evidence": [
+        "restored-client-receipt.json"
+      ],
+      "liveEvidence": "R20 live receipt.json retained locally; four binding/nearby checks passed HTTP/MCP",
+      "detail": "Four reviewed facility-feature bindings passed. No unique/open-now/emergency/walking-service qualification."
+    },
+    {
+      "journey": "Existing bus comparison journeys",
+      "result": "PASS",
+      "liveEvidence": "R20 receipt.json retained locally; CTB/KMB/NLB HTTP/nativeMCP comparison invariants passed",
+      "detail": "CTB checked4; NLB checked11 including5 reverse-order exclusions. KMB checked4, accepted3 and explicitly held11C. Partial coverage does not claim globally earliest bus, current calendar, walking or fastest arrival."
+    },
+    {
+      "journey": "Honest unavailable/partial outcomes",
+      "result": "PASS",
+      "evidence": [
+        "known-source-holds-live.json",
+        "hydro-held-live.json",
+        "published-interfaces-live.json"
+      ],
+      "detail": "RVD/Identify prior record failures not retried; current/recovered metadata is separate from record availability. Hydro remains denied. Nonrecord map styles reject record queries. KMB partiality remains visible."
+    },
+    {
+      "journey": "Recovery and configured schedules",
+      "result": "PASS",
+      "evidence": [
+        "post-restore-receipt.json",
+        "restored-census.json",
+        "restored-known-source-holds.json",
+        "schedules-restored.json",
+        "slot-released.json"
+      ],
+      "detail": "Immutable accepted archive independently retrieved/restored, checksum/integrity/captures/packs/registry/bindings passed. Staged HTTP/MCP used zero providers; all five original schedules read back; final health passed; owned slot closed."
+    }
+  ],
+  "recovery": {
+    "freshAcceptedArchiveSha256": "b5042edb13cb51eca51eefaf13a410c36b28d4d05e7806110d66f9ffea206cf7",
+    "archiveBytes": 123689142,
+    "databaseBytes": 366432256,
+    "captureBytes": 31155283,
+    "totalRestoredBytes": 397587539,
+    "integrity": "ok",
+    "baseAndTransportPacks": {
+      "population": 18,
+      "restaurants": 17296,
+      "transport": 62147
+    },
+    "sourceRegistryRecovered": true,
+    "nativeDatasetCount": 5048,
+    "activePreviousInventoryGenerations": 2,
+    "typedWorkbookOptions": 84,
+    "restoredPointBindings": [
+      {
+        "profileId": "ambulance-depot-feature-points-1",
+        "profileFingerprint": "2c46fabf80af8cc3a3d0393686a235d06912d5e189e2d773b6cf71771aae3fc8",
+        "sourceRows": 45
+      },
+      {
+        "profileId": "dh-clinic-feature-points-1",
+        "profileFingerprint": "d716d17e076adb0b4ee07a65c5ad00ea528ef66e0d4e03fb7b3d7f980b16ad26",
+        "sourceRows": 200
+      },
+      {
+        "profileId": "edb-school-record-points-1",
+        "profileFingerprint": "3263fce4baca106524b171f54228a7a425ea6e41232178ced42020ac063df2f9",
+        "sourceRows": 3496
+      },
+      {
+        "profileId": "fire-station-feature-points-1",
+        "profileFingerprint": "abfc4aa277d11dcb73d7eef77ab5233abab1e8ab310cde70451eedc2915928e1",
+        "sourceRows": 95
+      },
+      {
+        "profileId": "library-feature-points-1",
+        "profileFingerprint": "e75d4ced7e1654371ee3c563964d03d60bed7184a606b548e736b29c9caabc40",
+        "sourceRows": 184
+      },
+      {
+        "profileId": "museum-feature-points-1",
+        "profileFingerprint": "33282724e064947f6af7a4706ee355b7bcbafd6a900b18d31aa3b26fe408a524",
+        "sourceRows": 18
+      }
+    ],
+    "boundsUnchanged": {
+      "archive": 150000000,
+      "database": 500000000,
+      "totalRestored": 750000000
+    },
+    "preExistingHkmaVariantsPreserved": 38,
+    "repairedWfsMetadataPreserved": [
+      {
+        "resourceId": "f517af5f1721b0896cca46a0dec103f3",
+        "recordPath": "APP_AMEND_CSDI:AMEND_CRT",
+        "rows": 16,
+        "version": "a319b26570ac108c88c30d35e383beafecb7bb6d9289574d9589828cb093e95e"
+      },
+      {
+        "resourceId": "f517af5f1721b0896cca46a0dec103f3",
+        "recordPath": "APP_AMEND_CSDI:AMEND_PAST",
+        "rows": 1324,
+        "version": "b2405c33276b1778f811e6d2061553caaa1d75d5866605111fe7ba5ca569d534"
+      },
+      {
+        "resourceId": "f517af5f1721b0896cca46a0dec103f3",
+        "recordPath": "APP_AMEND_CSDI:APP_CRT",
+        "rows": 2179,
+        "version": "a1ad694683ffd139806bbde2d25ce013451ba32af21b872eba97cbc2abb92a7f"
+      }
+    ]
+  },
+  "schedules": {
+    "phase": "restored",
+    "readAt": "2026-11-06T22:24:20.029407+00:00",
+    "crons": [
+      "0 1 * * *",
+      "0 2 * * *",
+      "0 3 * * SUN",
+      "0 4 * * SUN",
+      "2-59/5 * * * *"
+    ],
+    "count": 5,
+    "matchesExpected": true
+  },
+  "oneOffBulkRunsEnded": true,
+  "candidateFrozen": true,
+  "sourceLimitations": [
+    "Catalogue metadata/choices are not universal accepted record access.",
+    "RVD028 and Identify record source failures remain explicit; no unchanged retry or current-record recovery claim.",
+    "Hydro reuse authorization remains unverified; public records denied.",
+    "KMB11C remains outside unchanged35m mapping gate; partial coverage explicit.",
+    "Native raw grids/XML/notices/wind do not establish normalized statistics, unique facilities, active vacancies/alerts or safety.",
+    "Fresh SFC/full HKEX and other held optional sources are not activated."
+  ],
+  "remainingLaunchBlockers": [],
+  "blockerOwners": {},
+  "independentAdoptionOrSearchIndexingMeasured": false,
+  "thirdPartySpecificClientUiAcceptanceClaimed": false,
+  "fullBacklogCompleted": false,
+  "bulkCoverageAndOptionalWorkDeferred": true,
+  "newPaidServiceCredentialScheduleOrOutreach": false
+}

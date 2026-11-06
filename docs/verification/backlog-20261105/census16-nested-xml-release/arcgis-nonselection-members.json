@@ -1,0 +1,22 @@
+{
+  "scope": "Frozen ArcGIS family members outside the explicit-selection graph; not silently omitted or requalified",
+  "providerRequests": 0,
+  "resources": [
+    {
+      "resourceId": "622d513c40c0f5487b72219cf96c1243",
+      "datasetId": "csdi:dsd_rcd_1629267205231_1442",
+      "format": "ARCGIS",
+      "lastStatus": "unavailable",
+      "lastReason": "SOURCE_API_ERROR",
+      "sourceUrl": "https://portal.csdi.gov.hk/server/rest/services/common/dsd_rcd_1629267205231_1442/FeatureServer"
+    },
+    {
+      "resourceId": "cb256a8072a45d7949424c0ddd5f6828",
+      "datasetId": "csdi:td_rcd_1638930345315_81787",
+      "format": "ARCGIS",
+      "lastStatus": "unavailable",
+      "lastReason": "SOURCE_UNAVAILABLE",
+      "sourceUrl": "https://portal.csdi.gov.hk/server/rest/services/common/td_rcd_1638930345315_81787/FeatureServer"
+    }
+  ]
+}

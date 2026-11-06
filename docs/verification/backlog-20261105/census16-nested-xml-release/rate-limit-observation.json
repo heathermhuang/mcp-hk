@@ -1,0 +1,10 @@
+{
+  "phase": "published interface parameter discovery",
+  "resourceId": "6dcc39e9b683a2f8b1e38ae2e4cd6488",
+  "observedHttpStatus": 429,
+  "originalResponseBodyCaptured": false,
+  "recordProviderCallAtThisStep": false,
+  "changedConditionRequired": "natural expiry of full existing rate-limit window and paced remaining verification",
+  "quotasOrIdentityChanged": false,
+  "successfulPublishedScopeRetained": "8249e3d730a8f969980548f55fd79d86"
+}

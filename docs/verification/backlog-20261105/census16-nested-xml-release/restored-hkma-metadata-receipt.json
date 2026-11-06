@@ -1,0 +1,11 @@
+{
+  "resourceId": "d7c84da8696472f6d7a7e9ee4e3e681d",
+  "scope": "actual fresh accepted checkpoint restored locally; source hold and historical metadata preserved, no offline record-availability claim",
+  "httpMcpMetadataParity": true,
+  "providerRequests": 0,
+  "records": {
+    "state": "held",
+    "reason": "SOURCE_HTTP_ERROR"
+  },
+  "hkmaPaginationContract": "hkma-pages-2"
+}

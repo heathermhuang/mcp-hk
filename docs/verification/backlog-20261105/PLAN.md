@@ -192,3 +192,12 @@ PR #176 repairs the three documented wind CSV layouts with hosted/fresh recovery
 PR #177 repairs the exact HKO forecast-track XML list with hosted/fresh recovery proof in `cyclone-list-release/`. Declared-schema empty state follows its specific publisher rule; the GML placeholder and worldwide/safety semantics remain unqualified. Hydro reuse and the complete wider programme stay open.
 
 PR #181 repairs the exact native-ID notification-detail framing with hosted/fresh recovery proof in `notification-detail-release/`. Source ID binding and raw message/timestamp values are retained; units, active-alert and safety semantics remain unqualified. Wider frozen graphs, task/reader work and the full programme remain open.
+
+PR #183 repairs native file/group selection for the three Census16 nested XML archives; hosted and staged recovery evidence is in `census16-nested-xml-release/`. The explicit cohort still needs every unblocked deployed native-group qualification. Raw XML values, source context and XML/XSD provenance do not grant statistical normalization or file/language equivalence. The full programme stays open.
+
+Approved launch-first steering freezes the delivered version-89 candidate after
+safe release closure and ends one-off qualification at saved boundaries. The
+supported launch journeys pass in `census16-nested-xml-release/LAUNCH-ACCEPTANCE.md`.
+The complete original backlog remains unfinished follow-up; new optional coverage,
+adapters and semantic bindings are deferred from the launch critical path. Existing
+production schedules, quotas, held sources and recovery limits remain unchanged.

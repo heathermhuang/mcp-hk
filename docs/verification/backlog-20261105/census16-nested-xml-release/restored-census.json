@@ -1,0 +1,40 @@
+{
+  "scope": "Staged explicit raw XML groups from actual fresh accepted checkpoint; not all file/group caches",
+  "providerRequests": 0,
+  "results": [
+    {
+      "resourceId": "76a5e9288bf457a9b0b3d666cb17c769",
+      "recordPath": "file:F101s.zip/Observation",
+      "version": "c26c07a2257730cf609d24d24ae8711791355edad117f08698e3ae24990de979",
+      "rawRows": 57,
+      "sourceSha256": "c26c07a2257730cf609d24d24ae8711791355edad117f08698e3ae24990de979",
+      "dictionarySha256": "2e9099dcab7a133a4ca99e50a9fd3d45a811f906be605d61198f6cfff8401733",
+      "dataItemsSha256": "010616ee92652c88807f80a091ae3eb0765670fee2668d6db011295c5f4704e3",
+      "differsFromEarlierLiveVersion": false,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "792653ddc405a4f3a4293c91e782a3f7",
+      "recordPath": "file:G101s.zip/Observation",
+      "version": "7fefb90720db3c9fde1aac442c9b519e66968bb5536e0f586bb960133a828a8c",
+      "rawRows": 100,
+      "sourceSha256": "7fefb90720db3c9fde1aac442c9b519e66968bb5536e0f586bb960133a828a8c",
+      "dictionarySha256": "ce9b5a14cf1692123c2676e7f0d8c33e495550e3fa2d7366631218daa6b64888",
+      "dataItemsSha256": "baa9609190d2677fc984fd0b650e6be2424272764ba2a8a5f57a80eda8abc4f8",
+      "differsFromEarlierLiveVersion": false,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "7234cfec152aca3e86cb46779ab1ae9a",
+      "recordPath": "file:H101s.zip/Observation",
+      "version": "fdb392cda19af7f8784f12b1bc7bf25b643cfaa7c285ace2890ebe4f3fe271a3",
+      "rawRows": 108,
+      "sourceSha256": "fdb392cda19af7f8784f12b1bc7bf25b643cfaa7c285ace2890ebe4f3fe271a3",
+      "dictionarySha256": "ce9b5a14cf1692123c2676e7f0d8c33e495550e3fa2d7366631218daa6b64888",
+      "dataItemsSha256": "6e68b65b08e58fdbb9617cad8718b8c5767846044e10f390873806bfb347a8a8",
+      "differsFromEarlierLiveVersion": false,
+      "httpMcpParity": true
+    }
+  ],
+  "allNativeGroupsRecovered": false
+}

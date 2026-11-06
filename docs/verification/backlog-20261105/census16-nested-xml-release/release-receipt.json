@@ -1,0 +1,625 @@
+{
+  "releasedCommit": "910c117c0eac22ed4122fa88ea22d0727052713f",
+  "codePrs": [
+    183
+  ],
+  "cloudflareVersionId": "763099e6-459b-459a-9785-00968c74407d",
+  "containerImageDigest": "sha256:62d84d79baac30179dfb41b964806a80205cd106968ea660db7039e60e0e85ef",
+  "containerApplicationVersion": 89,
+  "runningInstance": {
+    "instances": [
+      {
+        "state": "running",
+        "version": 89
+      }
+    ],
+    "observedAtUtc": "2026-11-06T22:04:12.710042+00:00",
+    "source": "native Wrangler containers instances; full private read retained"
+  },
+  "verifiedAtUtc": "2026-11-06T22:24:23.057485+00:00",
+  "legacyHttpMcpRegressionsPassed": false,
+  "legacyAvailableScopeRegressionsPassed": true,
+  "legacySourceHolds": [
+    {
+      "resourceId": "59a9eb26d741141f5a4d675ee17f701c",
+      "datasetId": "csdi:rvd_rcd_1701825947419_23025",
+      "checkedAtUtc": "2026-11-06T22:04:18.648202+00:00",
+      "currentMetadata": {
+        "id": "59a9eb26d741141f5a4d675ee17f701c",
+        "datasetId": "csdi:rvd_rcd_1701825947419_23025",
+        "url": "https://portal.csdi.gov.hk/server/services/common/rvd_rcd_1701825947419_23025/MapServer/WFSServer?service=wfs&request=GetCapabilities",
+        "format": "WFS",
+        "validation": {
+          "status": "unavailable",
+          "reason": "SOURCE_UNAVAILABLE",
+          "lastCheckedAt": 1793996142.168582,
+          "lastValidatedAt": 1793991095.2434325,
+          "recordCount": 22
+        },
+        "records": {
+          "state": "held",
+          "reason": "SOURCE_UNAVAILABLE"
+        }
+      },
+      "httpMcpMetadataParity": true,
+      "recordQueryPerformed": false,
+      "sourceRequests": 0,
+      "currentRecordAvailabilityClaimed": false,
+      "priorFailureRelease": "b22381d510976d23b2ddb5c0505f7c3ec7fbfddd",
+      "priorFailureHttpStatus": 502
+    },
+    {
+      "resourceId": "18e150f1f3e1fbe6f0171cdb5fe947d9",
+      "datasetId": "hk-landsd-openmap-development-identify-api",
+      "checkedAtUtc": "2026-11-06T22:04:18.980215+00:00",
+      "currentMetadata": {
+        "id": "18e150f1f3e1fbe6f0171cdb5fe947d9",
+        "datasetId": "hk-landsd-openmap-development-identify-api",
+        "url": "https://portal.csdi.gov.hk/csdi-webpage/apidoc/IdentifyAPI",
+        "format": "JSON",
+        "validation": {
+          "status": "unavailable",
+          "reason": "SOURCE_UNAVAILABLE",
+          "lastCheckedAt": 1793996461.5577674,
+          "lastValidatedAt": 1793991868.4746113,
+          "recordCount": 2
+        },
+        "records": {
+          "state": "held",
+          "reason": "SOURCE_UNAVAILABLE"
+        }
+      },
+      "httpMcpMetadataParity": true,
+      "recordQueryPerformed": false,
+      "sourceRequests": 0,
+      "currentRecordAvailabilityClaimed": false,
+      "priorFailureRelease": "b22381d510976d23b2ddb5c0505f7c3ec7fbfddd",
+      "priorFailureHttpStatus": 502
+    }
+  ],
+  "publishedAvailableScopeRegressionsPassed": true,
+  "knownSourceHoldMetadataRecovered": {
+    "scope": "Actual fresh checkpoint metadata for prior failed scopes, without record-query retry or current availability claim",
+    "providerRequests": 0,
+    "results": [
+      {
+        "resourceId": "59a9eb26d741141f5a4d675ee17f701c",
+        "httpMcpMetadataParity": true,
+        "currentRecords": {
+          "state": "held",
+          "reason": "SOURCE_UNAVAILABLE"
+        },
+        "recordQueryPerformed": false,
+        "recordAvailabilityClaimed": false,
+        "retainedDatedMetadata": [
+          {
+            "key": "3f435a73caa380cf92c5ed629dc7ce2f28d513f7141e896519343f5c0d0be17b",
+            "version": "47a748d565bff01ec4f35a7dd3a0555652f1980a2b63d5942768163124b1b536",
+            "schemaHash": "8a26d311045052d8ed0efaa61dedb2ca674dc498fa22db2bbe178166cd2cbbc6",
+            "rawRows": 22
+          }
+        ]
+      },
+      {
+        "resourceId": "18e150f1f3e1fbe6f0171cdb5fe947d9",
+        "httpMcpMetadataParity": true,
+        "currentRecords": {
+          "state": "held",
+          "reason": "SOURCE_UNAVAILABLE"
+        },
+        "recordQueryPerformed": false,
+        "recordAvailabilityClaimed": false,
+        "retainedDatedMetadata": [
+          {
+            "key": "7582df6a00bffdfd9b328f32217c713a65f0c66d5032c33ed43fc24d307f9686",
+            "version": "20675f1569e2c74e0755c67650cdca435d00fd47c0e03bd968bf75a615c3c18e",
+            "schemaHash": "f1f69e677fe975027e1d78225594998cc51ed927d85ec73ed646cbe6433a6580",
+            "rawRows": 2
+          }
+        ]
+      }
+    ]
+  },
+  "recyclingHosted": {
+    "resourceId": "bba25323baf621535677e9a743b0923b",
+    "selection": {
+      "recordPath": "file:wasteless260708.csv"
+    },
+    "checkedAtUtc": "2026-11-06T22:09:00.755425+00:00",
+    "httpStatus": 200,
+    "rawRows": 9735,
+    "version": "5429fc3b16c3c3ba700a3d2cc35d8c9bd330265929fa35281a432f1ce0b23832",
+    "sourceSha256": "62c7700f319d1ecfa744627246c01e840a3807a71f9f25184636af3b91f31753",
+    "dataItemsSha256": "ed6aac770cea7a60b2395797a520f8d2d1aa8ed4f0b036b9c99e7055bbd6a65c",
+    "publishedFile": {
+      "selection": "file:wasteless260708.csv",
+      "sourcePageUrl": "https://www.wastereduction.gov.hk/zh-hk/resources-centre/recyclable-collection-points-dataset",
+      "sourcePageSha256": "236b49f10a5483802754ca4fe3569c87e33c867e92f0e7805902687782aae334",
+      "publishedUrl": "https://www.wastereduction.gov.hk/sites/default/files/wasteless260708.csv"
+    },
+    "httpMcpParity": true
+  },
+  "sharedCensusRegression": {
+    "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+    "selection": {
+      "recordPath": "file:DC_21C.zip",
+      "limit": 1
+    },
+    "rawRows": 75,
+    "version": "9e075657e4933f5a05ecb2256cc04d94728fd650ef18f16ad14727da218c9600",
+    "httpMcpParity": true
+  },
+  "freshAcceptedRestore": {
+    "freshAcceptedArchiveSha256": "b5042edb13cb51eca51eefaf13a410c36b28d4d05e7806110d66f9ffea206cf7",
+    "archiveBytes": 123689142,
+    "databaseBytes": 366432256,
+    "captureBytes": 31155283,
+    "totalRestoredBytes": 397587539,
+    "integrity": "ok",
+    "baseAndTransportPacks": {
+      "population": 18,
+      "restaurants": 17296,
+      "transport": 62147
+    },
+    "sourceRegistryRecovered": true,
+    "nativeDatasetCount": 5048,
+    "activePreviousInventoryGenerations": 2,
+    "typedWorkbookOptions": 84,
+    "restoredPointBindings": [
+      {
+        "profileId": "ambulance-depot-feature-points-1",
+        "profileFingerprint": "2c46fabf80af8cc3a3d0393686a235d06912d5e189e2d773b6cf71771aae3fc8",
+        "sourceRows": 45
+      },
+      {
+        "profileId": "dh-clinic-feature-points-1",
+        "profileFingerprint": "d716d17e076adb0b4ee07a65c5ad00ea528ef66e0d4e03fb7b3d7f980b16ad26",
+        "sourceRows": 200
+      },
+      {
+        "profileId": "edb-school-record-points-1",
+        "profileFingerprint": "3263fce4baca106524b171f54228a7a425ea6e41232178ced42020ac063df2f9",
+        "sourceRows": 3496
+      },
+      {
+        "profileId": "fire-station-feature-points-1",
+        "profileFingerprint": "abfc4aa277d11dcb73d7eef77ab5233abab1e8ab310cde70451eedc2915928e1",
+        "sourceRows": 95
+      },
+      {
+        "profileId": "library-feature-points-1",
+        "profileFingerprint": "e75d4ced7e1654371ee3c563964d03d60bed7184a606b548e736b29c9caabc40",
+        "sourceRows": 184
+      },
+      {
+        "profileId": "museum-feature-points-1",
+        "profileFingerprint": "33282724e064947f6af7a4706ee355b7bcbafd6a900b18d31aa3b26fe408a524",
+        "sourceRows": 18
+      }
+    ],
+    "boundsUnchanged": {
+      "archive": 150000000,
+      "database": 500000000,
+      "totalRestored": 750000000
+    },
+    "preExistingHkmaVariantsPreserved": 38,
+    "repairedWfsMetadataPreserved": [
+      {
+        "resourceId": "f517af5f1721b0896cca46a0dec103f3",
+        "recordPath": "APP_AMEND_CSDI:AMEND_CRT",
+        "rows": 16,
+        "version": "a319b26570ac108c88c30d35e383beafecb7bb6d9289574d9589828cb093e95e"
+      },
+      {
+        "resourceId": "f517af5f1721b0896cca46a0dec103f3",
+        "recordPath": "APP_AMEND_CSDI:AMEND_PAST",
+        "rows": 1324,
+        "version": "b2405c33276b1778f811e6d2061553caaa1d75d5866605111fe7ba5ca569d534"
+      },
+      {
+        "resourceId": "f517af5f1721b0896cca46a0dec103f3",
+        "recordPath": "APP_AMEND_CSDI:APP_CRT",
+        "rows": 2179,
+        "version": "a1ad694683ffd139806bbde2d25ce013451ba32af21b872eba97cbc2abb92a7f"
+      }
+    ]
+  },
+  "recyclingRecovered": {
+    "scope": "Exact selected original recycling rows restored; no geographic/identity/current-service qualification",
+    "resourceId": "bba25323baf621535677e9a743b0923b",
+    "selection": {
+      "recordPath": "file:wasteless260708.csv"
+    },
+    "rawRows": 9735,
+    "version": "5429fc3b16c3c3ba700a3d2cc35d8c9bd330265929fa35281a432f1ce0b23832",
+    "sourceSha256": "62c7700f319d1ecfa744627246c01e840a3807a71f9f25184636af3b91f31753",
+    "httpMcpParity": true,
+    "providerRequests": 0
+  },
+  "hkstpHosted": {
+    "resourceId": "df2492726bb048a59ad63da80a5295b6",
+    "selection": {},
+    "checkedAtUtc": "2026-11-06T22:09:07.649098+00:00",
+    "httpStatus": 200,
+    "scope": "Original raw recruitment records only; active vacancy, identity and eligibility unreviewed",
+    "httpMcpParity": true,
+    "rawRows": 501,
+    "version": "34fb8006cb9d0e43cf1cb8d6e1c3a772488d3f70abde9b1287661e5312d450ea",
+    "sourceSha256": "34fb8006cb9d0e43cf1cb8d6e1c3a772488d3f70abde9b1287661e5312d450ea",
+    "observedSerialization": "hkstp_recruitment_array_in_json_string",
+    "dataItemsSha256": "2b84dbd6a98b4db6417401e0032863cb85313bdc771fec6413355d440532d98e"
+  },
+  "hkstpRecovered": {
+    "scope": "Exact selected original hkstp rows restored; no active-vacancy/identity/eligibility qualification",
+    "resourceId": "df2492726bb048a59ad63da80a5295b6",
+    "selection": {},
+    "rawRows": 501,
+    "version": "591aafc02bcecc836f3bef94e135218de4542f703266351996e19ac08623b9d8",
+    "sourceSha256": "591aafc02bcecc836f3bef94e135218de4542f703266351996e19ac08623b9d8",
+    "dataItemsSha256": "2b84dbd6a98b4db6417401e0032863cb85313bdc771fec6413355d440532d98e",
+    "httpMcpParity": true,
+    "providerRequests": 0
+  },
+  "hydroPublicHold": {
+    "scope": "Actual hosted public metadata and record-denial parity; this does not grant source reuse permission",
+    "checkedAtUtc": "2026-11-06T22:09:20.011433+00:00",
+    "results": [
+      {
+        "resourceId": "35f4fa534d677141e2d81d8c15b34287",
+        "metadataHttpMcpParity": true,
+        "recordHttpStatus": 422,
+        "recordCode": "SOURCE_REUSE_REVIEW_REQUIRED",
+        "nativeMcpRecordHold": true,
+        "sourceReuseReview": {
+          "state": "pending_source_reuse_review",
+          "reason": "source_reuse_review_required",
+          "publisherNoticeUrl": "https://current.hydro.gov.hk/main/disclaimer.php?lang=tc",
+          "catalogueTermsUrl": "https://data.gov.hk/en/terms-and-conditions",
+          "noticeSha256": "14a341a8e49c3f24d29431b8de964a399332ec68f54c4351b12991b75f740cc5",
+          "noticeReviewedOn": "2026-11-06",
+          "publisherCondition": "Noncommercial reproduction requires Marine Department attribution; commercial use requires prior written authorization.",
+          "publicApiReuseBasis": "unverified",
+          "networkAccessAssessment": "not_assessed_by_reuse_policy"
+        },
+        "recordAccessActivated": false
+      },
+      {
+        "resourceId": "496eac1466714b914d558cb375de4aef",
+        "metadataHttpMcpParity": true,
+        "recordHttpStatus": 422,
+        "recordCode": "SOURCE_REUSE_REVIEW_REQUIRED",
+        "nativeMcpRecordHold": true,
+        "sourceReuseReview": {
+          "state": "pending_source_reuse_review",
+          "reason": "source_reuse_review_required",
+          "publisherNoticeUrl": "https://current.hydro.gov.hk/main/disclaimer.php?lang=tc",
+          "catalogueTermsUrl": "https://data.gov.hk/en/terms-and-conditions",
+          "noticeSha256": "14a341a8e49c3f24d29431b8de964a399332ec68f54c4351b12991b75f740cc5",
+          "noticeReviewedOn": "2026-11-06",
+          "publisherCondition": "Noncommercial reproduction requires Marine Department attribution; commercial use requires prior written authorization.",
+          "publicApiReuseBasis": "unverified",
+          "networkAccessAssessment": "not_assessed_by_reuse_policy"
+        },
+        "recordAccessActivated": false
+      },
+      {
+        "resourceId": "be00600cbb0603b25c064daa0129813b",
+        "metadataHttpMcpParity": true,
+        "recordHttpStatus": 422,
+        "recordCode": "SOURCE_REUSE_REVIEW_REQUIRED",
+        "nativeMcpRecordHold": true,
+        "sourceReuseReview": {
+          "state": "pending_source_reuse_review",
+          "reason": "source_reuse_review_required",
+          "publisherNoticeUrl": "https://current.hydro.gov.hk/main/disclaimer.php?lang=tc",
+          "catalogueTermsUrl": "https://data.gov.hk/en/terms-and-conditions",
+          "noticeSha256": "14a341a8e49c3f24d29431b8de964a399332ec68f54c4351b12991b75f740cc5",
+          "noticeReviewedOn": "2026-11-06",
+          "publisherCondition": "Noncommercial reproduction requires Marine Department attribution; commercial use requires prior written authorization.",
+          "publicApiReuseBasis": "unverified",
+          "networkAccessAssessment": "not_assessed_by_reuse_policy"
+        },
+        "recordAccessActivated": false
+      }
+    ],
+    "HydroDataActivation": false
+  },
+  "hydroHoldRecovered": {
+    "scope": "Isolated restored metadata and record-denial parity; no source permission or raw data activation",
+    "checkedAtUtc": "2026-11-06T22:24:05.732730+00:00",
+    "results": [
+      {
+        "resourceId": "35f4fa534d677141e2d81d8c15b34287",
+        "metadataHttpMcpParity": true,
+        "recordHttpStatus": 422,
+        "recordCode": "SOURCE_REUSE_REVIEW_REQUIRED",
+        "nativeMcpRecordHold": true,
+        "sourceReuseReview": {
+          "state": "pending_source_reuse_review",
+          "reason": "source_reuse_review_required",
+          "publisherNoticeUrl": "https://current.hydro.gov.hk/main/disclaimer.php?lang=tc",
+          "catalogueTermsUrl": "https://data.gov.hk/en/terms-and-conditions",
+          "noticeSha256": "14a341a8e49c3f24d29431b8de964a399332ec68f54c4351b12991b75f740cc5",
+          "noticeReviewedOn": "2026-11-06",
+          "publisherCondition": "Noncommercial reproduction requires Marine Department attribution; commercial use requires prior written authorization.",
+          "publicApiReuseBasis": "unverified",
+          "networkAccessAssessment": "not_assessed_by_reuse_policy"
+        },
+        "recordAccessActivated": false
+      },
+      {
+        "resourceId": "496eac1466714b914d558cb375de4aef",
+        "metadataHttpMcpParity": true,
+        "recordHttpStatus": 422,
+        "recordCode": "SOURCE_REUSE_REVIEW_REQUIRED",
+        "nativeMcpRecordHold": true,
+        "sourceReuseReview": {
+          "state": "pending_source_reuse_review",
+          "reason": "source_reuse_review_required",
+          "publisherNoticeUrl": "https://current.hydro.gov.hk/main/disclaimer.php?lang=tc",
+          "catalogueTermsUrl": "https://data.gov.hk/en/terms-and-conditions",
+          "noticeSha256": "14a341a8e49c3f24d29431b8de964a399332ec68f54c4351b12991b75f740cc5",
+          "noticeReviewedOn": "2026-11-06",
+          "publisherCondition": "Noncommercial reproduction requires Marine Department attribution; commercial use requires prior written authorization.",
+          "publicApiReuseBasis": "unverified",
+          "networkAccessAssessment": "not_assessed_by_reuse_policy"
+        },
+        "recordAccessActivated": false
+      },
+      {
+        "resourceId": "be00600cbb0603b25c064daa0129813b",
+        "metadataHttpMcpParity": true,
+        "recordHttpStatus": 422,
+        "recordCode": "SOURCE_REUSE_REVIEW_REQUIRED",
+        "nativeMcpRecordHold": true,
+        "sourceReuseReview": {
+          "state": "pending_source_reuse_review",
+          "reason": "source_reuse_review_required",
+          "publisherNoticeUrl": "https://current.hydro.gov.hk/main/disclaimer.php?lang=tc",
+          "catalogueTermsUrl": "https://data.gov.hk/en/terms-and-conditions",
+          "noticeSha256": "14a341a8e49c3f24d29431b8de964a399332ec68f54c4351b12991b75f740cc5",
+          "noticeReviewedOn": "2026-11-06",
+          "publisherCondition": "Noncommercial reproduction requires Marine Department attribution; commercial use requires prior written authorization.",
+          "publicApiReuseBasis": "unverified",
+          "networkAccessAssessment": "not_assessed_by_reuse_policy"
+        },
+        "recordAccessActivated": false
+      }
+    ],
+    "HydroDataActivation": false,
+    "providerRequests": 0
+  },
+  "HydroDataActivation": false,
+  "sourceReuseClarificationPending": true,
+  "windHosted": [
+    {
+      "resourceId": "33f3a9904add55aff7648ccdab3bb0cf",
+      "selection": {},
+      "httpStatus": 200,
+      "checkedAtUtc": "2026-11-06T22:09:21.221997+00:00",
+      "httpMcpParity": true,
+      "rawRows": 30,
+      "version": "9360bf548d5424d8a8d1ccb06d5eb2201adaa152b50219adb602c0b1bc0d9f07",
+      "sourceSha256": "b964180bb02d94f9ec3a3cf1fdc4706440095f8d718fefa66ab2711676607f38",
+      "dataItemsSha256": "3ae25fd36c5f32bf81a37be6101e52b22fea4fdda2dd8753b6da561b372c2685",
+      "cacheTTLSeconds": 600,
+      "provisional": true,
+      "timestampTimezoneQualification": "unreviewed_native_timestamp"
+    },
+    {
+      "resourceId": "50e7577f11d6aca1f57cd275dc60bfda",
+      "selection": {},
+      "httpStatus": 200,
+      "checkedAtUtc": "2026-11-06T22:09:25.219824+00:00",
+      "httpMcpParity": true,
+      "rawRows": 30,
+      "version": "bb5aebad2147db8447aa25c1fbb9d156f98e1dcbd482f5307cef47dab7ade616",
+      "sourceSha256": "396eb03167d2190637c921b9751e88ca0b375fd6b2fd2bf39e611c14b3c9c8ec",
+      "dataItemsSha256": "46751b167bf7a65a5d33743985d8a9fade1eea67999c8699650d53dbf79ccc92",
+      "cacheTTLSeconds": 600,
+      "provisional": true,
+      "timestampTimezoneQualification": "unreviewed_native_timestamp"
+    },
+    {
+      "resourceId": "b255c7a8de8fc620e9d5f5eca43e4140",
+      "selection": {},
+      "httpStatus": 200,
+      "checkedAtUtc": "2026-11-06T22:09:28.704679+00:00",
+      "httpMcpParity": true,
+      "rawRows": 30,
+      "version": "200c1563176ff880ec27705bd627ee9427231276e08860dd363c7fe69c4fe53f",
+      "sourceSha256": "a6166aca4a1c7d64de0b61bf2a50bd9a278eed0ae2e73ef4a413863a0d8c8867",
+      "dataItemsSha256": "648921efdf45b15e3bb3a1e201b6bc9963885b130f34943b0a86007e5e66c909",
+      "cacheTTLSeconds": 600,
+      "provisional": true,
+      "timestampTimezoneQualification": "unreviewed_native_timestamp"
+    }
+  ],
+  "windRecovered": [
+    {
+      "resourceId": "33f3a9904add55aff7648ccdab3bb0cf",
+      "version": "8514c6f0bbcd4647747d4ab635cb008aea44cff4176e3ae6c58cde9a7900b20e",
+      "rawRows": 30,
+      "sourceSha256": "c8b7cba182925f610b8c3678e7ae900b243553975cc77cc3165e6508d7b52dc2",
+      "dataItemsSha256": "42da691f5815e9605c699b4f7749ab312f9ae444d3093a828e7f409dc3f61a7a",
+      "differsFromEarlierLiveVersion": true,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "50e7577f11d6aca1f57cd275dc60bfda",
+      "version": "38bf84a608c871f5b29cbfbc4476bff1bce9f0a1d1030bcc57bed72f5e186fa8",
+      "rawRows": 30,
+      "sourceSha256": "d0d667a12f61dc2b46415fb1ead096cfcef587121f742829dab96f927e41900b",
+      "dataItemsSha256": "0cf136c3f69e695d75f95c9c71284c5798621d2659c2a885d4a48e2f0d2281ff",
+      "differsFromEarlierLiveVersion": true,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "b255c7a8de8fc620e9d5f5eca43e4140",
+      "version": "cd713c6790c99aebd2cbc1abf604a16dc03422c268986a7e4e4476c22c189dac",
+      "rawRows": 30,
+      "sourceSha256": "c7fee249dc734769030da98221c1fb231c171b4583ae02c2c8d4cd221b92ab6e",
+      "dataItemsSha256": "b45ce02bde844477d1eb13175dd096bd666a9f77e2800b4ebb7a9cdaac5ab121",
+      "differsFromEarlierLiveVersion": true,
+      "httpMcpParity": true
+    }
+  ],
+  "windObservationFreshness": "unqualified",
+  "cycloneListHosted": {
+    "resourceId": "39679b6dc72e96e66bf48c6d85e1afce",
+    "selection": {},
+    "httpStatus": 200,
+    "checkedAtUtc": "2026-11-06T22:09:33.030160+00:00",
+    "httpMcpParity": true,
+    "rawRows": 0,
+    "sourceEmptyCollection": true,
+    "schemaTypeBasis": "publisher_declared_xml_text",
+    "version": "ae592b7afea0e305ef9916d7a1cf0ad37a01d5749308687445dada9cf35fd15c",
+    "sourceSha256": "ae592b7afea0e305ef9916d7a1cf0ad37a01d5749308687445dada9cf35fd15c",
+    "dataItemsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "globalCycloneOrSafetyQualification": false
+  },
+  "cycloneListRecovered": {
+    "resourceId": "39679b6dc72e96e66bf48c6d85e1afce",
+    "version": "ae592b7afea0e305ef9916d7a1cf0ad37a01d5749308687445dada9cf35fd15c",
+    "rawRows": 0,
+    "sourceSha256": "ae592b7afea0e305ef9916d7a1cf0ad37a01d5749308687445dada9cf35fd15c",
+    "sourceEmptyCollection": true,
+    "dataItemsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "differsFromEarlierLiveVersion": false,
+    "httpMcpParity": true,
+    "providerRequests": 0,
+    "globalCycloneOrSafetyQualification": false
+  },
+  "globalCycloneOrSafetyQualification": false,
+  "allRestoredProviderRequests": 0,
+  "allFiveSchedulesVerified": true,
+  "newNativeInventoryEntries": 0,
+  "newSemanticBindings": 0,
+  "coordinateIdentityAndCurrentServiceQualification": "unreviewed",
+  "activeVacancyAndEligibilityQualification": "unreviewed",
+  "wholeRemainingBacklogComplete": false,
+  "firstUnfinished": "Wider frozen graphs, Census builder/native task schemas, exact source/schema/capacity investigations and supported semantics.",
+  "launchCandidateFrozen": true,
+  "bulkExpansionDeferredFromLaunch": true,
+  "fullBacklogRemainsUnfinished": true,
+  "notificationDetailHosted": {
+    "resourceId": "1a4d8dd19c1d4469bac87ab932e682f4",
+    "parameters": {
+      "notification-id": "15634681"
+    },
+    "httpStatus": 200,
+    "checkedAtUtc": "2026-11-06T22:09:34.577979+00:00",
+    "httpMcpParity": true,
+    "activeAlertQualification": false,
+    "rawRows": 1,
+    "fieldCount": 10,
+    "version": "a7c13808f22d8581497982bd125e0abab0beade950d697142ed971bbe3b20259",
+    "sourceSha256": "a7c13808f22d8581497982bd125e0abab0beade950d697142ed971bbe3b20259",
+    "dataItemsSha256": "60ba5d3580deb5f8e406eb8931d47a48df77224708ff7e0edb063137b180057a",
+    "timestampUnitQualification": "unreviewed_list_detail_dictionary_unit_difference",
+    "messageStringsPreserved": true
+  },
+  "notificationDetailRecovered": {
+    "resourceId": "1a4d8dd19c1d4469bac87ab932e682f4",
+    "parameters": {
+      "notification-id": "15634681"
+    },
+    "version": "a7c13808f22d8581497982bd125e0abab0beade950d697142ed971bbe3b20259",
+    "rawRows": 1,
+    "sourceSha256": "a7c13808f22d8581497982bd125e0abab0beade950d697142ed971bbe3b20259",
+    "dataItemsSha256": "60ba5d3580deb5f8e406eb8931d47a48df77224708ff7e0edb063137b180057a",
+    "differsFromEarlierLiveVersion": false,
+    "httpMcpParity": true,
+    "providerRequests": 0,
+    "activeAlertQualification": false
+  },
+  "activeAlertQualification": false,
+  "censusNativeHosted": [
+    {
+      "resourceId": "76a5e9288bf457a9b0b3d666cb17c769",
+      "recordPath": "file:F101s.zip/Observation",
+      "checkedAtUtc": "2026-11-06T22:10:42.237426+00:00",
+      "rootHttpStatus": 200,
+      "httpStatus": 200,
+      "rootChoices": 23,
+      "rootHttpMcpMetadataParity": true,
+      "httpMcpParity": true,
+      "rawRows": 57,
+      "version": "c26c07a2257730cf609d24d24ae8711791355edad117f08698e3ae24990de979",
+      "sourceSha256": "c26c07a2257730cf609d24d24ae8711791355edad117f08698e3ae24990de979",
+      "dictionarySha256": "2e9099dcab7a133a4ca99e50a9fd3d45a811f906be605d61198f6cfff8401733",
+      "dataItemsSha256": "010616ee92652c88807f80a091ae3eb0765670fee2668d6db011295c5f4704e3",
+      "statisticalNormalizationQualified": false
+    },
+    {
+      "resourceId": "792653ddc405a4f3a4293c91e782a3f7",
+      "recordPath": "file:G101s.zip/Observation",
+      "checkedAtUtc": "2026-11-06T22:10:52.834150+00:00",
+      "rootHttpStatus": 200,
+      "httpStatus": 200,
+      "rootChoices": 19,
+      "rootHttpMcpMetadataParity": true,
+      "httpMcpParity": true,
+      "rawRows": 100,
+      "version": "7fefb90720db3c9fde1aac442c9b519e66968bb5536e0f586bb960133a828a8c",
+      "sourceSha256": "7fefb90720db3c9fde1aac442c9b519e66968bb5536e0f586bb960133a828a8c",
+      "dictionarySha256": "ce9b5a14cf1692123c2676e7f0d8c33e495550e3fa2d7366631218daa6b64888",
+      "dataItemsSha256": "baa9609190d2677fc984fd0b650e6be2424272764ba2a8a5f57a80eda8abc4f8",
+      "statisticalNormalizationQualified": false
+    },
+    {
+      "resourceId": "7234cfec152aca3e86cb46779ab1ae9a",
+      "recordPath": "file:H101s.zip/Observation",
+      "checkedAtUtc": "2026-11-06T22:11:02.923461+00:00",
+      "rootHttpStatus": 200,
+      "httpStatus": 200,
+      "rootChoices": 25,
+      "rootHttpMcpMetadataParity": true,
+      "httpMcpParity": true,
+      "rawRows": 108,
+      "version": "fdb392cda19af7f8784f12b1bc7bf25b643cfaa7c285ace2890ebe4f3fe271a3",
+      "sourceSha256": "fdb392cda19af7f8784f12b1bc7bf25b643cfaa7c285ace2890ebe4f3fe271a3",
+      "dictionarySha256": "ce9b5a14cf1692123c2676e7f0d8c33e495550e3fa2d7366631218daa6b64888",
+      "dataItemsSha256": "6e68b65b08e58fdbb9617cad8718b8c5767846044e10f390873806bfb347a8a8",
+      "statisticalNormalizationQualified": false
+    }
+  ],
+  "censusNativeRecovered": [
+    {
+      "resourceId": "76a5e9288bf457a9b0b3d666cb17c769",
+      "recordPath": "file:F101s.zip/Observation",
+      "version": "c26c07a2257730cf609d24d24ae8711791355edad117f08698e3ae24990de979",
+      "rawRows": 57,
+      "sourceSha256": "c26c07a2257730cf609d24d24ae8711791355edad117f08698e3ae24990de979",
+      "dictionarySha256": "2e9099dcab7a133a4ca99e50a9fd3d45a811f906be605d61198f6cfff8401733",
+      "dataItemsSha256": "010616ee92652c88807f80a091ae3eb0765670fee2668d6db011295c5f4704e3",
+      "differsFromEarlierLiveVersion": false,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "792653ddc405a4f3a4293c91e782a3f7",
+      "recordPath": "file:G101s.zip/Observation",
+      "version": "7fefb90720db3c9fde1aac442c9b519e66968bb5536e0f586bb960133a828a8c",
+      "rawRows": 100,
+      "sourceSha256": "7fefb90720db3c9fde1aac442c9b519e66968bb5536e0f586bb960133a828a8c",
+      "dictionarySha256": "ce9b5a14cf1692123c2676e7f0d8c33e495550e3fa2d7366631218daa6b64888",
+      "dataItemsSha256": "baa9609190d2677fc984fd0b650e6be2424272764ba2a8a5f57a80eda8abc4f8",
+      "differsFromEarlierLiveVersion": false,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "7234cfec152aca3e86cb46779ab1ae9a",
+      "recordPath": "file:H101s.zip/Observation",
+      "version": "fdb392cda19af7f8784f12b1bc7bf25b643cfaa7c285ace2890ebe4f3fe271a3",
+      "rawRows": 108,
+      "sourceSha256": "fdb392cda19af7f8784f12b1bc7bf25b643cfaa7c285ace2890ebe4f3fe271a3",
+      "dictionarySha256": "ce9b5a14cf1692123c2676e7f0d8c33e495550e3fa2d7366631218daa6b64888",
+      "dataItemsSha256": "6e68b65b08e58fdbb9617cad8718b8c5767846044e10f390873806bfb347a8a8",
+      "differsFromEarlierLiveVersion": false,
+      "httpMcpParity": true
+    }
+  ],
+  "allNativeCensusGroupsQualified": false,
+  "statisticalNormalizationQualified": false
+}

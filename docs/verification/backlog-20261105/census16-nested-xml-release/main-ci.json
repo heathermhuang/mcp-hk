@@ -1,0 +1,37 @@
+[
+  {
+    "conclusion": "success",
+    "databaseId": 42297174295,
+    "headSha": "910c117c0eac22ed4122fa88ea22d0727052713f",
+    "status": "completed",
+    "workflowName": "Curated read model"
+  },
+  {
+    "conclusion": "success",
+    "databaseId": 42297174216,
+    "headSha": "910c117c0eac22ed4122fa88ea22d0727052713f",
+    "status": "completed",
+    "workflowName": "Code Quality"
+  },
+  {
+    "conclusion": "success",
+    "databaseId": 42297174480,
+    "headSha": "910c117c0eac22ed4122fa88ea22d0727052713f",
+    "status": "completed",
+    "workflowName": "Deployment checks"
+  },
+  {
+    "conclusion": "success",
+    "databaseId": 42297174376,
+    "headSha": "910c117c0eac22ed4122fa88ea22d0727052713f",
+    "status": "completed",
+    "workflowName": "CI"
+  },
+  {
+    "conclusion": "success",
+    "databaseId": 42297174310,
+    "headSha": "910c117c0eac22ed4122fa88ea22d0727052713f",
+    "status": "completed",
+    "workflowName": "UX browser regressions"
+  }
+]

@@ -1,0 +1,62 @@
+{
+  "scope": "Readonly current metadata for two prior failed record canaries; no unchanged source query retry",
+  "sourceRequests": 0,
+  "results": [
+    {
+      "resourceId": "59a9eb26d741141f5a4d675ee17f701c",
+      "datasetId": "csdi:rvd_rcd_1701825947419_23025",
+      "checkedAtUtc": "2026-11-06T22:04:18.648202+00:00",
+      "currentMetadata": {
+        "id": "59a9eb26d741141f5a4d675ee17f701c",
+        "datasetId": "csdi:rvd_rcd_1701825947419_23025",
+        "url": "https://portal.csdi.gov.hk/server/services/common/rvd_rcd_1701825947419_23025/MapServer/WFSServer?service=wfs&request=GetCapabilities",
+        "format": "WFS",
+        "validation": {
+          "status": "unavailable",
+          "reason": "SOURCE_UNAVAILABLE",
+          "lastCheckedAt": 1793996142.168582,
+          "lastValidatedAt": 1793991095.2434325,
+          "recordCount": 22
+        },
+        "records": {
+          "state": "held",
+          "reason": "SOURCE_UNAVAILABLE"
+        }
+      },
+      "httpMcpMetadataParity": true,
+      "recordQueryPerformed": false,
+      "sourceRequests": 0,
+      "currentRecordAvailabilityClaimed": false,
+      "priorFailureRelease": "b22381d510976d23b2ddb5c0505f7c3ec7fbfddd",
+      "priorFailureHttpStatus": 502
+    },
+    {
+      "resourceId": "18e150f1f3e1fbe6f0171cdb5fe947d9",
+      "datasetId": "hk-landsd-openmap-development-identify-api",
+      "checkedAtUtc": "2026-11-06T22:04:18.980215+00:00",
+      "currentMetadata": {
+        "id": "18e150f1f3e1fbe6f0171cdb5fe947d9",
+        "datasetId": "hk-landsd-openmap-development-identify-api",
+        "url": "https://portal.csdi.gov.hk/csdi-webpage/apidoc/IdentifyAPI",
+        "format": "JSON",
+        "validation": {
+          "status": "unavailable",
+          "reason": "SOURCE_UNAVAILABLE",
+          "lastCheckedAt": 1793996461.5577674,
+          "lastValidatedAt": 1793991868.4746113,
+          "recordCount": 2
+        },
+        "records": {
+          "state": "held",
+          "reason": "SOURCE_UNAVAILABLE"
+        }
+      },
+      "httpMcpMetadataParity": true,
+      "recordQueryPerformed": false,
+      "sourceRequests": 0,
+      "currentRecordAvailabilityClaimed": false,
+      "priorFailureRelease": "b22381d510976d23b2ddb5c0505f7c3ec7fbfddd",
+      "priorFailureHttpStatus": 502
+    }
+  ]
+}
