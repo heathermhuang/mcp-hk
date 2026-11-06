@@ -1,0 +1,14 @@
+{
+  "scope": "Local HTTP/native MCP replay of exact captured Audit publisher bytes; fixture replay, no current hosted acceptance claim",
+  "providerRequests": 0,
+  "fixtureReads": 1,
+  "results": [
+    {
+      "resourceId": "656fde3a4a402d2e33d856f2619a9ec3",
+      "rows": 1337,
+      "httpMcpParity": true,
+      "sourceSha256": "b93b1345d3bd9a1cac5d486a0dcabb0905247434f47ead08178afd7f5f56a51d",
+      "serialization": "complete_top_level_comma_separated_json_object_sequence"
+    }
+  ]
+}

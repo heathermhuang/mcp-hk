@@ -1,0 +1,14 @@
+{
+  "archiveChecksumAndSqliteRestorePassed": true,
+  "failure": "provider refresh attempted by isolated reader test after short API TTL expiry",
+  "shortContextValidatedAtUtc": [
+    "2026-11-06T10:16:26.984620Z",
+    "2026-11-06T10:16:43.639747Z",
+    "2026-11-06T10:16:53.280110Z"
+  ],
+  "ttlSeconds": 300,
+  "offlineQueryAtUtc": "2026-11-06T10:22:08Z",
+  "producerCreatedAtUtc": "2026-11-06T10:21:29.449Z",
+  "timestampsModified": false,
+  "nextAttemptBasis": "the exact short scopes have naturally expired; ordinary queries now revalidate them"
+}

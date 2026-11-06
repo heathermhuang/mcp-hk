@@ -1,5 +1,13 @@
 # Remaining-backlog implementation releases — 6 November 2026
 
+PR #163 is deployed at `531292c41469a454aa6e9146575b7e3bbe25dc42` with exact-main CI,
+actual controller/image/instance adoption, hosted Audit HTTP/native MCP parity and
+fresh isolated recovery. The 1,337 raw accounts objects are now readable.
+Unchanged TID source holds remain. See [Audit framing release](audit-framing-release/README.md).
+The complete frozen programme remains open.
+
+## Earlier reader-contract release
+
 PRs #159–#161 are deployed at `ffe09b2b6ac33390d2355e8626cc2b7db396baac` with exact-main CI,
 actual controller/image/instance adoption, hosted HTTP/native MCP and fresh isolated
 recovery. 26 new raw scopes passed; 3 retain individual unresolved reasons.
