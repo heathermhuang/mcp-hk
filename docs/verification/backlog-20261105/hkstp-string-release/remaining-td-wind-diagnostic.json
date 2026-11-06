@@ -1,0 +1,286 @@
+{
+  "scope": "One exact request for each of nine previously uninspected TD XLS and two remaining wind CSV mismatch resources; no status writes or group-wide inference",
+  "results": [
+    {
+      "resourceId": "300b0ec5b2253aa830b88d13d9618d1c",
+      "datasetId": "hk-td-tis_10-monthly-traffic-and-transport-digest",
+      "format": "XLS",
+      "originalUrl": "https://www.td.gov.hk/datagovhk_td/mttd/resources/chart21.xls",
+      "host": "www.td.gov.hk",
+      "datedCode": "SOURCE_SCHEMA_CHANGED",
+      "datedMessage": "No table header",
+      "groupResources": 1,
+      "checkedAtUtc": "2026-11-06T13:10:35.697036+00:00",
+      "httpStatus": 200,
+      "bytes": 68608,
+      "sha256": "c40264f27df9e1be95086abccdd56dccebd826b3d47b0e1d7766fa90c3a4cd06",
+      "contentType": "application/vnd.ms-excel",
+      "responseUrl": "https://www.td.gov.hk/datagovhk_td/mttd/resources/chart21.xls",
+      "signatureHex": "d0cf11e0a1b11ae10000000000000000",
+      "parserState": "held",
+      "parserCode": "SOURCE_SCHEMA_CHANGED",
+      "reason": "SOURCE_SCHEMA_CHANGED: No table header",
+      "physicalWorksheets": [
+        {
+          "name": "\u5de5\u4f5c\u88681",
+          "rows": 0,
+          "columns": 0
+        }
+      ]
+    },
+    {
+      "resourceId": "50e7577f11d6aca1f57cd275dc60bfda",
+      "datasetId": "hk-hko-rss-latest-ten-minute-wind-info",
+      "format": "CSV",
+      "originalUrl": "https://data.weather.gov.hk/weatherAPI/hko_data/regional-weather/latest_10min_wind_sc.csv",
+      "host": "data.weather.gov.hk",
+      "datedCode": "SCHEMA_DRIFT",
+      "datedMessage": "Source fields/types changed; accepted version retained for operator review",
+      "groupResources": 1,
+      "checkedAtUtc": "2026-11-06T13:10:39.011812+00:00",
+      "httpStatus": 200,
+      "bytes": 1162,
+      "sha256": "49d3cf7f81cc40c248f9456dda317c83cc6f10a742c16b5abba4675364b52a1e",
+      "contentType": "text/csv",
+      "responseUrl": "https://data.weather.gov.hk/weatherAPI/hko_data/regional-weather/latest_10min_wind_sc.csv",
+      "signatureHex": "efbbbfe697a5e69c9fe697b6e997b42c",
+      "parserState": "success",
+      "rawRows": 30
+    },
+    {
+      "resourceId": "558ad7402e65fa0f5cfe1be7a0cf0dcf",
+      "datasetId": "hk-td-tis_10-monthly-traffic-and-transport-digest",
+      "format": "XLS",
+      "originalUrl": "https://www.td.gov.hk/datagovhk_td/mttd/resources/chart22.xls",
+      "host": "www.td.gov.hk",
+      "datedCode": "SOURCE_SCHEMA_CHANGED",
+      "datedMessage": "No table header",
+      "groupResources": 1,
+      "checkedAtUtc": "2026-11-06T13:10:42.270032+00:00",
+      "httpStatus": 200,
+      "bytes": 129536,
+      "sha256": "2f3b48ad5bcc74144898401510fe78659ccd8ef3a9f08c45df20699046adf794",
+      "contentType": "application/vnd.ms-excel",
+      "responseUrl": "https://www.td.gov.hk/datagovhk_td/mttd/resources/chart22.xls",
+      "signatureHex": "d0cf11e0a1b11ae10000000000000000",
+      "parserState": "held",
+      "parserCode": "SOURCE_SCHEMA_CHANGED",
+      "reason": "SOURCE_SCHEMA_CHANGED: No table header",
+      "physicalWorksheets": [
+        {
+          "name": "\u5de5\u4f5c\u88681",
+          "rows": 0,
+          "columns": 0
+        }
+      ]
+    },
+    {
+      "resourceId": "69fff3e1804fb09a2be0c9f54e719c84",
+      "datasetId": "hk-td-tis_10-monthly-traffic-and-transport-digest",
+      "format": "XLS",
+      "originalUrl": "https://www.td.gov.hk/datagovhk_td/mttd/resources/chart81.xls",
+      "host": "www.td.gov.hk",
+      "datedCode": "SOURCE_SCHEMA_CHANGED",
+      "datedMessage": "No table header",
+      "groupResources": 1,
+      "checkedAtUtc": "2026-11-06T13:10:45.544703+00:00",
+      "httpStatus": 200,
+      "bytes": 189440,
+      "sha256": "55b88d0b1e46349fc3fabf415e7a7567d9d405edf0fed3349c1d132d53a093f8",
+      "contentType": "application/vnd.ms-excel",
+      "responseUrl": "https://www.td.gov.hk/datagovhk_td/mttd/resources/chart81.xls",
+      "signatureHex": "d0cf11e0a1b11ae10000000000000000",
+      "parserState": "held",
+      "parserCode": "SOURCE_SCHEMA_CHANGED",
+      "reason": "SOURCE_SCHEMA_CHANGED: No table header",
+      "physicalWorksheets": [
+        {
+          "name": "\u5de5\u4f5c\u88681",
+          "rows": 0,
+          "columns": 0
+        }
+      ]
+    },
+    {
+      "resourceId": "8bacea5b7e49f0dfe0c3ec8d491fb65d",
+      "datasetId": "hk-td-tis_10-monthly-traffic-and-transport-digest",
+      "format": "XLS",
+      "originalUrl": "https://www.td.gov.hk/datagovhk_td/mttd/resources/chart82_87.xls",
+      "host": "www.td.gov.hk",
+      "datedCode": "SOURCE_SCHEMA_CHANGED",
+      "datedMessage": "No table header",
+      "groupResources": 1,
+      "checkedAtUtc": "2026-11-06T13:10:48.880155+00:00",
+      "httpStatus": 200,
+      "bytes": 3000832,
+      "sha256": "8db8276b74ecf1ddc34173a153ad0b079f69faaec80961fe3b92f3f7ad4bf14f",
+      "contentType": "application/vnd.ms-excel",
+      "responseUrl": "https://www.td.gov.hk/datagovhk_td/mttd/resources/chart82_87.xls",
+      "signatureHex": "d0cf11e0a1b11ae10000000000000000",
+      "parserState": "held",
+      "parserCode": "SOURCE_SCHEMA_CHANGED",
+      "reason": "SOURCE_SCHEMA_CHANGED: No table header",
+      "physicalWorksheets": [
+        {
+          "name": "\u5de5\u4f5c\u88681",
+          "rows": 0,
+          "columns": 0
+        }
+      ]
+    },
+    {
+      "resourceId": "90fe3c8510c728693d2e1ddc4d89c66c",
+      "datasetId": "hk-td-tis_10-monthly-traffic-and-transport-digest",
+      "format": "XLS",
+      "originalUrl": "https://www.td.gov.hk/datagovhk_td/mttd/resources/chart71.xls",
+      "host": "www.td.gov.hk",
+      "datedCode": "SOURCE_SCHEMA_CHANGED",
+      "datedMessage": "No table header",
+      "groupResources": 1,
+      "checkedAtUtc": "2026-11-06T13:10:52.389315+00:00",
+      "httpStatus": 200,
+      "bytes": 1502720,
+      "sha256": "8711a0c9febf6ab8505c5c15dc98aaf6c7ff0d3f51ce1474f4ea6c031d8be6e0",
+      "contentType": "application/vnd.ms-excel",
+      "responseUrl": "https://www.td.gov.hk/datagovhk_td/mttd/resources/chart71.xls",
+      "signatureHex": "d0cf11e0a1b11ae10000000000000000",
+      "parserState": "held",
+      "parserCode": "SOURCE_SCHEMA_CHANGED",
+      "reason": "SOURCE_SCHEMA_CHANGED: No table header",
+      "physicalWorksheets": [
+        {
+          "name": "\u5de5\u4f5c\u88681",
+          "rows": 0,
+          "columns": 0
+        }
+      ]
+    },
+    {
+      "resourceId": "ae212d13358b1b7bf57368b743ccaa8d",
+      "datasetId": "hk-td-tis_10-monthly-traffic-and-transport-digest",
+      "format": "XLS",
+      "originalUrl": "https://www.td.gov.hk/datagovhk_td/mttd/resources/chart72.xls",
+      "host": "www.td.gov.hk",
+      "datedCode": "SOURCE_SCHEMA_CHANGED",
+      "datedMessage": "No table header",
+      "groupResources": 1,
+      "checkedAtUtc": "2026-11-06T13:10:55.750630+00:00",
+      "httpStatus": 200,
+      "bytes": 1805312,
+      "sha256": "ecb0f90937ed04c34cd80bb11e0fde790010f4b11b9a06db930285f247189bba",
+      "contentType": "application/vnd.ms-excel",
+      "responseUrl": "https://www.td.gov.hk/datagovhk_td/mttd/resources/chart72.xls",
+      "signatureHex": "d0cf11e0a1b11ae10000000000000000",
+      "parserState": "held",
+      "parserCode": "SOURCE_SCHEMA_CHANGED",
+      "reason": "SOURCE_SCHEMA_CHANGED: No table header",
+      "physicalWorksheets": [
+        {
+          "name": "\u5de5\u4f5c\u88681",
+          "rows": 0,
+          "columns": 0
+        }
+      ]
+    },
+    {
+      "resourceId": "b255c7a8de8fc620e9d5f5eca43e4140",
+      "datasetId": "hk-hko-rss-latest-ten-minute-wind-info",
+      "format": "CSV",
+      "originalUrl": "https://data.weather.gov.hk/weatherAPI/hko_data/regional-weather/latest_10min_wind.csv",
+      "host": "data.weather.gov.hk",
+      "datedCode": "SCHEMA_DRIFT",
+      "datedMessage": "Source fields/types changed; accepted version retained for operator review",
+      "groupResources": 1,
+      "checkedAtUtc": "2026-11-06T13:10:59.120147+00:00",
+      "httpStatus": 200,
+      "bytes": 1261,
+      "sha256": "ace15665da7292884914e90514f445f307c07b67117fcdf337692afe8080bda5",
+      "contentType": "text/csv",
+      "responseUrl": "https://data.weather.gov.hk/weatherAPI/hko_data/regional-weather/latest_10min_wind.csv",
+      "signatureHex": "446174652074696d652c4175746f6d61",
+      "parserState": "success",
+      "rawRows": 30
+    },
+    {
+      "resourceId": "b95de882b22a895d9adcdc1457526b30",
+      "datasetId": "hk-td-tis_10-monthly-traffic-and-transport-digest",
+      "format": "XLS",
+      "originalUrl": "https://www.td.gov.hk/datagovhk_td/mttd/resources/chart31.xls",
+      "host": "www.td.gov.hk",
+      "datedCode": "SOURCE_SCHEMA_CHANGED",
+      "datedMessage": "No table header",
+      "groupResources": 1,
+      "checkedAtUtc": "2026-11-06T13:11:02.296273+00:00",
+      "httpStatus": 200,
+      "bytes": 81408,
+      "sha256": "6432d6d68a8c310e6973e352cca880ac219c68e7a8568aa63fae239e8baaf81e",
+      "contentType": "application/vnd.ms-excel",
+      "responseUrl": "https://www.td.gov.hk/datagovhk_td/mttd/resources/chart31.xls",
+      "signatureHex": "d0cf11e0a1b11ae10000000000000000",
+      "parserState": "held",
+      "parserCode": "SOURCE_SCHEMA_CHANGED",
+      "reason": "SOURCE_SCHEMA_CHANGED: No table header",
+      "physicalWorksheets": [
+        {
+          "name": "\u5de5\u4f5c\u88681",
+          "rows": 0,
+          "columns": 0
+        }
+      ]
+    },
+    {
+      "resourceId": "ebd41f0e2c90aa957eb3d78e910d8b64",
+      "datasetId": "hk-td-tis_10-monthly-traffic-and-transport-digest",
+      "format": "XLS",
+      "originalUrl": "https://www.td.gov.hk/datagovhk_td/mttd/resources/chart23_26.xls",
+      "host": "www.td.gov.hk",
+      "datedCode": "SOURCE_SCHEMA_CHANGED",
+      "datedMessage": "No table header",
+      "groupResources": 1,
+      "checkedAtUtc": "2026-11-06T13:11:05.601451+00:00",
+      "httpStatus": 200,
+      "bytes": 4093440,
+      "sha256": "ab38304b708a57442f920716866da5a12d70d48384fad0c1cd8b174e9a174c98",
+      "contentType": "application/vnd.ms-excel",
+      "responseUrl": "https://www.td.gov.hk/datagovhk_td/mttd/resources/chart23_26.xls",
+      "signatureHex": "d0cf11e0a1b11ae10000000000000000",
+      "parserState": "held",
+      "parserCode": "SOURCE_SCHEMA_CHANGED",
+      "reason": "SOURCE_SCHEMA_CHANGED: No table header",
+      "physicalWorksheets": [
+        {
+          "name": "\u5de5\u4f5c\u88681",
+          "rows": 0,
+          "columns": 0
+        }
+      ]
+    },
+    {
+      "resourceId": "f0c37fbb2e681cbb78cc4da82163c35c",
+      "datasetId": "hk-td-tis_10-monthly-traffic-and-transport-digest",
+      "format": "XLS",
+      "originalUrl": "https://www.td.gov.hk/datagovhk_td/mttd/resources/chart41.xls",
+      "host": "www.td.gov.hk",
+      "datedCode": "SOURCE_SCHEMA_CHANGED",
+      "datedMessage": "No table header",
+      "groupResources": 1,
+      "checkedAtUtc": "2026-11-06T13:11:09.076448+00:00",
+      "httpStatus": 200,
+      "bytes": 123904,
+      "sha256": "64e014ea95a95fc82f6d6a67b537874051235fdb01d7981fe9a6f8295491531b",
+      "contentType": "application/vnd.ms-excel",
+      "responseUrl": "https://www.td.gov.hk/datagovhk_td/mttd/resources/chart41.xls",
+      "signatureHex": "d0cf11e0a1b11ae10000000000000000",
+      "parserState": "held",
+      "parserCode": "SOURCE_SCHEMA_CHANGED",
+      "reason": "SOURCE_SCHEMA_CHANGED: No table header",
+      "physicalWorksheets": [
+        {
+          "name": "\u5de5\u4f5c\u88681",
+          "rows": 0,
+          "columns": 0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "scope": "One published pre-download map metadata request; explicit caller-selected timestamp and mode, not an inferred default or navigation product",
+  "url": "https://current.hydro.gov.hk/data/static_geojson.php?time=20261106000000&mode=A",
+  "selection": {
+    "time": "20261106000000",
+    "mode": "A"
+  },
+  "sourceAttempts": 1,
+  "statusWrites": 0,
+  "automaticRetry": false,
+  "atUtc": "2026-11-06T13:15:42.405219+00:00",
+  "httpStatus": 200,
+  "bytes": 209751,
+  "sha256": "9e8648180811982a1d40205f34dd48cc13ba591462748221ea877f2d00ba4b9b",
+  "contentType": "application/json",
+  "rootType": "dict",
+  "rootKeys": [
+    "type",
+    "features"
+  ],
+  "rawFeatures": 1158,
+  "firstPropertyNames": [
+    "point_id",
+    "time",
+    "mode",
+    "knot",
+    "deg"
+  ]
+}

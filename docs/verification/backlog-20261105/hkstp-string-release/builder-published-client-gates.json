@@ -1,0 +1,18 @@
+{
+  "scope": "Offline inspection of previously captured published client text; no new availability or authentication conclusion",
+  "checksumRoute": {
+    "method": "GET",
+    "path": "/mvc/DBCheckSum/GetDBCheckSum",
+    "usesServerReturnedVersion": true
+  },
+  "dictionaryPath": "/idds/{actual_server_checksum}/idds_{published_dictionary_name}.csv",
+  "conditionalCaptchaClientPresent": true,
+  "captchaValidationPath": "/mvc/captcha/shx",
+  "causeOfChecksumRedirectLimit": "not established",
+  "sessionsCreated": 0,
+  "captchaRoutesInvoked": 0,
+  "queriesSubmitted": 0,
+  "providerRequests": 0,
+  "noGuessedVersionOrDictionaryIds": true,
+  "remainingWork": "Ordinary published-client protocol investigation; retain exact redirect hold and do not bypass a challenge or denial"
+}

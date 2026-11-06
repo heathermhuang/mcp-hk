@@ -1,0 +1,50 @@
+{
+  "scope": "Three exact first-party scripts published by previously saved HTML interfaces; text retrieval only, no execution, agreement, session or data query",
+  "results": [
+    {
+      "resourceId": "bd-disclaimer-client",
+      "originalUrl": "https://www.bd.gov.hk/js/search/disclaimer.js",
+      "host": "www.bd.gov.hk",
+      "format": "CLIENT_JS",
+      "groupResources": 1,
+      "checkedAtUtc": "2026-11-06T13:10:42.360885+00:00",
+      "httpStatus": 200,
+      "bytes": 1303,
+      "sha256": "abf8706db47012847941a5dc56ac79a4a1099346411c004c12f4c89d4cda8d04",
+      "contentType": "application/javascript",
+      "responseUrl": "https://www.bd.gov.hk/js/search/disclaimer.js",
+      "signatureHex": "766172205f7064663d20676574506172",
+      "parserState": "text_saved_without_execution"
+    },
+    {
+      "resourceId": "hydro-download-client",
+      "originalUrl": "https://current.hydro.gov.hk/_js/data_download.js",
+      "host": "current.hydro.gov.hk",
+      "format": "CLIENT_JS",
+      "groupResources": 1,
+      "checkedAtUtc": "2026-11-06T13:10:45.646944+00:00",
+      "httpStatus": 200,
+      "bytes": 17400,
+      "sha256": "1d739007f0926644f2f16a383edab2e43ea78ee7d732f4846287dd5aa15e0bd3",
+      "contentType": "text/javascript",
+      "responseUrl": "https://current.hydro.gov.hk/_js/data_download.js",
+      "signatureHex": "2f2a2a2a2a2a204461746554696d6550",
+      "parserState": "text_saved_without_execution"
+    },
+    {
+      "resourceId": "nd-statistics-client",
+      "originalUrl": "https://www.nd.gov.hk/assets/js/statistics-table.js",
+      "host": "www.nd.gov.hk",
+      "format": "CLIENT_JS",
+      "groupResources": 1,
+      "checkedAtUtc": "2026-11-06T13:10:48.962710+00:00",
+      "httpStatus": 200,
+      "bytes": 102464,
+      "sha256": "ec006389f5c3c59ee25a6441befcd1343ae0a9981ecc86f87af9df518265ca22",
+      "contentType": "application/javascript",
+      "responseUrl": "https://www.nd.gov.hk/assets/js/statistics-table.js",
+      "signatureHex": "2f2a21206a51756572792056616c6964",
+      "parserState": "text_saved_without_execution"
+    }
+  ]
+}
