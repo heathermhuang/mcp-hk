@@ -178,3 +178,11 @@ activation. `hydro-reuse-hold/` records the evidence and fail-closed policy. The
 other frozen source graphs and supported tasks remain open.
 
 PR #173 is deployed with actual hosted/restored hold behavior in `source-reuse-guard-release/`. Hydro reuse remains pending owner clarification; no public records were activated. Wider frozen graphs, the report lane's exact internal failure and independently supported task/semantic work remain open.
+
+Qualification receipts now retain a bounded allowlist of response correlation
+headers (Cloudflare ray, request/release IDs, retry delay and content type).
+Authorization, cookies and redirect locations are excluded. Existing receipts,
+including failures, remain immutable and are reused. A gateway recovery label
+can cover transport or non-JSON backend failures; it does not prove a restart or
+restore. Correlation metadata supports investigation without changing source
+requests, identity, quotas, retry policy or acceptance criteria.

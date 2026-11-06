@@ -16,6 +16,31 @@ import urllib.request
 
 from mcp_open_data_hk.census_reports import location
 
+RESPONSE_CONTEXT_HEADERS = (
+    "cf-ray",
+    "x-request-id",
+    "x-mcp-release",
+    "retry-after",
+    "content-type",
+)
+
+
+def response_context(response):
+    """Retain bounded gateway correlation fields, never credentials or locations."""
+    headers = getattr(response, "headers", None)
+    if headers is None:
+        return {}
+    result = {}
+    for name in RESPONSE_CONTEXT_HEADERS:
+        value = headers.get(name)
+        if (
+            isinstance(value, str)
+            and len(value) <= 256
+            and not any(c in value for c in "\r\n")
+        ):
+            result[name] = value
+    return result
+
 
 def candidates(manifest):
     """Prioritize uncovered selection cohorts without dropping other candidates."""
@@ -118,7 +143,7 @@ def main(args):
                     },
                 )
                 used += 1
-                status, body = None, b""
+                status, body, context = None, b"", {}
                 try:
                     try:
                         response = urllib.request.urlopen(request, timeout=135)
@@ -126,6 +151,7 @@ def main(args):
                         response = exc
                     with response:
                         status = response.code
+                        context = response_context(response)
                         body = response.read(3_000_001)
                     if len(body) > 3_000_000:
                         raise ValueError("Qualification response exceeds receipt bound")
@@ -145,6 +171,7 @@ def main(args):
                     "httpStatus": status,
                     "seconds": round(time.monotonic() - started, 4),
                     "response": value,
+                    "responseHeaders": context,
                 }
                 target.write_bytes(
                     gzip.compress(

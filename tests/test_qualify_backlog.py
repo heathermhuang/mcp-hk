@@ -6,6 +6,7 @@ import gzip
 import importlib.util
 import io
 import json
+from email.message import Message
 from pathlib import Path
 
 
@@ -199,3 +200,94 @@ def test_query_leaf_proof_avoids_duplicate_materialization_and_replays_failures(
     args.query_options = False
     module.main(args)
     assert calls == [], "Legacy mode must reuse both query proof and a known denial"
+
+
+def test_failure_context_retains_safe_headers_and_never_replays_the_failure(
+    tmp_path, monkeypatch
+):
+    spec = importlib.util.spec_from_file_location(
+        "qualify_context", Path(__file__).parents[1] / "scripts" / "qualify_backlog.py"
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    manifest = tmp_path / "manifest.json.gz"
+    manifest.write_bytes(
+        gzip.compress(
+            json.dumps(
+                {
+                    "familyCandidates": [
+                        {
+                            "resourceId": "r",
+                            "datasetId": "d",
+                            "family": "workbook",
+                            "lastStatus": "needs_selection",
+                            "acceptedSameDatasetAlternatives": [],
+                        }
+                    ]
+                }
+            ).encode()
+        )
+    )
+    calls = []
+
+    def request(req, timeout):
+        calls.append(req.full_url)
+        response = io.BytesIO(
+            json.dumps({"error": {"code": "SERVICE_RECOVERING"}}).encode()
+        )
+        response.code = 503
+        response.headers = Message()
+        for name, value in {
+            "CF-Ray": "synthetic-ray-SIN",
+            "X-Request-ID": "synthetic-request",
+            "X-Mcp-Release": "a" * 40,
+            "Retry-After": "10",
+            "Content-Type": "application/json",
+            "Set-Cookie": "private-cookie",
+            "Authorization": "Bearer private-auth",
+            "Location": "https://private.invalid/?token=private-location",
+        }.items():
+            response.headers[name] = value
+        return response
+
+    monkeypatch.setattr(module.urllib.request, "urlopen", request)
+    monkeypatch.setattr(module.time, "sleep", lambda _: None)
+    args = argparse.Namespace(
+        manifest=manifest,
+        receipts=tmp_path / "receipts",
+        family=None,
+        read_options=True,
+        query_options=True,
+        requests=1,
+    )
+    module.main(args)
+    path = args.receipts / "r-options.json.gz"
+    data = json.load(gzip.open(path, "rt"))
+    assert (
+        data["httpStatus"] == 503
+        and data["response"]["error"]["code"] == "SERVICE_RECOVERING"
+    )
+    assert data["responseHeaders"] == {
+        "cf-ray": "synthetic-ray-SIN",
+        "x-request-id": "synthetic-request",
+        "x-mcp-release": "a" * 40,
+        "retry-after": "10",
+        "content-type": "application/json",
+    }
+    assert "private-" not in json.dumps(data)
+    before = path.read_bytes()
+    module.main(args)
+    assert len(calls) == 1 and path.read_bytes() == before
+
+
+def test_response_context_omits_unbounded_and_control_character_values():
+    spec = importlib.util.spec_from_file_location(
+        "qualify_context_limits",
+        Path(__file__).parents[1] / "scripts" / "qualify_backlog.py",
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    response = argparse.Namespace(
+        headers={"cf-ray": "x" * 257, "x-request-id": "a\r\nb"}
+    )
+    assert module.response_context(response) == {}
