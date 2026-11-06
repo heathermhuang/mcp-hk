@@ -37,6 +37,12 @@ def service(tmp_path):
                 ("notifications", "JSON", NOTIFICATIONS),
                 ("unknown", "XLSX", FSD + "?download=1"),
                 ("archsd", "JSON", "https://www.archsd.gov.hk/tc/psi/tender.json"),
+                ("tid", "XML", "https://www.tid.gov.hk/service/utf/messageFromUsEn.do"),
+                (
+                    "tid-other",
+                    "XML",
+                    "https://www.tid.gov.hk/service/utf/messageFromUsEn.do?other=1",
+                ),
             ]
         ],
         {},
@@ -109,6 +115,7 @@ async def test_flat_csv_has_no_workbook_or_record_path_selectors(service, monkey
         ("notifications", b'NotiList({"notifications":[{"id":1,"id":2}]});'),
         ("notifications", b'NotiList({"message":"Source unavailable"});'),
         ("fsd", b"<html><body>Missing source</body></html>"),
+        ("tid-other", b'\n<?xml version="1.0"?><DATA><value>01</value></DATA>'),
     ],
 )
 @pytest.mark.asyncio
@@ -165,3 +172,42 @@ async def test_explicit_empty_notification_array_remains_distinct_from_errors(
     monkeypatch.setattr("mcp_open_data_hk.resources.fetch", fetch)
     result = await service.resources.query("notifications")
     assert result["meta"]["total"] == 0 and result["data"]["items"] == []
+
+
+@pytest.mark.asyncio
+async def test_tid_xml_prefix_preserves_original_hash_and_values(service, monkeypatch):
+    body = b'\r\n  \r\n<?xml version="1.0" encoding="UTF-8"?><DATA><ITEM><id>01</id><text>Original</text></ITEM></DATA>'
+
+    async def fetch(url, *a, **kw):
+        return body, {}, url, 200
+
+    monkeypatch.setattr("mcp_open_data_hk.resources.fetch", fetch)
+    result = await service.resources.query("tid")
+    assert (
+        result["schema"]["observedSerialization"]
+        == "xml_declaration_after_whitespace_prefix"
+    )
+    assert result["meta"]["version"] == hashlib.sha256(body).hexdigest()
+    assert result["schema"]["sourceContentHash"] == result["meta"]["version"]
+    assert "01" in str(result["data"]["items"])
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        b'\n<?xml version="1.0"?><DATA><ahref="https://example.invalid">bad</ahref></DATA>',
+        b'\n<?xml version="1.0"?><!DOCTYPE DATA [<!ENTITY e "expanded">]><DATA>&e;</DATA>',
+        b"<html>Unrelated source page</html>",
+    ],
+)
+@pytest.mark.asyncio
+async def test_xml_prefix_handling_does_not_repair_markup_or_enable_entities(
+    service, monkeypatch, body
+):
+    async def fetch(url, *a, **kw):
+        return body, {}, url, 200
+
+    monkeypatch.setattr("mcp_open_data_hk.resources.fetch", fetch)
+    with pytest.raises(DomainError):
+        await service.resources.query("tid")
+    assert service.resources.catalogue.check("tid")["status"] != "queryable"
