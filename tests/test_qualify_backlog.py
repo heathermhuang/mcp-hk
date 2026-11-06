@@ -72,7 +72,11 @@ def test_queries_precede_variant_eviction_and_saved_receipts_are_reused(
         else:
             if args["sheet"] not in cache:
                 cache_misses.append(args["sheet"])
-            value = {"data": {"items": [{"raw": args["sheet"]}]}, "meta": {"total": 1}}
+            value = {
+                "data": {"items": [{"raw": args["sheet"]}]},
+                "meta": {"total": 1},
+                "schema": {"sourceResponseComplete": True},
+            }
         response = io.BytesIO(json.dumps(value).encode())
         response.code = 200
         return response
@@ -96,3 +100,102 @@ def test_queries_precede_variant_eviction_and_saved_receipts_are_reused(
     args.requests = 1
     module.main(args)
     assert not requests
+
+
+def test_query_leaf_proof_avoids_duplicate_materialization_and_replays_failures(
+    tmp_path, monkeypatch
+):
+    spec = importlib.util.spec_from_file_location(
+        "qualify", Path(__file__).parents[1] / "scripts" / "qualify_backlog.py"
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    manifest = tmp_path / "manifest.json.gz"
+    manifest.write_bytes(
+        gzip.compress(
+            json.dumps(
+                {
+                    "familyCandidates": [
+                        {
+                            "resourceId": "large-map",
+                            "datasetId": "d",
+                            "family": "arcgis",
+                            "sourceUrl": "https://example.gov.hk/FeatureServer",
+                            "lastStatus": "needs_selection",
+                            "acceptedSameDatasetAlternatives": [],
+                        }
+                    ]
+                }
+            ).encode()
+        )
+    )
+    calls = []
+    materializations = []
+
+    def request(req, timeout):
+        q = json.loads(req.data)
+        op = req.full_url.rsplit("/", 1)[1]
+        calls.append((op, q))
+        if "layer" not in q:
+            value = {
+                "selections": [
+                    {
+                        "argument": "layer",
+                        "options": [
+                            {
+                                "value": i,
+                                "nextAction": {
+                                    "arguments": {"resourceId": "large-map", "layer": i}
+                                },
+                            }
+                            for i in [0, 1]
+                        ],
+                    }
+                ]
+            }
+            status = 200
+        else:
+            materializations.append(q["layer"])
+            assert (
+                op == "query"
+            ), "An uncached selected schema would download the full layer again"
+            if q["layer"] == 1:
+                value = {"error": {"code": "ACCESS_RESTRICTED"}}
+                status = 502
+            else:
+                value = {
+                    "schema": {"sourceResponseComplete": True, "sourceMatched": 73058},
+                    "meta": {"total": 73058},
+                    "data": {"items": [{"nativeId": "0001"}]},
+                }
+                status = 200
+        response = io.BytesIO(json.dumps(value).encode())
+        response.code = status
+        return response
+
+    monkeypatch.setattr(module.urllib.request, "urlopen", request)
+    monkeypatch.setattr(module.time, "sleep", lambda _: None)
+    args = argparse.Namespace(
+        manifest=manifest,
+        receipts=tmp_path / "receipts",
+        family=None,
+        read_options=True,
+        requests=10,
+        query_options=True,
+    )
+    module.main(args)
+    assert len(calls) == 3 and materializations == [0, 1]
+    assert not list(args.receipts.glob("*-schema.json.gz"))
+    queries = [
+        json.load(gzip.open(p, "rt")) for p in args.receipts.glob("*-query.json.gz")
+    ]
+    accepted = next(r for r in queries if r["httpStatus"] == 200)
+    assert (
+        accepted["operation"] == "query"
+        and accepted["response"]["schema"]["sourceMatched"] == 73058
+    )
+    assert accepted["response"]["data"]["items"][0]["nativeId"] == "0001"
+    calls.clear()
+    args.query_options = False
+    module.main(args)
+    assert calls == [], "Legacy mode must reuse both query proof and a known denial"

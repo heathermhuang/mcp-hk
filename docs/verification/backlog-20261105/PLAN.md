@@ -122,3 +122,14 @@ candidates received one terminal check and hit the existing 8 MB decoded-respons
 ceiling. This establishes neither original-workbook equivalence nor newly current
 upstream availability. The separate issue-scoped `wbr.html` report graph and other
 unvisited/unknown selections remain open. See `census-task-audit.md`.
+
+Operator `scripts/qualify_backlog.py --read-options --query-options` can qualify a
+published leaf choice with the query endpoint's schema/count/data response. Root
+metadata and non-leaf report tables still use schema discovery. This avoids a
+second complete download for large selections that cannot fit the 4 MB row cache;
+it does not increase that cache or any source budget. The receipt remains an actual
+`operation=query` response, not an invented schema HTTP request. Existing selected
+schema receipts retain their normal flow, and existing query receipts—including
+failures—are reused across modes without retrying a known failure through another
+endpoint. Query proof requires the complete-source schema, integer total and the
+expected bounded data item count.
