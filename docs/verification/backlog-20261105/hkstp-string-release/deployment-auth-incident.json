@@ -1,0 +1,18 @@
+{
+  "phase": "container_update_after_worker_upload",
+  "commandExitCode": 1,
+  "error": "Unauthorized 401",
+  "workerUploadVersion": "33efcbcc-1ab5-4489-919d-79ae7d8256f5",
+  "finalDeploymentVersionPrinted": false,
+  "observedContainerVersion": 83,
+  "observedContainerImage": "registry.cloudflare.com/63a7fe52c985c63bb9e69ce47efdc569/mcp-hk-mcpcontainer@sha256:88a5d5ebe4e363a365abdc84e9fcfb1c496919fc91276366f719e4e23f4fd9ab",
+  "existingOAuthGrantRefreshedDuringFailedInvocation": true,
+  "freshProcessApplicationReadSucceeded": true,
+  "newCredentialsOrScopes": false,
+  "cause": "Authentication state changed during invocation; precise container-client cause unconfirmed",
+  "retryPolicy": "One exact pinned deployment after fresh native/ownership/checkpoint guards; no alternate identity or permission changes",
+  "guardedSameGrantRetryExitCode": 0,
+  "retryWorkerVersion": "7dd2f44b-611b-4f73-9b9f-a1efe1a35faa",
+  "containerUpdateSucceeded": true,
+  "leasesClearedManually": false
+}

@@ -1,0 +1,123 @@
+{
+  "scope": "Offline exact ID and URL reconciliation; reuse existing terminal capacity receipts, no new source availability claim",
+  "resources": [
+    {
+      "resourceId": "e24b6b473e39dbdf7ec8252202b07557",
+      "sourceUrl": "https://www.censtatd.gov.hk/tc/web_table.html?id=940-92031&full_series=1&download_excel=1",
+      "reusedCheckedAt": 1793910173.922508,
+      "retainedCode": "SOURCE_TOO_LARGE"
+    },
+    {
+      "resourceId": "e31d5cca2ec99fdb3fe0a40209837bbe",
+      "sourceUrl": "https://www.censtatd.gov.hk/en/web_table.html?id=210-06201&full_series=1&download_excel=1",
+      "reusedCheckedAt": 1793910177.3952289,
+      "retainedCode": "SOURCE_TOO_LARGE"
+    },
+    {
+      "resourceId": "e41becdbd54cb6c7ad509fccb2cbeafe",
+      "sourceUrl": "https://www.censtatd.gov.hk/en/web_table.html?id=210-06508&full_series=1&download_excel=1",
+      "reusedCheckedAt": 1793910180.585311,
+      "retainedCode": "SOURCE_TOO_LARGE"
+    },
+    {
+      "resourceId": "e46838c491316f3f4cee96c089d97e08",
+      "sourceUrl": "https://www.censtatd.gov.hk/tc/web_table.html?id=130-06605&full_series=1&download_excel=1",
+      "reusedCheckedAt": 1793910185.208083,
+      "retainedCode": "SOURCE_TOO_LARGE"
+    },
+    {
+      "resourceId": "e496605dc283ac9e035e30a5d38ac02e",
+      "sourceUrl": "https://www.censtatd.gov.hk/en/web_table.html?id=510-60001A&full_series=1&download_excel=1",
+      "reusedCheckedAt": 1793910190.092949,
+      "retainedCode": "SOURCE_TOO_LARGE"
+    },
+    {
+      "resourceId": "e57df73a0870437c42343dfa2a3f52a3",
+      "sourceUrl": "https://www.censtatd.gov.hk/tc/web_table.html?id=420-57002&full_series=1&download_excel=1",
+      "reusedCheckedAt": 1793910193.295209,
+      "retainedCode": "SOURCE_TOO_LARGE"
+    },
+    {
+      "resourceId": "e731800141d3420385090cba6b70e832",
+      "sourceUrl": "https://www.censtatd.gov.hk/en/web_table.html?id=130-06605&full_series=1&download_excel=1",
+      "reusedCheckedAt": 1793910198.0418549,
+      "retainedCode": "SOURCE_TOO_LARGE"
+    },
+    {
+      "resourceId": "e9214f0875b45b9af53103696e09daec",
+      "sourceUrl": "https://www.censtatd.gov.hk/tc/web_table.html?id=510-60003&full_series=1&download_excel=1",
+      "reusedCheckedAt": 1793910200.7905521,
+      "retainedCode": "SOURCE_TOO_LARGE"
+    },
+    {
+      "resourceId": "ea01fabbc61d412ee6eb642ff50ab0e3",
+      "sourceUrl": "https://www.censtatd.gov.hk/tc/web_table.html?id=210-06305&full_series=1&download_excel=1",
+      "reusedCheckedAt": 1793910205.505313,
+      "retainedCode": "SOURCE_TOO_LARGE"
+    },
+    {
+      "resourceId": "eecf0f3e480485042c6a640735e63fe9",
+      "sourceUrl": "https://www.censtatd.gov.hk/en/web_table.html?id=130-06607&full_series=1&download_excel=1",
+      "reusedCheckedAt": 1793910208.605584,
+      "retainedCode": "SOURCE_TOO_LARGE"
+    },
+    {
+      "resourceId": "f0fe491ecefb11639f6587ae374a5c01",
+      "sourceUrl": "https://www.censtatd.gov.hk/tc/web_table.html?id=115-01021&full_series=1&download_excel=1",
+      "reusedCheckedAt": 1793910212.518473,
+      "retainedCode": "SOURCE_TOO_LARGE"
+    },
+    {
+      "resourceId": "f17da1ba8ebd3690c26621398c242746",
+      "sourceUrl": "https://www.censtatd.gov.hk/en/web_table.html?id=215-16010&full_series=1&download_excel=1",
+      "reusedCheckedAt": 1793910219.557655,
+      "retainedCode": "SOURCE_TOO_LARGE"
+    },
+    {
+      "resourceId": "f42e59b44f0991e0256798d0c3a00686",
+      "sourceUrl": "https://www.censtatd.gov.hk/tc/web_table.html?id=210-06303&full_series=1&download_excel=1",
+      "reusedCheckedAt": 1793910222.275809,
+      "retainedCode": "SOURCE_TOO_LARGE"
+    },
+    {
+      "resourceId": "f7dff2abeaa600e29e7fbbb6272e60ac",
+      "sourceUrl": "https://www.censtatd.gov.hk/tc/web_table.html?id=210-06305A&full_series=1&download_excel=1",
+      "reusedCheckedAt": 1793910226.399295,
+      "retainedCode": "SOURCE_TOO_LARGE"
+    },
+    {
+      "resourceId": "f95ab152e847c4e1f1acc90814a3265c",
+      "sourceUrl": "https://www.censtatd.gov.hk/en/web_table.html?id=210-06401&full_series=1&download_excel=1",
+      "reusedCheckedAt": 1793910230.0068,
+      "retainedCode": "SOURCE_TOO_LARGE"
+    },
+    {
+      "resourceId": "fa8d0439d4cf1ace2d1e4ee7c1922698",
+      "sourceUrl": "https://www.censtatd.gov.hk/en/web_table.html?id=210-06309&full_series=1&download_excel=1",
+      "reusedCheckedAt": 1793910234.054634,
+      "retainedCode": "SOURCE_TOO_LARGE"
+    },
+    {
+      "resourceId": "fbbde36101a68efe214e9a1254f7c9f6",
+      "sourceUrl": "https://www.censtatd.gov.hk/tc/web_table.html?id=210-06409&full_series=1&download_excel=1",
+      "reusedCheckedAt": 1793910236.402648,
+      "retainedCode": "SOURCE_TOO_LARGE"
+    },
+    {
+      "resourceId": "fcdccf88f15195949281ec4c9c7e1fe5",
+      "sourceUrl": "https://www.censtatd.gov.hk/tc/web_table.html?id=210-06203&full_series=1&download_excel=1",
+      "reusedCheckedAt": 1793910240.320506,
+      "retainedCode": "SOURCE_TOO_LARGE"
+    },
+    {
+      "resourceId": "ff257496050cf7dd11882be85ebfbf7a",
+      "sourceUrl": "https://www.censtatd.gov.hk/sc/web_table.html?id=215-16010&full_series=1&download_excel=1",
+      "reusedCheckedAt": 1793910246.35989,
+      "retainedCode": "SOURCE_TOO_LARGE"
+    }
+  ],
+  "allAlreadyIn147DecodedResponseHolds": true,
+  "providerRequests": 0,
+  "statusWrites": 0,
+  "decodedByteLimitUnchanged": 8000000
+}

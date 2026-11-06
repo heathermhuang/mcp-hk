@@ -1,0 +1,9 @@
+{
+  "sourceCommit": "ce9d6f6250832cc0d6bf6454575a8d58878645ff",
+  "imageDigest": "sha256:3f6fec4e07560bfd2735e9b946dd8bfd9a3edbc82cfa132a262a90d94ab1b31e",
+  "localImageId": "sha256:87c17d84e00f8b24bc98f13115092ee43b1ca20442be8177a59d4c0830261508",
+  "pushedWith": "wrangler4.158 existing OAuth grant",
+  "newCredentials": false,
+  "dependencyChanges": false,
+  "offlineSmokePassed": true
+}

@@ -1,0 +1,23 @@
+{
+  "scope": "One exact public read-only statistical form query using published controls; no automatic production acceptance",
+  "sourcePage": "https://www.nd.gov.hk/en/introduction.html",
+  "method": "POST",
+  "url": "https://www.nd.gov.hk/en/enquiry_result.php",
+  "fields": {
+    "frmAct": "Submit",
+    "period": "2022-2025",
+    "period_earlier": "",
+    "abuser": "00000",
+    "sex": "00999",
+    "age": "00999",
+    "age_group": "",
+    "analysis_var": "CT000315"
+  },
+  "checkedAtUtc": "2026-11-06T13:15:44.663937+00:00",
+  "sourceAttempts": 1,
+  "statusWrites": 0,
+  "automaticRetry": false,
+  "held": true,
+  "code": "SOURCE_UNAVAILABLE",
+  "reason": "SOURCE_UNAVAILABLE: Source download failed"
+}

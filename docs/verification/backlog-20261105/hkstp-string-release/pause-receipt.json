@@ -1,0 +1,8 @@
+{
+  "resourceCronOnlyPaused": true,
+  "nativeFourSchedulesReadAt": "2026-11-06T13:08:56.140744+00:00",
+  "propagationSeconds": 900,
+  "propagationNotBeforeUtc": "2026-11-06T13:23:56.140744+00:00",
+  "propagationNotBeforeEpoch": 1793971436.140744,
+  "owningLeasesWillNotBeCleared": true
+}

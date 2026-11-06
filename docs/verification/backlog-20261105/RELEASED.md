@@ -1,5 +1,9 @@
 # Remaining-backlog implementation releases — 6 November 2026
 
+PR #168 is deployed at `ce9d6f6250832cc0d6bf6454575a8d58878645ff` with actual HTTP/native MCP and fresh isolated zero-provider recovery of 501 raw recruitment records. Vacancy activity, identity and eligibility remain unreviewed. See [HKSTP release](hkstp-string-release/README.md). The full programme remains open.
+
+## Earlier recycling release
+
 PR #167 is deployed at `ab3662d97ee6e9acbde216a75c519284c125eba9` with exact-main CI,
 actual adoption, hosted HTTP/native MCP and fresh isolated recovery of 9,735
 raw recycling rows. Coordinates/identity/current service remain unreviewed. See
