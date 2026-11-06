@@ -3,7 +3,7 @@
 import math
 
 from .contracts import DomainError
-from . import geodetic_requests, hydro_requests
+from . import geodetic_requests, hydro_requests, notification_detail
 
 SPEC_PREFIX = "https://portal.csdi.gov.hk/csdi-webpage/apidoc/"
 LOCATION_SEARCH_SPEC = (
@@ -15,6 +15,7 @@ NEARBY_SPEC = SPEC_PREFIX + "SearchNearbyAPI"
 NUMBER_SEARCH_SPEC = SPEC_PREFIX + "LPPUNSearchAPI"
 LOT_INDEX_SPEC = SPEC_PREFIX + "LotIndexAPI"
 REQUESTS = {
+    notification_detail.URL: notification_detail.URL,
     **{page: hydro_requests.TEMPLATE for page in hydro_requests.PAGES},
     **{
         spec: geodetic_requests.SPEC + "/?inSys={inSys}"
@@ -82,6 +83,8 @@ def request_requirements(url):
         "sourceSpecificationUrl": spec,
         "scope": "explicit_parameter_response_not_full_inventory",
     }
+    if spec == notification_detail.URL:
+        result.update(notification_detail.requirements())
     if spec in hydro_requests.PAGES:
         result.update(
             interface="published_map_prediction_snapshot_not_period_csv",
@@ -138,6 +141,8 @@ def validate_parameters(url, parameters):
 
 
 def annotate_response(url, schema, parameters=None):
+    if url == notification_detail.URL:
+        notification_detail.annotate(schema, parameters)
     if url.rstrip("/") in geodetic_requests.SPECS:
         geodetic_requests.validate_response(schema)
     if request_template(url) != url:
