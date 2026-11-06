@@ -1,0 +1,1306 @@
+{
+  "scope": "Actual hosted original-resource/published-file selections, raw parsed rows only; no statistical grain or representation/language equivalence",
+  "parents": [
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "choices": 14,
+      "metadataHttpMcpParity": true,
+      "sourceInterface": {
+        "kind": "published_file_index",
+        "sourcePageSha256": "9722fa797a1b82f8c81b431d02c48a7fa6c7b3b5788462b94768c39485803161",
+        "advertisedCatalogueFormat": "XML",
+        "originalRepresentationEquivalence": "unreviewed"
+      }
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "choices": 14,
+      "metadataHttpMcpParity": true,
+      "sourceInterface": {
+        "kind": "published_file_index",
+        "sourcePageSha256": "2915d88700fd6bb448ac7f1ef9ad36c73146ac4e0f28926ea2cf57e2dfd5a5fd",
+        "advertisedCatalogueFormat": "XML",
+        "originalRepresentationEquivalence": "unreviewed"
+      }
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "choices": 14,
+      "metadataHttpMcpParity": true,
+      "sourceInterface": {
+        "kind": "published_file_index",
+        "sourcePageSha256": "3657e5d45353c2fcbb5d6a2f5c9e8b87b866a8500fd252cfc8b6206fa05650ac",
+        "advertisedCatalogueFormat": "XML",
+        "originalRepresentationEquivalence": "unreviewed"
+      }
+    }
+  ],
+  "results": [
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "recordPath": "file:DCCA_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:36:04.472202+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 511,
+      "version": "aa6f862ceb4cb64ebdea3733c5e04888d1f078152629a33d24a7997b67002387",
+      "dataItemsSha256": "9db5ec0bc41dab5c7516fa370860fb7f14257785b28119a7b3177a2963ec441e",
+      "publishedFile": {
+        "selection": "file:DCCA_21C.xlsx",
+        "sourcePageUrl": "https://www.census2021.gov.hk/tc/district_profiles.html",
+        "sourcePageSha256": "9722fa797a1b82f8c81b431d02c48a7fa6c7b3b5788462b94768c39485803161",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/DCCA_21C.xlsx"
+      },
+      "schemaFormat": "XLSX",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "recordPath": "file:DCCA_21C.zip"
+      },
+      "checkedAtUtc": "2026-11-06T11:36:11.139633+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 511,
+      "version": "f158fec879e77e18aaa4bbd5bf880883380ad7150e7bc5c67686fe50d723800e",
+      "dataItemsSha256": "9e9ac601049d7bc7b927aca4fe914e098682dab5796ae40f2e66a2e5ec897b39",
+      "publishedFile": {
+        "selection": "file:DCCA_21C.zip",
+        "sourcePageUrl": "https://www.census2021.gov.hk/tc/district_profiles.html",
+        "sourcePageSha256": "9722fa797a1b82f8c81b431d02c48a7fa6c7b3b5788462b94768c39485803161",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/DCCA_21C.zip"
+      },
+      "schemaFormat": "ZIP",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "recordPath": "file:DC_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:36:16.634555+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 75,
+      "version": "a1b1d4f13bc5ad178f37d65d078bbb72d51c16a4393ec6982505ccc5bc850028",
+      "dataItemsSha256": "8ee787cd6f7366f350c801f524a8424a91e8a97b51884a8c50739bd9d7265e40",
+      "publishedFile": {
+        "selection": "file:DC_21C.xlsx",
+        "sourcePageUrl": "https://www.census2021.gov.hk/tc/district_profiles.html",
+        "sourcePageSha256": "9722fa797a1b82f8c81b431d02c48a7fa6c7b3b5788462b94768c39485803161",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/DC_21C.xlsx"
+      },
+      "schemaFormat": "XLSX",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "recordPath": "file:DC_21C.zip"
+      },
+      "checkedAtUtc": "2026-11-06T11:36:21.943785+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 75,
+      "version": "9e075657e4933f5a05ecb2256cc04d94728fd650ef18f16ad14727da218c9600",
+      "dataItemsSha256": "0bc311d221775f247d6dc7166ebab85a05a8a73503d8843b6e9486f7792df08a",
+      "publishedFile": {
+        "selection": "file:DC_21C.zip",
+        "sourcePageUrl": "https://www.census2021.gov.hk/tc/district_profiles.html",
+        "sourcePageSha256": "9722fa797a1b82f8c81b431d02c48a7fa6c7b3b5788462b94768c39485803161",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/DC_21C.zip"
+      },
+      "schemaFormat": "ZIP",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:36:33.601179+00:00",
+      "httpStatus": 422,
+      "selectionRequired": "sheet",
+      "discoveredChildren": [
+        {
+          "sheet": "WholeTerritory",
+          "recordPath": "file:HMA_BG_21C.xlsx"
+        },
+        {
+          "sheet": "DCD",
+          "recordPath": "file:HMA_BG_21C.xlsx"
+        },
+        {
+          "sheet": "LSUG",
+          "recordPath": "file:HMA_BG_21C.xlsx"
+        },
+        {
+          "sheet": "HousingMarketArea",
+          "recordPath": "file:HMA_BG_21C.xlsx"
+        },
+        {
+          "sheet": "BuildingGroup",
+          "recordPath": "file:HMA_BG_21C.xlsx"
+        },
+        {
+          "sheet": "IP Rights Notice",
+          "recordPath": "file:HMA_BG_21C.xlsx"
+        }
+      ]
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "sheet": "WholeTerritory",
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:36:56.834003+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 47,
+      "version": "8425dfb53a84fe4cff7ff8a4ce55ff79b7bc2e795f5eaba2f42dae30c5585814",
+      "dataItemsSha256": "76ec586503be1f25693af38d7581d010900daf81eed6ca37423b4a27b6359cc6",
+      "publishedFile": {
+        "selection": "file:HMA_BG_21C.xlsx",
+        "sourcePageUrl": "https://www.census2021.gov.hk/tc/district_profiles.html",
+        "sourcePageSha256": "9722fa797a1b82f8c81b431d02c48a7fa6c7b3b5788462b94768c39485803161",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/HMA_BG_21C.xlsx"
+      },
+      "schemaFormat": "XLSX",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "sheet": "DCD",
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:37:08.829031+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 65,
+      "version": "8425dfb53a84fe4cff7ff8a4ce55ff79b7bc2e795f5eaba2f42dae30c5585814",
+      "dataItemsSha256": "35dd765c6b8428bf5bfa37becc49dca6eb74173a53802f6710d38607ef28c320",
+      "publishedFile": {
+        "selection": "file:HMA_BG_21C.xlsx",
+        "sourcePageUrl": "https://www.census2021.gov.hk/tc/district_profiles.html",
+        "sourcePageSha256": "9722fa797a1b82f8c81b431d02c48a7fa6c7b3b5788462b94768c39485803161",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/HMA_BG_21C.xlsx"
+      },
+      "schemaFormat": "XLSX",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "sheet": "LSUG",
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:37:30.766280+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 1795,
+      "version": "8425dfb53a84fe4cff7ff8a4ce55ff79b7bc2e795f5eaba2f42dae30c5585814",
+      "dataItemsSha256": "a60089536765d09388c3cd12b27d97fcf6bb8ebaa9f19200dc2068e140eb4866",
+      "publishedFile": {
+        "selection": "file:HMA_BG_21C.xlsx",
+        "sourcePageUrl": "https://www.census2021.gov.hk/tc/district_profiles.html",
+        "sourcePageSha256": "9722fa797a1b82f8c81b431d02c48a7fa6c7b3b5788462b94768c39485803161",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/HMA_BG_21C.xlsx"
+      },
+      "schemaFormat": "XLSX",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "sheet": "HousingMarketArea",
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:37:45.667081+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 222,
+      "version": "8425dfb53a84fe4cff7ff8a4ce55ff79b7bc2e795f5eaba2f42dae30c5585814",
+      "dataItemsSha256": "23fb9bd80467497bd39e7aae584092ca380ddd41d97aac4917b59828fe461164",
+      "publishedFile": {
+        "selection": "file:HMA_BG_21C.xlsx",
+        "sourcePageUrl": "https://www.census2021.gov.hk/tc/district_profiles.html",
+        "sourcePageSha256": "9722fa797a1b82f8c81b431d02c48a7fa6c7b3b5788462b94768c39485803161",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/HMA_BG_21C.xlsx"
+      },
+      "schemaFormat": "XLSX",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "sheet": "BuildingGroup",
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:38:14.236329+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 3373,
+      "version": "8425dfb53a84fe4cff7ff8a4ce55ff79b7bc2e795f5eaba2f42dae30c5585814",
+      "dataItemsSha256": "67b90b2b039fc66c7051355dc9b21b7bc0068cce9a00796386aa1cd7efbfe609",
+      "publishedFile": {
+        "selection": "file:HMA_BG_21C.xlsx",
+        "sourcePageUrl": "https://www.census2021.gov.hk/tc/district_profiles.html",
+        "sourcePageSha256": "9722fa797a1b82f8c81b431d02c48a7fa6c7b3b5788462b94768c39485803161",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/HMA_BG_21C.xlsx"
+      },
+      "schemaFormat": "XLSX",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "sheet": "IP Rights Notice",
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:38:26.005826+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 13,
+      "version": "8425dfb53a84fe4cff7ff8a4ce55ff79b7bc2e795f5eaba2f42dae30c5585814",
+      "dataItemsSha256": "3e6d020c0a10de535be285dcfe05d137439350f1dc8676df6b4ed9756e806459",
+      "publishedFile": {
+        "selection": "file:HMA_BG_21C.xlsx",
+        "sourcePageUrl": "https://www.census2021.gov.hk/tc/district_profiles.html",
+        "sourcePageSha256": "9722fa797a1b82f8c81b431d02c48a7fa6c7b3b5788462b94768c39485803161",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/HMA_BG_21C.xlsx"
+      },
+      "schemaFormat": "XLSX",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "recordPath": "file:HMA_BG_21C.zip"
+      },
+      "checkedAtUtc": "2026-11-06T11:38:38.967216+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 5515,
+      "version": "25ecf5e46d8b43d21e011b4c249b85f9f1cc834e71b3c31e9b7e4b594f5221c9",
+      "dataItemsSha256": "dabd37a58f49dad8df78f1157cb8d6012c6962e9dc1a937d4b49522f4415c5c6",
+      "publishedFile": {
+        "selection": "file:HMA_BG_21C.zip",
+        "sourcePageUrl": "https://www.census2021.gov.hk/tc/district_profiles.html",
+        "sourcePageSha256": "9722fa797a1b82f8c81b431d02c48a7fa6c7b3b5788462b94768c39485803161",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/HMA_BG_21C.zip"
+      },
+      "schemaFormat": "ZIP",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "recordPath": "file:LSUG_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:38:51.993906+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 1779,
+      "version": "a49a18cc131f093b0bb05b4afb6b3994e7e6d286d2b5b64b90a18771b91c407a",
+      "dataItemsSha256": "ec2426d7110d86031e9243e92994c2ec0130adc0a088ec163dbc2688009114d0",
+      "publishedFile": {
+        "selection": "file:LSUG_21C.xlsx",
+        "sourcePageUrl": "https://www.census2021.gov.hk/tc/district_profiles.html",
+        "sourcePageSha256": "9722fa797a1b82f8c81b431d02c48a7fa6c7b3b5788462b94768c39485803161",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/LSUG_21C.xlsx"
+      },
+      "schemaFormat": "XLSX",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "recordPath": "file:LSUG_21C.zip"
+      },
+      "checkedAtUtc": "2026-11-06T11:38:59.220198+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 1779,
+      "version": "8a35d811a1fcca6da287994a84e2b99080b0f734b6e142c9a96af142a58389f5",
+      "dataItemsSha256": "200477ac49aacfb946c4e4d6f2fe8783903bbc5afcff992c9ac41a3758feacac",
+      "publishedFile": {
+        "selection": "file:LSUG_21C.zip",
+        "sourcePageUrl": "https://www.census2021.gov.hk/tc/district_profiles.html",
+        "sourcePageSha256": "9722fa797a1b82f8c81b431d02c48a7fa6c7b3b5788462b94768c39485803161",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/LSUG_21C.zip"
+      },
+      "schemaFormat": "ZIP",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "recordPath": "file:LTPUG_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:39:06.251113+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 218,
+      "version": "fe94d59dbec3ac299a6ced30411c5f06e4f129757d4011eb6e0d9bf0f4d1af71",
+      "dataItemsSha256": "86cd41dcabb39fe1c73b4f2c24d743d19075335037834444db03b248b0c376c7",
+      "publishedFile": {
+        "selection": "file:LTPUG_21C.xlsx",
+        "sourcePageUrl": "https://www.census2021.gov.hk/tc/district_profiles.html",
+        "sourcePageSha256": "9722fa797a1b82f8c81b431d02c48a7fa6c7b3b5788462b94768c39485803161",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/LTPUG_21C.xlsx"
+      },
+      "schemaFormat": "XLSX",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "recordPath": "file:LTPUG_21C.zip"
+      },
+      "checkedAtUtc": "2026-11-06T11:39:11.929801+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 218,
+      "version": "71418b0325bcc0eba2a9f4605c9b03842ed03d6e165fb96bd97bc0efdc39cf67",
+      "dataItemsSha256": "ad25ce12117247b4aa8a42107bc4425d1de2808c1416945a956c23a55c97ab77",
+      "publishedFile": {
+        "selection": "file:LTPUG_21C.zip",
+        "sourcePageUrl": "https://www.census2021.gov.hk/tc/district_profiles.html",
+        "sourcePageSha256": "9722fa797a1b82f8c81b431d02c48a7fa6c7b3b5788462b94768c39485803161",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/LTPUG_21C.zip"
+      },
+      "schemaFormat": "ZIP",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "recordPath": "file:SSUG_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:39:17.889920+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 2353,
+      "version": "8a2a9c78cf2a7382183ea11770b4c8ab0e2428275560a993d8b81dc6263091b1",
+      "dataItemsSha256": "5c7bb3ec7adcb0aa0b8d88681f4f81afab1ca78319f5bfa959241fa0cb267b7a",
+      "publishedFile": {
+        "selection": "file:SSUG_21C.xlsx",
+        "sourcePageUrl": "https://www.census2021.gov.hk/tc/district_profiles.html",
+        "sourcePageSha256": "9722fa797a1b82f8c81b431d02c48a7fa6c7b3b5788462b94768c39485803161",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/SSUG_21C.xlsx"
+      },
+      "schemaFormat": "XLSX",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "recordPath": "file:SSUG_21C.zip"
+      },
+      "checkedAtUtc": "2026-11-06T11:39:22.798088+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 2353,
+      "version": "b2a2889c0d1e137b28e31138decfa7e4c8edc2018a516bf910e380632176447b",
+      "dataItemsSha256": "092e93416f331d913f160a66e6a1054dbb133d39bea5be81fc0fe9682cb7f91b",
+      "publishedFile": {
+        "selection": "file:SSUG_21C.zip",
+        "sourcePageUrl": "https://www.census2021.gov.hk/tc/district_profiles.html",
+        "sourcePageSha256": "9722fa797a1b82f8c81b431d02c48a7fa6c7b3b5788462b94768c39485803161",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/SSUG_21C.zip"
+      },
+      "schemaFormat": "ZIP",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "recordPath": "file:STPUG_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:39:29.843005+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 272,
+      "version": "7d7d36b18ff815105ef18ae9de7e79cadab05d3baafdff94c77721e08fc5f96c",
+      "dataItemsSha256": "96ee6fd36ba7627e3afc572b07fd34c0eb68844584b74b0ae7acd951e7c2da72",
+      "publishedFile": {
+        "selection": "file:STPUG_21C.xlsx",
+        "sourcePageUrl": "https://www.census2021.gov.hk/tc/district_profiles.html",
+        "sourcePageSha256": "9722fa797a1b82f8c81b431d02c48a7fa6c7b3b5788462b94768c39485803161",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/STPUG_21C.xlsx"
+      },
+      "schemaFormat": "XLSX",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "16fafd591ada9d66d2c7a015e9d40941",
+      "selection": {
+        "recordPath": "file:STPUG_21C.zip"
+      },
+      "checkedAtUtc": "2026-11-06T11:39:36.017562+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 272,
+      "version": "cafe526626538036d01ef5b8cf6a1d3049e2d9aac0cb996ce6eea4f505060752",
+      "dataItemsSha256": "ec5330afdb492ba296e17347a51846933bdda6667b9eb97b73581ce9015a8780",
+      "publishedFile": {
+        "selection": "file:STPUG_21C.zip",
+        "sourcePageUrl": "https://www.census2021.gov.hk/tc/district_profiles.html",
+        "sourcePageSha256": "9722fa797a1b82f8c81b431d02c48a7fa6c7b3b5788462b94768c39485803161",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/STPUG_21C.zip"
+      },
+      "schemaFormat": "ZIP",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "recordPath": "file:DCCA_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:39:54.559638+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 511,
+      "version": "aa6f862ceb4cb64ebdea3733c5e04888d1f078152629a33d24a7997b67002387",
+      "dataItemsSha256": "9db5ec0bc41dab5c7516fa370860fb7f14257785b28119a7b3177a2963ec441e",
+      "publishedFile": {
+        "selection": "file:DCCA_21C.xlsx",
+        "sourcePageUrl": "https://www.census2021.gov.hk/en/district_profiles.html",
+        "sourcePageSha256": "2915d88700fd6bb448ac7f1ef9ad36c73146ac4e0f28926ea2cf57e2dfd5a5fd",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/DCCA_21C.xlsx"
+      },
+      "schemaFormat": "XLSX",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "recordPath": "file:DCCA_21C.zip"
+      },
+      "checkedAtUtc": "2026-11-06T11:40:01.047852+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 511,
+      "version": "f158fec879e77e18aaa4bbd5bf880883380ad7150e7bc5c67686fe50d723800e",
+      "dataItemsSha256": "9e9ac601049d7bc7b927aca4fe914e098682dab5796ae40f2e66a2e5ec897b39",
+      "publishedFile": {
+        "selection": "file:DCCA_21C.zip",
+        "sourcePageUrl": "https://www.census2021.gov.hk/en/district_profiles.html",
+        "sourcePageSha256": "2915d88700fd6bb448ac7f1ef9ad36c73146ac4e0f28926ea2cf57e2dfd5a5fd",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/DCCA_21C.zip"
+      },
+      "schemaFormat": "ZIP",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "recordPath": "file:DC_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:40:06.566346+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 75,
+      "version": "a1b1d4f13bc5ad178f37d65d078bbb72d51c16a4393ec6982505ccc5bc850028",
+      "dataItemsSha256": "8ee787cd6f7366f350c801f524a8424a91e8a97b51884a8c50739bd9d7265e40",
+      "publishedFile": {
+        "selection": "file:DC_21C.xlsx",
+        "sourcePageUrl": "https://www.census2021.gov.hk/en/district_profiles.html",
+        "sourcePageSha256": "2915d88700fd6bb448ac7f1ef9ad36c73146ac4e0f28926ea2cf57e2dfd5a5fd",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/DC_21C.xlsx"
+      },
+      "schemaFormat": "XLSX",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "recordPath": "file:DC_21C.zip"
+      },
+      "checkedAtUtc": "2026-11-06T11:40:11.542565+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 75,
+      "version": "9e075657e4933f5a05ecb2256cc04d94728fd650ef18f16ad14727da218c9600",
+      "dataItemsSha256": "0bc311d221775f247d6dc7166ebab85a05a8a73503d8843b6e9486f7792df08a",
+      "publishedFile": {
+        "selection": "file:DC_21C.zip",
+        "sourcePageUrl": "https://www.census2021.gov.hk/en/district_profiles.html",
+        "sourcePageSha256": "2915d88700fd6bb448ac7f1ef9ad36c73146ac4e0f28926ea2cf57e2dfd5a5fd",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/DC_21C.zip"
+      },
+      "schemaFormat": "ZIP",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:40:23.018755+00:00",
+      "httpStatus": 422,
+      "selectionRequired": "sheet",
+      "discoveredChildren": [
+        {
+          "sheet": "WholeTerritory",
+          "recordPath": "file:HMA_BG_21C.xlsx"
+        },
+        {
+          "sheet": "DCD",
+          "recordPath": "file:HMA_BG_21C.xlsx"
+        },
+        {
+          "sheet": "LSUG",
+          "recordPath": "file:HMA_BG_21C.xlsx"
+        },
+        {
+          "sheet": "HousingMarketArea",
+          "recordPath": "file:HMA_BG_21C.xlsx"
+        },
+        {
+          "sheet": "BuildingGroup",
+          "recordPath": "file:HMA_BG_21C.xlsx"
+        },
+        {
+          "sheet": "IP Rights Notice",
+          "recordPath": "file:HMA_BG_21C.xlsx"
+        }
+      ]
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "sheet": "WholeTerritory",
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:40:49.030414+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 47,
+      "version": "8425dfb53a84fe4cff7ff8a4ce55ff79b7bc2e795f5eaba2f42dae30c5585814",
+      "dataItemsSha256": "76ec586503be1f25693af38d7581d010900daf81eed6ca37423b4a27b6359cc6",
+      "publishedFile": {
+        "selection": "file:HMA_BG_21C.xlsx",
+        "sourcePageUrl": "https://www.census2021.gov.hk/en/district_profiles.html",
+        "sourcePageSha256": "2915d88700fd6bb448ac7f1ef9ad36c73146ac4e0f28926ea2cf57e2dfd5a5fd",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/HMA_BG_21C.xlsx"
+      },
+      "schemaFormat": "XLSX",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "sheet": "DCD",
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:41:02.539521+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 65,
+      "version": "8425dfb53a84fe4cff7ff8a4ce55ff79b7bc2e795f5eaba2f42dae30c5585814",
+      "dataItemsSha256": "35dd765c6b8428bf5bfa37becc49dca6eb74173a53802f6710d38607ef28c320",
+      "publishedFile": {
+        "selection": "file:HMA_BG_21C.xlsx",
+        "sourcePageUrl": "https://www.census2021.gov.hk/en/district_profiles.html",
+        "sourcePageSha256": "2915d88700fd6bb448ac7f1ef9ad36c73146ac4e0f28926ea2cf57e2dfd5a5fd",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/HMA_BG_21C.xlsx"
+      },
+      "schemaFormat": "XLSX",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "sheet": "LSUG",
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:41:24.120673+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 1795,
+      "version": "8425dfb53a84fe4cff7ff8a4ce55ff79b7bc2e795f5eaba2f42dae30c5585814",
+      "dataItemsSha256": "a60089536765d09388c3cd12b27d97fcf6bb8ebaa9f19200dc2068e140eb4866",
+      "publishedFile": {
+        "selection": "file:HMA_BG_21C.xlsx",
+        "sourcePageUrl": "https://www.census2021.gov.hk/en/district_profiles.html",
+        "sourcePageSha256": "2915d88700fd6bb448ac7f1ef9ad36c73146ac4e0f28926ea2cf57e2dfd5a5fd",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/HMA_BG_21C.xlsx"
+      },
+      "schemaFormat": "XLSX",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "sheet": "HousingMarketArea",
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:41:39.115404+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 222,
+      "version": "8425dfb53a84fe4cff7ff8a4ce55ff79b7bc2e795f5eaba2f42dae30c5585814",
+      "dataItemsSha256": "23fb9bd80467497bd39e7aae584092ca380ddd41d97aac4917b59828fe461164",
+      "publishedFile": {
+        "selection": "file:HMA_BG_21C.xlsx",
+        "sourcePageUrl": "https://www.census2021.gov.hk/en/district_profiles.html",
+        "sourcePageSha256": "2915d88700fd6bb448ac7f1ef9ad36c73146ac4e0f28926ea2cf57e2dfd5a5fd",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/HMA_BG_21C.xlsx"
+      },
+      "schemaFormat": "XLSX",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "sheet": "BuildingGroup",
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:42:07.556424+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 3373,
+      "version": "8425dfb53a84fe4cff7ff8a4ce55ff79b7bc2e795f5eaba2f42dae30c5585814",
+      "dataItemsSha256": "67b90b2b039fc66c7051355dc9b21b7bc0068cce9a00796386aa1cd7efbfe609",
+      "publishedFile": {
+        "selection": "file:HMA_BG_21C.xlsx",
+        "sourcePageUrl": "https://www.census2021.gov.hk/en/district_profiles.html",
+        "sourcePageSha256": "2915d88700fd6bb448ac7f1ef9ad36c73146ac4e0f28926ea2cf57e2dfd5a5fd",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/HMA_BG_21C.xlsx"
+      },
+      "schemaFormat": "XLSX",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "sheet": "IP Rights Notice",
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:42:20.443914+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 13,
+      "version": "8425dfb53a84fe4cff7ff8a4ce55ff79b7bc2e795f5eaba2f42dae30c5585814",
+      "dataItemsSha256": "3e6d020c0a10de535be285dcfe05d137439350f1dc8676df6b4ed9756e806459",
+      "publishedFile": {
+        "selection": "file:HMA_BG_21C.xlsx",
+        "sourcePageUrl": "https://www.census2021.gov.hk/en/district_profiles.html",
+        "sourcePageSha256": "2915d88700fd6bb448ac7f1ef9ad36c73146ac4e0f28926ea2cf57e2dfd5a5fd",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/HMA_BG_21C.xlsx"
+      },
+      "schemaFormat": "XLSX",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "recordPath": "file:HMA_BG_21C.zip"
+      },
+      "checkedAtUtc": "2026-11-06T11:42:35.449104+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 5515,
+      "version": "25ecf5e46d8b43d21e011b4c249b85f9f1cc834e71b3c31e9b7e4b594f5221c9",
+      "dataItemsSha256": "dabd37a58f49dad8df78f1157cb8d6012c6962e9dc1a937d4b49522f4415c5c6",
+      "publishedFile": {
+        "selection": "file:HMA_BG_21C.zip",
+        "sourcePageUrl": "https://www.census2021.gov.hk/en/district_profiles.html",
+        "sourcePageSha256": "2915d88700fd6bb448ac7f1ef9ad36c73146ac4e0f28926ea2cf57e2dfd5a5fd",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/HMA_BG_21C.zip"
+      },
+      "schemaFormat": "ZIP",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "recordPath": "file:LSUG_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:42:48.153985+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 1779,
+      "version": "a49a18cc131f093b0bb05b4afb6b3994e7e6d286d2b5b64b90a18771b91c407a",
+      "dataItemsSha256": "ec2426d7110d86031e9243e92994c2ec0130adc0a088ec163dbc2688009114d0",
+      "publishedFile": {
+        "selection": "file:LSUG_21C.xlsx",
+        "sourcePageUrl": "https://www.census2021.gov.hk/en/district_profiles.html",
+        "sourcePageSha256": "2915d88700fd6bb448ac7f1ef9ad36c73146ac4e0f28926ea2cf57e2dfd5a5fd",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/LSUG_21C.xlsx"
+      },
+      "schemaFormat": "XLSX",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "recordPath": "file:LSUG_21C.zip"
+      },
+      "checkedAtUtc": "2026-11-06T11:42:56.199165+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 1779,
+      "version": "8a35d811a1fcca6da287994a84e2b99080b0f734b6e142c9a96af142a58389f5",
+      "dataItemsSha256": "200477ac49aacfb946c4e4d6f2fe8783903bbc5afcff992c9ac41a3758feacac",
+      "publishedFile": {
+        "selection": "file:LSUG_21C.zip",
+        "sourcePageUrl": "https://www.census2021.gov.hk/en/district_profiles.html",
+        "sourcePageSha256": "2915d88700fd6bb448ac7f1ef9ad36c73146ac4e0f28926ea2cf57e2dfd5a5fd",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/LSUG_21C.zip"
+      },
+      "schemaFormat": "ZIP",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "recordPath": "file:LTPUG_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:43:04.068819+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 218,
+      "version": "fe94d59dbec3ac299a6ced30411c5f06e4f129757d4011eb6e0d9bf0f4d1af71",
+      "dataItemsSha256": "86cd41dcabb39fe1c73b4f2c24d743d19075335037834444db03b248b0c376c7",
+      "publishedFile": {
+        "selection": "file:LTPUG_21C.xlsx",
+        "sourcePageUrl": "https://www.census2021.gov.hk/en/district_profiles.html",
+        "sourcePageSha256": "2915d88700fd6bb448ac7f1ef9ad36c73146ac4e0f28926ea2cf57e2dfd5a5fd",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/LTPUG_21C.xlsx"
+      },
+      "schemaFormat": "XLSX",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "recordPath": "file:LTPUG_21C.zip"
+      },
+      "checkedAtUtc": "2026-11-06T11:43:09.746646+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 218,
+      "version": "71418b0325bcc0eba2a9f4605c9b03842ed03d6e165fb96bd97bc0efdc39cf67",
+      "dataItemsSha256": "ad25ce12117247b4aa8a42107bc4425d1de2808c1416945a956c23a55c97ab77",
+      "publishedFile": {
+        "selection": "file:LTPUG_21C.zip",
+        "sourcePageUrl": "https://www.census2021.gov.hk/en/district_profiles.html",
+        "sourcePageSha256": "2915d88700fd6bb448ac7f1ef9ad36c73146ac4e0f28926ea2cf57e2dfd5a5fd",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/LTPUG_21C.zip"
+      },
+      "schemaFormat": "ZIP",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "recordPath": "file:SSUG_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:43:15.539539+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 2353,
+      "version": "8a2a9c78cf2a7382183ea11770b4c8ab0e2428275560a993d8b81dc6263091b1",
+      "dataItemsSha256": "5c7bb3ec7adcb0aa0b8d88681f4f81afab1ca78319f5bfa959241fa0cb267b7a",
+      "publishedFile": {
+        "selection": "file:SSUG_21C.xlsx",
+        "sourcePageUrl": "https://www.census2021.gov.hk/en/district_profiles.html",
+        "sourcePageSha256": "2915d88700fd6bb448ac7f1ef9ad36c73146ac4e0f28926ea2cf57e2dfd5a5fd",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/SSUG_21C.xlsx"
+      },
+      "schemaFormat": "XLSX",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "recordPath": "file:SSUG_21C.zip"
+      },
+      "checkedAtUtc": "2026-11-06T11:43:20.405026+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 2353,
+      "version": "b2a2889c0d1e137b28e31138decfa7e4c8edc2018a516bf910e380632176447b",
+      "dataItemsSha256": "092e93416f331d913f160a66e6a1054dbb133d39bea5be81fc0fe9682cb7f91b",
+      "publishedFile": {
+        "selection": "file:SSUG_21C.zip",
+        "sourcePageUrl": "https://www.census2021.gov.hk/en/district_profiles.html",
+        "sourcePageSha256": "2915d88700fd6bb448ac7f1ef9ad36c73146ac4e0f28926ea2cf57e2dfd5a5fd",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/SSUG_21C.zip"
+      },
+      "schemaFormat": "ZIP",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "recordPath": "file:STPUG_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:43:27.257617+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 272,
+      "version": "7d7d36b18ff815105ef18ae9de7e79cadab05d3baafdff94c77721e08fc5f96c",
+      "dataItemsSha256": "96ee6fd36ba7627e3afc572b07fd34c0eb68844584b74b0ae7acd951e7c2da72",
+      "publishedFile": {
+        "selection": "file:STPUG_21C.xlsx",
+        "sourcePageUrl": "https://www.census2021.gov.hk/en/district_profiles.html",
+        "sourcePageSha256": "2915d88700fd6bb448ac7f1ef9ad36c73146ac4e0f28926ea2cf57e2dfd5a5fd",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/STPUG_21C.xlsx"
+      },
+      "schemaFormat": "XLSX",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "selection": {
+        "recordPath": "file:STPUG_21C.zip"
+      },
+      "checkedAtUtc": "2026-11-06T11:43:33.027164+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 272,
+      "version": "cafe526626538036d01ef5b8cf6a1d3049e2d9aac0cb996ce6eea4f505060752",
+      "dataItemsSha256": "ec5330afdb492ba296e17347a51846933bdda6667b9eb97b73581ce9015a8780",
+      "publishedFile": {
+        "selection": "file:STPUG_21C.zip",
+        "sourcePageUrl": "https://www.census2021.gov.hk/en/district_profiles.html",
+        "sourcePageSha256": "2915d88700fd6bb448ac7f1ef9ad36c73146ac4e0f28926ea2cf57e2dfd5a5fd",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/STPUG_21C.zip"
+      },
+      "schemaFormat": "ZIP",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "recordPath": "file:DCCA_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:43:51.852755+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 511,
+      "version": "aa6f862ceb4cb64ebdea3733c5e04888d1f078152629a33d24a7997b67002387",
+      "dataItemsSha256": "9db5ec0bc41dab5c7516fa370860fb7f14257785b28119a7b3177a2963ec441e",
+      "publishedFile": {
+        "selection": "file:DCCA_21C.xlsx",
+        "sourcePageUrl": "https://www.census2021.gov.hk/sc/district_profiles.html",
+        "sourcePageSha256": "3657e5d45353c2fcbb5d6a2f5c9e8b87b866a8500fd252cfc8b6206fa05650ac",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/DCCA_21C.xlsx"
+      },
+      "schemaFormat": "XLSX",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "recordPath": "file:DCCA_21C.zip"
+      },
+      "checkedAtUtc": "2026-11-06T11:43:58.323729+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 511,
+      "version": "f158fec879e77e18aaa4bbd5bf880883380ad7150e7bc5c67686fe50d723800e",
+      "dataItemsSha256": "9e9ac601049d7bc7b927aca4fe914e098682dab5796ae40f2e66a2e5ec897b39",
+      "publishedFile": {
+        "selection": "file:DCCA_21C.zip",
+        "sourcePageUrl": "https://www.census2021.gov.hk/sc/district_profiles.html",
+        "sourcePageSha256": "3657e5d45353c2fcbb5d6a2f5c9e8b87b866a8500fd252cfc8b6206fa05650ac",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/DCCA_21C.zip"
+      },
+      "schemaFormat": "ZIP",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "recordPath": "file:DC_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:44:03.971312+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 75,
+      "version": "a1b1d4f13bc5ad178f37d65d078bbb72d51c16a4393ec6982505ccc5bc850028",
+      "dataItemsSha256": "8ee787cd6f7366f350c801f524a8424a91e8a97b51884a8c50739bd9d7265e40",
+      "publishedFile": {
+        "selection": "file:DC_21C.xlsx",
+        "sourcePageUrl": "https://www.census2021.gov.hk/sc/district_profiles.html",
+        "sourcePageSha256": "3657e5d45353c2fcbb5d6a2f5c9e8b87b866a8500fd252cfc8b6206fa05650ac",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/DC_21C.xlsx"
+      },
+      "schemaFormat": "XLSX",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "recordPath": "file:DC_21C.zip"
+      },
+      "checkedAtUtc": "2026-11-06T11:44:09.105603+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 75,
+      "version": "9e075657e4933f5a05ecb2256cc04d94728fd650ef18f16ad14727da218c9600",
+      "dataItemsSha256": "0bc311d221775f247d6dc7166ebab85a05a8a73503d8843b6e9486f7792df08a",
+      "publishedFile": {
+        "selection": "file:DC_21C.zip",
+        "sourcePageUrl": "https://www.census2021.gov.hk/sc/district_profiles.html",
+        "sourcePageSha256": "3657e5d45353c2fcbb5d6a2f5c9e8b87b866a8500fd252cfc8b6206fa05650ac",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/DC_21C.zip"
+      },
+      "schemaFormat": "ZIP",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:44:21.126526+00:00",
+      "httpStatus": 422,
+      "selectionRequired": "sheet",
+      "discoveredChildren": [
+        {
+          "sheet": "WholeTerritory",
+          "recordPath": "file:HMA_BG_21C.xlsx"
+        },
+        {
+          "sheet": "DCD",
+          "recordPath": "file:HMA_BG_21C.xlsx"
+        },
+        {
+          "sheet": "LSUG",
+          "recordPath": "file:HMA_BG_21C.xlsx"
+        },
+        {
+          "sheet": "HousingMarketArea",
+          "recordPath": "file:HMA_BG_21C.xlsx"
+        },
+        {
+          "sheet": "BuildingGroup",
+          "recordPath": "file:HMA_BG_21C.xlsx"
+        },
+        {
+          "sheet": "IP Rights Notice",
+          "recordPath": "file:HMA_BG_21C.xlsx"
+        }
+      ]
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "sheet": "WholeTerritory",
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:44:45.173383+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 47,
+      "version": "8425dfb53a84fe4cff7ff8a4ce55ff79b7bc2e795f5eaba2f42dae30c5585814",
+      "dataItemsSha256": "76ec586503be1f25693af38d7581d010900daf81eed6ca37423b4a27b6359cc6",
+      "publishedFile": {
+        "selection": "file:HMA_BG_21C.xlsx",
+        "sourcePageUrl": "https://www.census2021.gov.hk/sc/district_profiles.html",
+        "sourcePageSha256": "3657e5d45353c2fcbb5d6a2f5c9e8b87b866a8500fd252cfc8b6206fa05650ac",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/HMA_BG_21C.xlsx"
+      },
+      "schemaFormat": "XLSX",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "sheet": "DCD",
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:44:57.455166+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 65,
+      "version": "8425dfb53a84fe4cff7ff8a4ce55ff79b7bc2e795f5eaba2f42dae30c5585814",
+      "dataItemsSha256": "35dd765c6b8428bf5bfa37becc49dca6eb74173a53802f6710d38607ef28c320",
+      "publishedFile": {
+        "selection": "file:HMA_BG_21C.xlsx",
+        "sourcePageUrl": "https://www.census2021.gov.hk/sc/district_profiles.html",
+        "sourcePageSha256": "3657e5d45353c2fcbb5d6a2f5c9e8b87b866a8500fd252cfc8b6206fa05650ac",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/HMA_BG_21C.xlsx"
+      },
+      "schemaFormat": "XLSX",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "sheet": "LSUG",
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:45:19.738910+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 1795,
+      "version": "8425dfb53a84fe4cff7ff8a4ce55ff79b7bc2e795f5eaba2f42dae30c5585814",
+      "dataItemsSha256": "a60089536765d09388c3cd12b27d97fcf6bb8ebaa9f19200dc2068e140eb4866",
+      "publishedFile": {
+        "selection": "file:HMA_BG_21C.xlsx",
+        "sourcePageUrl": "https://www.census2021.gov.hk/sc/district_profiles.html",
+        "sourcePageSha256": "3657e5d45353c2fcbb5d6a2f5c9e8b87b866a8500fd252cfc8b6206fa05650ac",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/HMA_BG_21C.xlsx"
+      },
+      "schemaFormat": "XLSX",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "sheet": "HousingMarketArea",
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:45:35.057445+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 222,
+      "version": "8425dfb53a84fe4cff7ff8a4ce55ff79b7bc2e795f5eaba2f42dae30c5585814",
+      "dataItemsSha256": "23fb9bd80467497bd39e7aae584092ca380ddd41d97aac4917b59828fe461164",
+      "publishedFile": {
+        "selection": "file:HMA_BG_21C.xlsx",
+        "sourcePageUrl": "https://www.census2021.gov.hk/sc/district_profiles.html",
+        "sourcePageSha256": "3657e5d45353c2fcbb5d6a2f5c9e8b87b866a8500fd252cfc8b6206fa05650ac",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/HMA_BG_21C.xlsx"
+      },
+      "schemaFormat": "XLSX",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "sheet": "BuildingGroup",
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:46:06.929834+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 3373,
+      "version": "8425dfb53a84fe4cff7ff8a4ce55ff79b7bc2e795f5eaba2f42dae30c5585814",
+      "dataItemsSha256": "67b90b2b039fc66c7051355dc9b21b7bc0068cce9a00796386aa1cd7efbfe609",
+      "publishedFile": {
+        "selection": "file:HMA_BG_21C.xlsx",
+        "sourcePageUrl": "https://www.census2021.gov.hk/sc/district_profiles.html",
+        "sourcePageSha256": "3657e5d45353c2fcbb5d6a2f5c9e8b87b866a8500fd252cfc8b6206fa05650ac",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/HMA_BG_21C.xlsx"
+      },
+      "schemaFormat": "XLSX",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "sheet": "IP Rights Notice",
+        "recordPath": "file:HMA_BG_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:46:20.630192+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 13,
+      "version": "8425dfb53a84fe4cff7ff8a4ce55ff79b7bc2e795f5eaba2f42dae30c5585814",
+      "dataItemsSha256": "3e6d020c0a10de535be285dcfe05d137439350f1dc8676df6b4ed9756e806459",
+      "publishedFile": {
+        "selection": "file:HMA_BG_21C.xlsx",
+        "sourcePageUrl": "https://www.census2021.gov.hk/sc/district_profiles.html",
+        "sourcePageSha256": "3657e5d45353c2fcbb5d6a2f5c9e8b87b866a8500fd252cfc8b6206fa05650ac",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/HMA_BG_21C.xlsx"
+      },
+      "schemaFormat": "XLSX",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "recordPath": "file:HMA_BG_21C.zip"
+      },
+      "checkedAtUtc": "2026-11-06T11:46:34.335722+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 5515,
+      "version": "25ecf5e46d8b43d21e011b4c249b85f9f1cc834e71b3c31e9b7e4b594f5221c9",
+      "dataItemsSha256": "dabd37a58f49dad8df78f1157cb8d6012c6962e9dc1a937d4b49522f4415c5c6",
+      "publishedFile": {
+        "selection": "file:HMA_BG_21C.zip",
+        "sourcePageUrl": "https://www.census2021.gov.hk/sc/district_profiles.html",
+        "sourcePageSha256": "3657e5d45353c2fcbb5d6a2f5c9e8b87b866a8500fd252cfc8b6206fa05650ac",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/HMA_BG_21C.zip"
+      },
+      "schemaFormat": "ZIP",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "recordPath": "file:LSUG_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:46:48.616329+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 1779,
+      "version": "a49a18cc131f093b0bb05b4afb6b3994e7e6d286d2b5b64b90a18771b91c407a",
+      "dataItemsSha256": "ec2426d7110d86031e9243e92994c2ec0130adc0a088ec163dbc2688009114d0",
+      "publishedFile": {
+        "selection": "file:LSUG_21C.xlsx",
+        "sourcePageUrl": "https://www.census2021.gov.hk/sc/district_profiles.html",
+        "sourcePageSha256": "3657e5d45353c2fcbb5d6a2f5c9e8b87b866a8500fd252cfc8b6206fa05650ac",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/LSUG_21C.xlsx"
+      },
+      "schemaFormat": "XLSX",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "recordPath": "file:LSUG_21C.zip"
+      },
+      "checkedAtUtc": "2026-11-06T11:46:56.224935+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 1779,
+      "version": "8a35d811a1fcca6da287994a84e2b99080b0f734b6e142c9a96af142a58389f5",
+      "dataItemsSha256": "200477ac49aacfb946c4e4d6f2fe8783903bbc5afcff992c9ac41a3758feacac",
+      "publishedFile": {
+        "selection": "file:LSUG_21C.zip",
+        "sourcePageUrl": "https://www.census2021.gov.hk/sc/district_profiles.html",
+        "sourcePageSha256": "3657e5d45353c2fcbb5d6a2f5c9e8b87b866a8500fd252cfc8b6206fa05650ac",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/LSUG_21C.zip"
+      },
+      "schemaFormat": "ZIP",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "recordPath": "file:LTPUG_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:47:04.213676+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 218,
+      "version": "fe94d59dbec3ac299a6ced30411c5f06e4f129757d4011eb6e0d9bf0f4d1af71",
+      "dataItemsSha256": "86cd41dcabb39fe1c73b4f2c24d743d19075335037834444db03b248b0c376c7",
+      "publishedFile": {
+        "selection": "file:LTPUG_21C.xlsx",
+        "sourcePageUrl": "https://www.census2021.gov.hk/sc/district_profiles.html",
+        "sourcePageSha256": "3657e5d45353c2fcbb5d6a2f5c9e8b87b866a8500fd252cfc8b6206fa05650ac",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/LTPUG_21C.xlsx"
+      },
+      "schemaFormat": "XLSX",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "recordPath": "file:LTPUG_21C.zip"
+      },
+      "checkedAtUtc": "2026-11-06T11:47:09.932480+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 218,
+      "version": "71418b0325bcc0eba2a9f4605c9b03842ed03d6e165fb96bd97bc0efdc39cf67",
+      "dataItemsSha256": "ad25ce12117247b4aa8a42107bc4425d1de2808c1416945a956c23a55c97ab77",
+      "publishedFile": {
+        "selection": "file:LTPUG_21C.zip",
+        "sourcePageUrl": "https://www.census2021.gov.hk/sc/district_profiles.html",
+        "sourcePageSha256": "3657e5d45353c2fcbb5d6a2f5c9e8b87b866a8500fd252cfc8b6206fa05650ac",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/LTPUG_21C.zip"
+      },
+      "schemaFormat": "ZIP",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "recordPath": "file:SSUG_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:47:15.594495+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 2353,
+      "version": "8a2a9c78cf2a7382183ea11770b4c8ab0e2428275560a993d8b81dc6263091b1",
+      "dataItemsSha256": "5c7bb3ec7adcb0aa0b8d88681f4f81afab1ca78319f5bfa959241fa0cb267b7a",
+      "publishedFile": {
+        "selection": "file:SSUG_21C.xlsx",
+        "sourcePageUrl": "https://www.census2021.gov.hk/sc/district_profiles.html",
+        "sourcePageSha256": "3657e5d45353c2fcbb5d6a2f5c9e8b87b866a8500fd252cfc8b6206fa05650ac",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/SSUG_21C.xlsx"
+      },
+      "schemaFormat": "XLSX",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "recordPath": "file:SSUG_21C.zip"
+      },
+      "checkedAtUtc": "2026-11-06T11:47:21.030230+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 2353,
+      "version": "b2a2889c0d1e137b28e31138decfa7e4c8edc2018a516bf910e380632176447b",
+      "dataItemsSha256": "092e93416f331d913f160a66e6a1054dbb133d39bea5be81fc0fe9682cb7f91b",
+      "publishedFile": {
+        "selection": "file:SSUG_21C.zip",
+        "sourcePageUrl": "https://www.census2021.gov.hk/sc/district_profiles.html",
+        "sourcePageSha256": "3657e5d45353c2fcbb5d6a2f5c9e8b87b866a8500fd252cfc8b6206fa05650ac",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/SSUG_21C.zip"
+      },
+      "schemaFormat": "ZIP",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "recordPath": "file:STPUG_21C.xlsx"
+      },
+      "checkedAtUtc": "2026-11-06T11:47:28.954411+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 272,
+      "version": "7d7d36b18ff815105ef18ae9de7e79cadab05d3baafdff94c77721e08fc5f96c",
+      "dataItemsSha256": "96ee6fd36ba7627e3afc572b07fd34c0eb68844584b74b0ae7acd951e7c2da72",
+      "publishedFile": {
+        "selection": "file:STPUG_21C.xlsx",
+        "sourcePageUrl": "https://www.census2021.gov.hk/sc/district_profiles.html",
+        "sourcePageSha256": "3657e5d45353c2fcbb5d6a2f5c9e8b87b866a8500fd252cfc8b6206fa05650ac",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/STPUG_21C.xlsx"
+      },
+      "schemaFormat": "XLSX",
+      "cacheTTLSeconds": 86400
+    },
+    {
+      "resourceId": "f1b29a710e21509e0ca68d690845b5c9",
+      "selection": {
+        "recordPath": "file:STPUG_21C.zip"
+      },
+      "checkedAtUtc": "2026-11-06T11:47:35.286494+00:00",
+      "httpStatus": 200,
+      "httpMcpParity": true,
+      "rawRows": 272,
+      "version": "cafe526626538036d01ef5b8cf6a1d3049e2d9aac0cb996ce6eea4f505060752",
+      "dataItemsSha256": "ec5330afdb492ba296e17347a51846933bdda6667b9eb97b73581ce9015a8780",
+      "publishedFile": {
+        "selection": "file:STPUG_21C.zip",
+        "sourcePageUrl": "https://www.census2021.gov.hk/sc/district_profiles.html",
+        "sourcePageSha256": "3657e5d45353c2fcbb5d6a2f5c9e8b87b866a8500fd252cfc8b6206fa05650ac",
+        "publishedUrl": "https://www.census2021.gov.hk/doc/STPUG_21C.zip"
+      },
+      "schemaFormat": "ZIP",
+      "cacheTTLSeconds": 86400
+    }
+  ],
+  "sourceHolds": [],
+  "httpRequests": 69,
+  "allOriginalFileFrontiersVisited": true
+}

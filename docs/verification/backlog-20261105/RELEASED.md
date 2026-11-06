@@ -1,5 +1,13 @@
 # Remaining-backlog implementation releases — 6 November 2026
 
+PR #164 is deployed at `a7ad82d521afa11b08c19375aaf880cc055ab311` with exact-main CI,
+actual adoption, individual hosted Census file/sheet checks and fresh isolated
+recovery. 57 scopes passed; 0 retain explicit unresolved reasons.
+Raw rows/equivalence/statistical grain remain unreviewed. See [Census file release](census-files-release/README.md).
+The full frozen programme remains open.
+
+## Earlier Audit framing release
+
 PR #163 is deployed at `531292c41469a454aa6e9146575b7e3bbe25dc42` with exact-main CI,
 actual controller/image/instance adoption, hosted Audit HTTP/native MCP parity and
 fresh isolated recovery. The 1,337 raw accounts objects are now readable.

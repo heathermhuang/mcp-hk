@@ -156,3 +156,9 @@ through hosted clients and fresh isolated recovery; see `audit-framing-release/`
 The first expired-cache verification and corrected real-age staging are explicit.
 Source holds, Census published-file/task work, wider graphs and semantic gates
 remain separate and unfinished.
+
+PR #164 implements the published-file selector for the three district-profile
+pages. `census-files-release/` records every observed original file/sheet scope,
+remaining reasons and bounded restore coverage. Raw table/grid acceptance does
+not establish statistical observations or XML/language/file equivalence. Interactive
+builder, wider graph, schema/capacity/source and semantic work remain open.

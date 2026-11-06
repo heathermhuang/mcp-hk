@@ -1,0 +1,26 @@
+{
+  "scope": "Dated original page and two captured files through local HTTP/native MCP; raw rows only, no language/file equivalence or statistical/physical-entity grain qualification",
+  "providerRequests": 0,
+  "fixtureReads": 7,
+  "publishedChoices": 14,
+  "results": [
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "recordPath": "file:DC_21C.zip",
+      "httpMcpParity": true,
+      "rawRows": 75,
+      "sourceSha256": "9e075657e4933f5a05ecb2256cc04d94728fd650ef18f16ad14727da218c9600",
+      "sourcePageSha256": "2915d88700fd6bb448ac7f1ef9ad36c73146ac4e0f28926ea2cf57e2dfd5a5fd",
+      "originalRepresentationEquivalence": "unreviewed"
+    },
+    {
+      "resourceId": "2b7ffba4f42b0dc20375975ac296b0b6",
+      "recordPath": "file:DC_21C.xlsx",
+      "httpMcpParity": true,
+      "rawRows": 75,
+      "sourceSha256": "a1b1d4f13bc5ad178f37d65d078bbb72d51c16a4393ec6982505ccc5bc850028",
+      "sourcePageSha256": "2915d88700fd6bb448ac7f1ef9ad36c73146ac4e0f28926ea2cf57e2dfd5a5fd",
+      "originalRepresentationEquivalence": "unreviewed"
+    }
+  ]
+}

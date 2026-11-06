@@ -1,0 +1,8 @@
+{
+  "operation": "published-interface verification wrapper",
+  "failure": "local checked helper file missing after scaffolding copy",
+  "requestsMadeAtFailedStep": 0,
+  "earlierPassedRegressionsReused": true,
+  "correction": "restored checked helper and ran only remaining steps",
+  "codeRedeployedForHarnessFailure": false
+}
