@@ -1,0 +1,60 @@
+{
+  "scope": "Fresh accepted archive restored in isolation; individually accepted raw scopes only, exact unresolved cases preserved",
+  "providerRequests": 0,
+  "results": [
+    {
+      "resourceId": "1cefa98483583d4ab9235f8764187d5f",
+      "kind": "serialization",
+      "parameters": {},
+      "version": "72f9c978f5df8eec2c737a47a3141f29bb5dcb79ff193045ae6a9d14fce6e840",
+      "total": 516,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "1e6a30329eb17f70afdd8ba409cbd051",
+      "kind": "serialization",
+      "parameters": {},
+      "version": "212b9595b388bef8c6591daec9348d4874a83b6b02aa9a0acd4a2574dca6f54d",
+      "total": 25,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "656fde3a4a402d2e33d856f2619a9ec3",
+      "kind": "serialization",
+      "parameters": {},
+      "version": "b93b1345d3bd9a1cac5d486a0dcabb0905247434f47ead08178afd7f5f56a51d",
+      "total": 1337,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "1fd8818399022e50dd5f0752a45daa8f",
+      "kind": "geodetic",
+      "parameters": {
+        "inSys": "hkgrid",
+        "outSys": "wgsgeog",
+        "e": "832591.320",
+        "n": "820359.389"
+      },
+      "version": "a046ac90c2beea67e146c3fd0c037e817af4ae857c92bf582ca4c6d2ff2f5d5d",
+      "total": 1,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "4c2d28574d52c5fc4804943be6c76e78",
+      "kind": "serialization",
+      "parameters": {},
+      "version": "e76bc43a7d1e7bbe047ff958aa0e772602a3cb172910ca4cd11c884568376519",
+      "total": 10,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "851aab38d8c7932828567d37432a092a",
+      "kind": "serialization",
+      "parameters": {},
+      "version": "b78100df31f36ed0d9d39d3b37d0c02430c7d84f5ccc9ecd4e7f06119e9a6971",
+      "total": 1,
+      "httpMcpParity": true
+    }
+  ],
+  "unresolvedScopes": []
+}

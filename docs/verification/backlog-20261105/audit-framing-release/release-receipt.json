@@ -1,0 +1,267 @@
+{
+  "releasedCommit": "531292c41469a454aa6e9146575b7e3bbe25dc42",
+  "codePrs": [
+    163
+  ],
+  "cloudflareVersionId": "eb94fa0a-fc96-4b34-aa84-7a686c9210cb",
+  "containerImageDigest": "sha256:52c5d52666f4717b7b4d8674a450aec10964cab1699e59cafea57ce7dfeca7ae",
+  "containerApplicationVersion": 81,
+  "runningInstance": {
+    "instances": [
+      {
+        "state": "running",
+        "version": 81
+      }
+    ],
+    "observedAtUtc": "2026-11-06T10:10:10.105486+00:00",
+    "source": "native Wrangler containers instances; full private read retained"
+  },
+  "verifiedAtUtc": "2026-11-06T10:39:28.554599+00:00",
+  "existingHttpMcpRegressionsPassed": true,
+  "checkedReaderScopesAccepted": 6,
+  "newReaderScopesUnresolved": [],
+  "actualNewReaderCanaries": {
+    "scope": "Actual hosted HTTP/native MCP; explicit raw source scopes, no new semantic qualification",
+    "results": [
+      {
+        "resourceId": "1fd8818399022e50dd5f0752a45daa8f",
+        "kind": "geodetic",
+        "parameters": {
+          "inSys": "hkgrid",
+          "outSys": "wgsgeog",
+          "e": "832591.320",
+          "n": "820359.389"
+        },
+        "checkedAtUtc": "2026-11-06T10:16:26.637386+00:00",
+        "requireFreshRequested": false,
+        "httpStatus": 200,
+        "httpMcpParity": true,
+        "total": 1,
+        "version": "a046ac90c2beea67e146c3fd0c037e817af4ae857c92bf582ca4c6d2ff2f5d5d",
+        "dataItemsSha256": "1ebb9e025e5681bb7e7bce16e733e9a3720ff635084e1a38430e2fa292263eed",
+        "cacheTTLSeconds": 300,
+        "observedSerialization": null,
+        "originalSourceSha256": null,
+        "sourceSchemaFormat": "JSON"
+      },
+      {
+        "resourceId": "1cefa98483583d4ab9235f8764187d5f",
+        "kind": "serialization",
+        "parameters": {},
+        "checkedAtUtc": "2026-11-06T10:16:31.797426+00:00",
+        "requireFreshRequested": false,
+        "httpStatus": 200,
+        "httpMcpParity": true,
+        "total": 516,
+        "version": "72f9c978f5df8eec2c737a47a3141f29bb5dcb79ff193045ae6a9d14fce6e840",
+        "dataItemsSha256": "6612b47705c3cc04ad61d1d761d87ed0d96e2d265f043a0aa8a8d2332c7b9f0d",
+        "cacheTTLSeconds": 86400,
+        "observedSerialization": "complete_top_level_json_object_sequence",
+        "originalSourceSha256": "72f9c978f5df8eec2c737a47a3141f29bb5dcb79ff193045ae6a9d14fce6e840",
+        "sourceSchemaFormat": "JSON"
+      },
+      {
+        "resourceId": "1e6a30329eb17f70afdd8ba409cbd051",
+        "kind": "serialization",
+        "parameters": {},
+        "checkedAtUtc": "2026-11-06T10:16:36.970709+00:00",
+        "requireFreshRequested": false,
+        "httpStatus": 200,
+        "httpMcpParity": true,
+        "total": 25,
+        "version": "212b9595b388bef8c6591daec9348d4874a83b6b02aa9a0acd4a2574dca6f54d",
+        "dataItemsSha256": "cb65ef72ea744785294cadd722ed986c3f5ac9b9c156af06808f34cfb8d36d17",
+        "cacheTTLSeconds": 86400,
+        "observedSerialization": "flat_csv_advertised_as_xlsx",
+        "originalSourceSha256": "212b9595b388bef8c6591daec9348d4874a83b6b02aa9a0acd4a2574dca6f54d",
+        "sourceSchemaFormat": "CSV"
+      },
+      {
+        "resourceId": "4c2d28574d52c5fc4804943be6c76e78",
+        "kind": "serialization",
+        "parameters": {},
+        "checkedAtUtc": "2026-11-06T10:16:43.379122+00:00",
+        "requireFreshRequested": false,
+        "httpStatus": 200,
+        "httpMcpParity": true,
+        "total": 10,
+        "version": "73f0f244f786415a0545862af2ddcfba2ee530fe18f1acf3034fa03da3035128",
+        "dataItemsSha256": "e3b56fd826a4b824e0c9d31bfe203c9c9d54bbd981943425e192c9348fe5fb30",
+        "cacheTTLSeconds": 300,
+        "observedSerialization": "fixed_NotiList_jsonp_wrapper",
+        "originalSourceSha256": "73f0f244f786415a0545862af2ddcfba2ee530fe18f1acf3034fa03da3035128",
+        "sourceSchemaFormat": "JSON"
+      },
+      {
+        "resourceId": "656fde3a4a402d2e33d856f2619a9ec3",
+        "kind": "serialization",
+        "parameters": {},
+        "checkedAtUtc": "2026-11-06T10:16:48.057149+00:00",
+        "requireFreshRequested": true,
+        "httpStatus": 200,
+        "httpMcpParity": true,
+        "total": 1337,
+        "version": "b93b1345d3bd9a1cac5d486a0dcabb0905247434f47ead08178afd7f5f56a51d",
+        "dataItemsSha256": "7904289349cc92ddce352fadc3bb8d4f147d11b5832dc9079f97d3c6249d4a58",
+        "cacheTTLSeconds": 86400,
+        "observedSerialization": "complete_top_level_comma_separated_json_object_sequence",
+        "originalSourceSha256": "b93b1345d3bd9a1cac5d486a0dcabb0905247434f47ead08178afd7f5f56a51d",
+        "sourceSchemaFormat": "JSON"
+      },
+      {
+        "resourceId": "851aab38d8c7932828567d37432a092a",
+        "kind": "serialization",
+        "parameters": {},
+        "checkedAtUtc": "2026-11-06T10:16:52.723456+00:00",
+        "requireFreshRequested": false,
+        "httpStatus": 200,
+        "httpMcpParity": true,
+        "total": 1,
+        "version": "b78100df31f36ed0d9d39d3b37d0c02430c7d84f5ccc9ecd4e7f06119e9a6971",
+        "dataItemsSha256": "611f30f44ef329dafa9bed65618c06b5632c6562bf3fe5c217d00ac55510176a",
+        "cacheTTLSeconds": 300,
+        "observedSerialization": "xml_declaration_after_whitespace_prefix",
+        "originalSourceSha256": "b78100df31f36ed0d9d39d3b37d0c02430c7d84f5ccc9ecd4e7f06119e9a6971",
+        "sourceSchemaFormat": "XML"
+      }
+    ]
+  },
+  "freshAcceptedRestore": {
+    "freshAcceptedArchiveSha256": "1f892d6d0301c6b6cde32911afd78dfd15df43544b8e69dc301d65cb3e6f770d",
+    "archiveBytes": 116074541,
+    "databaseBytes": 332431360,
+    "captureBytes": 31155283,
+    "totalRestoredBytes": 363586643,
+    "integrity": "ok",
+    "baseAndTransportPacks": {
+      "population": 18,
+      "restaurants": 17296,
+      "transport": 62147
+    },
+    "sourceRegistryRecovered": true,
+    "nativeDatasetCount": 5048,
+    "activePreviousInventoryGenerations": 2,
+    "typedWorkbookOptions": 84,
+    "restoredPointBindings": [
+      {
+        "profileId": "ambulance-depot-feature-points-1",
+        "profileFingerprint": "2c46fabf80af8cc3a3d0393686a235d06912d5e189e2d773b6cf71771aae3fc8",
+        "sourceRows": 45
+      },
+      {
+        "profileId": "dh-clinic-feature-points-1",
+        "profileFingerprint": "d716d17e076adb0b4ee07a65c5ad00ea528ef66e0d4e03fb7b3d7f980b16ad26",
+        "sourceRows": 200
+      },
+      {
+        "profileId": "edb-school-record-points-1",
+        "profileFingerprint": "3263fce4baca106524b171f54228a7a425ea6e41232178ced42020ac063df2f9",
+        "sourceRows": 3496
+      },
+      {
+        "profileId": "fire-station-feature-points-1",
+        "profileFingerprint": "abfc4aa277d11dcb73d7eef77ab5233abab1e8ab310cde70451eedc2915928e1",
+        "sourceRows": 95
+      },
+      {
+        "profileId": "library-feature-points-1",
+        "profileFingerprint": "e75d4ced7e1654371ee3c563964d03d60bed7184a606b548e736b29c9caabc40",
+        "sourceRows": 184
+      },
+      {
+        "profileId": "museum-feature-points-1",
+        "profileFingerprint": "33282724e064947f6af7a4706ee355b7bcbafd6a900b18d31aa3b26fe408a524",
+        "sourceRows": 18
+      }
+    ],
+    "boundsUnchanged": {
+      "archive": 150000000,
+      "database": 500000000,
+      "totalRestored": 750000000
+    },
+    "preExistingHkmaVariantsPreserved": 35,
+    "repairedWfsMetadataPreserved": [
+      {
+        "resourceId": "f517af5f1721b0896cca46a0dec103f3",
+        "recordPath": "APP_AMEND_CSDI:AMEND_CRT",
+        "rows": 16,
+        "version": "a319b26570ac108c88c30d35e383beafecb7bb6d9289574d9589828cb093e95e"
+      },
+      {
+        "resourceId": "f517af5f1721b0896cca46a0dec103f3",
+        "recordPath": "APP_AMEND_CSDI:AMEND_PAST",
+        "rows": 1324,
+        "version": "b2405c33276b1778f811e6d2061553caaa1d75d5866605111fe7ba5ca569d534"
+      },
+      {
+        "resourceId": "f517af5f1721b0896cca46a0dec103f3",
+        "recordPath": "APP_AMEND_CSDI:APP_CRT",
+        "rows": 2179,
+        "version": "a1ad694683ffd139806bbde2d25ce013451ba32af21b872eba97cbc2abb92a7f"
+      }
+    ]
+  },
+  "newReaderRestoredScopes": [
+    {
+      "resourceId": "1cefa98483583d4ab9235f8764187d5f",
+      "kind": "serialization",
+      "parameters": {},
+      "version": "72f9c978f5df8eec2c737a47a3141f29bb5dcb79ff193045ae6a9d14fce6e840",
+      "total": 516,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "1e6a30329eb17f70afdd8ba409cbd051",
+      "kind": "serialization",
+      "parameters": {},
+      "version": "212b9595b388bef8c6591daec9348d4874a83b6b02aa9a0acd4a2574dca6f54d",
+      "total": 25,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "656fde3a4a402d2e33d856f2619a9ec3",
+      "kind": "serialization",
+      "parameters": {},
+      "version": "b93b1345d3bd9a1cac5d486a0dcabb0905247434f47ead08178afd7f5f56a51d",
+      "total": 1337,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "1fd8818399022e50dd5f0752a45daa8f",
+      "kind": "geodetic",
+      "parameters": {
+        "inSys": "hkgrid",
+        "outSys": "wgsgeog",
+        "e": "832591.320",
+        "n": "820359.389"
+      },
+      "version": "a046ac90c2beea67e146c3fd0c037e817af4ae857c92bf582ca4c6d2ff2f5d5d",
+      "total": 1,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "4c2d28574d52c5fc4804943be6c76e78",
+      "kind": "serialization",
+      "parameters": {},
+      "version": "e76bc43a7d1e7bbe047ff958aa0e772602a3cb172910ca4cd11c884568376519",
+      "total": 10,
+      "httpMcpParity": true
+    },
+    {
+      "resourceId": "851aab38d8c7932828567d37432a092a",
+      "kind": "serialization",
+      "parameters": {},
+      "version": "b78100df31f36ed0d9d39d3b37d0c02430c7d84f5ccc9ecd4e7f06119e9a6971",
+      "total": 1,
+      "httpMcpParity": true
+    }
+  ],
+  "allRestoredProviderRequests": 0,
+  "allFiveSchedulesVerified": true,
+  "prePauseNativeReadVerified": true,
+  "postPauseNativeReadVerified": true,
+  "fixedRecoveryLimitsUnchanged": true,
+  "newSemanticBindings": 0,
+  "wholeRemainingBacklogComplete": false,
+  "firstUnfinished": "Remaining frozen qualification graphs; Census native-link/task adapters; exact schema/capacity/source issues and evidence-supported semantic work."
+}

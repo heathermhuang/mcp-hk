@@ -1,0 +1,18 @@
+{
+  "scope": "Persisted held metadata only; source responses deliberately not retried",
+  "providerRequests": 0,
+  "results": [
+    {
+      "resourceId": "3b66489e3a40df4b50d0dcf76b31950c",
+      "status": "needs_adapter",
+      "reason": "SOURCE_PARSE_ERROR",
+      "unchangedHeldMetadataRecovered": true
+    },
+    {
+      "resourceId": "f101df40374314150d641d26f4cdb625",
+      "status": "needs_adapter",
+      "reason": "SOURCE_PARSE_ERROR",
+      "unchangedHeldMetadataRecovered": true
+    }
+  ]
+}

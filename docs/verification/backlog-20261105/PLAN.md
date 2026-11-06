@@ -150,3 +150,9 @@ also identifies fourteen distinct, unfetched Census files behind three original
 HTML pages. Native file/task selection remains an internal adapter frontier;
 malformed-source, schema, capacity and semantic reasons remain distinct. No
 qualification count or frozen native inventory denominator is silently expanded.
+
+PR #163 closes the demonstrated Audit accounts comma-framing gap and is verified
+through hosted clients and fresh isolated recovery; see `audit-framing-release/`.
+The first expired-cache verification and corrected real-age staging are explicit.
+Source holds, Census published-file/task work, wider graphs and semantic gates
+remain separate and unfinished.
