@@ -1,0 +1,12 @@
+{
+  "scope": "Exact selected original recycling rows restored; no geographic/identity/current-service qualification",
+  "resourceId": "bba25323baf621535677e9a743b0923b",
+  "selection": {
+    "recordPath": "file:wasteless260708.csv"
+  },
+  "rawRows": 9735,
+  "version": "5429fc3b16c3c3ba700a3d2cc35d8c9bd330265929fa35281a432f1ce0b23832",
+  "sourceSha256": "62c7700f319d1ecfa744627246c01e840a3807a71f9f25184636af3b91f31753",
+  "httpMcpParity": true,
+  "providerRequests": 0
+}
