@@ -89,4 +89,7 @@ def test_directory_is_server_rendered_with_every_family_and_broad_subjects(lang)
         assert family["limits"][lang] in render_page("/", lang)
     assert any(n.attrs.get("action") == "/coverage" and n.tag == "form" for n in nodes)
     assert any(n.attrs.get("id") == "directory-access" for n in nodes)
+    results = next(n for n in nodes if n.attrs.get("id") == "directory-catalogue")
+    assert "hidden" in results.attrs
+    assert any("data-browse-all" in n.attrs for n in nodes)
     assert not any("data-concept" in n.attrs for n in nodes)

@@ -1,13 +1,13 @@
 import {encodeRecipe} from './playground-state.js';
 import {fetchPublicJson} from './http.js';
 import {weatherChoices} from './source-quality.js';
-/* The homepage uses the shared family copy and the real, paginated catalogue.
+/* Topics lead the homepage; explicit searches use the real, paginated catalogue.
    Native source text is rendered verbatim as text, never as HTML. */
 (() => {
   if (location.pathname !== '/') return;
   const $ = id => document.getElementById(id), t = (...args) => MhkI18n.t(...args);
   const fallback = [...$('directory-results').childNodes];
-  let families = [], sequence = 0, controller;
+  let families = [], sequence = 0, controller, browseAll = false;
   let state = {q:'',access:'all',provider:'all',offset:0}, nextOffset = null;
   const node = (tag,text) => {const e=document.createElement(tag);e.textContent=text;return e;};
   const localized = value => value?.[MhkI18n.locale] || value?.en || '';
@@ -20,14 +20,24 @@ import {weatherChoices} from './source-quality.js';
   function restore(){
     const p=new URL(location.href).searchParams;
     state={q:(p.get('q')||'').slice(0,200),access:['connected','sources'].includes(p.get('access'))?p.get('access'):'all',provider:['government','independent','independent_or_public_corporation','unclassified'].includes(p.get('provider'))?p.get('provider'):'all',offset:Math.max(0,Math.min(100000,Math.trunc(Number(p.get('offset')))||0))};
+    browseAll=p.get('browse')==='all'||(!state.q&&location.hash==='#directory-catalogue');
     $('mhk-discovery-query').value=state.q;$('directory-access').value=state.access;$('directory-provider').value=state.provider;
   }
   function sync(){
     const u=new URL(location.href);
     for(const [key,value]of Object.entries(state)){if(value&&value!=='all')u.searchParams.set(key,value);else u.searchParams.delete(key);}
+    if(browseAll)u.searchParams.set('browse','all');else u.searchParams.delete('browse');
+    if(!requested()&&u.hash==='#directory-catalogue')u.hash='';
     u.searchParams.set('lang',MhkI18n.locale);history.pushState(null,'',u.pathname+u.search+u.hash);
   }
   function focusResults(){const h=$('directory-results-title');h.focus({preventScroll:true});h.scrollIntoView({block:'start',behavior:'auto'});}
+  function requested(){return Boolean(browseAll||state.q||state.access!=='all'||state.provider!=='all'||state.offset);}
+  function start(){
+    ++sequence;controller?.abort();nextOffset=null;
+    $('directory-catalogue').hidden=true;$('directory-results').setAttribute('aria-busy','false');
+    $('directory-results').replaceChildren();$('directory-count').textContent='';
+    document.querySelectorAll('[data-topic-query]').forEach(a=>a.removeAttribute('aria-current'));
+  }
   function renderRow(d){
     const connected=d.entryKind==='connected_service',family=families.find(f=>f.id===d.packId);
     const row=node('details','');row.className='mhk-directory-row';
@@ -55,13 +65,18 @@ import {weatherChoices} from './source-quality.js';
   }
   async function search({push=true,focus=false}={}){
     if(push)sync();
+    if(!requested()){start();if(focus)$('mhk-discovery-query').focus();return;}
+    $('directory-catalogue').hidden=false;
+    const heading=state.q?'directoryCatalogue':'directoryBrowseResults',ordering=state.q?'directoryOrdering':'directoryAllOrdering';
+    $('directory-results-title').dataset.i18n=heading;$('directory-results-title').textContent=t(heading);
+    $('directory-ordering').dataset.i18n=ordering;$('directory-ordering').textContent=t(ordering);
     const token=++sequence;controller?.abort();controller=new AbortController();
     $('directory-count').textContent=t('searching');$('directory-results').replaceChildren(node('p',t('searching')));$('directory-results').setAttribute('aria-busy','true');
     $('directory-previous').hidden=true;$('directory-next').hidden=true;nextOffset=null;
-    $('directory-reset').hidden=!(state.q||state.access!=='all'||state.provider!=='all');
+    $('directory-reset').hidden=false;
     document.querySelectorAll('[data-topic-query]').forEach(a=>{if(a.dataset.topicQuery===state.q)a.setAttribute('aria-current','true');else a.removeAttribute('aria-current');});
     try{
-      const data=await fetchPublicJson('/api/v1/catalogue/datasets?'+new URLSearchParams({...state,order:'title',limit:10}),undefined,{signal:controller.signal});
+      const [data]=await Promise.all([fetchPublicJson('/api/v1/catalogue/datasets?'+new URLSearchParams({...state,order:state.q?'relevance':'title',limit:10}),undefined,{signal:controller.signal}),familyReady]);
       if(token!==sequence)return;
       $('directory-results').replaceChildren(...data.items.map(renderRow));
       $('directory-count').textContent=t('pageRange',{start:data.items.length?state.offset+1:0,end:state.offset+data.items.length,total:data.total});
@@ -74,13 +89,15 @@ import {weatherChoices} from './source-quality.js';
       $('directory-results').replaceChildren(message,...fallback);
     }finally{if(token===sequence){$('directory-results').setAttribute('aria-busy','false');if(focus)focusResults();}}
   }
-  $('mhk-discovery-form').addEventListener('submit',event=>{event.preventDefault();state.q=$('mhk-discovery-query').value.trim();state.offset=0;search({focus:true});});
+  $('mhk-discovery-form').addEventListener('submit',event=>{event.preventDefault();state.q=$('mhk-discovery-query').value.trim();state.offset=0;browseAll=!state.q;search({focus:true});});
   for(const field of ['provider','access'])$('directory-'+field).addEventListener('change',()=>{state[field]=$('directory-'+field).value;state.offset=0;search();});
-  document.querySelectorAll('[data-topic-query]').forEach(a=>a.addEventListener('click',event=>{if(event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;event.preventDefault();state={q:a.dataset.topicQuery,provider:'all',access:'all',offset:0};$('mhk-discovery-query').value=state.q;$('directory-access').value='all';$('directory-provider').value='all';search({focus:true});}));
+  document.querySelectorAll('[data-topic-query]').forEach(a=>a.addEventListener('click',event=>{if(event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;event.preventDefault();browseAll=false;state={q:a.dataset.topicQuery,provider:'all',access:'all',offset:0};$('mhk-discovery-query').value=state.q;$('directory-access').value='all';$('directory-provider').value='all';search({focus:true});}));
+  document.querySelectorAll('[data-browse-all]').forEach(a=>a.addEventListener('click',event=>{if(event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;event.preventDefault();browseAll=true;state={q:'',provider:'all',access:'all',offset:0};$('mhk-discovery-query').value='';$('directory-access').value='all';$('directory-provider').value='all';search({focus:true});}));
   $('directory-next').addEventListener('click',()=>{if(nextOffset!=null){state.offset=nextOffset;search({focus:true});}});
   $('directory-previous').addEventListener('click',()=>{state.offset=Math.max(0,state.offset-10);search({focus:true});});
-  $('directory-reset').addEventListener('click',()=>{state={q:'',provider:'all',access:'all',offset:0};$('mhk-discovery-query').value='';$('directory-provider').value='all';$('directory-access').value='all';search({focus:true});});
+  $('directory-reset').addEventListener('click',()=>{browseAll=false;state={q:'',provider:'all',access:'all',offset:0};$('mhk-discovery-query').value='';$('directory-provider').value='all';$('directory-access').value='all';search({focus:true});});
   window.addEventListener('popstate',()=>{restore();search({push:false});});
+  const familyReady=fetchPublicJson('/assets/datasets.json').then(data=>{families=data;}).catch(()=>{});
   restore();
-  fetchPublicJson('/assets/datasets.json').then(data=>{families=data;}).catch(()=>{}).finally(()=>search({push:false}));
+  if(requested())search({push:false});else start();
 })();
