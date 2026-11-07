@@ -84,5 +84,23 @@ try{
    assert.equal(calls,1);receipts.push({width:1280,lang:'en',delayedFamilyMetadata:true,singleSearchRequest:true});
   }finally{releaseFamily();await context.close();}
  }
+ for(const initial of ['provider=government','offset=10']){
+  const context=await browser.newContext({viewport:{width:1280,height:900}}),page=await context.newPage();
+  page.on('pageerror',e=>errors.push(e.message));await context.route('https://hk.app/**',r=>r.abort());
+  await context.route('**/api/v1/catalogue/datasets?*',route=>{
+   const p=new URL(route.request().url()).searchParams;
+   const items=rows.filter(d=>p.get('provider')==='all'||d.providerType===p.get('provider'));
+   const offset=Number(p.get('offset')),limit=Number(p.get('limit'));
+   return route.fulfill({json:{items:items.slice(offset,offset+limit),total:items.length,nextOffset:offset+limit<items.length?offset+limit:null}});
+  });
+  try{
+   await page.goto(origin+'/?'+initial+'&lang=en');await page.waitForFunction(()=>!document.querySelector('#directory-catalogue').hidden&&document.querySelector('#directory-results').getAttribute('aria-busy')==='false');
+   if(initial.startsWith('provider'))await page.locator('#directory-provider').selectOption('all');else await page.locator('#directory-previous').click();
+   assert.equal(await page.locator('#directory-catalogue').isVisible(),true);
+   await page.waitForFunction(()=>document.querySelector('#directory-results').getAttribute('aria-busy')==='false');
+   assert.equal(await page.locator('.mhk-directory-row').count(),10);
+   receipts.push({width:1280,lang:'en',legacyBookmark:initial,explicitBrowseIntentPreserved:true});
+  }finally{await context.close();}
+ }
  assert.deepEqual(errors,[]);await writeFile(new URL('receipt.json',out),JSON.stringify({origin,scope:'Deterministic discovery UI fixtures; no source qualification or production deployment',receipts,errors},null,2)+'\n');console.log(JSON.stringify({cases:receipts.length,errors}));
 }finally{await browser.close();}
