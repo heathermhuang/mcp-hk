@@ -12,7 +12,7 @@ from .spatial_profiles import accepted_binding, profile_for, dataset_kind
 from .resource_protocols import protocol, HKMA_PAGING_CONTRACT
 from .hydro_requests import reuse_hold
 
-REVISION = "resource-capabilities-3"
+REVISION = "resource-capabilities-4"
 OPERATIONS = ("records", "text_search", "typed_comparison", "nearby")
 READERS = {
     "CSV": "table",
@@ -77,6 +77,20 @@ def public_selection(schema):
     }
 
 
+def workbook_selection(selection):
+    sheet = selection.get("sheet")
+    path = selection.get("recordPath")
+    if (
+        not isinstance(sheet, str)
+        or not 1 <= len(sheet) <= 100
+        or selection.get("parameterNames")
+        or path is not None
+        and (not isinstance(path, str) or len(path) > 300)
+    ):
+        return None
+    return {"sheet": sheet, **({"recordPath": path} if path else {})}
+
+
 def project(resource, check=None, receipts=(), schema=None):
     check = check or {}
     status = check.get("status") or "pending"
@@ -127,6 +141,22 @@ def project(resource, check=None, receipts=(), schema=None):
                 **({"requiresRevalidation": revalidate} if hkma else {}),
             }
         )
+    selected_sheet = next(
+        (
+            selection
+            for receipt in accepted
+            if receipt["status"] == "queryable"
+            and not receipt.get("requiresRevalidation")
+            and (selection := workbook_selection(receipt["selection"]))
+        ),
+        None,
+    )
+    scoped_workbook = (
+        access == "workbook"
+        and status == "needs_adapter"
+        and check.get("reason") == "SOURCE_SCHEMA_CHANGED"
+        and selected_sheet is not None
+    )
     if access == "map_imagery":
         state, reason = "unsupported", "map_imagery_is_not_a_record_collection"
     elif status in {
@@ -139,6 +169,8 @@ def project(resource, check=None, receipts=(), schema=None):
         state, reason = "held", check.get("reason") or status
     elif status == "needs_selection":
         state, reason = "requires_selection", check.get("reason") or status
+    elif scoped_workbook:
+        state, reason = "requires_selection", "inspect_accepted_workbook_sheet"
     elif (
         hkma
         and status == "queryable"
@@ -231,7 +263,10 @@ def project(resource, check=None, receipts=(), schema=None):
         ),
         "nextAction": {
             "tool": "hk_resource_schema",
-            "arguments": {"resourceId": resource["id"]},
+            "arguments": {
+                "resourceId": resource["id"],
+                **(selected_sheet if scoped_workbook else {}),
+            },
         },
     }
 

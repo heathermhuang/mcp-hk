@@ -103,6 +103,80 @@ def test_receipts_do_not_qualify_semantics_or_other_selections(service):
     )
 
 
+def test_failed_workbook_sheet_keeps_accepted_sheet_discoverable(service):
+    catalogue = service.resources.catalogue
+    catalogue.accept(
+        "xls",
+        "accepted-sheet",
+        [{"id": "001"}],
+        {"format": "XLSX", "sourceSelection": {"sheet": "2025"}},
+        "hash",
+        {},
+    )
+    catalogue.failure("xls", "SOURCE_SCHEMA_CHANGED", "needs_adapter", "empty-sheet")
+    cap = catalogue.capability("xls")
+    assert cap["operations"]["records"]["state"] == "requires_selection"
+    assert cap["nextAction"]["arguments"] == {"resourceId": "xls", "sheet": "2025"}
+    assert catalogue.check("xls")["reason"] == "SOURCE_SCHEMA_CHANGED"
+    assert catalogue.search(capability="requires_selection")["total"] == 1
+    assert catalogue.search(capability="records")["total"] == 0
+    catalogue.failure("xls", "ACCESS_RESTRICTED", "restricted")
+    assert catalogue.capability("xls")["operations"]["records"]["state"] == "held"
+    assert catalogue.search(capability="requires_selection")["total"] == 0
+
+
+def test_failed_accepted_sheet_cannot_advertise_a_successful_selection(service):
+    catalogue = service.resources.catalogue
+    catalogue.accept(
+        "xls",
+        "accepted-sheet",
+        [{"id": "001"}],
+        {"format": "XLSX", "sourceSelection": {"sheet": "2025"}},
+        "hash",
+        {},
+    )
+    catalogue.failure("xls", "SOURCE_SCHEMA_CHANGED", "needs_adapter", "accepted-sheet")
+    assert (
+        catalogue.capability("xls")["operations"]["records"]["state"] == "unsupported"
+    )
+    assert catalogue.search(capability="requires_selection")["total"] == 0
+
+
+@pytest.mark.parametrize("parameters", [{}, {"query": "private query"}])
+def test_workbook_recovery_action_preserves_file_scope_without_guessing_parameters(
+    service, parameters
+):
+    catalogue = service.resources.catalogue
+    catalogue.accept(
+        "xls",
+        "accepted-sheet",
+        [{"id": "001"}],
+        {
+            "format": "XLSX",
+            "sourceSelection": {
+                "sheet": "2025",
+                "recordPath": "file:published.xlsx",
+                "parameters": parameters,
+            },
+        },
+        "hash",
+        {},
+    )
+    catalogue.failure("xls", "SOURCE_SCHEMA_CHANGED", "needs_adapter", "empty-sheet")
+    cap = catalogue.capability("xls")
+    assert "private query" not in json.dumps(cap)
+    if parameters:
+        assert cap["operations"]["records"]["state"] == "unsupported"
+        assert catalogue.search(capability="requires_selection")["total"] == 0
+    else:
+        assert cap["nextAction"]["arguments"] == {
+            "resourceId": "xls",
+            "sheet": "2025",
+            "recordPath": "file:published.xlsx",
+        }
+        assert catalogue.search(capability="requires_selection")["total"] == 1
+
+
 @pytest.mark.asyncio
 async def test_discovery_filters_http_mcp_and_no_url_token_search(service):
     catalogue = service.resources.catalogue

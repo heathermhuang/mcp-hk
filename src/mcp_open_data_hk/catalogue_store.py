@@ -369,10 +369,25 @@ class CatalogueStore:
         if capability == "records":
             where += " AND EXISTS (SELECT 1 FROM inventory_resources r JOIN resource_checks c ON c.id=r.id WHERE r.generation=inventory_datasets.generation AND r.dataset=inventory_datasets.id AND c.status='queryable' AND EXISTS (SELECT 1 FROM resource_variants v WHERE v.resource=r.id AND v.status='queryable' AND v.schema_hash IS NOT NULL))"
         elif capability == "requires_selection":
-            where += " AND EXISTS (SELECT 1 FROM inventory_resources r JOIN resource_checks c ON c.id=r.id WHERE r.generation=inventory_datasets.generation AND r.dataset=inventory_datasets.id AND c.status='needs_selection')"
+            where += " AND EXISTS (SELECT 1 FROM inventory_resources r JOIN resource_checks c ON c.id=r.id WHERE r.generation=inventory_datasets.generation AND r.dataset=inventory_datasets.id AND (c.status='needs_selection' OR (c.status='needs_adapter' AND c.reason='SOURCE_SCHEMA_CHANGED' AND r.format IN ('XLS','XLSX','XLSM') AND EXISTS (SELECT 1 FROM resource_variants v WHERE v.resource=r.id AND v.status='queryable' AND v.schema_hash IS NOT NULL AND v.schema_json IS NOT NULL AND accepted_workbook_sheet(v.schema_json) IS NOT NULL))))"
         elif capability == "unqualified":
             where += " AND NOT EXISTS (SELECT 1 FROM inventory_resources r JOIN resource_checks c ON c.id=r.id WHERE r.generation=inventory_datasets.generation AND r.dataset=inventory_datasets.id AND c.status='queryable')"
         with self.store.connect() as db:
+            if capability == "requires_selection":
+                db.create_function(
+                    "accepted_workbook_sheet",
+                    1,
+                    lambda schema: (
+                        json.dumps(selection)
+                        if (
+                            selection := capabilities.workbook_selection(
+                                capabilities.public_selection(unpack(schema))
+                            )
+                        )
+                        else None
+                    ),
+                    deterministic=True,
+                )
             total_native = (
                 db.execute(
                     "SELECT count(*) FROM inventory_datasets WHERE " + where,
