@@ -35,6 +35,59 @@ def service(tmp_path):
 
 
 @pytest.mark.asyncio
+async def test_padded_workbook_records_match_http_mcp_and_restored_cache(
+    service, monkeypatch, tmp_path
+):
+    import json
+
+    from fastapi.testclient import TestClient
+    from fastmcp import Client
+    from openpyxl.styles import PatternFill
+
+    from mcp_open_data_hk.api import create_app
+
+    book = Workbook()
+    book.active.append(["id", None, "value"])
+    book.active.append(["001", None, "=1+1"])
+    book.active.cell(1, 16384).fill = PatternFill("solid", fgColor="FFFF00")
+    body = io.BytesIO()
+    book.save(body)
+    book.close()
+    calls = []
+
+    async def fetch(url, headers=None, **kwargs):
+        calls.append(url)
+        return body.getvalue(), {}, url, 200
+
+    monkeypatch.setattr("mcp_open_data_hk.resources.fetch", fetch)
+    app = create_app(service)
+    with TestClient(app) as client:
+        response = client.post("/api/v1/resources/XLSX/query", json={"sheet": "Sheet"})
+        assert response.status_code == 200
+        http = response.json()
+    async with Client(app.state.mcp) as client:
+        result = await client.call_tool(
+            "hk_resource_query", {"resourceId": "XLSX", "sheet": "Sheet"}
+        )
+        mcp = json.loads(result.content[0].text)
+    expected = [{"id": "001", "_column_2": None, "value": "=1+1"}]
+    assert http["data"]["items"] == mcp["data"]["items"] == expected
+    assert http["meta"]["total"] == mcp["meta"]["total"] == 1
+    assert len(calls) == 1
+    restored_path = str(tmp_path / "restored.sqlite3")
+    with service.store.connect() as db, sqlite3.connect(restored_path) as restored:
+        db.backup(restored)
+
+    async def fail(*args, **kwargs):
+        raise AssertionError("Restored accepted rows must use the saved cache")
+
+    monkeypatch.setattr("mcp_open_data_hk.resources.fetch", fail)
+    recovered = Service(Store(restored_path))
+    result = await recovered.resources.query("XLSX", sheet="Sheet")
+    assert result["data"]["items"] == expected
+
+
+@pytest.mark.asyncio
 async def test_streamed_json_discovers_explicit_paths_then_queries_selected_records(
     service, monkeypatch, tmp_path
 ):

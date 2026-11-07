@@ -167,6 +167,25 @@ def table(matrix, info=None, positional_date_header=False):
     return rows
 
 
+def workbook_table(matrix, info):
+    def values():
+        for row in matrix:
+            end = len(row)
+            while end and row[end - 1] is None:
+                end -= 1
+            yield row[: max(end, 1)]
+
+    rows = table(values(), info)
+    # Worksheet dimensions include formatting-only cells. Keep actual column
+    # positions and rectangular nulls without treating that padding as fields.
+    for column in info["sourceColumns"]:
+        if column["sourceHeader"] is None:
+            column["sourceHeader"] = ""
+        for row in rows:
+            row.setdefault(column["name"], None)
+    return rows
+
+
 def parse(body, fmt, record_path="", sheet=""):
     fmt = fmt.upper()
     if body.startswith(b"PK\x03\x04") and fmt not in {"XLSX", "XLSM"}:
@@ -381,7 +400,11 @@ def parse(body, fmt, record_path="", sheet=""):
             ws = book[sheet or book.sheetnames[0]]
             info["sheet"] = ws.title
             # Preserve formulas rather than presenting unverified cached results.
-            rows = table(ws.values, info)
+            rows = (
+                workbook_table(ws.values, info)
+                if (ws.max_column or 0) > MAX_FIELDS
+                else table(ws.values, info)
+            )
         finally:
             book.close()
     elif fmt == "XLS":
