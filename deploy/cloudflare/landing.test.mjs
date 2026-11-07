@@ -51,6 +51,7 @@ test('homepage search has a real catalogue fallback without JavaScript',()=>{
 
 test('browse-all links explicitly include the full source catalogue',()=>{
   const html=readFileSync(new URL('../../src/mcp_open_data_hk/web/index.html',import.meta.url),'utf8');
-  const links=[...html.matchAll(/href="([^"]+)" data-i18n="seeCoverage"/g)];
+  const links=[...html.matchAll(/<a\b[^>]*href="([^"]+)"[^>]*data-i18n="(?:seeCoverage|directoryBrowseAll)"[^>]*>/g)];
   assert.equal(links.length,2);for(const link of links)assert.equal(link[1],'/coverage?access=all');
+  assert.match(html,/<a[^>]*data-browse-all[^>]*data-i18n="directoryBrowseAll"/);
 });
