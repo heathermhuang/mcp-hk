@@ -19,8 +19,8 @@ import {weatherChoices} from './source-quality.js';
   function sourceLink(path,text){const a=node('a',text);if(/^https?:\/\//i.test(path||'')){a.href=path;a.rel='noreferrer';}return a;}
   function restore(){
     const p=new URL(location.href).searchParams;
-    state={q:(p.get('q')||'').slice(0,200),access:['connected','sources'].includes(p.get('access'))?p.get('access'):'all',provider:['government','independent','independent_or_public_corporation','unclassified'].includes(p.get('provider'))?p.get('provider'):'all',offset:Math.max(0,Math.min(100000,Math.trunc(Number(p.get('offset')))||0))};
-    browseAll=p.get('browse')==='all'||(!state.q&&location.hash==='#directory-catalogue');
+    state={q:(p.get('q')||'').slice(0,200).trim(),access:['connected','sources'].includes(p.get('access'))?p.get('access'):'all',provider:['government','independent','independent_or_public_corporation','unclassified'].includes(p.get('provider'))?p.get('provider'):'all',offset:Math.max(0,Math.min(100000,Math.trunc(Number(p.get('offset')))||0))};
+    browseAll=!state.q&&(p.get('browse')==='all'||['q','access','provider','offset'].some(key=>p.has(key))||location.hash==='#directory-catalogue');
     $('mhk-discovery-query').value=state.q;$('directory-access').value=state.access;$('directory-provider').value=state.provider;
   }
   function sync(){
