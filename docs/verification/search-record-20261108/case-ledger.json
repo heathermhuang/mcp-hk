@@ -1,0 +1,68 @@
+{
+  "scope": "Bounded operator checks, not independent pilot acceptance",
+  "queries": [
+    {
+      "query": "weather",
+      "expectedFirstId": "hk-hko-rss-current-weather-report",
+      "action": "coverage to selected resource; existing qualified shortcut for weather"
+    },
+    {
+      "query": "天氣",
+      "expectedFirstId": "hk-hko-rss-current-weather-report",
+      "action": "coverage to selected resource; existing qualified shortcut for weather"
+    },
+    {
+      "query": "school",
+      "expectedFirstId": "hk-edb-schinfo-school-location-and-information",
+      "action": "coverage to selected resource; existing qualified shortcut for weather"
+    },
+    {
+      "query": "學校",
+      "expectedFirstId": "hk-edb-schinfo-school-location-and-information",
+      "action": "coverage to selected resource; existing qualified shortcut for weather"
+    }
+  ],
+  "tasks": [
+    {
+      "task": "weather",
+      "resourceId": "574e2fdcf4b1756347aedaf3ba2feeda",
+      "selectors": {
+        "recordPath": "temperature/data"
+      },
+      "expected": "HKO station temperatures with C, observation time and source",
+      "citation": "https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=en",
+      "caveats": "Selected observations only; numeric AQHI is unsupported by station-directory metadata."
+    },
+    {
+      "task": "school",
+      "resourceId": "f16c9373b666f84412e61839dfb220b8",
+      "settings": {
+        "nearby": {
+          "lat": 22.28046,
+          "lon": 114.16537,
+          "radiusM": 500
+        }
+      },
+      "expected": "Published source session/level rows; nearby through existing HTTP/MCP only",
+      "citation": "https://www.edb.gov.hk/attachment/en/student-parents/sch-info/sch-search/sch-location-info/SCH_LOC_EDB.csv",
+      "caveats": "No unique-school, admissions or availability claim."
+    },
+    {
+      "task": "transport",
+      "settings": {
+        "origin": "Lan Kwai Fong",
+        "destination": "Seymour Road",
+        "includeArrivals": true,
+        "limit": 3
+      },
+      "action": "hk_transport_journey / POST /api/v1/transport/journeys",
+      "expected": "Operator predictions or explicit partial/unavailable outcome",
+      "caveats": "Boarding/alighting verification retained; unknown calendars and source no-GPS flags; no global earliest, walking time or fastest arrival."
+    }
+  ],
+  "negativeControl": {
+    "task": "numerical current AQHI",
+    "expected": "Not answered by station metadata or an index link",
+    "evidence": "Existing bounded 2026-11-07 aqhi_records inspection; unchanged reader; no new live read or adapter."
+  }
+}

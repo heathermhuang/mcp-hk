@@ -1,9 +1,8 @@
 """First-class discovery of connected query services; never a government mirror."""
 
-import unicodedata
-
 from .sources import SOURCES, available_packs
 from .dataset_content import family
+from .search_ranking import normalise
 
 
 def entries():
@@ -41,10 +40,6 @@ def entries():
             }
         )
     return result
-
-
-def normalise(text):
-    return unicodedata.normalize("NFKC", text).casefold().strip()
 
 
 def matching(q):

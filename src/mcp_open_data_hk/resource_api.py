@@ -149,6 +149,11 @@ def register_http(app, resources):
     ):
         return resources.catalogue.resources(datasetId, status, format, limit, offset)
 
+    @app.get("/api/v1/resources/{resourceId}")
+    def resource_metadata(resourceId: str):
+        """Restore a selected inventory resource without a provider read."""
+        return resources.catalogue.resource(resourceId)
+
     @app.get("/api/v1/resources/{resourceId}/schema")
     async def schema(
         resourceId: str,

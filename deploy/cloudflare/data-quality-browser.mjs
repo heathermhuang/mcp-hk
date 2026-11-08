@@ -2,6 +2,7 @@
 import {chromium} from 'playwright';
 import assert from 'node:assert/strict';
 import {mkdir,writeFile} from 'node:fs/promises';
+import {contextPath} from '../../src/mcp_open_data_hk/web/search-journey.js';
 import {weatherChoices} from '../../src/mcp_open_data_hk/web/source-quality.js';
 const origin=process.env.MCP_HK_TEST_ORIGIN||'http://127.0.0.1:8779';
 const out=new URL('../../playwright-artifacts/data-quality/',import.meta.url);await mkdir(out,{recursive:true});
@@ -28,8 +29,9 @@ try{
   const health=await page.locator('#pg-health').innerText();assert.match(health,lang==='en'?/newer filings may be missing/:/較新的披露/);assert.equal(statuses,1);
   await page.locator('[data-family="company_registry"]').click();await page.waitForFunction(()=>document.querySelector('#pg-health').textContent.includes('414,954'));
   const company=await page.locator('#pg-health').innerText();assert.match(company,/1,410 \/ 414,954/);assert.match(company,lang==='en'?/not feasible/:/無法/);
-  await page.goto(origin+weatherChoices('hk-hko-rss-current-weather-report',lang)[0].href);
+  await page.goto(origin+contextPath(weatherChoices('hk-hko-rss-current-weather-report',lang)[0].href,{q:'weather',access:'sources',provider:'government'},lang));
   await page.waitForSelector('#pg-table tbody tr');assert.match(await page.locator('#pg-table').innerText(),/27/);
+  assert.equal(new URL(page.url()).searchParams.get('discoveryQ'),'weather');assert.equal(new URL(page.url()).searchParams.get('discoveryProvider'),'government');
   const dates=await page.locator('#pg-dates').innerText();assert.match(dates,lang==='en'?/Source observation time/:/來源觀察時間/);assert.match(dates,lang==='en'?/Retrieved/:/擷取/);assert.doesNotMatch(dates,/2019-06-27|Observed \/ retrieved/);assert.equal(await page.locator('#pg-filter-options').getAttribute('open'),null);
   assert.match(await page.locator('#pg-warnings').innerText(),lang==='en'?/contract checked/:/規約/);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);

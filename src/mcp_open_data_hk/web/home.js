@@ -1,3 +1,4 @@
+import {resultPath,contextPath,setSearchState,InventoryPages} from './search-journey.js';
 import {encodeRecipe} from './playground-state.js';
 import {fetchPublicJson} from './http.js';
 import {weatherChoices} from './source-quality.js';
@@ -6,6 +7,7 @@ import {weatherChoices} from './source-quality.js';
 (() => {
   if (location.pathname !== '/') return;
   const $ = id => document.getElementById(id), t = (...args) => MhkI18n.t(...args);
+  const pages=new InventoryPages();let inventoryChanged=false;
   const fallback = [...$('directory-results').childNodes];
   let families = [], sequence = 0, controller, browseAll = false;
   let state = {q:'',access:'all',provider:'all',offset:0}, nextOffset = null;
@@ -25,7 +27,7 @@ import {weatherChoices} from './source-quality.js';
   }
   function sync(){
     const u=new URL(location.href);
-    for(const [key,value]of Object.entries(state)){if(value&&value!=='all')u.searchParams.set(key,value);else u.searchParams.delete(key);}
+    setSearchState(u,state);
     if(browseAll)u.searchParams.set('browse','all');else u.searchParams.delete('browse');
     if(!requested()&&u.hash==='#directory-catalogue')u.hash='';
     u.searchParams.set('lang',MhkI18n.locale);history.pushState(null,'',u.pathname+u.search+u.hash);
@@ -45,7 +47,7 @@ import {weatherChoices} from './source-quality.js';
     names.append(node('strong',MhkI18n.lang==='zh'?d.titleZhHant||d.title:d.title),node('small',[d.provider,t(d.providerType||'unclassified'),d.catalogue].filter(Boolean).join(' · ')));
     const badge=node('span',t(connected?'directoryConnected':'sourceCatalogues'));badge.className='directory-access';summary.append(names,badge);
     const detail=node('div','');detail.className='mhk-directory-detail';
-    for(const choice of weatherChoices(d.id,MhkI18n.locale))detail.append(internalLink(choice.href,choice.label+' →'),document.createElement('br'));
+    for(const choice of weatherChoices(d.id,MhkI18n.locale))detail.append(internalLink(contextPath(choice.href,state,MhkI18n.locale),choice.label+' →'),document.createElement('br'));
     const description=MhkI18n.lang==='zh'?d.descriptionZhHant||d.description:d.description;
     if(description)detail.append(node('p',String(description).replace(/<[^>]*>/g,' ')));
     if(family)detail.append(node('p',localized(family.availability)),node('p',localized(family.limits)));
@@ -57,8 +59,9 @@ import {weatherChoices} from './source-quality.js';
     if(d.licence?.termsUrl)detail.append(sourceLink(d.licence.termsUrl,t('directoryTerms')));
     detail.append(node('h3',t('directoryDownloads')),node('p',family?localized(family.download):t('directoryResourceAccess')));
     if(!connected){const states=d.resourceSummary?.byStatus||{};detail.append(node('p',t('sourceCount',{total:d.resourceSummary?.total??'—'})));for(const [status,count]of Object.entries(states))detail.append(node('p',`${t(status)} · ${count}`));}
-    const path='/playground'+encodeRecipe({v:1,family:connected?d.packId:'catalogue',...(connected?{}:{dataset:d.id}),lang:MhkI18n.locale});
+    const path=resultPath(d,state,MhkI18n.locale);
     detail.append(internalLink(path,t('directoryOpen')+' →'));
+    if(!connected)detail.append(document.createTextNode(' · '),internalLink('/playground'+encodeRecipe({v:1,family:'catalogue',dataset:d.id,lang:MhkI18n.locale}),t('playground')));
     if(family)detail.append(document.createTextNode(' · '),internalLink(family.statusPage,t('directoryScopeLink')));
     if(connected&&d.access){detail.append(node('pre',[...(d.access.http||[]).map(p=>'GET '+p),...(d.access.tools||[]).map(tool=>'MCP: '+tool)].join('\n')));}
     detail.append(internalLink('/docs',t('apiDocs')));row.append(summary,detail);return row;
@@ -78,8 +81,10 @@ import {weatherChoices} from './source-quality.js';
     try{
       const [data]=await Promise.all([fetchPublicJson('/api/v1/catalogue/datasets?'+new URLSearchParams({...state,order:state.q?'relevance':'title',limit:10}),undefined,{signal:controller.signal}),familyReady]);
       if(token!==sequence)return;
+      if(pages.changed(JSON.stringify([state.q,state.access,state.provider]),data.generation,state.offset)){state.offset=0;inventoryChanged=true;sync();return search({push:false,focus});}
       $('directory-results').replaceChildren(...data.items.map(renderRow));
       $('directory-count').textContent=t('pageRange',{start:data.items.length?state.offset+1:0,end:state.offset+data.items.length,total:data.total});
+      if(inventoryChanged){$('directory-results').prepend(node('p',t('inventoryChanged')));inventoryChanged=false;}
       if(!data.items.length)$('directory-results').append(node('p',t('directoryEmpty')));
       nextOffset=data.nextOffset;$('directory-previous').hidden=!state.offset;$('directory-next').hidden=nextOffset==null;
     }catch(error){

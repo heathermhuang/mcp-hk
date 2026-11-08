@@ -21,7 +21,7 @@ try{
   await page.locator('#docs-query').fill('GET /api/v1/racing/races');await page.locator('#docs-query').press('Enter');assert.equal(await page.locator('.docs-operation').count(),2);
   await page.locator('#docs-query').fill('no-such-endpoint-20261029');await page.locator('#docs-query').press('Enter');assert.equal(await page.locator('.docs-operation').count(),0);
   await page.locator('#docs-clear').click();assert.equal(await page.locator('.docs-operation').count(),count);
-  await page.locator('#docs-query').fill('GET /api/v1/resources');await page.locator('#docs-query').press('Enter');assert.equal(await page.locator('.docs-operation').count(),3);
+  await page.locator('#docs-query').fill('GET /api/v1/resources');await page.locator('#docs-query').press('Enter');assert.deepEqual((await page.locator('.docs-operation summary code').allTextContents()).sort(),['/api/v1/resources','/api/v1/resources/{resourceId}','/api/v1/resources/{resourceId}/records','/api/v1/resources/{resourceId}/schema'].sort());
   await page.locator('#docs-query').fill('POST /api/v1/resources');await page.locator('#docs-query').press('Enter');
   const resource=page.locator('.docs-operation').filter({has:page.locator('summary code',{hasText:'/api/v1/resources/{resourceId}/query'})});await resource.locator(':scope>summary').click();assert.ok((await resource.innerText()).includes('recordPath'));assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
   if([390,1280].includes(width)){await page.locator('#api-reference').scrollIntoViewIfNeeded();await page.screenshot({path:new URL(`reference-${lang}-${width}.png`,out).pathname});}

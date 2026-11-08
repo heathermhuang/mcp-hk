@@ -9,7 +9,7 @@ import zlib
 from .contracts import DomainError
 from . import capabilities, resource_selections
 from .spatial_profiles import profiles
-from . import transport, connected
+from . import transport, connected, search_ranking
 from .quality import REVISION as REVIEW_REVISION, freshness
 from .review_config import capacity
 from .source_contracts import comparable_fields
@@ -311,18 +311,17 @@ class CatalogueStore:
             )
         )
         where, args = "generation=?", (generation,)
-        alias_ids = []
-        for profile in profiles():
-            aliases = connected.normalise(" ".join(profile.get("aliases", [])))
-            if q.strip() and all(term in aliases for term in terms):
-                alias_ids.append(profile["datasetId"])
+        aliases = {
+            **search_ranking.TASK_ALIASES,
+            **{p["datasetId"]: p.get("aliases", []) for p in profiles()},
+        }
         for term, pattern in zip(terms, patterns):
             matching_aliases = [
-                p["datasetId"]
-                for p in profiles()
-                if term and term in connected.normalise(" ".join(p.get("aliases", [])))
+                dataset_id
+                for dataset_id, names in aliases.items()
+                if term and term in connected.normalise(" ".join(names))
             ]
-            expression = "lower(" + lexical + ") LIKE ? ESCAPE '\\'"
+            expression = "search_normalise(" + lexical + ") LIKE ? ESCAPE '\\'"
             args += (pattern,)
             if matching_aliases:
                 expression += (
@@ -330,11 +329,6 @@ class CatalogueStore:
                 )
                 args += tuple(matching_aliases)
             where += " AND (" + expression + ")"
-        alias_rank = (
-            " WHEN id IN (" + ",".join("?" for _ in alias_ids) + ") THEN 1"
-            if alias_ids
-            else ""
-        )
         if provider != "all":
             where += (
                 " AND COALESCE(json_extract(payload,'$.providerType'),'unclassified')=?"
@@ -373,6 +367,7 @@ class CatalogueStore:
         elif capability == "unqualified":
             where += " AND NOT EXISTS (SELECT 1 FROM inventory_resources r JOIN resource_checks c ON c.id=r.id WHERE r.generation=inventory_datasets.generation AND r.dataset=inventory_datasets.id AND c.status='queryable')"
         with self.store.connect() as db:
+            search_ranking.register_sql(db, q, aliases)
             if capability == "requires_selection":
                 db.create_function(
                     "accepted_workbook_sheet",
@@ -397,45 +392,58 @@ class CatalogueStore:
                 else 0
             )
             start_native = max(0, offset - len(curated))
-            count_native = max(0, limit - len(curated[offset : offset + limit]))
-            if order == "title":
-                # Merge a bounded native window with the small connected registry.
-                # Both interfaces receive the same title/id order, including ties.
-                count_native = limit + len(curated)
-                rows = (
-                    db.execute(
-                        "SELECT payload FROM inventory_datasets WHERE "
-                        + where
-                        + " ORDER BY lower(json_extract(payload,'$.title')),id LIMIT ? OFFSET ?",
-                        (*args, count_native, start_native),
-                    ).fetchall()
-                    if total_native
-                    else []
+            merged_order = order == "title" or bool(q.strip())
+            count_native = (
+                limit + len(curated)
+                if merged_order
+                else max(0, limit - len(curated[offset : offset + limit]))
+            )
+            ordering = (
+                "lower(json_extract(payload,'$.title')),id"
+                if order == "title"
+                else (
+                    "relevance_bucket(payload),relevance_title(payload),id"
+                    if q.strip()
+                    else "CASE WHEN lower(json_extract(payload,'$.title'))='' THEN 0 "
+                    "WHEN json_extract(payload,'$.title') LIKE '%' OR json_extract(payload,'$.titleZhHant') LIKE '%' THEN 2 "
+                    "WHEN json_extract(payload,'$.provider') LIKE '%' THEN 3 ELSE 4 END,id"
                 )
-            else:
-                rows = (
-                    db.execute(
-                        "SELECT payload FROM inventory_datasets WHERE "
-                        + where
-                        + " ORDER BY CASE WHEN lower(json_extract(payload,'$.title'))=? THEN 0"
-                        + alias_rank
-                        + " WHEN json_extract(payload,'$.title') LIKE ? ESCAPE '\\' OR json_extract(payload,'$.titleZhHant') LIKE ? ESCAPE '\\' THEN 2 WHEN json_extract(payload,'$.provider') LIKE ? ESCAPE '\\' THEN 3 ELSE 4 END,id LIMIT ? OFFSET ?",
-                        (
-                            *args,
-                            connected.normalise(q),
-                            *alias_ids,
-                            patterns[0],
-                            patterns[0],
-                            patterns[0],
-                            count_native,
-                            start_native,
-                        ),
-                    ).fetchall()
-                    if total_native and count_native
-                    else []
-                )
+            )
+            rows = (
+                db.execute(
+                    "SELECT payload FROM inventory_datasets WHERE "
+                    + where
+                    + " ORDER BY "
+                    + ordering
+                    + " LIMIT ? OFFSET ?",
+                    (*args, count_native, start_native),
+                ).fetchall()
+                if total_native and count_native
+                else []
+            )
             native = [json.loads(r[0]) for r in rows]
-            for item in native:
+            ascii_lower = str.maketrans(
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz"
+            )
+            if merged_order:
+                key = (
+                    (
+                        lambda item: (
+                            item.get("title", "").translate(ascii_lower),
+                            item["id"],
+                        )
+                    )
+                    if order == "title"
+                    else (lambda item: search_ranking.relevance_key(item, q, aliases))
+                )
+                items = sorted(curated + native, key=key)[
+                    offset - start_native : offset - start_native + limit
+                ]
+            else:
+                items = curated[offset : offset + limit] + native
+            for item in items:
+                if item in curated:
+                    continue
                 states = {
                     r[0]: r[1]
                     for r in db.execute(
@@ -452,19 +460,6 @@ class CatalogueStore:
                     "byStatus": states,
                 }
         total = len(curated) + total_native
-        if order == "title":
-            ascii_lower = str.maketrans(
-                "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz"
-            )
-            items = sorted(
-                curated + native,
-                key=lambda item: (
-                    item.get("title", "").translate(ascii_lower),
-                    item["id"],
-                ),
-            )[offset - start_native : offset - start_native + limit]
-        else:
-            items = curated[offset : offset + limit] + native
         return {
             "items": items,
             "total": total,

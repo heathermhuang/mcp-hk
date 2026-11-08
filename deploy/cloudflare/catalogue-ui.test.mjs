@@ -2,6 +2,9 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 import {test} from 'node:test';
+import {validateRecipe} from '../../src/mcp_open_data_hk/web/playground-state.js';
+import {resultPath,contextPath,InventoryPages} from '../../src/mcp_open_data_hk/web/search-journey.js';
+import {assertResource,selectionAction} from '../../src/mcp_open_data_hk/web/source-actions.js';
 import {weatherChoices,dateFacts,qualityText} from '../../src/mcp_open_data_hk/web/source-quality.js';
 class Element {
   constructor(tag='div'){this.tag=tag;this.children=[];this.listeners={};this.dataset={};this.attrs={};this.value='';this.textContent='';this.hidden=false;}
@@ -18,25 +21,25 @@ async function browser(){
   const a={id:'alpha',title:'Alpha',provider:'Provider',providerType:'government',catalogue:'DATA.GOV.HK',sourceUrl:'https://example.gov.hk/alpha'},b={...a,id:'beta',title:'Beta'};
   const first={id:'a'.repeat(32),datasetId:'alpha',format:'JSON',url:'https://example.gov.hk/a',catalogue:'DATA.GOV.HK',validation:{status:'needs_selection'},transport:{operation:'arrivals',operator:'MTR',requiredParameters:['line','sta'],parameterExamples:{line:'TWL',sta:'CEN'},cacheTTLSeconds:10}};
   const second={...first,id:'b'.repeat(32),transport:undefined},third={...second,id:'c'.repeat(32),datasetId:'beta'};
-  let pendingResolve;
+  let pendingResolve;const calls=[];
   const api=async(path,body)=>{
-    const u=new URL(path,location);
+    const u=new URL(path,location);calls.push({path,body});
     if(u.pathname==='/api/v1/coverage')return {datasets:{discovered:2},resources:{discovered:3,byStatus:{}}};
     if(u.pathname==='/api/v1/catalogue/datasets')return {items:u.searchParams.get('q')==='Beta'?[b]:[a,b],total:u.searchParams.get('q')==='Beta'?1:2,nextOffset:null};
     if(u.pathname.startsWith('/api/v1/catalogue/datasets/'))return u.pathname.endsWith('alpha')?a:b;
     if(u.pathname==='/api/v1/resources')return {items:u.searchParams.get('datasetId')==='beta'?[third]:[first,second],total:2,nextOffset:null};
-    if(u.pathname.endsWith('/schema'))return {schema:{fields:[{name:'row',types:['string']}],queryFields:[]},recordCount:1};
+    if(u.pathname.endsWith('/schema'))return {resource:[first,second,third].find(r=>r.id===u.pathname.split('/')[4]),schema:{fields:[{name:'row',types:['string']}],queryFields:[]},recordCount:1};
     if(u.pathname.endsWith('/query'))return new Promise(resolve=>{pendingResolve=resolve;});
     throw Error('Unexpected request '+path);
   };
   const document={getElementById:el,querySelectorAll:s=>s==='[data-access]'?modes:[],createElement:t=>new Element(t),createTextNode:t=>t,title:''};
   const context=vm.createContext({document,location,URL,URLSearchParams,history:{pushState(a,b,path){location.href=new URL(path,location).href;},replaceState(a,b,path){location.href=new URL(path,location).href;}},fetchPublicJson:api,setTimeout,clearTimeout,FormData:class{constructor(f){this.f=f;}get(k){return this.f.elements[k]?.value||'';}},MhkI18n:{lang:'en',locale:'en',t:(key)=>key,apply(){},coverageSummary(){}}});
   context.window=context;context.matchMedia=()=>({matches:true});context.addEventListener=(name,fn)=>{listeners[name]=fn;};
-  Object.assign(context,{weatherChoices,dateFacts,qualityText});context.MhkI18n.date=String;
+  Object.assign(context,{weatherChoices,dateFacts,qualityText,resultPath,contextPath,InventoryPages,assertResource,validateRecipe:v=>validateRecipe(structuredClone(v)),selectionAction:(...args)=>selectionAction(...structuredClone(args))});context.MhkI18n.date=String;
   vm.runInContext(readFileSync(new URL('../../src/mcp_open_data_hk/web/coverage.js',import.meta.url),'utf8').replace(/^import .*\n/gm,''),context);
   await flush();await flush();
   const button=(id,text)=>el(id).querySelectorAll(id==='datasets'?'a':'button').find(b=>b.textContent===text);
-  return {el,button,form,queryButton,listeners,location,first,second,resolve:value=>pendingResolve(value)};
+  return {el,button,form,queryButton,listeners,location,first,second,calls,resolve:value=>pendingResolve(value)};
 }
 test('switching resources clears incompatible source settings and selection state',async()=>{
   const b=await browser();b.button('datasets','Alpha').listeners.click({preventDefault(){}});await flush();
@@ -51,7 +54,7 @@ test('an old query cannot restore unrelated records after a new search',async()=
   const b=await browser();b.button('datasets','Alpha').listeners.click({preventDefault(){}});await flush();b.el('resources').querySelectorAll('button')[1].listeners.click({preventDefault(){}});
   b.form.listeners.submit({preventDefault(){},submitter:{value:'query'}});await flush();
   b.el('dataset-query').value='Beta';b.el('dataset-search').listeners.submit({preventDefault(){}});await flush();
-  b.resolve({data:{items:[{row:'old response'}]},schema:{fields:[]},meta:{total:1,structuredQueryable:true},warnings:[],provenance:[]});await flush();await flush();
+  b.resolve({resource:b.second,data:{items:[{row:'old response'}]},schema:{fields:[]},meta:{total:1,structuredQueryable:true},warnings:[],provenance:[]});await flush();await flush();
   assert.equal(b.el('preview-step').hidden,true);assert.equal(b.el('resource-step').hidden,true);assert.equal(b.el('record-table').children.length,0);assert.equal(b.queryButton.disabled,true);
   assert.equal(b.location.searchParams.get('q'),'Beta');assert.equal(b.location.searchParams.has('resource'),false);
 });
@@ -64,11 +67,11 @@ test('back/refresh URL state restores the selected dataset and source',async()=>
 test('replacement query loading and malformed objects never retain prior response JSON',async()=>{
   const b=await browser();b.button('datasets','Alpha').listeners.click({preventDefault(){}});await flush();b.el('resources').querySelectorAll('button')[1].listeners.click({preventDefault(){}});
   b.form.listeners.submit({preventDefault(){},submitter:{value:'query'}});await flush();
-  b.resolve({data:{items:[{row:'old response'}]},schema:{fields:[]},meta:{total:1,structuredQueryable:true},warnings:[],provenance:[]});await flush();await flush();
+  b.resolve({resource:b.second,data:{items:[{row:'old response'}]},schema:{fields:[]},meta:{total:1,structuredQueryable:true},warnings:[],provenance:[]});await flush();await flush();
   assert.match(b.el('record-response').textContent,/old response/);
   b.form.listeners.submit({preventDefault(){},submitter:{value:'query'}});
   assert.equal(b.el('record-response').textContent,'');
-  b.resolve({data:{items:[]},schema:{fields:[]},meta:{total:0,structuredQueryable:true},warnings:[],provenance:[]});await flush();await flush();
+  b.resolve({resource:b.second,data:{items:[]},schema:{fields:[]},meta:{total:0,structuredQueryable:true},warnings:[],provenance:[]});await flush();await flush();
   for(const value of ['{','null','[]','"text"']){
     b.form.elements.parameters.value=value;b.form.listeners.submit({preventDefault(){},submitter:{value:'query'}});await flush();
     assert.equal(b.el('record-response').textContent,'');assert.equal(b.el('record-table').children.some(e=>e.tag==='table'),false);assert.equal(b.el('query-message').textContent,'sourceError');assert.equal(b.queryButton.disabled,false);
@@ -84,4 +87,14 @@ test('resource directory status, format, page and selection survive URL restorat
   b.el('coverage-status').value='unavailable';b.location.href=saved;await b.listeners.popstate();await flush();
   assert.equal(b.el('resource-step').hidden,false);assert.equal(b.el('coverage-status').value,'queryable');assert.equal(b.el('resource-format').value,'JSON');
   assert.equal(b.location.searchParams.get('sourceOffset'),'15');assert.equal(b.location.searchParams.get('resource'),b.second.id);assert.equal(b.el('preview-step').hidden,false);
+});
+
+test('restoring required parameter inputs retains the explicit saved query',async()=>{
+ const b=await browser();b.button('datasets','Alpha').listeners.click({preventDefault(){}});await flush();b.el('resources').querySelectorAll('button')[0].listeners.click({preventDefault(){}});
+ const inputs=b.el('source-inputs').querySelectorAll('[data-source-parameter]');for(const input of inputs)input.value={line:'TWL',sta:'CEN'}[input.dataset.sourceParameter];
+ b.form.listeners.submit({preventDefault(){},submitter:{value:'query'}});await flush();const saved=b.location.href;
+ b.el('dataset-query').value='Beta';b.el('dataset-search').listeners.submit({preventDefault(){}});await flush();b.location.href=saved;await b.listeners.popstate();await flush();
+ assert.deepEqual(JSON.parse(b.location.searchParams.get('parameters')),{line:'TWL',sta:'CEN'});
+ for(const input of b.el('source-inputs').querySelectorAll('[data-source-parameter]'))assert.equal(input.value,{line:'TWL',sta:'CEN'}[input.dataset.sourceParameter]);
+ b.form.listeners.submit({preventDefault(){},submitter:{value:'query'}});await flush();assert.deepEqual(JSON.parse(JSON.stringify(b.calls.filter(c=>c.path.endsWith('/schema')).at(-1).body.parameters)),{line:'TWL',sta:'CEN'});
 });

@@ -1,0 +1,46 @@
+[
+  {
+    "query": "weather",
+    "total": 37,
+    "ids": [
+      "hk-hko-rss-current-weather-report",
+      "hk-hko-rss-9-day-weather-forecast",
+      "csdi:hko_rcd_1634806665997_63899",
+      "hk-cepu-prfs-funding-scheme-project-no-2016-a1-038-16d",
+      "hk-hko-rss-local-weather-forecast"
+    ]
+  },
+  {
+    "query": "school",
+    "total": 106,
+    "ids": [
+      "hk-edb-schinfo-school-location-and-information",
+      "csdi:swd_rcd_1633494404819_18872",
+      "hk-swd-fcw-list-ascp-pc",
+      "csdi:edb_rcd_1629267205213_6391",
+      "csdi:edb_rcd_1629267205213_53323"
+    ]
+  },
+  {
+    "query": "天氣",
+    "total": 13,
+    "ids": [
+      "hk-hko-rss-current-weather-report",
+      "csdi:hko_rcd_1634806665997_63899",
+      "csdi:hko_rcd_1634957986804_49802",
+      "csdi:hko_rcd_1634955430532_53971",
+      "csdi:hko_rcd_1634874829534_64181"
+    ]
+  },
+  {
+    "query": "學校",
+    "total": 17,
+    "ids": [
+      "hk-edb-schinfo-school-location-and-information",
+      "csdi:edb_rcd_1629267205213_7733",
+      "csdi:edb_rcd_1633335271365_64175",
+      "csdi:wsd_rcd_1696489932835_71654",
+      "csdi:edb_rcd_1629267205213_10118"
+    ]
+  }
+]
