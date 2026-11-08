@@ -1,0 +1,46 @@
+[
+  {
+    "query": "weather",
+    "total": 37,
+    "ids": [
+      "mcp:catalogue",
+      "csdi:hko_rcd_1634806665997_63899",
+      "csdi:hko_rcd_1634872644049_34294",
+      "csdi:hko_rcd_1634874829534_64181",
+      "csdi:hko_rcd_1634875711587_25731"
+    ]
+  },
+  {
+    "query": "school",
+    "total": 106,
+    "ids": [
+      "mcp:catalogue",
+      "hk-edb-schinfo-school-location-and-information",
+      "chsc-chsc-primary-school-profiles",
+      "chsc-chsc-secondary-school-profiles",
+      "csdi:edb_rcd_1629267205213_10118"
+    ]
+  },
+  {
+    "query": "天氣",
+    "total": 12,
+    "ids": [
+      "mcp:catalogue",
+      "csdi:hko_rcd_1634806665997_63899",
+      "csdi:hko_rcd_1634872644049_34294",
+      "csdi:hko_rcd_1634874829534_64181",
+      "csdi:hko_rcd_1634875711587_25731"
+    ]
+  },
+  {
+    "query": "學校",
+    "total": 17,
+    "ids": [
+      "mcp:catalogue",
+      "hk-edb-schinfo-school-location-and-information",
+      "csdi:edb_rcd_1629267205213_10118",
+      "csdi:edb_rcd_1629267205213_1378",
+      "csdi:edb_rcd_1629267205213_1928"
+    ]
+  }
+]

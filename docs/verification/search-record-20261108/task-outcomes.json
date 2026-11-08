@@ -1,0 +1,125 @@
+{
+  "sourceRelease": "ba830a6b4d5ddd8c96d3a9a7816af37095d3faff",
+  "readerCodeUnchangedInCandidate": true,
+  "results": [
+    {
+      "task": "weather",
+      "checkedAtUtc": "2026-11-08T02:16:19.774879+00:00",
+      "operatorCheck": true,
+      "independentPilot": false,
+      "httpStatus": 200,
+      "elapsedMs": 508,
+      "recordCount": 5,
+      "outcome": "PASS_SELECTED_OBSERVATIONS",
+      "observedAt": "2026-11-08T10:00:00+08:00",
+      "quality": {
+        "semanticVerification": "selected_observation_contract",
+        "qualification": {
+          "contract": "hko-station-observations-1",
+          "series": "temperature",
+          "rowCount": 27,
+          "uniqueStationCount": 27,
+          "unit": "C",
+          "scope": "All observations in this selected source response; not a fixed station inventory or complete weather coverage."
+        }
+      },
+      "caveat": "Selected HKO temperature observations only; no fixed station inventory, full weather coverage or numerical AQHI claim.",
+      "httpMcpVerified": true,
+      "citations": [
+        {
+          "sourceUrl": "https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=en",
+          "attribution": "Hong Kong Observatory / DATA.GOV.HK"
+        }
+      ]
+    },
+    {
+      "task": "school",
+      "checkedAtUtc": "2026-11-08T02:16:20.805452+00:00",
+      "operatorCheck": true,
+      "independentPilot": false,
+      "httpStatus": 200,
+      "elapsedMs": 2010,
+      "recordCount": 3,
+      "outcome": "PASS_SOURCE_ROWS_AND_NEARBY",
+      "caveat": "Published session/level source rows, not unique schools; no admissions or availability inference.",
+      "httpMcpVerified": true,
+      "citations": [
+        {
+          "sourceUrl": "https://www.edb.gov.hk/attachment/en/student-parents/sch-info/sch-search/sch-location-info/SCH_LOC_EDB.csv",
+          "attribution": "Education Bureau / DATA.GOV.HK"
+        }
+      ]
+    },
+    {
+      "task": "transport",
+      "checkedAtUtc": "2026-11-08T02:16:23.256288+00:00",
+      "operatorCheck": true,
+      "independentPilot": false,
+      "httpStatus": 200,
+      "elapsedMs": 16964,
+      "recordCount": 3,
+      "outcome": "HELD",
+      "coverage": {
+        "candidate": 8,
+        "eligible": 0,
+        "eligibilityUnknown": 8,
+        "verifiedNotServingOrder": 0,
+        "acceptedArrivalChecks": 0,
+        "checked": 8,
+        "failed": 8,
+        "unchecked": 0,
+        "uncheckedReasons": {},
+        "sourceRequests": 3,
+        "requestLimit": 64,
+        "deadlineSeconds": 45,
+        "referenceIndexStale": false,
+        "complete": false,
+        "eligibilityMeaning": "Verified current operator boarding/alighting occurrence; service calendars remain unknown."
+      },
+      "caveat": "Direct candidate routes with operator boarding/alighting checks. Calendars unknown; preserve no-GPS flags. No global-earliest, walking-time or fastest-arrival claim.",
+      "httpMcpVerified": true,
+      "citations": [
+        {
+          "sourceUrl": "https://data.gov.hk/en-data/dataset/hk-td-tis_11-pt-headway-en",
+          "attribution": "Transport Department / DATA.GOV.HK; live arrivals attributed separately to each operator"
+        },
+        {
+          "sourceUrl": "https://static.data.gov.hk/td/pt-headway-en/stops.txt",
+          "attribution": null
+        },
+        {
+          "sourceUrl": "https://static.data.gov.hk/td/pt-headway-tc/stops.txt",
+          "attribution": null
+        },
+        {
+          "sourceUrl": "https://static.data.gov.hk/td/routes-fares-xml/ROUTE_BUS.xml",
+          "attribution": null
+        },
+        {
+          "sourceUrl": "https://static.data.gov.hk/td/routes-fares-xml/RSTOP_BUS.xml",
+          "attribution": null
+        }
+      ],
+      "code": "ACCESS_RESTRICTED",
+      "mcpCoverage": {
+        "candidate": 8,
+        "eligible": 0,
+        "eligibilityUnknown": 8,
+        "verifiedNotServingOrder": 0,
+        "acceptedArrivalChecks": 0,
+        "checked": 8,
+        "failed": 8,
+        "unchecked": 0,
+        "uncheckedReasons": {},
+        "sourceRequests": 3,
+        "requestLimit": 64,
+        "deadlineSeconds": 45,
+        "referenceIndexStale": false,
+        "complete": false,
+        "eligibilityMeaning": "Verified current operator boarding/alighting occurrence; service calendars remain unknown."
+      },
+      "predictionsReached": false,
+      "detail": "All eight candidate arrival/eligibility checks failed; reference routes remain unknown. No further source attempt."
+    }
+  ]
+}

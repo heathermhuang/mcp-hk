@@ -222,5 +222,9 @@
   "POST /api/v1/transport/journeys": {
     "en": "Find direct bus routes and verified Citybus arrivals",
     "zh-Hant": "尋找直達巴士路線及已核實的城巴到站預測"
+  },
+  "GET /api/v1/resources/{resourceId}": {
+    "en": "Read source resource inventory metadata",
+    "zh-Hant": "讀取來源資源目錄中繼資料"
   }
 }

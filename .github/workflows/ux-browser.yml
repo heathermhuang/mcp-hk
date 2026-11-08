@@ -32,6 +32,7 @@ jobs:
           node deploy/cloudflare/company-acceptance-browser.mjs
           node deploy/cloudflare/content-browser.mjs
           node deploy/cloudflare/home-browser.mjs
+          node deploy/cloudflare/search-record-browser.mjs
           MCP_HK_TEST_ORIGIN=http://127.0.0.1:8765 node deploy/cloudflare/playground-browser.mjs
           MCP_HK_TEST_ORIGIN=http://127.0.0.1:8765 node deploy/cloudflare/data-quality-browser.mjs
           PYTHONPATH=src MCP_HK_DATABASE=/tmp/mcp-hk-playground-ux.sqlite3 python tests/prepare_playground_browser.py

@@ -1,3 +1,6 @@
+import {validateRecipe} from './playground-state.js';
+import {resultPath,contextPath,InventoryPages} from './search-journey.js';
+import {assertResource,selectionAction} from './source-actions.js';
 import {fetchPublicJson} from './http.js';
 import {weatherChoices,dateFacts,qualityText} from './source-quality.js';
 /* Source data is always rendered as text and retains its original language. */
@@ -6,9 +9,10 @@ import {weatherChoices,dateFacts,qualityText} from './source-quality.js';
   let searchSequence = 0, resourceSequence = 0, requestGeneration = 0;
   let previousResult=null,retryUntil=0,retryTimer=null;
   let selected = null, nextRecords = null, lastQuery = null, searchOffset = 0, resourceOffset = 0;
-  let datasetId = null, datasetTitle = '', access = 'connected', submittedQuery = '', directoryMode = false, busy = false;
+  let datasetId = null, datasetTitle = '', access = 'connected', provider='all', submittedQuery = '', directoryMode = false, busy = false;
   let inventory = null, inventoryFailed = false, datasets = null, resourceList = null, result = null;
   let searchError = null, resourceError = null, queryError = null, expiryTimer = null;
+  const pages=new InventoryPages();let inventoryChanged=false;
   const api = fetchPublicJson, controllers={};
   function request(key,path,body){controllers[key]?.abort();const controller=typeof AbortController==='function'?new AbortController():null;controllers[key]=controller;return api(path,body,{signal:controller?.signal,attempts:key==='preview'?1:3});}
   const node = (tag, text) => { const e = document.createElement(tag); e.textContent = text; return e; };
@@ -26,8 +30,9 @@ import {weatherChoices,dateFacts,qualityText} from './source-quality.js';
   function internalLink(url, text) { const a=node('a',text), u=new URL(url,location.origin); if(u.origin===location.origin){u.searchParams.set('lang',MhkI18n.locale);a.href=u.pathname+u.search+u.hash;}return a; }
   function focusSection(id) { const e=$(id);e.focus({preventScroll:true});e.scrollIntoView({behavior:window.matchMedia?.('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'}); }
   function syncUrl(push=true) {
-    const u=new URL(location.href);u.searchParams.set('q',submittedQuery);u.searchParams.set('access',access);u.searchParams.set('lang',MhkI18n.locale);
+    const u=new URL(location.href);u.searchParams.set('q',submittedQuery);u.searchParams.set('access',access);if(provider!=='all')u.searchParams.set('provider',provider);else u.searchParams.delete('provider');u.searchParams.set('lang',MhkI18n.locale);
     for(const [key,value] of [['dataset',datasetId],['resource',selected?.id],['offset',searchOffset||null],['sourceOffset',resourceOffset||null],['format',$('resource-format').value||null],['directory',directoryMode?'1':null],['status',directoryMode?$('coverage-status').value||null:null]]) {if(value!=null)u.searchParams.set(key,value);else u.searchParams.delete(key);}
+    if(selected){const selectors=validateRecipe({v:1,family:'catalogue',lang:MhkI18n.locale,selectors:currentSelectors()}).selectors;for(const key of ['sheet','layer','recordPath','parameters']){const value=selectors[key];if(value!=null&&(key!=='parameters'||Object.keys(value).length))u.searchParams.set(key,key==='parameters'?JSON.stringify(value):value);else u.searchParams.delete(key);}}else for(const key of ['sheet','layer','recordPath','parameters'])u.searchParams.delete(key);
     history[push?'pushState':'replaceState'](null,'',u.pathname+u.search+u.hash);
   }
   function resetPreview() {
@@ -46,18 +51,19 @@ import {weatherChoices,dateFacts,qualityText} from './source-quality.js';
       if(access!=='all'){const all=node('button',t('searchAllData'));all.type='button';all.addEventListener('click',()=>{access='all';searchOffset=0;search();});$('datasets').append(all);}
       $('datasets').append(internalLink('/coverage?q=Plate.hk&access=all',t('tryPlate')),document.createTextNode(' · '),internalLink('/coverage?q=weather&access=all',t('topicWeather'))); return;
     }
+    if(inventoryChanged)$('datasets').append(node('p',t('inventoryChanged')));
     for (const d of datasets.items) {
       const row = node('article', ''), heading=node('h3','');row.className='catalogue-result';
       const connected=d.entryKind==='connected_service';
       const button=node('a',title(d));
-      if(connected){const a=internalLink(d.action.url,title(d));button.href=a.href;}
-      else {button.href='/coverage?'+new URLSearchParams({q:submittedQuery,access,dataset:d.id,offset:searchOffset,lang:MhkI18n.locale});button.setAttribute('aria-pressed',String(datasetId===d.id));button.addEventListener('click',event=>{if(event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;event.preventDefault();resetDataset();datasetId=d.id;datasetTitle=title(d);$('resource-step').hidden=false;syncUrl();resources().then(()=>focusSection('resource-heading'));renderDatasets();renderFocus();});}
+      if(connected){const a=internalLink(resultPath(d,{q:submittedQuery,access,provider,offset:searchOffset},MhkI18n.locale),title(d));button.href=a.href;}
+      else {button.href='/coverage?'+new URLSearchParams({q:submittedQuery,access,provider,dataset:d.id,offset:searchOffset,lang:MhkI18n.locale});button.setAttribute('aria-pressed',String(datasetId===d.id));button.addEventListener('click',event=>{if(event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;event.preventDefault();resetDataset();datasetId=d.id;datasetTitle=title(d);$('resource-step').hidden=false;syncUrl();resources().then(()=>focusSection('resource-heading'));renderDatasets();renderFocus();});}
       heading.append(button);row.append(heading);
       const description=MhkI18n.lang==='zh'?d.descriptionZhHant||d.description:d.description;if(description)row.append(node('p',String(description).replace(/<[^>]*>/g,' ').slice(0,280)));
       const states=d.resourceSummary?.byStatus||{};
       const capability=connected?'connectedQuery':states.queryable?'previewChecked':states.needs_selection||states.stale?'sourceSettingsNeeded':states.document?'documentPreview':'sourceFiles';
       const badge=node('span',t(capability));badge.className='data-capability';row.append(badge,node('p',`${d.provider} · ${t(d.providerType)} · ${d.catalogue}`));
-      if(connected){const a=internalLink(d.action.url,MhkI18n.lang==='zh'?d.action.labelZhHant:d.action.label);a.className='mhk-button mhk-secondary';row.append(a);}
+      if(connected){const a=internalLink(resultPath(d,{q:submittedQuery,access,provider,offset:searchOffset},MhkI18n.locale),MhkI18n.lang==='zh'?d.action.labelZhHant:d.action.label);a.className='mhk-button mhk-secondary';row.append(a);}
       else row.append(node('p',t('sourceCount',{total:d.resourceSummary?.total??'—'})));
       row.append(link(d.sourceUrl,t('originalSource')));$('datasets').append(row);
     }
@@ -69,8 +75,9 @@ import {weatherChoices,dateFacts,qualityText} from './source-quality.js';
     resetDataset();syncUrl(push);
     const sequence = ++searchSequence; datasets = null; searchError = null; $('dataset-total').textContent = ''; $('datasets-next').hidden = true; renderDatasets();
     try {
-      const data = await request('search','/api/v1/catalogue/datasets?' + new URLSearchParams({q:submittedQuery,access,limit:10,offset:searchOffset}));
-      if (sequence !== searchSequence) return; datasets = data;
+      const data = await request('search','/api/v1/catalogue/datasets?' + new URLSearchParams({q:submittedQuery,access,provider,limit:10,offset:searchOffset}));
+      if (sequence !== searchSequence) return;
+      if(pages.changed(JSON.stringify([submittedQuery,access,provider]),data.generation,searchOffset)){searchOffset=0;inventoryChanged=true;return search({readInput:false,push:false});}datasets = data;
     } catch (e) { if (sequence !== searchSequence) return; searchError = e; }
     renderDatasets();
   }
@@ -83,9 +90,9 @@ import {weatherChoices,dateFacts,qualityText} from './source-quality.js';
     if (!datasetId && !directoryMode) { $('resources').textContent = resourceError ? failure(resourceError) : t('searchFirst'); return; }
     $('resources').replaceChildren();$('dataset-context').textContent=datasetTitle;
     if (!resourceList) { $('resources').textContent = resourceError ? failure(resourceError) : t('loadingResources'); return; }
-    if(resourceList.connected){const d=resourceList.connected;$('resources').append(node('p',t('connectedAccessHint')),internalLink(d.action.url,MhkI18n.lang==='zh'?d.action.labelZhHant:d.action.label));return;}
+    if(resourceList.connected){const d=resourceList.connected;$('resources').append(node('p',t('connectedAccessHint')),internalLink(resultPath(d,{q:submittedQuery,access,provider,offset:searchOffset},MhkI18n.locale),MhkI18n.lang==='zh'?d.action.labelZhHant:d.action.label));return;}
     $('resources').append(node('p', t('pageRange',{start:resourceList.items.length?resourceOffset+1:0,end:resourceOffset+resourceList.items.length,total:resourceList.total})));
-    for(const choice of weatherChoices(datasetId,MhkI18n.locale))$('resources').append(internalLink(choice.href,choice.label+' →'),document.createElement('br'));
+    for(const choice of weatherChoices(datasetId,MhkI18n.locale))$('resources').append(internalLink(contextPath(choice.href,{q:submittedQuery,access,provider,offset:searchOffset},MhkI18n.locale),choice.label+' →'),document.createElement('br'));
     if(datasetId==='csdi:hko_rcd_1634806665997_63899')$('resources').append(internalLink('/coverage?access=sources&dataset=hk-hko-rss-current-weather-report&resource=770e68f0676dcbf8e65e2b4e1c6f6e60',t('weatherAlternative')));
     const recommended=resourceList.items.find(r=>r.id==='770e68f0676dcbf8e65e2b4e1c6f6e60')||resourceList.items.find(r=>['JSON','CSV','GEOJSON','RSS','XML'].includes(r.format)&&r.validation?.status==='queryable'&&!r.transport?.requiredParameters?.length);
     const other=node('details','');other.append(node('summary',t('otherFormats')));
@@ -114,13 +121,13 @@ import {weatherChoices,dateFacts,qualityText} from './source-quality.js';
   }
   function resourceName(r){const key={'34caeb756a0a82b09c0a0d3d6b152cbe':'rainfallDistrictLinks','770e68f0676dcbf8e65e2b4e1c6f6e60':'weatherBulletin'}[r.id];return key?t(key):r.aliases?.[0]?.name||r.datasetId;}
   function selectResource(r,push=true) {
-    resetPreview();selected=r;$('preview-step').hidden=false;renderSourceInputs();renderSelection();renderQuery();syncUrl(push);
+    assertResource(r,datasetId,r.id);resetPreview();selected=r;$('preview-step').hidden=false;renderSourceInputs();renderSelection();renderQuery();syncUrl(push);
     $('resource-code').textContent=`GET ${location.origin}/api/v1/resources/${r.id}/schema\n\nMCP: hk_resource_schema(${JSON.stringify({resourceId:r.id})})`;renderResources();focusSection('query-heading');
   }
   function renderSourceInputs(names=selected?.transport?.requiredParameters||[]) {
     const box=$('source-inputs'), previous={};box.querySelectorAll('[data-source-parameter]').forEach(e=>previous[e.dataset.sourceParameter]=e.value);box.replaceChildren();
     if(!names.length)return;box.append(node('p',t('sourceInputHelp')));
-    for(const name of names){const label=node('label',t('param_'+name)===('param_'+name)?name:t('param_'+name));const input=node('input','');input.dataset.sourceParameter=name;input.setAttribute('aria-label',label.textContent);input.maxLength=40;input.value=previous[name]??selected?.transport?.parameterExamples?.[name]??'';label.append(input);box.append(label);}
+    for(const name of names){const label=node('label',t('param_'+name)===('param_'+name)?name:t('param_'+name));const input=node('input','');input.dataset.sourceParameter=name;input.setAttribute('aria-label',label.textContent);input.maxLength=40;input.value=previous[name]??'';input.placeholder=selected?.transport?.parameterExamples?.[name]??'';label.append(input);box.append(label);}
   }
   async function resources() {
     const sequence = ++resourceSequence; resourceList = null; resourceError = null; $('resources-next').hidden = true; renderResources();
@@ -183,8 +190,38 @@ import {weatherChoices,dateFacts,qualityText} from './source-quality.js';
     for (const p of result.provenance) $('resource-citations').append(link(p.sourceUrl,p.attribution+' ↗'),link(p.termsUrl,t('sourceTerms')));
     $('records-next').hidden = !nextRecords;
   }
-  function renderRequiredSelection(){const key=result.selectionRequired,values=result.layers||result.featureTypes||result.sheets||[];const box=$('record-path-choices');box.replaceChildren();if(!values.length){$('query-options').open=true;return;}const label=node('label',t(key)),select=node('select','');select.setAttribute('aria-label',t(key));const blank=node('option',t('chooseSourceOption'));blank.value='';select.append(blank);for(const item of values){const option=node('option',typeof item==='object'?item.name||String(item.id):item);option.value=typeof item==='object'?item.id:item;select.append(option);}select.addEventListener('change',()=>{if(select.value==='')return;$('record-query').elements[key].value=select.value;query('query');});label.append(select);box.append(label);}
+  function currentSelectors(){
+    const f=new FormData($('record-query')),s={};
+    for(const key of ['sheet','recordPath'])if(f.get(key))s[key]=f.get(key);
+    if(f.get('layer')!=='')s.layer=Number(f.get('layer'));
+    s.parameters=jsonObject(f.get('parameters'),'parameters');
+    $('source-inputs').querySelectorAll('[data-source-parameter]').forEach(e=>s.parameters[e.dataset.sourceParameter]=e.value);
+    return s;
+  }
+  function renderTypedSelections(){
+    const groups=result?.selections||[];if(!groups.length)return false;
+    const box=$('record-path-choices');box.replaceChildren();
+    for(const group of groups){
+      const choices=[];
+      for(const option of (group.options||[]).slice(0,100)){
+        try{selectionAction(group,option,selected,datasetId,currentSelectors());choices.push(option);}catch{/* Untrusted or differently scoped metadata is not an action. */}
+      }
+      if(!choices.length)continue;
+      const label=node('label',t(group.argument)),select=node('select','');select.setAttribute('aria-label',t(group.argument));
+      const blank=node('option',t('chooseSourceOption'));blank.value='';select.append(blank);
+      choices.forEach((option,index)=>{const o=node('option',option.label||String(option.value));o.value=String(index);select.append(o);});
+      select.addEventListener('change',()=>{if(select.value==='')return;try{
+        const action=selectionAction(group,choices[Number(select.value)],selected,datasetId,currentSelectors());
+        for(const key of ['sheet','recordPath','layer'])$('record-query').elements[key].value=action.selectors[key]??'';
+        $('record-query').elements.parameters.value=JSON.stringify(action.selectors.parameters||{});
+        syncUrl(false);query('query');
+      }catch(e){queryError=e;renderQuery();}});label.append(select);box.append(label);
+    }
+    return true;
+  }
+  function renderRequiredSelection(){if(renderTypedSelections())return;const key=result.selectionRequired,values=result.layers||result.featureTypes||result.sheets||[];const box=$('record-path-choices');box.replaceChildren();if(!values.length){$('query-options').open=true;return;}const label=node('label',t(key)),select=node('select','');select.setAttribute('aria-label',t(key));const blank=node('option',t('chooseSourceOption'));blank.value='';select.append(blank);for(const item of values){const option=node('option',typeof item==='object'?item.name||String(item.id):item);option.value=typeof item==='object'?item.id:item;select.append(option);}select.addEventListener('change',()=>{if(select.value==='')return;$('record-query').elements[key].value=select.value;query('query');});label.append(select);box.append(label);}
   function renderRecordPaths(){
+    if(renderTypedSelections())return;
     const box=$('record-path-choices');box.replaceChildren();const paths=result?.schema?.availableRecordPaths||[];if(paths.length<2||selected?.transport?.operation==='arrivals')return;
     const label=node('label',t('recordListChoice')),select=node('select','');select.setAttribute('aria-label',t('recordListChoice'));const blank=node('option',t('chooseSourceOption'));blank.value='';select.append(blank);for(const path of paths){const option=node('option',path||t('wholeSource'));option.value=path;option.selected=path===result.schema.recordPath;select.append(option);}label.append(select);box.append(label);select.addEventListener('change',()=>{if(!select.value)return;$('record-query').elements.recordPath.value=select.value;query('query');});
   }
@@ -203,10 +240,12 @@ import {weatherChoices,dateFacts,qualityText} from './source-quality.js';
       const form = new FormData($('record-query')), selectors = {recordPath:form.get('recordPath'),sheet:form.get('sheet')};
       if (form.get('layer') !== '') selectors.layer = Number(form.get('layer'));
       const parameters=jsonObject(form.get('parameters'),'parameters');$('source-inputs').querySelectorAll('[data-source-parameter]').forEach(e=>parameters[e.dataset.sourceParameter]=e.value);
+      validateRecipe({v:1,family:'catalogue',lang:MhkI18n.locale,selectors:{...selectors,parameters}});syncUrl(false);
       let body = kind === 'schema' ? {...selectors,parameters} : continuation ? {...lastQuery,offset:nextRecords.offset,version:nextRecords.version} : {...selectors,parameters,filters:jsonObject(form.get('filters'),'filters'),fields:String(form.get('fields')).split(',').map(s=>s.trim()).filter(Boolean),limit:5};
       if(kind!=='schema' && !continuation && !body.fields.length){
         const schema=await request('preview',`/api/v1/resources/${selected.id}/schema`,{...selectors,parameters});
         if(generation!==requestGeneration)return;
+        assertResource(schema.resource,datasetId,selected.id);
         if(schema.selectionRequired){result=schema;return;}
         result=schema;
         const paths=(schema.schema?.availableRecordPaths||[]).filter(p=>!p.includes('/0/'));
@@ -220,7 +259,7 @@ import {weatherChoices,dateFacts,qualityText} from './source-quality.js';
       const path = `/api/v1/resources/${selected.id}/` + (kind === 'schema' ? 'schema' : 'query');
       const data = await request('preview',path,body);
       if (generation !== requestGeneration) return;
-      result = data; lastQuery = body; nextRecords = result.meta?.nextOffset == null ? null : {offset:result.meta.nextOffset,version:result.meta.version};
+      assertResource(data.resource,datasetId,selected.id);result = data; lastQuery = body; nextRecords = result.meta?.nextOffset == null ? null : {offset:result.meta.nextOffset,version:result.meta.version};
       $('resource-code').textContent = `POST ${location.origin}${path}\n${JSON.stringify(body,null,2)}\n\nMCP: ${kind === 'schema' ? 'hk_resource_schema' : 'hk_resource_query'}(${JSON.stringify({resourceId:selected.id,...body},null,2)})`;
       // No unbounded metadata refresh after a deliberate preview.
     } catch (e) { if (generation !== requestGeneration) return; result=null;queryError=e;if(e.retryAfter){retryUntil=Date.now()+e.retryAfter*1000;clearTimeout(retryTimer);retryTimer=setTimeout(renderQuery,e.retryAfter*1000);}
@@ -230,14 +269,16 @@ import {weatherChoices,dateFacts,qualityText} from './source-quality.js';
   function render() { MhkI18n.apply(); if (!selected) $('resource-code').textContent = t('selectForCode'); if (document.documentElement?.dataset?.discovery !== 'true') document.title = t('coveragePageTitle'); renderCoverage(); renderDatasets(); renderResources(); renderSelection(); renderQuery(); }
   async function restore() {
     const p=new URL(location.href).searchParams, wantedDataset=p.get('dataset'), wantedResource=p.get('resource'), wantedOffset=Math.min(100000,Math.max(0,Number(p.get('sourceOffset'))||0)),wantedFormat=p.get('format')||'',wantedDirectory=p.get('directory')==='1',wantedStatus=p.get('status')||'';
-    submittedQuery=p.get('q')||'';access=['all','connected','sources'].includes(p.get('access'))?p.get('access'):(submittedQuery||wantedDataset?'all':'connected');searchOffset=Math.min(100000,Math.max(0,Number(p.get('offset'))||0));$('dataset-query').value=submittedQuery;
+    const savedSelectors={};for(const key of ['sheet','recordPath'])if(p.has(key))savedSelectors[key]=p.get(key);if(p.has('layer'))savedSelectors.layer=Number(p.get('layer'));if(p.has('parameters')){try{savedSelectors.parameters=JSON.parse(p.get('parameters'));}catch{return;}}
+    try{validateRecipe({v:1,family:'catalogue',lang:MhkI18n.locale,selectors:savedSelectors});}catch{return;}
+    provider=['government','independent','independent_or_public_corporation','unclassified'].includes(p.get('provider'))?p.get('provider'):'all';submittedQuery=p.get('q')||'';access=['all','connected','sources'].includes(p.get('access'))?p.get('access'):(submittedQuery||wantedDataset?'all':'connected');searchOffset=Math.min(100000,Math.max(0,Number(p.get('offset'))||0));$('dataset-query').value=submittedQuery;
     const pending=search({readInput:false,push:false}),sequence=searchSequence;await pending;
     if(sequence!==searchSequence||(!wantedDataset&&!wantedDirectory))return;
     try{
       if(wantedDirectory){directoryMode=true;$('coverage-status').value=wantedStatus;}
       else {const d=await api('/api/v1/catalogue/datasets/'+encodeURIComponent(wantedDataset));if(sequence!==searchSequence)return;datasetId=d.id;datasetTitle=title(d);}
       resourceOffset=wantedOffset;$('resource-format').value=wantedFormat;$('resource-step').hidden=false;await resources();if(sequence!==searchSequence)return;
-      if(wantedResource){const r=resourceList?.items.find(r=>r.id===wantedResource);if(r)selectResource(r,false);}syncUrl(false);renderDatasets();renderFocus();
+      if(wantedResource){const r=resourceList?.items.find(r=>r.id===wantedResource)||await api('/api/v1/resources/'+encodeURIComponent(wantedResource));if(sequence!==searchSequence)return;assertResource(r,datasetId,wantedResource);selectResource(r,false);for(const key of ['sheet','layer','recordPath'])$('record-query').elements[key].value=savedSelectors[key]??'';$('record-query').elements.parameters.value=JSON.stringify(savedSelectors.parameters||{});}syncUrl(false);renderDatasets();renderFocus();
     }catch(e){if(sequence===searchSequence){resourceError=e;$('resource-step').hidden=false;renderResources();}}
   }
   $('dataset-search').addEventListener('submit',e=>{e.preventDefault();searchOffset=0;search();});
