@@ -198,6 +198,7 @@ import {weatherChoices,dateFacts,qualityText} from './source-quality.js';
     $('source-inputs').querySelectorAll('[data-source-parameter]').forEach(e=>s.parameters[e.dataset.sourceParameter]=e.value);
     return s;
   }
+  function clearProjection(){const f=$('record-query').elements;f.fields.value='';f.filters.value='{}';nextRecords=null;lastQuery=null;}
   function renderTypedSelections(){
     const groups=result?.selections||[];if(!groups.length)return false;
     const box=$('record-path-choices');box.replaceChildren();
@@ -214,16 +215,16 @@ import {weatherChoices,dateFacts,qualityText} from './source-quality.js';
         const action=selectionAction(group,choices[Number(select.value)],selected,datasetId,currentSelectors());
         for(const key of ['sheet','recordPath','layer'])$('record-query').elements[key].value=action.selectors[key]??'';
         $('record-query').elements.parameters.value=JSON.stringify(action.selectors.parameters||{});
-        syncUrl(false);query('query');
+        clearProjection();syncUrl(false);query('query');
       }catch(e){queryError=e;renderQuery();}});label.append(select);box.append(label);
     }
     return true;
   }
-  function renderRequiredSelection(){if(renderTypedSelections())return;const key=result.selectionRequired,values=result.layers||result.featureTypes||result.sheets||[];const box=$('record-path-choices');box.replaceChildren();if(!values.length){$('query-options').open=true;return;}const label=node('label',t(key)),select=node('select','');select.setAttribute('aria-label',t(key));const blank=node('option',t('chooseSourceOption'));blank.value='';select.append(blank);for(const item of values){const option=node('option',typeof item==='object'?item.name||String(item.id):item);option.value=typeof item==='object'?item.id:item;select.append(option);}select.addEventListener('change',()=>{if(select.value==='')return;$('record-query').elements[key].value=select.value;query('query');});label.append(select);box.append(label);}
+  function renderRequiredSelection(){if(renderTypedSelections())return;const key=result.selectionRequired,values=result.layers||result.featureTypes||result.sheets||[];const box=$('record-path-choices');box.replaceChildren();if(!values.length){$('query-options').open=true;return;}const label=node('label',t(key)),select=node('select','');select.setAttribute('aria-label',t(key));const blank=node('option',t('chooseSourceOption'));blank.value='';select.append(blank);for(const item of values){const option=node('option',typeof item==='object'?item.name||String(item.id):item);option.value=typeof item==='object'?item.id:item;select.append(option);}select.addEventListener('change',()=>{if(select.value==='')return;$('record-query').elements[key].value=select.value;clearProjection();query('query');});label.append(select);box.append(label);}
   function renderRecordPaths(){
     if(renderTypedSelections())return;
     const box=$('record-path-choices');box.replaceChildren();const paths=result?.schema?.availableRecordPaths||[];if(paths.length<2||selected?.transport?.operation==='arrivals')return;
-    const label=node('label',t('recordListChoice')),select=node('select','');select.setAttribute('aria-label',t('recordListChoice'));const blank=node('option',t('chooseSourceOption'));blank.value='';select.append(blank);for(const path of paths){const option=node('option',path||t('wholeSource'));option.value=path;option.selected=path===result.schema.recordPath;select.append(option);}label.append(select);box.append(label);select.addEventListener('change',()=>{if(!select.value)return;$('record-query').elements.recordPath.value=select.value;query('query');});
+    const label=node('label',t('recordListChoice')),select=node('select','');select.setAttribute('aria-label',t('recordListChoice'));const blank=node('option',t('chooseSourceOption'));blank.value='';select.append(blank);for(const path of paths){const option=node('option',path||t('wholeSource'));option.value=path;option.selected=path===result.schema.recordPath;select.append(option);}label.append(select);box.append(label);select.addEventListener('change',()=>{if(!select.value)return;$('record-query').elements.recordPath.value=select.value;clearProjection();query('query');});
   }
   function jsonObject(value, field) {
     try {

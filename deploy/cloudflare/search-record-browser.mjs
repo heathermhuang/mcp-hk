@@ -25,8 +25,10 @@ try{
     const field=!body.recordPath?'recordPath':!body.sheet?'sheet':null;
     if(field){const value=field==='recordPath'?'reports/2026.xlsx':'2026',option={value,label:value,nextAction:{tool:malicious?'hk_catalogue_search':'hk_resource_schema',arguments:{resourceId:'file',[field]:value,parameters:{date:'2026-11-08'},...(field==='sheet'?{recordPath:'reports/2026.xlsx'}:{})}}};
      return reply({resource,selectionRequired:field==='recordPath'?'recordPath':'sheet',selections:[{argument:field,options:[option],scopedToParameterNames:['date'],...(field==='sheet'?{scopedToRecordPath:'reports/2026.xlsx'}:{})}]});}
-    assert.equal(body.recordPath,'reports/2026.xlsx');assert.equal(body.sheet,'2026');assert.deepEqual(body.parameters,{date:'2026-11-08'});
-    return reply({resource,schema:{fields:[{name:'name',types:['string']}]},data:{items:[{name:'Published school session row'}]},meta:{total:1,nextOffset:null,structuredQueryable:true},warnings:[],provenance:[{sourceUrl:resource.url,attribution:'Official school source',retrievedAt:1794103200,referencePeriod:'2026'}]});
+    assert.equal(body.recordPath,'reports/2026.xlsx');assert.ok(['2026','2025'].includes(body.sheet));assert.deepEqual(body.parameters,{date:'2026-11-08'});
+    const column=body.sheet==='2025'?'previous_name':'name';
+    if(path.endsWith('/query'))assert.deepEqual(body.fields,[column]);
+    return reply({resource,schema:{fields:[{name:column,types:['string']}]},selections:[{argument:'sheet',scopedToRecordPath:'reports/2026.xlsx',options:['2026','2025'].map(value=>({value,label:value,nextAction:{tool:'hk_resource_schema',arguments:{resourceId:'file',sheet:value,recordPath:'reports/2026.xlsx',parameters:{date:'2026-11-08'}}}}))}],data:{items:[{[column]:'Published school session row'}]},meta:{total:1,nextOffset:null,structuredQueryable:true},warnings:[],provenance:[{sourceUrl:resource.url,attribution:'Official school source',retrievedAt:1794103200,referencePeriod:'2026'}]});
    }
    return route.fulfill({status:404,json:{error:{code:'NOT_FOUND',message:'fixture'}}});
   });
@@ -43,9 +45,11 @@ try{
   await page.waitForFunction(()=>document.querySelector('#record-path-choices')?.textContent.includes('2026')&&document.querySelector('[name="recordPath"]').value==='reports/2026.xlsx');
   await page.locator('#record-path-choices select').selectOption('0');await page.locator('#record-table tbody tr').waitFor();
   assert.match(await page.locator('#resource-citations').innerText(),/Official school source/);
-  assert.equal(new URL(page.url()).searchParams.get('recordPath'),'reports/2026.xlsx');assert.equal(new URL(page.url()).searchParams.get('sheet'),'2026');
+  await page.locator('#record-path-choices select').selectOption('1');await page.waitForFunction(()=>document.querySelector('#record-table')?.textContent.includes('previous_name'));
+  assert.equal(await page.locator('[name=fields]').inputValue(),'previous_name');
+  assert.equal(new URL(page.url()).searchParams.get('recordPath'),'reports/2026.xlsx');assert.equal(new URL(page.url()).searchParams.get('sheet'),'2025');
   await page.reload();await page.locator('#preview-step:not([hidden])').waitFor();
-  assert.equal(await page.locator('[name="recordPath"]').inputValue(),'reports/2026.xlsx');assert.equal(await page.locator('[name="sheet"]').inputValue(),'2026');
+  assert.equal(await page.locator('[name="recordPath"]').inputValue(),'reports/2026.xlsx');assert.equal(await page.locator('[name="sheet"]').inputValue(),'2025');
   await page.locator('.mhk-language').click();await page.locator('button[value="query"]').click();await page.locator('#record-table tbody tr').waitFor();
   assert.equal(new URL(page.url()).searchParams.get('q'),'all');assert.equal(new URL(page.url()).searchParams.get('provider'),'government');
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
@@ -58,7 +62,7 @@ try{
   // The selected dataset is restored by identity even when the search page differs.
   await page.goto(origin+'/coverage?q=unmatched&dataset=fixture&resource=file&lang='+lang);await page.locator('#preview-step:not([hidden])').waitFor();
   assert.match(await page.locator('#selected-resource').innerText(),/School/);
-  receipts.push({width,lang,literalAll:true,filters:true,typedFileAndSheet:true,parametersRetained:true,reload:true,locale:true,citedRecords:true,heldNotEmpty:true,unsafeActionRejected:true,generationReset:true,bookmarkIdentity:true,overflow:false});await context.close();
+  receipts.push({width,lang,literalAll:true,filters:true,typedFileAndSheet:true,changedSheetResetsProjection:true,parametersRetained:true,reload:true,locale:true,citedRecords:true,heldNotEmpty:true,unsafeActionRejected:true,generationReset:true,bookmarkIdentity:true,overflow:false});await context.close();
  }
  assert.deepEqual(errors,[]);await writeFile(new URL('receipt.json',out),JSON.stringify({scope:'Rendered deterministic fixtures',receipts,errors},null,2)+'\n');console.log(JSON.stringify({cases:receipts.length,errors}));
 }finally{await browser.close();}
