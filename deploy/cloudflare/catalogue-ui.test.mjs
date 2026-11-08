@@ -21,9 +21,9 @@ async function browser(){
   const a={id:'alpha',title:'Alpha',provider:'Provider',providerType:'government',catalogue:'DATA.GOV.HK',sourceUrl:'https://example.gov.hk/alpha'},b={...a,id:'beta',title:'Beta'};
   const first={id:'a'.repeat(32),datasetId:'alpha',format:'JSON',url:'https://example.gov.hk/a',catalogue:'DATA.GOV.HK',validation:{status:'needs_selection'},transport:{operation:'arrivals',operator:'MTR',requiredParameters:['line','sta'],parameterExamples:{line:'TWL',sta:'CEN'},cacheTTLSeconds:10}};
   const second={...first,id:'b'.repeat(32),transport:undefined},third={...second,id:'c'.repeat(32),datasetId:'beta'};
-  let pendingResolve;
+  let pendingResolve;const calls=[];
   const api=async(path,body)=>{
-    const u=new URL(path,location);
+    const u=new URL(path,location);calls.push({path,body});
     if(u.pathname==='/api/v1/coverage')return {datasets:{discovered:2},resources:{discovered:3,byStatus:{}}};
     if(u.pathname==='/api/v1/catalogue/datasets')return {items:u.searchParams.get('q')==='Beta'?[b]:[a,b],total:u.searchParams.get('q')==='Beta'?1:2,nextOffset:null};
     if(u.pathname.startsWith('/api/v1/catalogue/datasets/'))return u.pathname.endsWith('alpha')?a:b;
@@ -39,7 +39,7 @@ async function browser(){
   vm.runInContext(readFileSync(new URL('../../src/mcp_open_data_hk/web/coverage.js',import.meta.url),'utf8').replace(/^import .*\n/gm,''),context);
   await flush();await flush();
   const button=(id,text)=>el(id).querySelectorAll(id==='datasets'?'a':'button').find(b=>b.textContent===text);
-  return {el,button,form,queryButton,listeners,location,first,second,resolve:value=>pendingResolve(value)};
+  return {el,button,form,queryButton,listeners,location,first,second,calls,resolve:value=>pendingResolve(value)};
 }
 test('switching resources clears incompatible source settings and selection state',async()=>{
   const b=await browser();b.button('datasets','Alpha').listeners.click({preventDefault(){}});await flush();
@@ -87,4 +87,14 @@ test('resource directory status, format, page and selection survive URL restorat
   b.el('coverage-status').value='unavailable';b.location.href=saved;await b.listeners.popstate();await flush();
   assert.equal(b.el('resource-step').hidden,false);assert.equal(b.el('coverage-status').value,'queryable');assert.equal(b.el('resource-format').value,'JSON');
   assert.equal(b.location.searchParams.get('sourceOffset'),'15');assert.equal(b.location.searchParams.get('resource'),b.second.id);assert.equal(b.el('preview-step').hidden,false);
+});
+
+test('restoring required parameter inputs retains the explicit saved query',async()=>{
+ const b=await browser();b.button('datasets','Alpha').listeners.click({preventDefault(){}});await flush();b.el('resources').querySelectorAll('button')[0].listeners.click({preventDefault(){}});
+ const inputs=b.el('source-inputs').querySelectorAll('[data-source-parameter]');for(const input of inputs)input.value={line:'TWL',sta:'CEN'}[input.dataset.sourceParameter];
+ b.form.listeners.submit({preventDefault(){},submitter:{value:'query'}});await flush();const saved=b.location.href;
+ b.el('dataset-query').value='Beta';b.el('dataset-search').listeners.submit({preventDefault(){}});await flush();b.location.href=saved;await b.listeners.popstate();await flush();
+ assert.deepEqual(JSON.parse(b.location.searchParams.get('parameters')),{line:'TWL',sta:'CEN'});
+ for(const input of b.el('source-inputs').querySelectorAll('[data-source-parameter]'))assert.equal(input.value,{line:'TWL',sta:'CEN'}[input.dataset.sourceParameter]);
+ b.form.listeners.submit({preventDefault(){},submitter:{value:'query'}});await flush();assert.deepEqual(JSON.parse(JSON.stringify(b.calls.filter(c=>c.path.endsWith('/schema')).at(-1).body.parameters)),{line:'TWL',sta:'CEN'});
 });

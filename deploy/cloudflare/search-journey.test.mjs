@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {resultPath,contextPath,setSearchState,InventoryPages} from '../../src/mcp_open_data_hk/web/search-journey.js';
+import {resultPath,contextPath,preserveDiscoveryContext,setSearchState,InventoryPages} from '../../src/mcp_open_data_hk/web/search-journey.js';
 import {assertResource,selectionAction} from '../../src/mcp_open_data_hk/web/source-actions.js';
 test('literal all and Unicode remain search intent, defaults apply only to filters',()=>{
   for(const q of ['all','天氣',' school  data ','']){
@@ -11,11 +11,12 @@ test('literal all and Unicode remain search intent, defaults apply only to filte
   const path=new URL(resultPath(row,state,'zh-Hant'),'https://mcp.hk');
   for(const [k,v]of Object.entries({...state,dataset:'school',lang:'zh-Hant'}))assert.equal(path.searchParams.get(k),String(v));
   assert.equal(path.pathname,'/coverage');
-  const shortcut=new URL(contextPath('/playground#p=encoded',state,'zh-Hant'),'https://mcp.hk');assert.equal(shortcut.hash,'#p=encoded');assert.equal(shortcut.searchParams.get('q'),'all');
+  const shortcut=new URL(contextPath('/playground#p=encoded',state,'zh-Hant'),'https://mcp.hk');assert.equal(shortcut.hash,'#p=encoded');assert.equal(shortcut.searchParams.get('discoveryQ'),'all');
   const gateway=new URL(resultPath({id:'mcp:catalogue',packId:'catalogue',entryKind:'connected_service'},state,'en'),'https://mcp.hk');
   assert.equal(gateway.pathname,'/coverage');assert.equal(gateway.searchParams.get('q'),'all');assert.equal(gateway.searchParams.get('access'),'sources');
   const guided=new URL(resultPath({entryKind:'connected_service',action:{url:'/transport?operator=CTB'}},state,'en'),'https://mcp.hk');
-  assert.equal(guided.searchParams.get('operator'),'CTB');assert.equal(guided.searchParams.get('q'),'all');
+  assert.equal(guided.searchParams.get('operator'),'CTB');assert.equal(guided.searchParams.get('discoveryQ'),'all');assert.equal(guided.searchParams.has('q'),false);
+  const company=new URL(resultPath({entryKind:'connected_service',action:{url:'/companies?companySource=official'}},state,'en'),'https://mcp.hk');assert.equal(company.searchParams.get('companySource'),'official');assert.equal(company.searchParams.has('q'),false);const record=preserveDiscoveryContext(new URL('https://mcp.hk/companies?q=HSBC'),company);assert.equal(record.searchParams.get('q'),'HSBC');assert.equal(record.searchParams.get('discoveryQ'),'all');
   assert.throws(()=>resultPath({entryKind:'connected_service',action:{url:'https://elsewhere.test/'}},state,'en'));
 });
 test('inventory pagination resets only on a changed generation of the same search',()=>{

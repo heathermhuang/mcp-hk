@@ -8,7 +8,7 @@ export function resultPath(row,state,locale){
 export function contextPath(path,state,locale){
   if(typeof path!=='string'||!/^\/(?!\/)/.test(path))throw Error('INVALID_ACTION');
   const u=new URL(path,'https://mcp.hk');if(u.origin!=='https://mcp.hk')throw Error('INVALID_ACTION');
-  for(const [key,value]of Object.entries({q:state.q||'',access:state.access||'all',provider:state.provider||'all',offset:state.offset||0,lang:locale}))u.searchParams.set(key,value);
+  for(const [key,value]of Object.entries({discoveryQ:state.q||'',discoveryAccess:state.access||'all',discoveryProvider:state.provider||'all',discoveryOffset:state.offset||0,lang:locale}))u.searchParams.set(key,value);
   return u.pathname+u.search+u.hash;
 }
 export function setSearchState(url,state){
@@ -24,4 +24,12 @@ export class InventoryPages{
     this.key=key;this.generation=generation;
     return changed&&offset>0;
   }
+}
+
+export function preserveDiscoveryContext(target,source){
+  const from=new URL(source);
+  for(const key of ['discoveryQ','discoveryAccess','discoveryProvider','discoveryOffset']){
+    const value=from.searchParams.get(key);if(value!=null&&value.length<=200)target.searchParams.set(key,value);
+  }
+  return target;
 }

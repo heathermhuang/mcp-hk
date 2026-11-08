@@ -1,3 +1,4 @@
+import {resultPath} from '../../src/mcp_open_data_hk/web/search-journey.js';
 import {openSourceExplorer} from './source-explorer-browser.mjs';
 /* Real browser regressions with bounded deterministic provider responses. */
 import {chromium} from 'playwright';
@@ -49,7 +50,7 @@ await run('scope, pagination, history, focused detail and preview budget',async(
  await page.screenshot({path:new URL('coverage-en.png',output).pathname,fullPage:true});
 });
 await run('one company controller, partial source failure, grouping and focus',async({page,calls})=>{
- await page.goto(origin+'/companies?lang=en');await openSourceExplorer(page);await page.locator('#company-query').fill('HSBC');await page.locator('#company-submit').click();await page.getByRole('button',{name:'HSBC fixture',exact:true}).waitFor();assert.equal(new URL(page.url()).searchParams.get('companySource'),'both');assert.equal(calls.filter(c=>c.path==='/api/v1/companies').length,2);assert.match(await page.locator('#official-status').innerText(),/unavailable/);assert.equal(await page.locator('#official-search').count(),0);
+ await page.goto(origin+resultPath({entryKind:'connected_service',action:{url:'/companies'}},{q:'company',access:'all'},'en'));await openSourceExplorer(page);assert.equal(await page.locator('#official-companies').isVisible(),true);assert.equal(await page.locator('#company-query').inputValue(),'');await page.locator('#company-query').fill('HSBC');await page.locator('#company-submit').click();await page.getByRole('button',{name:'HSBC fixture',exact:true}).waitFor();assert.equal(new URL(page.url()).searchParams.get('companySource'),'both');assert.equal(new URL(page.url()).searchParams.get('discoveryQ'),'company');assert.equal(calls.filter(c=>c.path==='/api/v1/companies').length,2);assert.match(await page.locator('#official-status').innerText(),/unavailable/);assert.equal(await page.locator('#official-search').count(),0);
  await page.getByRole('button',{name:'HSBC fixture',exact:true}).click();await page.locator('.company-overview-name').waitFor();assert.equal(await page.locator('#company-record-heading').evaluate(e=>e===document.activeElement),true);assert.equal(new URL(page.url()).searchParams.get('version'),'fixture-v1');
  await page.screenshot({path:new URL('companies-en.png',output).pathname,fullPage:true});
 });
