@@ -44,7 +44,7 @@ test('reject mismatched identities, unexpected actions, selectors and bounds',()
     o=>o.nextAction.arguments.parameters={secret:'x'},o=>o.nextAction.arguments.recordPath='other.xlsx',
   ];
   for(const mutate of mutations){const [g,o]=choice();mutate(o);assert.throws(()=>selectionAction(g,o,resource,'dataset'));}
-  for(const [field,value]of [['layer',-1],['layer',10001],['layer',0.1],['sheet','x'.repeat(101)],['recordPath','x'.repeat(301)]]){
+  for(const [field,value]of [['sheet',null],['sheet',''],['layer',null],['layer',-1],['layer',10001],['layer',0.1],['sheet','x'.repeat(101)],['recordPath','x'.repeat(301)]]){
     const [g,o]=choice(field,value);assert.throws(()=>selectionAction(g,o,resource,'dataset'));
   }
   const [g,o]=choice('layer',0);assert.equal(selectionAction(g,o,resource,'dataset').selectors.layer,0);
