@@ -111,3 +111,69 @@ def test_citybus_reference_uses_the_approved_resolved_v2_url(monkeypatch):
     assert route.endswith("resourceId=2b407d29bdbd9b2760f0d45be844d43a")
     assert headers == {"Authorization": "Bearer private-token"}
     assert relay_request(url + "?unapproved=1") is None
+
+
+@pytest.mark.parametrize(
+    "path,resource,parameters",
+    [
+        (
+            "route-stop/CTB/13/outbound",
+            "8794004d904a1b6dd40199d3a5db1778",
+            {"route": "13", "direction": "outbound"},
+        ),
+        ("stop/001042", "3eca9b6a7bf3414531b1206042744a2f", {"stop_id": "001042"}),
+        (
+            "eta/CTB/001042/13",
+            "2b1b8d6b425bf3ddd1e1ddb811d54ba4",
+            {"stop_id": "001042", "route": "13"},
+        ),
+    ],
+)
+def test_citybus_typed_requests_use_existing_authenticated_worker(
+    monkeypatch, path, resource, parameters
+):
+    from urllib.parse import urlsplit, parse_qs
+
+    configure(monkeypatch)
+    request, headers = relay_request(
+        "https://rt.data.gov.hk/v2/transport/citybus/" + path
+    )
+    assert urlsplit(request).path == "/__ops/source-relay"
+    assert parse_qs(urlsplit(request).query) == {
+        k: [v] for k, v in {"resourceId": resource, **parameters}.items()
+    }
+    assert headers == {"Authorization": "Bearer private-token"}
+
+
+@pytest.mark.parametrize(
+    "suffix",
+    [
+        "route-stop/CTB/13/sideways",
+        "route-stop/NWFB/13/outbound",
+        "stop/1042",
+        "stop/001042?url=https://evil.example",
+        "eta/CTB/001042/13/extra",
+        "eta/CTB/001042/%2fadmin",
+        "route-stop/CTB/13/outbound#fragment",
+    ],
+)
+def test_citybus_relay_never_accepts_unreviewed_paths(monkeypatch, suffix):
+    configure(monkeypatch)
+    assert (
+        relay_request("https://rt.data.gov.hk/v2/transport/citybus/" + suffix) is None
+    )
+
+
+def test_parameterized_citybus_retains_credential_and_private_dns_guards(monkeypatch):
+    configure(monkeypatch)
+    url = "https://rt.data.gov.hk/v2/transport/citybus/route-stop/CTB/13/outbound"
+    assert relay_request(url, {"Authorization": "never-forward"}) is None
+    assert relay_request(url, {"Cookie": "never-forward"}) is None
+    assert relay_request(url, payload=b"{}") is None
+
+    def reject(*args):
+        raise DomainError("UNSAFE_SOURCE", "Nonpublic address")
+
+    monkeypatch.setattr(resource_fetch, "public_addresses", reject)
+    with pytest.raises(DomainError, match="UNSAFE_SOURCE"):
+        resource_fetch.fetch_sync(url)

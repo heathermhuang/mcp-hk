@@ -35,5 +35,30 @@
     "ddac745769218fccdde9edbee87cb2a1": "https://webcat.hkpl.gov.hk/search/syndication?match_1=PHRASE&field_1&term_1=fiction&facet_format=book&facet_item_class=3&facet_lang=eng&sort=dateNewest&syndication=true&theme=WEB",
     "e1205cc110e6d56456b944e797aa1041": "https://webcat.hkpl.gov.hk/search/syndication?facet_format=sound_recording.cd&facet_item_class=15&facet_lang=chi&sort=dateNewest&syndication=true&theme=WEB",
     "fb1573c72a9f046d46bdffba1f97b216": "https://data.smartplay.lcsd.gov.hk/rest/cms/api/v1/publ/contents/open-data/volleyball/file"
+  },
+  "transport": {
+    "8794004d904a1b6dd40199d3a5db1778": {
+      "template": "https://rt.data.gov.hk/v2/transport/citybus/route-stop/CTB/{route}/{direction}",
+      "parameters": {
+        "route": "[A-Za-z0-9_-]{1,40}",
+        "direction": "(?:inbound|outbound)"
+      },
+      "arrivals": false
+    },
+    "3eca9b6a7bf3414531b1206042744a2f": {
+      "template": "https://rt.data.gov.hk/v2/transport/citybus/stop/{stop_id}",
+      "parameters": {
+        "stop_id": "[0-9]{6}"
+      },
+      "arrivals": false
+    },
+    "2b1b8d6b425bf3ddd1e1ddb811d54ba4": {
+      "template": "https://rt.data.gov.hk/v2/transport/citybus/eta/CTB/{stop_id}/{route}",
+      "parameters": {
+        "stop_id": "[0-9]{6}",
+        "route": "[A-Za-z0-9_-]{1,40}"
+      },
+      "arrivals": true
+    }
   }
 }

@@ -220,3 +220,29 @@ Department resource `2c3ad746961a833f59740f4abbf26644`, readable through the ord
 resource query API. Its departures are schedules, never live ETA predictions.
 The broken operator ETA endpoints remain unavailable until a successful real-source
 read qualifies a restored or officially replaced endpoint.
+
+
+## Hosted Citybus source transport
+
+The existing authenticated Worker source relay carries the three already supported
+Citybus V2 selections: route stops (`route`, `direction`), stop detail (`stop_id`)
+and ETA (`stop_id`, `route`). A shared shipped manifest fixes resource IDs, HTTPS
+host/path templates and parameter bounds in Python and Worker code. It accepts no
+caller-selected destination, body, extra/repeated parameter or credential.
+
+This closes a hosting-path gap: the existing fixed Citybus route-list relay was
+readable while the direct container route-stop request returned source HTTP 403.
+The provider's public V2 format is unchanged. It does not add a provider, key,
+semantic join, quota, container or new routing service. Public clients still use
+the normal typed HTTP/MCP tools. Source URLs/provenance remain Citybus's originals;
+`schema.sourceTransport` identifies `approved-worker-relay`.
+
+ETA reads omit conditional validators and send `Cache-Control: no-cache` to the
+source. The existing provider timestamp/expiry checks and maximum 20-second cache
+remain mandatory. A denial, rate limit or redirect never selects a different
+source path or stale ETA. Unknown identity/order and empty/expired predictions
+retain their original caveats. Production recovery/adoption and successful live
+predictions must be verified before closing the earlier Citybus hold.
+
+Official request contract: [Citybus API specification V2.01](https://www.citybus.com.hk/datagovhk/bus_eta_api_specifications.pdf).
+Provider maintainer: [DATA.GOV.HK Citybus dataset](https://data.gov.hk/en-data/dataset/ctb-eta-transport-realtime-eta).
