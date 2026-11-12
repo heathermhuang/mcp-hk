@@ -102,10 +102,10 @@ test('data browser shares the same complete navigation and footer as the other p
 });
 
 
-test('badge policy update uses the same effective date in both languages',()=>{
+test('privacy policy update uses the same effective date in both languages',()=>{
  const policy=readFileSync(new URL('../../src/mcp_open_data_hk/web/legal.js',import.meta.url),'utf8');
- assert.equal((policy.match(/Effective 5 November 2026/g)||[]).length,2);
- assert.equal((policy.match(/2026 年 11 月 5 日/g)||[]).length,2);
+ assert.equal((policy.match(/Effective 12 November 2026/g)||[]).length,2);
+ assert.equal((policy.match(/2026 年 11 月 12 日/g)||[]).length,2);
 });
 
 test('configured archive status makes no claim of a successful availability check',()=>{

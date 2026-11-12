@@ -1,3 +1,4 @@
+import {optedOut} from './intelligence.ts';
 // Optional hosted agent access. Public MCP and /api/v1 remain anonymous.
 // The separate auth DO owns keys, registrations and revocation, never data backups.
 export const READ_SCOPE = 'data.read';
@@ -58,6 +59,8 @@ export function protectedDataPath(path: string): string | undefined {
 export function dataRequestHeaders(request: Request,clientIP=request.headers.get('cf-connecting-ip')||'unknown'): Headers {
   const headers=new Headers(request.headers);
   headers.delete('Authorization');headers.delete('Cookie');headers.delete('x-auth-client-key');
+  if(optedOut(request))headers.set('x-mcp-analytics-opt-out','1');
+  else headers.delete('x-mcp-analytics-opt-out');
   headers.set('x-mcp-client-ip',clientIP);
   return headers;
 }
