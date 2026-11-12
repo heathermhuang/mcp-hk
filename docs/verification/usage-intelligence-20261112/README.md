@@ -36,6 +36,12 @@ The isolated feature branch starts from main `8e4e037a237e768240ac448902b2f1361f
 - The CLI's private offline HTML output is tested for content escaping, no active
   external resources, restrictive CSP and mode 0600. No production stats or
   credentials were included in test artifacts.
+- The unchanged homepage Chromium suite passes all 11 cases after using ordered
+  deferred loading for the privacy script. A new browser regression deliberately
+  delays that script and proves stored refusals and browser GPC reach the request
+  header/cookie before catalogue queries. Production-host requests are intercepted
+  locally and no production analytics are sent. The existing homepage assertions
+  and timeouts were preserved; the fix removes parser blocking in source HTML.
 
 The integration test declares its direct development dependencies. Its pinned
 workerd binary supports the existing production compatibility date; the production
