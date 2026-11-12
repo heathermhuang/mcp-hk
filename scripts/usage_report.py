@@ -40,7 +40,16 @@ def render(report):
     content += (
         "<p>Private operator report. Network clients are estimates, not people.</p>"
     )
-    content += table("Recorded totals", [totals], list(totals))
+    backend = report.get("backendRequests", {})
+    content += table(
+        "All observed backend requests (legacy UTC window)",
+        [backend.get("totals", {})],
+        list(backend.get("totals", {})),
+    )
+    content += "<p>" + escape(backend.get("note", "")) + "</p>"
+    content += table(
+        "Recorded demand observations (bounded HK window)", [totals], list(totals)
+    )
     content += table(
         "Daily network estimates",
         report.get("audience", []),

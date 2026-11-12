@@ -86,7 +86,10 @@ python3 scripts/usage_report.py --days 7 --output /private/tmp/mcp-hk-usage.html
 It uses authenticated `GET /__ops/analytics`; unauthenticated requests return 404.
 The standalone HTML contains no credential or external scripts/resources. It may
 contain sanitised search demand: keep it private. `--input saved-report.json` can
-render an exported report offline. The report includes current-incarnation ingress
+render an exported report offline. The report also includes the legacy full backend request totals with an explicit
+UTC-window label, separate from bounded HK-time demand observations. These
+populations and time windows must not be divided to claim a capture rate.
+The report includes current-incarnation ingress
 loss/failure diagnostics, persisted last-write time, budget drops, detail limits,
 unknown outcomes, audience limitations and completed-week comparison windows.
 

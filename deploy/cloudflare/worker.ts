@@ -422,8 +422,10 @@ export default {
       if (url.pathname === '/__ops/diagnostics') return Response.json(await env.APP.get(env.APP.idFromName('production')).operationDiagnostics());
       if (url.pathname === '/__ops/analytics' && request.method === 'GET') {
         const analytics=await env.USAGE_ANALYTICS.get(env.USAGE_ANALYTICS.idFromName('production')).report(Number(url.searchParams.get('days')||7));
-        const ingress=await env.APP.get(env.APP.idFromName('production')).intelligenceDiagnostics();
-        return Response.json({...analytics,ingress,enabled:env.USAGE_INTELLIGENCE_ENABLED==='true'},{headers:{'Cache-Control':'no-store'}});
+        const app=env.APP.get(env.APP.idFromName('production'));
+        const [ingress,legacy]=await Promise.all([app.intelligenceDiagnostics(),app.usageReport(Number(url.searchParams.get('days')||7))]);
+        const backendRequests={asOf:legacy.asOf,days:legacy.days,timezone:'UTC',totals:legacy.totals,scope:legacy.definitions.requests,note:'Legacy UTC calendar window differs from demand analytics HK days. Counts include throttles/control traffic; do not divide these populations to infer sampling coverage.'};
+        return Response.json({...analytics,backendRequests,ingress,enabled:env.USAGE_INTELLIGENCE_ENABLED==='true'},{headers:{'Cache-Control':'no-store'}});
       }
       if (url.pathname === '/__ops/usage' && request.method === 'GET') return Response.json(await env.APP.get(env.APP.idFromName('production')).usageReport(Number(url.searchParams.get('days') || 7)),{headers:{'Cache-Control':'no-store'}});
       if (url.pathname === '/__ops/status') return Response.json(await env.APP.get(env.APP.idFromName('production')).operationsStatus());

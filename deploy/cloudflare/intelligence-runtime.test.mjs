@@ -57,7 +57,7 @@ test('real Worker runtime enforces operator auth, persists observations, schedul
     assert.equal(data.status,200);assert.deepEqual(await data.json(),{items:[]});
     await mf.dispatchFetch('https://mcp.hk/test-drain');
     const observed=await (await mf.dispatchFetch('https://mcp.hk/__ops/analytics',{headers:auth})).json();
-    assert.equal(observed.totals.requests,2);assert.equal(observed.recent.length,1);assert.equal(observed.audience[0].unresolved,1);
+    assert.equal(observed.backendRequests.totals.requests,1);assert.equal(observed.backendRequests.timezone,'UTC');assert.equal(observed.totals.requests,2);assert.equal(observed.recent.length,1);assert.equal(observed.audience[0].unresolved,1);
     assert.doesNotMatch(JSON.stringify(observed),/schools|hidden|198\.51\.100/);
     const legacy=await (await mf.dispatchFetch('https://mcp.hk/__ops/usage',{headers:auth})).json();
     assert.equal(legacy.totals.requests,1);
