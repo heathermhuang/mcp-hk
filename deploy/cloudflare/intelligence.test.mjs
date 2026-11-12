@@ -3,7 +3,7 @@ import {test} from 'node:test';
 import {DatabaseSync} from 'node:sqlite';
 import {readFileSync,readdirSync} from 'node:fs';
 import vm from 'node:vm';
-import {IntelligenceStore,ANALYTICS_LIMITS,reportingDay,networkHash,requestFacts,safeKeyword,optedOut} from './intelligence.ts';
+import {IntelligenceStore,ANALYTICS_LIMITS,datasetFamily,reportingDay,networkHash,requestFacts,safeKeyword,optedOut} from './intelligence.ts';
 import {describeRequest,inspectResponse,meterResponse,operationNames} from './usage.ts';
 import {dataRequestHeaders} from './agent-auth.ts';
 
@@ -25,6 +25,8 @@ test('actual registered MCP tool names cannot silently fall into other',()=>{
     for(const match of readFileSync(new URL(file,root),'utf8').matchAll(/(?:async )?def (hk_\w+)\(/g))names.add(match[1]);
   }
   for(const name of names)assert.ok(operationNames.includes(name),name);
+  for(const [operation,pack] of [['hk_company_search','companies'],['hk_hkex_archive_disclosures','webb-sdi'],['hk_hkex_latest_disclosures','hkex-daily'],['hk_sfc_verify','sfc'],['hk_transport_journey','transport'],['hk_racing_results','racing']])assert.equal(datasetFamily(operation),pack);
+  assert.equal(datasetFamily('other'),'');
 });
 test('public catalogue keywords are bounded and sensitive operations/values are suppressed',()=>{
   assert.equal(safeKeyword('  空氣   質素 '),'空氣 質素');

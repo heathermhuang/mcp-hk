@@ -17,7 +17,7 @@ import {completeRacingPublication} from './racing-publication';
 import {RacingAdmission} from './racing-admission';
 import {curatedContainerEnv} from './curated';
 import {UsageStore, LIMITS, clientKey, describeRequest, meterResponse} from './usage';
-import {IntelligenceStore, ANALYTICS_LIMITS, archiveClosedDay, networkHash, requestFacts, type Observation, type ResultFacts} from './intelligence.ts';
+import {IntelligenceStore, ANALYTICS_LIMITS, archiveClosedDay, datasetFamily, networkHash, requestFacts, type Observation, type ResultFacts} from './intelligence.ts';
 
 
 async function authorized(request: Request, token: string): Promise<boolean> {
@@ -105,7 +105,8 @@ export class McpContainer extends Container<Env> {
         if(minute!==this.intelligenceMinute){this.intelligenceMinute=minute;this.intelligenceSent=0;}
         if(this.intelligenceSent>=ANALYTICS_LIMITS.perMinute){this.intelligenceState.ingressDropped++;return;}
         this.intelligenceSent++;
-        const event:Observation={id:crypto.randomUUID(),at:now,op,facts:requestFacts(request,op,body),result,status,outcome,items,bytesIn,bytesOut,duration};
+        const attributed={...op,dataset:op.dataset||datasetFamily(op.operation)};
+        const event:Observation={id:crypto.randomUUID(),at:now,op:attributed,facts:requestFacts(request,op,body),result,status,outcome,items,bytesIn,bytesOut,duration};
         // RPC is post-response work; its storage/availability never gates admission.
         this.ctx.waitUntil(this.env.USAGE_ANALYTICS.get(this.env.USAGE_ANALYTICS.idFromName('production')).observe(event,request.headers.get('x-mcp-client-ip')||'unknown')
           .then(receipt=>{if(!receipt.recorded)this.intelligenceState.collectorRejected++;})

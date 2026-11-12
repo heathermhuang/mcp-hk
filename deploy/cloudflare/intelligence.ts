@@ -7,6 +7,11 @@ export const reportingDay=(now:number)=>Math.floor((now+OFFSET)/DAY);
 const object=(v:unknown):Record<string,unknown>=>v!==null&&typeof v==='object'&&!Array.isArray(v)?v as Record<string,unknown>:{};
 const safeId=(v:unknown)=>typeof v==='string'&&/^[a-z0-9][a-z0-9_:.-]{0,159}$/i.test(v)?v:'';
 const families=['chatgpt','claude','codex','cursor','windsurf','vscode','fastmcp','python-httpx','curl'];
+export function datasetFamily(operation:string):string {
+  // Coarse pack attribution only; actual response dataset IDs take precedence.
+  const prefixes=[['hk_company_','companies'],['hk_hkex_archive_','webb-sdi'],['hk_hkex_latest_','hkex-daily'],['hk_hkex_','hkex'],['hk_sfc_','sfc'],['hk_transport_','transport'],['hk_racing_','racing'],['hk_property_','seehouse'],['hk_plate_','platehk'],['hk_address_','addresses'],['hk_restaurant_','restaurants'],['hk_district_','population']];
+  return prefixes.find(([prefix])=>operation.startsWith(prefix))?.[1]||'';
+}
 function latency(rows:Row[]){
   const bins=Array.from({length:7},(_,i)=>rows.reduce((sum,row)=>sum+Number(row['b'+i]),0)),total=bins.reduce((a,b)=>a+b,0);
   const quantile=(q:number)=>{let count=0;for(let i=0;i<bins.length;i++){count+=bins[i];if(total&&count>=Math.ceil(total*q))return [100,300,1000,3000,10000,30000,null][i];}return null;};
