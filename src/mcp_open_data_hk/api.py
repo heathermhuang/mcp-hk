@@ -53,7 +53,12 @@ def create_app(service=None):
         CORSMiddleware,
         allow_origins=["*"],
         allow_methods=["GET", "POST", "OPTIONS"],
-        allow_headers=["Content-Type", "MCP-Protocol-Version", "Mcp-Session-Id"],
+        allow_headers=[
+            "Content-Type",
+            "MCP-Protocol-Version",
+            "Mcp-Session-Id",
+            "x-mcp-analytics-opt-out",
+        ],
         expose_headers=["MCP-Protocol-Version", "Mcp-Session-Id"],
     )
     buckets = OrderedDict()

@@ -14,8 +14,11 @@
     "@cloudflare/containers": "0.3.7"
   },
   "devDependencies": {
+    "esbuild": "0.28.1",
+    "miniflare": "5.20260926.0-alpha",
     "playwright": "1.62.1",
     "typescript": "^5.9.3",
+    "workerd": "1.20261110.1",
     "wrangler": "4.143.0"
   }
 }

@@ -17,6 +17,7 @@ import {completeRacingPublication} from './racing-publication';
 import {RacingAdmission} from './racing-admission';
 import {curatedContainerEnv} from './curated';
 import {UsageStore, LIMITS, clientKey, describeRequest, meterResponse} from './usage';
+import {IntelligenceStore, ANALYTICS_LIMITS, archiveClosedDay, networkHash, requestFacts, type Observation, type ResultFacts} from './intelligence.ts';
 
 
 async function authorized(request: Request, token: string): Promise<boolean> {
@@ -65,7 +66,53 @@ export class AgentAuth extends DurableObject<Env> {
   async revokeAll(): Promise<void> {this.service.revokeAll();}
 }
 
+export class UsageAnalytics extends DurableObject<Env> {
+  private store:IntelligenceStore;
+  private key='';
+  private failures=0;
+  constructor(ctx:DurableObjectState,env:Env){
+    super(ctx,env);
+    this.store=new IntelligenceStore(ctx.storage.sql,fn=>ctx.storage.transactionSync(fn),()=>ctx.storage.sql.databaseSize);
+    ctx.blockConcurrencyWhile(async()=>{
+      this.key=await ctx.storage.get<string>('network-hmac-key')||crypto.randomUUID()+crypto.randomUUID();
+      await ctx.storage.put('network-hmac-key',this.key);
+    });
+  }
+  async observe(event:Observation,networkIP:string){
+    try {
+      const hash=event.facts.detail?await networkHash(networkIP,this.key,event.at):null;
+      return this.store.record(event,hash);
+    } catch {this.failures++;return {recorded:false,reason:'storage_failure'};}
+  }
+  report(days:number){return {...this.store.report(days),runtimeWriteFailures:this.failures};}
+  maintain(now:number){this.store.cleanup(now);return this.store.digest(now);}
+  nextArchive(){return this.store.nextArchive();}
+  confirmArchive(day:number,checksum:string){this.store.confirmArchive(day,checksum);}
+}
+
 export class McpContainer extends Container<Env> {
+  private intelligenceMinute=0;
+  private intelligenceSent=0;
+  private intelligenceState={offered:0,rateLimitedExcluded:0,ingressDropped:0,deliveryFailures:0,collectorRejected:0};
+  intelligenceDiagnostics(){return {...this.intelligenceState,scope:'Current controller incarnation only; counters reset on restart.'};}
+  private intelligenceObserver(request:Request,body?:Uint8Array){
+    if(this.env.USAGE_INTELLIGENCE_ENABLED!=='true')return undefined;
+    return (op:ReturnType<typeof describeRequest>,status:number,outcome:string,bytesIn:number,bytesOut:number,items:number|null,duration:number,result:ResultFacts)=>{
+      try {
+        if(status===429){this.intelligenceState.rateLimitedExcluded++;return;}
+        this.intelligenceState.offered++;
+        const now=Date.now(),minute=Math.floor(now/60000);
+        if(minute!==this.intelligenceMinute){this.intelligenceMinute=minute;this.intelligenceSent=0;}
+        if(this.intelligenceSent>=ANALYTICS_LIMITS.perMinute){this.intelligenceState.ingressDropped++;return;}
+        this.intelligenceSent++;
+        const event:Observation={id:crypto.randomUUID(),at:now,op,facts:requestFacts(request,op,body),result,status,outcome,items,bytesIn,bytesOut,duration};
+        // RPC is post-response work; its storage/availability never gates admission.
+        this.ctx.waitUntil(this.env.USAGE_ANALYTICS.get(this.env.USAGE_ANALYTICS.idFromName('production')).observe(event,request.headers.get('x-mcp-client-ip')||'unknown')
+          .then(receipt=>{if(!receipt.recorded)this.intelligenceState.collectorRejected++;})
+          .catch(()=>{this.intelligenceState.deliveryFailures++;console.error(JSON.stringify({event:'intelligence_delivery_failed'}));}));
+      }catch{this.intelligenceState.deliveryFailures++;}
+    };
+  }
   racingAdmission(input:{action:string;id?:string;referenceId?:string;inspectionId?:string;evidenceSha256?:string;state?:string;bytes?:number;code?:string|null}){
     const admission=new RacingAdmission(this.ctx.storage.sql);
     if(input.action==='reserve')return admission.reserve(String(input.id));
@@ -154,7 +201,7 @@ export class McpContainer extends Container<Env> {
     const preliminary=usage.quota(key,0,Date.now(),false);
     if (!preliminary.allowed) {
       const response=Response.json({error:{code:'RATE_LIMITED',scope:preliminary.scope}},{status:429,headers:{'Retry-After':String(preliminary.retryAfter),'RateLimit-Limit':String(LIMITS.perMinute),'RateLimit-Remaining':'0','RateLimit-Reset':String(preliminary.retryAfter),'Cache-Control':'no-store','Access-Control-Allow-Origin':'*','Access-Control-Expose-Headers':'RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset, Retry-After'}});
-      const metered=meterResponse(response,describeRequest(request),0,started,(...args)=>usage.record(...args));
+      const metered=meterResponse(response,describeRequest(request),0,started,(...args)=>usage.record(...args),this.intelligenceObserver(request));
       this.ctx.waitUntil(metered.done);return metered.response;
     }
     let body: Uint8Array | undefined;
@@ -163,7 +210,7 @@ export class McpContainer extends Container<Env> {
       catch (error) {
         const admission=usage.quota(key,0);
         const response=admission.allowed ? Response.json({error:{code:'BODY_TOO_LARGE'}},{status:413,headers:{'Cache-Control':'no-store','Access-Control-Allow-Origin':'*'}}) : Response.json({error:{code:'RATE_LIMITED',scope:admission.scope}},{status:429,headers:{'Retry-After':String(admission.retryAfter),'Cache-Control':'no-store','Access-Control-Allow-Origin':'*'}});
-        const metered=meterResponse(response,describeRequest(request),error instanceof BodyLimitError ? error.bytesRead : 0,started,(...args)=>usage.record(...args));
+        const metered=meterResponse(response,describeRequest(request),error instanceof BodyLimitError ? error.bytesRead : 0,started,(...args)=>usage.record(...args),this.intelligenceObserver(request,body));
         this.ctx.waitUntil(metered.done);return metered.response;
       }
     }
@@ -172,7 +219,7 @@ export class McpContainer extends Container<Env> {
     const rateHeaders = {'RateLimit-Limit':String(LIMITS.perMinute),'RateLimit-Remaining':String(quota.remaining),'RateLimit-Reset':String(Math.max(1,Math.ceil(quota.reset-Date.now()/1000))),'Cache-Control':'no-store','Access-Control-Allow-Origin':'*','Access-Control-Expose-Headers':'RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset, Retry-After, MCP-Protocol-Version, Mcp-Session-Id'};
     if (!quota.allowed) {
       const response = Response.json({error:{code:'RATE_LIMITED',message:'Request or source budget exceeded',scope:quota.scope}},{status:429,headers:{...rateHeaders,'Retry-After':String(quota.retryAfter)}});
-      const metered = meterResponse(response,op,body?.length || 0,started,(...args)=>usage.record(...args));
+      const metered = meterResponse(response,op,body?.length || 0,started,(...args)=>usage.record(...args),this.intelligenceObserver(request,body));
       this.ctx.waitUntil(metered.done); return metered.response;
     }
     if (url.pathname === '/mcp' && body) {
@@ -180,7 +227,7 @@ export class McpContainer extends Container<Env> {
       try { batch = Array.isArray(JSON.parse(new TextDecoder().decode(body))); } catch { /* Backend handles JSON-RPC parse errors. */ }
       if (batch) {
         const response = Response.json({error:{code:'BATCH_NOT_SUPPORTED',message:'Send one JSON-RPC operation per request'}},{status:400,headers:rateHeaders});
-        const metered = meterResponse(response,op,body.length,started,(...args)=>usage.record(...args));
+        const metered = meterResponse(response,op,body.length,started,(...args)=>usage.record(...args),this.intelligenceObserver(request,body));
         this.ctx.waitUntil(metered.done); return metered.response;
       }
     }
@@ -197,7 +244,7 @@ export class McpContainer extends Container<Env> {
     const result = new Response(response.body,response);
     for (const [name,value] of Object.entries(rateHeaders)) result.headers.set(name,value);
     result.headers.set('Access-Control-Expose-Headers','RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset, Retry-After, MCP-Protocol-Version, Mcp-Session-Id');
-    const metered = meterResponse(result,op,body?.length || 0,started,(...args)=>usage.record(...args));
+    const metered = meterResponse(result,op,body?.length || 0,started,(...args)=>usage.record(...args),this.intelligenceObserver(request,body));
     this.ctx.waitUntil(metered.done); return metered.response;
   }
 
@@ -373,6 +420,11 @@ export default {
       if (url.pathname === '/__ops/publish-overview' && request.method === 'POST') return Response.json(await env.APP.get(env.APP.idFromName('production')).publishOverview());
       if (url.pathname === '/__ops/restart' && request.method === 'POST') return Response.json(await env.APP.get(env.APP.idFromName('production')).restartFromCheckpoint(request.headers.get('x-snapshot-sha256') || ''));
       if (url.pathname === '/__ops/diagnostics') return Response.json(await env.APP.get(env.APP.idFromName('production')).operationDiagnostics());
+      if (url.pathname === '/__ops/analytics' && request.method === 'GET') {
+        const analytics=await env.USAGE_ANALYTICS.get(env.USAGE_ANALYTICS.idFromName('production')).report(Number(url.searchParams.get('days')||7));
+        const ingress=await env.APP.get(env.APP.idFromName('production')).intelligenceDiagnostics();
+        return Response.json({...analytics,ingress,enabled:env.USAGE_INTELLIGENCE_ENABLED==='true'},{headers:{'Cache-Control':'no-store'}});
+      }
       if (url.pathname === '/__ops/usage' && request.method === 'GET') return Response.json(await env.APP.get(env.APP.idFromName('production')).usageReport(Number(url.searchParams.get('days') || 7)),{headers:{'Cache-Control':'no-store'}});
       if (url.pathname === '/__ops/status') return Response.json(await env.APP.get(env.APP.idFromName('production')).operationsStatus());
       return new Response('Not found', {status: 404});
@@ -420,6 +472,12 @@ export default {
     }
   },
   async scheduled(controller: ScheduledController, env: Env, ctx: ExecutionContext) {
+    if(env.USAGE_INTELLIGENCE_ENABLED==='true')ctx.waitUntil((async()=>{
+      const analytics=env.USAGE_ANALYTICS.get(env.USAGE_ANALYTICS.idFromName('production'));
+      await analytics.maintain(controller.scheduledTime);
+      const receipt=await archiveClosedDay(env.BACKUPS,await analytics.nextArchive(),controller.scheduledTime);
+      if(receipt)await analytics.confirmArchive(receipt.day,receipt.checksum);
+    })().catch(()=>{console.error(JSON.stringify({event:'intelligence_maintenance_failed'}));}));
     const pack = scheduledPack(controller.cron);
     ctx.waitUntil(env.APP.get(env.APP.idFromName('production')).runScheduled(pack, controller.scheduledTime));
   },
