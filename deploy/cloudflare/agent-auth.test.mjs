@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {DatabaseSync} from 'node:sqlite';
 import {test} from 'node:test';
-import {AgentAuthService,digest,JWT_GRANT,CLAIM_GRANT,protectedDataPath,isAgentAuthPath,dataRequestHeaders} from './agent-auth.ts';
+import {AgentAuthService,digest,JWT_GRANT,CLAIM_GRANT,protectedDataPath,isAgentAuthPath,dataRequestHeaders,poppyDiscovery} from './agent-auth.ts';
 
 async function fixture(){
   const db=new DatabaseSync(':memory:');let now=Date.UTC(2026,9,19,12);
@@ -141,4 +141,38 @@ test('both public and protected data forwarding omit credentials and retain the 
   assert.equal(headers.get('x-mcp-client-ip'),'203.0.113.8');assert.equal(headers.get('Mcp-Session-Id'),'public-mcp-session');assert.equal(headers.get('Accept'),'application/json');
   const controller=dataRequestHeaders(new Request('https://mcp.hk/api/v1/packs',{headers:{Cookie:'owner-secret',Authorization:'Bearer owner-secret','x-mcp-client-ip':'203.0.113.8'}}),'203.0.113.8');
   assert.equal(controller.get('x-mcp-client-ip'),'203.0.113.8');assert.equal(controller.has('Cookie'),false);assert.equal(controller.has('Authorization'),false);
+});
+
+test('Poppy 0.1 discovery binds implemented public interfaces to the OAuth issuer',async()=>{
+  const f=await fixture(),url='https://mcp.hk/.well-known/poppy.json';
+  const response=poppyDiscovery(new Request(url),'https://mcp.hk');
+  assert.equal(response.status,200);assert.match(response.headers.get('Content-Type'),/application\/json/);
+  assert.equal(response.headers.get('Access-Control-Allow-Origin'),'*');
+  const manifest=await response.json();
+  assert.equal(manifest.protocol_version,'0.1');
+  assert.deepEqual(manifest.organization,{name:'mcp.hk',domain:new URL(url).hostname});
+  assert.deepEqual(manifest.apis,[{type:'mcp',url:'https://mcp.hk/mcp',description:'Public read-only Hong Kong data. No account or token required; shared request limits apply.'}]);
+  assert.deepEqual(manifest.web,{});assert.equal(manifest.agent,undefined);
+  assert.equal(manifest.auth.direct,undefined);assert.equal(manifest.auth.device,undefined);
+  const metadata=await (await f.req('/.well-known/oauth-authorization-server')).json();
+  assert.equal(metadata.issuer,manifest.auth.issuer);
+  assert.deepEqual(metadata.poppy_domains,[manifest.organization.domain]);
+  for(const key of ['token_endpoint','revocation_endpoint','authorization_endpoint']){
+    assert.equal(new URL(metadata[key]).protocol,'https:');
+    assert.equal(new URL(metadata[key]).origin,manifest.auth.issuer);
+  }
+  // Advertised handlers exist; invalid requests fail locally rather than redirecting.
+  for(const key of ['token_endpoint','revocation_endpoint']){
+    const result=await f.form(new URL(metadata[key]).pathname,{});
+    assert.equal(result.status,400);assert.equal(result.headers.has('Location'),false);
+  }
+  assert.equal((await f.req(new URL(metadata.authorization_endpoint).pathname)).status,400);
+  const head=poppyDiscovery(new Request(url,{method:'HEAD'}),'https://mcp.hk');
+  assert.equal(head.status,200);assert.equal(await head.text(),'');
+  assert.equal(head.headers.get('Content-Type'),response.headers.get('Content-Type'));
+  const post=poppyDiscovery(new Request(url,{method:'POST'}),'https://mcp.hk');
+  assert.equal(post.status,405);assert.equal(post.headers.get('Allow'),'GET, HEAD');
+  for(const other of ['https://unrelated.example','https://mcp-hk.measurable.workers.dev','http://mcp.hk']){
+    assert.equal(poppyDiscovery(new Request(other+'/.well-known/poppy.json'),'https://mcp.hk').status,400);
+  }
 });

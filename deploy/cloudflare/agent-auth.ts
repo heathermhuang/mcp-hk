@@ -3,6 +3,19 @@
 export const READ_SCOPE = 'data.read';
 export const JWT_GRANT = 'urn:ietf:params:oauth:grant-type:jwt-bearer';
 export const CLAIM_GRANT = 'urn:workos:agent-auth:grant-type:claim';
+export function poppyDiscovery(request: Request, origin: string): Response {
+  if (new URL(request.url).origin !== origin) return new Response('Use the canonical mcp.hk origin', {status:400});
+  const headers = {'Access-Control-Allow-Origin':'*', 'Cache-Control':'public, max-age=300', 'X-Content-Type-Options':'nosniff'};
+  if (!['GET','HEAD'].includes(request.method)) return new Response(null, {status:405, headers:{Allow:'GET, HEAD', ...headers}});
+  const manifest = {
+    protocol_version:'0.1',
+    organization:{name:'mcp.hk', domain:new URL(origin).hostname},
+    auth:{issuer:origin},
+    apis:[{type:'mcp', url:origin+'/mcp', description:'Public read-only Hong Kong data. No account or token required; shared request limits apply.'}],
+    web:{},
+  };
+  return new Response(request.method === 'HEAD' ? null : JSON.stringify(manifest), {headers:{'Content-Type':'application/json; charset=utf-8', ...headers}});
+}
 const encoder = new TextEncoder();
 type RecordValue = Record<string, unknown>;
 type Registration = {id: string; owner: string; version: number; expires: number; revoked: boolean; name: string};
@@ -271,7 +284,7 @@ export class AgentAuthService {
     try {
       this.cleanup();
       if(request.method==='OPTIONS')return new Response(null,{status:204,headers:{...commonHeaders,'Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'GET, HEAD, POST, OPTIONS','Access-Control-Allow-Headers':'Authorization, Content-Type'}});
-      if(path==='/.well-known/oauth-authorization-server'&&['GET','HEAD'].includes(request.method))return json({issuer:this.origin,authorization_endpoint:this.origin+'/oauth2/authorize',token_endpoint:this.origin+'/oauth2/token',jwks_uri:this.origin+'/oauth2/jwks',registration_endpoint:this.origin+'/oauth2/register',revocation_endpoint:this.origin+'/oauth2/revoke',response_types_supported:['code'],grant_types_supported:[JWT_GRANT,CLAIM_GRANT,'authorization_code'],token_endpoint_auth_methods_supported:['none'],code_challenge_methods_supported:['S256'],scopes_supported:[READ_SCOPE],agent_auth:{skill:this.origin+'/auth.md',register_uri:this.origin+'/agent/identity',identity_endpoint:this.origin+'/agent/identity',claim_uri:this.origin+'/agent/identity/claim',claim_endpoint:this.origin+'/agent/identity/claim',identity_types_supported:['anonymous'],anonymous:{credential_types_supported:['identity_assertion']}}});
+      if(path==='/.well-known/oauth-authorization-server'&&['GET','HEAD'].includes(request.method))return json({issuer:this.origin,poppy_domains:[new URL(this.origin).hostname],authorization_endpoint:this.origin+'/oauth2/authorize',token_endpoint:this.origin+'/oauth2/token',jwks_uri:this.origin+'/oauth2/jwks',registration_endpoint:this.origin+'/oauth2/register',revocation_endpoint:this.origin+'/oauth2/revoke',response_types_supported:['code'],grant_types_supported:[JWT_GRANT,CLAIM_GRANT,'authorization_code'],token_endpoint_auth_methods_supported:['none'],code_challenge_methods_supported:['S256'],scopes_supported:[READ_SCOPE],agent_auth:{skill:this.origin+'/auth.md',register_uri:this.origin+'/agent/identity',identity_endpoint:this.origin+'/agent/identity',claim_uri:this.origin+'/agent/identity/claim',claim_endpoint:this.origin+'/agent/identity/claim',identity_types_supported:['anonymous'],anonymous:{credential_types_supported:['identity_assertion']}}});
       if((path==='/.well-known/oauth-protected-resource'||path==='/.well-known/oauth-protected-resource/agent/data')&&['GET','HEAD'].includes(request.method))return json({resource:path==='/.well-known/oauth-protected-resource'?this.origin:this.origin+'/agent/data',resource_name:'mcp.hk optional authenticated public-data reads',authorization_servers:[this.origin],scopes_supported:[READ_SCOPE],bearer_methods_supported:['header'],resource_documentation:this.origin+'/auth.md'});
       if(path==='/oauth2/jwks'&&['GET','HEAD'].includes(request.method))return json({keys:[{...this.jwk,kid:this.kid,alg:'ES256',use:'sig',key_ops:['verify']}]});
       this.limit('request:'+request.headers.get('x-auth-client-key'),60,60);this.limit('requests-global',10000,86400);
