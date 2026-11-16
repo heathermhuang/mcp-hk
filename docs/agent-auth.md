@@ -102,7 +102,7 @@ production flow afterwards. Never retain raw live credentials in public receipts
 The Auth.md draft and scanner use evolving metadata names. Both `identity_endpoint`
 and `register_uri` (and claim endpoint aliases) identify the same implemented
 anonymous registration/claim handlers. Provider ID-JAGs, service-auth email flow,
-provider event receivers, A2A and Poppy are not advertised as implemented.
+provider event receivers and A2A are not advertised as implemented.
 
 References: [Auth.md](https://workos.com/auth-md/docs/apps),
 [RFC 8414](https://www.rfc-editor.org/rfc/rfc8414),
@@ -110,3 +110,18 @@ References: [Auth.md](https://workos.com/auth-md/docs/apps),
 [RFC 7523](https://www.rfc-editor.org/rfc/rfc7523),
 [RFC 7009](https://www.rfc-editor.org/rfc/rfc7009),
 [RFC 7591](https://www.rfc-editor.org/rfc/rfc7591).
+
+## Poppy public discovery (draft 0.1)
+
+The hosted Worker serves `https://mcp.hk/.well-known/poppy.json` as JSON for
+GET and HEAD. The existing www redirect uses HTTPS and retains the well-known
+path. The manifest names `mcp.hk`, the public read-only MCP endpoint and ordinary
+website browsing. Its `auth.issuer` is exactly `https://mcp.hk`; the existing
+RFC 8414 metadata lists `mcp.hk` in `poppy_domains`, with the implemented token,
+revocation and authorization endpoints. Other serving origins cannot claim this
+manifest. Self-hosted Python deployments do not advertise the hosted issuer.
+
+This implements the draft 0.1 discovery check, not Poppy runtime sessions,
+conversations, browser joins, device sign-in or a new OAuth flow. Public MCP
+continues to require no token. The current protocol specification has advanced
+beyond 0.1; this declaration deliberately targets the requested scanner contract.
