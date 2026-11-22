@@ -6,7 +6,7 @@
   window.addEventListener('pagehide', event => { if (!event.persisted) lifecycle.abort(); }, {once:true});
   const validObject = value => value && typeof value === 'object' && !Array.isArray(value);
   async function read(path) {
-    const response = await fetch(path, {headers:{Accept:'application/json'},signal:AbortSignal.timeout(90000),credentials:'omit',redirect:'error'});
+    const response = await fetch(path, {headers:{Accept:'application/json',...(window.MhkPrivacy?.headers()||{})},signal:AbortSignal.timeout(90000),credentials:'omit',redirect:'error'});
     if (!response.ok) throw new Error('mcp.hk public read failed (HTTP '+response.status+'). Respect Retry-After; a source failure is not an empty dataset.');
     const reader=response.body.getReader(), chunks=[];let length=0;
     for (;;) {

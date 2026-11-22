@@ -1,7 +1,9 @@
+import {resultFacts, type ResultFacts} from './intelligence.ts';
 /* Aggregate accounting: never persist IPs, query text, arguments or record bodies. */
 export const LIMITS = {perMinute: 60, dailyRequests: 50000, dailyAddressRequests: 10000, bodyBytes: 65536, retentionDays: 90};
 const CAPTURE_BYTES = 262144;
-const tools = new Set(['hk_racing_status','hk_racing_search','hk_racing_results','hk_racing_profile','hk_address_search','hk_address_get','hk_restaurant_search','hk_restaurant_get','hk_district_list','hk_district_statistics','hk_data_packs','hk_source_status','hk_plate_search','hk_plate_comparables','hk_plate_datasets','hk_property_search','hk_property_building','hk_property_price_history','hk_property_coverage','hk_catalogue_search','hk_dataset_resources','hk_resource_schema','hk_resource_query','hk_coverage','list_datasets','get_dataset_details','list_categories','get_category_details','search_datasets','get_supported_formats','search_datasets_with_facets','get_datasets_by_format']);
+export const operationNames = ["get_category_details", "get_dataset_details", "get_datasets_by_format", "get_supported_formats", "hk_address_get", "hk_address_search", "hk_catalogue_search", "hk_company_address_history", "hk_company_get", "hk_company_licence_relationships", "hk_company_licences", "hk_company_name_history", "hk_company_officers", "hk_company_search", "hk_company_updates_status", "hk_coverage", "hk_data_packs", "hk_dataset_resources", "hk_district_list", "hk_district_statistics", "hk_hkex_archive_disclosure", "hk_hkex_archive_disclosures", "hk_hkex_archive_issuers", "hk_hkex_archive_status", "hk_hkex_disclosure", "hk_hkex_disclosures", "hk_hkex_issuers", "hk_hkex_latest_disclosure", "hk_hkex_latest_disclosures", "hk_hkex_latest_status", "hk_hkex_status", "hk_plate_comparables", "hk_plate_datasets", "hk_plate_search", "hk_property_building", "hk_property_coverage", "hk_property_price_history", "hk_property_search", "hk_racing_profile", "hk_racing_profile_history", "hk_racing_profile_observation", "hk_racing_results", "hk_racing_search", "hk_racing_status", "hk_resource_query", "hk_resource_schema", "hk_restaurant_get", "hk_restaurant_search", "hk_sfc_export", "hk_sfc_history", "hk_sfc_status", "hk_sfc_verify", "hk_source_status", "hk_transport_journey", "hk_transport_stop_routes", "hk_transport_stop_search", "list_categories", "list_datasets", "search_datasets", "search_datasets_with_facets"];
+const tools = new Set(operationNames);
 type ObjectValue = Record<string, unknown>;
 const object = (v: unknown): ObjectValue => v !== null && typeof v === 'object' && !Array.isArray(v) ? v as ObjectValue : {};
 const resource = (v: unknown) => typeof v === 'string' && /^[a-f0-9]{32}$/.test(v) ? v : '';
@@ -19,7 +21,7 @@ export function describeRequest(request: Request, body?: Uint8Array): Operation 
     return {protocol:'mcp', operation, resource:resource(args.resourceId), dataset:'', sourceCalls:['hk_address_search','hk_address_get'].includes(operation) ? 1 : 0};
   }
   const match = path.match(/^\/api\/v1\/resources\/([a-f0-9]{32})\/(schema|query|records)$/);
-  const pack = path.match(/^\/api\/v1\/(addresses|restaurants|districts|plates|properties|racing)(?:\/|$)/)?.[1];
+  const pack = path.match(/^\/api\/v1\/(addresses|restaurants|districts|plates|properties|racing|companies|hkex|sfc|transport|webb-sdi)(?:\/|$)/)?.[1];
   const route = match ? 'resource_' + match[2] : pack || ({'/api/v1/coverage':'coverage','/api/v1/resources':'resource_directory','/api/v1/catalogue/datasets':'catalogue_search','/api/v1/datasets':'catalogue_search','/api/v1/packs':'packs','/api/v1/status':'status','/healthz':'health','/readyz':'readiness','/docs':'docs','/openapi.json':'openapi'}[path] || 'other');
   return {protocol:'http', operation:route, resource:match?.[1] || '', dataset:pack || '', sourceCalls:pack === 'addresses' ? 1 : 0};
 }
@@ -75,7 +77,7 @@ export class UsageStore {
 }
 
 export function inspectResponse(raw: string, op: Operation, status: number) {
-  let payload: ObjectValue = {}, inspected = false;
+  let payload: ObjectValue = {}, inspected = false, mcpError = false;
   try {
     let text=raw;
     if (/(^|\n)data:/.test(raw)) {
@@ -85,25 +87,28 @@ export function inspectResponse(raw: string, op: Operation, status: number) {
     payload = object(JSON.parse(text)); inspected = true;
     if (op.protocol === 'mcp') {
       const result = object(payload.result);
-      if (payload.error || result.isError) return {op,outcome:'error',items:0};
+      mcpError = Boolean(payload.error || result.isError);
+      if (payload.error) { const summary=resultFacts(payload,'error',status,0); return {op,outcome:'error',items:0,summary}; }
       if (result.structuredContent) payload = object(result.structuredContent);
       else if (Array.isArray(result.content)) {
-        try { payload = object(JSON.parse(String(object(result.content[0]).text))); } catch { payload = {}; }
+        try { payload = object(JSON.parse(String(object(result.content[0]).text))); } catch { payload = {}; inspected = false; }
       } else payload = result;
     }
   } catch { /* Bodies are neither persisted nor logged. */ }
-  if (status >= 400 || payload.error) return {op,outcome:status === 429 ? 'rate_limited' : 'error',items:0};
+  if (status >= 400 || payload.error || mcpError) { const outcome=status === 429 ? 'rate_limited' : 'error'; return {op,outcome,items:0,summary:resultFacts(payload,outcome,status,0)}; }
   const resolved = object(payload.resource);
   const sourceId = Array.isArray(payload.provenance) ? object(payload.provenance[0]).sourceId : '';
   const pack = ['addresses','restaurants','population','platehk','seehouse','catalogue'].includes(String(sourceId)) ? String(sourceId) : '';
   const next = {...op,dataset:dataset(resolved.datasetId) || pack || op.dataset,resource:resource(resolved.id) || op.resource};
   const data = object(payload.data);
-  const propertyRows = pack === 'seehouse' ? [data.candidates,data.listings,data.events].find(Array.isArray) : (op.operation==='racing'||op.operation.startsWith('hk_racing_')) ? [data.results,data.appearances].find(Array.isArray) : undefined;
-  const items = Array.isArray(propertyRows) ? propertyRows.length : Array.isArray(data.items) ? data.items.length : Array.isArray(payload.items) ? payload.items.length : payload.data && Array.isArray(payload.provenance) ? 1 : null;
-  return {op:next,outcome:inspected ? 'ok' : 'uninspected',items};
+  const rowKeys=['items','candidates','listings','events','results','appearances','records','companies','issuers','disclosures','rows','resources','datasets','races','stops','routes'];
+  const collection=Array.isArray(payload.data)?payload.data:rowKeys.map(key=>data[key]).find(Array.isArray) || (Array.isArray(payload.items)?payload.items:undefined);
+  const items = Array.isArray(collection) ? collection.length : payload.data && Array.isArray(payload.provenance) ? 1 : null;
+  const outcome=inspected ? 'ok' : 'uninspected';
+  return {op:next,outcome,items,summary:resultFacts(payload,outcome,status,items)};
 }
 
-export function meterResponse(response: Response, op: Operation, bytesIn: number, started: number, save: (op: Operation,status:number,outcome:string,bytesIn:number,bytesOut:number,items:number|null,duration:number)=>void) {
+export function meterResponse(response: Response, op: Operation, bytesIn: number, started: number, save: (op: Operation,status:number,outcome:string,bytesIn:number,bytesOut:number,items:number|null,duration:number)=>void, observe?: (op:Operation,status:number,outcome:string,bytesIn:number,bytesOut:number,items:number|null,duration:number,summary:ResultFacts)=>void) {
   const reader = response.body?.getReader();
   let total = 0, captured = 0, finished = false;
   const parts: Uint8Array[] = [];
@@ -115,7 +120,11 @@ export function meterResponse(response: Response, op: Operation, bytesIn: number
     const result = inspectResponse(raw,op,response.status);
     try { save(result.op,response.status,reason || result.outcome,bytesIn,total,reason ? null : result.items,Date.now()-started); }
     catch { console.error(JSON.stringify({event:'usage_write_failed'})); }
-    finally { resolveDone(); }
+    finally {
+      try { observe?.(result.op,response.status,reason || result.outcome,bytesIn,total,reason ? null : result.items,Date.now()-started,reason ? {...result.summary,category:reason} : result.summary); }
+      catch { console.error(JSON.stringify({event:'intelligence_observe_failed'})); }
+      resolveDone();
+    }
   }
   if (!reader) { finish(); return {response,done}; }
   const body = new ReadableStream<Uint8Array>({

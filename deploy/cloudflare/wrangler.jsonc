@@ -13,6 +13,7 @@
   "secrets": { "required": ["OPS_TOKEN"] },
   "vars": {
     "PUBLIC_ORIGIN": "https://mcp.hk",
+    "USAGE_INTELLIGENCE_ENABLED": "true",
     "CURATED_BACKEND_ORIGIN": "https://curated.mcp.hk",
     "WEBB_SDI_ARCHIVE_ENABLED": "true",
     "HKEX_DAILY_ENABLED": "true",
@@ -33,9 +34,9 @@
     "max_instances": 1
   }],
   "durable_objects": {
-    "bindings": [{ "name": "APP", "class_name": "McpContainer" }, { "name": "AGENT_AUTH", "class_name": "AgentAuth" }]
+    "bindings": [{ "name": "APP", "class_name": "McpContainer" }, { "name": "AGENT_AUTH", "class_name": "AgentAuth" }, { "name": "USAGE_ANALYTICS", "class_name": "UsageAnalytics" }]
   },
-  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["McpContainer"] }, { "tag": "v2-agent-auth", "new_sqlite_classes": ["AgentAuth"] }],
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["McpContainer"] }, { "tag": "v2-agent-auth", "new_sqlite_classes": ["AgentAuth"] }, { "tag": "v3-usage-intelligence", "new_sqlite_classes": ["UsageAnalytics"] }],
   "r2_buckets": [{ "binding": "BACKUPS", "bucket_name": "mcp-hk-backups" }],
   "triggers": { "crons": ["0 2 * * *", "0 3 * * SUN", "0 1 * * *", "0 4 * * SUN", "2-59/5 * * * *"] },
   "observability": { "enabled": true, "head_sampling_rate": 0.1, "logs": { "enabled": true, "invocation_logs": false } },

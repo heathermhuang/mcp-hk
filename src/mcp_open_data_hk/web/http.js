@@ -1,7 +1,7 @@
 /* Retry only our bounded cold-recovery signal, never provider/data failures. */
 export async function fetchPublicJson(path, body, {signal,attempts=3,capture} = {}) {
   for (let attempt = 0; attempt < attempts; attempt++) {
-    const response = await fetch(path, {signal, method: body ? 'POST' : 'GET', headers: body ? {'Content-Type': 'application/json'} : {}, body: body ? JSON.stringify(body) : undefined});
+    const response = await fetch(path, {signal, method: body ? 'POST' : 'GET', headers: {...(globalThis.MhkPrivacy?.headers()||{}),...(body ? {'Content-Type': 'application/json'} : {})}, body: body ? JSON.stringify(body) : undefined});
     let payload;
     try { const raw = await response.text(); payload = JSON.parse(raw); if(response.ok) capture?.(raw); }
     catch { throw new Error(`HTTP ${response.status}: The service did not return JSON data. Retry shortly.`); }

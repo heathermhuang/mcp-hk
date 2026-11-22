@@ -46,6 +46,7 @@
   function choose(allowed) {
     choice={version:1,allowed,at:Date.now()};
     try {localStorage.setItem(key,JSON.stringify(choice));} catch { /* Choice still applies to this page. */ }
+    window.MhkPrivacy?.sync(allowed);
     if (allowed) start();
     else { if (id) window['ga-disable-'+id]=true; removeCookies(); }
     dialog.close(); render();
