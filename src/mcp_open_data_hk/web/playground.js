@@ -7,6 +7,7 @@ import {genericFamily,DomainSession,request,url,mcpExample} from './playground-a
 import {evidencePackage,exportPolicy} from './playground-export.js';
 import {node,button,safeLink,cellText,drawChart,drawLocations} from './playground-views.js';
 import {SourceHealth} from './source-health.js';
+import {mountTransport} from './transport-lookup.js';
 import {dateFacts,qualityText,weatherChoices} from './source-quality.js';
 const $=id=>document.getElementById('pg-'+id),t=(key,values)=>MhkI18n.t('pg'+key,values),locale=()=>MhkI18n.locale;
 // Keep older cached HTML usable while the assets and container adopt a release.
@@ -15,7 +16,9 @@ if(!$('filter-options')){const box=node('details',null,'mhk-disclosure');box.id=
 const inventoryPages=new InventoryPages();
 const flow=new RequestFlow(),discoveryFlow=new RequestFlow(),detailFlow=new RequestFlow(),exportFlow=new RequestFlow();
 const sourceHealth=new SourceHealth($('health'));
-let families=[],draft=null,applied=null,result=null,schema=null,resource=null,session=null,pages=[],pageIndex=-1,loading=false,selectedFocus=null,expiryTimer,retryTimer,retryUntil=0,searchQuery='',choiceData={};
+let families=[],draft=null,applied=null,result=null,schema=null,resource=null,session=null,pages=[],pageIndex=-1,loading=false,selectedFocus=null,expiryTimer,retryTimer,retryUntil=0,searchQuery='',choiceData={},transportLookup=null;
+const transportPanel=node('section',null,'pg-bus');
+transportPanel.hidden=true;$('controls').before(transportPanel);
 function emptyRecipe(family){return validateRecipe({v:1,family,lang:locale()});}
 function message(text){$('status').textContent=text||'';}
 function dirty(){exportFlow.cancel();$('draft').textContent=applied&&JSON.stringify(draft)!==JSON.stringify(applied)?t('Draft'):'';}
@@ -24,13 +27,17 @@ function intentUrl(hash){const u=new URL(location.href);u.pathname='/playground'
 function controlsLoading(value){loading=value;$('output').setAttribute('aria-busy',String(value));$('apply').disabled=value||Date.now()<retryUntil;$('cancel').hidden=!value;for(const k of ['next','previous','download'])$(k).disabled=value||!result;if(value)$('download').disabled=true;}
 function cancel(){flow.cancel();detailFlow.cancel();exportFlow.cancel();session?.cancel();clearInterval(retryTimer);controlsLoading(false);}
 function clearResult(){result=null;pages=[];pageIndex=-1;$('output').hidden=true;$('detail').hidden=true;$('export-status').textContent='';$('share-fallback').hidden=true;clearTimeout(expiryTimer);}
-function renderFamilies(){const target=$('families');target.replaceChildren();for(const family of families){const b=button(family.title[locale()],()=>openFamily(family.id));b.className='pg-family';b.dataset.family=family.id;b.setAttribute('aria-pressed',String(draft?.family===family.id));b.append(node('small',family.id==='transport'?MhkI18n.t('browseTransportDatasets'):family.availability[locale()]));target.append(b);}}
+function renderFamilies(){const target=$('families');target.replaceChildren();for(const family of families){const b=button(family.title[locale()],()=>openFamily(family.id));b.className='pg-family';b.dataset.family=family.id;b.setAttribute('aria-pressed',String(draft?.family===family.id));b.append(node('small',family.availability[locale()]));target.append(b);}}
 function title(){const family=families.find(f=>f.id===draft?.family);$('heading').textContent=family?.title[locale()]||t('Choose');$('description').textContent=family?.question[locale()]||t('ChooseHelp');$('limits').textContent=family?.limits[locale()]||'';renderFamilies();}
 function labelInput(target,label,key,value='',{type='text',options,max=200,required=false,change}={}){
   const box=node('label'),span=node('span',label),input=node(options?'select':'input');input.name=key;input.setAttribute('aria-label',label);if(options){for(const [v,text] of options){const opt=node('option',text);opt.value=v;input.append(opt);}}else{input.type=type;input.maxLength=max;}input.value=value;input.required=required;
   input.addEventListener(options?'change':'input',()=>{if(change)change(input.value);else draft.query[key]=input.value;dirty();});box.append(span,input);target.append(box);return input;
 }
+function closeTransport(){
+  transportLookup?.dispose();transportLookup=null;transportPanel.hidden=true;
+}
 async function openFamily(family,recipe=null,{restore=false}={}){
+  closeTransport();
   sourceHealth.show(family);
   cancel();discoveryFlow.cancel();clearResult();schema=null;resource=null;choiceData={};draft=recipe||emptyRecipe(family);applied=null;session=genericFamily(family)?null:new DomainSession(family,locale);
   $('source-choices').replaceChildren();$('selectors').replaceChildren();$('domain-controls').replaceChildren();$('filter-options').hidden=true;$('filter-options').open=false;$('filters-box').hidden=true;$('columns-box').hidden=true;$('controls').hidden=false;$('draft').textContent='';$('back').hidden=!searchQuery;title();message('');if(!restore){$('heading').focus({preventScroll:true});$('heading').scrollIntoView({block:'start'});}if(!restore)history.pushState(null,'',intentUrl(encodeRecipe(draft)));
@@ -38,7 +45,12 @@ async function openFamily(family,recipe=null,{restore=false}={}){
     $('controls').hidden=!draft.resource;
     if(draft.resource)await inspect({saved:true,restore});
     else if(draft.dataset)await showResources(draft.dataset);
-    else if(family==='transport')await discover('transport',0);
+    else if(family==='transport'){
+      transportPanel.hidden=false;
+      transportLookup=mountTransport(transportPanel,()=>{
+        $('topic').value='transport';$('topic').focus();discover('transport',0);
+      });
+    }
     else message(t('ChooseHelp'));
   }else{
     const run=flow.start();controlsLoading(true);
@@ -79,7 +91,10 @@ async function discover(query,offset=0){
   }catch(e){if(run.current())$('discovery-results').textContent=t('Failed');}
 }
 async function selectDataset(row){
-  await openFamily(draft?.family==='transport'?'transport':'catalogue');draft.dataset=row.id;history.pushState(null,'',intentUrl(encodeRecipe(draft)));$('heading').textContent=locale()==='zh-Hant'?row.titleZhHant||row.title:row.title;$('description').textContent=locale()==='zh-Hant'?row.descriptionZhHant||row.description||'':row.description||'';await showResources(row.id);
+  const next=emptyRecipe(draft?.family==='transport'?'transport':'catalogue');
+  next.dataset=row.id;await openFamily(next.family,next);
+  $('heading').textContent=locale()==='zh-Hant'?row.titleZhHant||row.title:row.title;
+  $('description').textContent=locale()==='zh-Hant'?row.descriptionZhHant||row.description||'':row.description||'';
 }
 async function showResources(dataset,offset=0){
   const run=flow.start();controlsLoading(true);message(t('Reading'));
@@ -263,7 +278,7 @@ function historyControls(context,target){
   for(const key of context.families){const copy={names:'Names',officers:'Officers',licences:'Licences',addresses:'Addresses',licence_relationships:'LicenceRelationships',history:'History'}[key];nav.append(button(t(copy),()=>{family=key;cursor=null;load();}));}target.append(node('h3',t('History')),nav,list,more);
   async function load(next=false){const run=detailFlow.start();more.disabled=true;list.replaceChildren(node('p',t('Reading')));try{const p=await session.history(context,family,next?cursor:null,run.signal);if(!run.current())return;const rows=Array.isArray(p.data)?p.data:p.data?.items;if(p.meta?.version!==context.version||!Array.isArray(rows))throw Error('SOURCE_IDENTITY_CHANGED');list.replaceChildren();showHistoryRows(list,p);cursor=p.meta?.nextCursor;more.hidden=!cursor;}catch(e){if(run.current())list.replaceChildren(node('p',t('Failed')),node('pre',e.message));}finally{if(run.current())more.disabled=false;}}
 }
-async function restore(){let recipe;try{recipe=decodeRecipe(location.hash);}catch{cancel();clearResult();message(t('InvalidRecipe'));return;}if(recipe){recipe.lang=locale();await openFamily(recipe.family,recipe,{restore:true});}else{sourceHealth.clear();cancel();clearResult();draft=null;applied=null;$('controls').hidden=true;title();message(t('ChooseHelp'));}}
+async function restore(){let recipe;try{recipe=decodeRecipe(location.hash);}catch{closeTransport();cancel();clearResult();message(t('InvalidRecipe'));return;}if(recipe){recipe.lang=locale();await openFamily(recipe.family,recipe,{restore:true});}else{closeTransport();sourceHealth.clear();cancel();clearResult();draft=null;applied=null;$('controls').hidden=true;title();message(t('ChooseHelp'));}}
 $('search').addEventListener('submit',e=>{e.preventDefault();discover($('topic').value.trim(),0);});
 $('controls').addEventListener('submit',e=>{e.preventDefault();apply();});
 $('add-filter').addEventListener('click',()=>{const field=fieldsOf(schema).find(f=>!draft.filters.some(p=>p.field===f.name)&&f.types.some(t=>!['object','array'].includes(t)));if(!field)return;const kind=(field.scalarKinds||[]).find(k=>['string','integer','float','boolean','null'].includes(k))||'string';draft.filters.push({field:field.name,kind,value:kind==='null'?'null':kind==='boolean'?'true':''});renderFilters();dirty();});

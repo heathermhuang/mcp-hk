@@ -273,8 +273,14 @@ class TransportSearch:
     @staticmethod
     def matches(index, q="", lat=None, lon=None, radius=500, operator=""):
         needle = normalise(q)
+        stops = index["stops"]
+        if needle.startswith("td:stop:"):
+            # An explicit namespace never falls back to a partial name match.
+            stop_id = needle.removeprefix("td:stop:")
+            stops = {stop_id: stops[stop_id]} if stop_id in stops else {}
+            needle = stop_id
         result = []
-        for sid, stop in index["stops"].items():
+        for sid, stop in stops.items():
             memberships = index["memberships"][sid]
             if operator and not any(
                 operator in r["operator"].split("+") for r in memberships

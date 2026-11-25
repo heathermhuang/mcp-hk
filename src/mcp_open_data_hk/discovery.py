@@ -254,13 +254,11 @@ def family_directory(
             f'<p>{escape(row["question"][lang])}</p>'
         )
         if not compact:
-            action = strings[
-                (
-                    "browseTransportDatasets"
-                    if row["id"] == "transport"
-                    else "directoryOpen"
-                )
-            ]
+            action = (
+                row["action"][lang]
+                if row["id"] == "transport" and playground
+                else strings["directoryOpen"]
+            )
             parts.append(
                 f'<p class="mhk-note">{escape(row["limits"][lang])}</p>'
                 '<p class="dataset-actions">'

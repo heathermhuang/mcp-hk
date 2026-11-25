@@ -50,14 +50,16 @@ try{
     const link=new URL(await page.locator('#dataset-hkex_daily h2 a').getAttribute('href'),origin);
     assert.equal(link.searchParams.get('lang'),lang);assert.equal(link.pathname,'/playground');assert.equal(JSON.parse(decodeURIComponent(link.hash.slice(3))).family,'hkex_daily');
     await page.screenshot({path:new URL(`directory-${lang}-${width}.png`,out).pathname,fullPage:true});
-    const transport=page.locator('#dataset-transport .dataset-actions').getByRole('link',{name:transportLabel+' →'});
+    const lookupLabel=lang==='en'?'Look up bus stops and routes':'查巴士站及路線';
+    const transport=page.locator('#dataset-transport .dataset-actions').getByRole('link',{name:lookupLabel+' →'});
     const legacy=await page.locator('#dataset-transport h2 a').getAttribute('href');
     assert.equal(await transport.getAttribute('href'),legacy);
     await transport.press('Enter');
     const choice=page.locator('[data-family="transport"]');
     await choice.waitFor();
+    assert.equal(await choice.getAttribute('aria-pressed'),'true');
+    await page.getByRole('button',{name:transportLabel,exact:true}).click();
     await page.locator('#pg-discovery-results').getByRole('button',{name:lang==='en'?'Bus route data':'巴士路線數據'}).waitFor();
-    assert.match(await choice.innerText(),new RegExp(transportLabel));
     assert.equal(transportSearches.length,1);
     assert.equal(new URL(page.url()).hash,new URL(legacy,origin).hash);
    }

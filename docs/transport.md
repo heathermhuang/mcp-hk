@@ -14,7 +14,8 @@ workflow below; absence of a dedicated tool never proves a source is absent.
 - `hk_transport_journey(origin="Lan Kwai Fong", destination="Seymour Road")`
   finds direct bus routes and independently attaches verified Citybus, KMB/LWB
   and NLB live ETAs.
-  Names, exact returned TD stop IDs, or `originLat`/`originLon` and
+  Names, returned TD stop IDs (use `td:stop:261` to require an exact match),
+  or `originLat`/`originLon` and
   `destinationLat`/`destinationLon` are accepted. Use ALS address search first for
   arbitrary landmarks; choose ambiguous addresses rather than guessing.
 
