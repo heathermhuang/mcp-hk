@@ -7,7 +7,14 @@ const t=(key,values)=>MhkI18n.t('bus'+key,values);
 const name=record=>record?.[MhkI18n.locale==='zh-Hant'?'zhHant':'en']||record?.en||record?.zhHant;
 const stopName=stop=>name(stop.name)||stop.stopId;
 const date=value=>MhkI18n.date(value);
-const epoch=value=>typeof value==='number'?value:Date.parse(value)/1000;
+function epoch(value){
+  if(typeof value==='number')return value;
+  if(typeof value!=='string')return NaN;
+  // The provider sometimes omits an offset. Use the same HKT rule as the transport API.
+  const normal=value.replaceAll('/','-').replace(' ','T');
+  const local=/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?$/.test(normal);
+  return Date.parse(local?normal+'+08:00':normal)/1000;
+}
 const stopIdentity=stop=>'td:stop:'+stop.stopId;
 const isHeld=code=>/RESTRICTED|HELD|HOLD|BUDGET|ACCESS_DENIED/.test(code);
 const isExpired=code=>/STALE|EXPIRED/.test(code);
@@ -136,8 +143,8 @@ function showArrivals(card,candidate){
   card.append(notes);
   const update=()=>{
     if(!Number.isFinite(expiry)||expiry*1000<=Date.now()){status.textContent=t('Expired');return false;}
-    const predictedAt=prediction?Date.parse(prediction):NaN;
-    if(predictedAt>Date.now())status.textContent=t('Prediction',{time:date(prediction)});
+    const predictedAt=epoch(prediction);
+    if(predictedAt*1000>Date.now())status.textContent=t('Prediction',{time:date(predictedAt)});
     else if(prediction)status.textContent=t('Expired');
     else status.textContent=arrivals?.items?.length?t('NoFuture'):t('NoPredictions');
     return true;

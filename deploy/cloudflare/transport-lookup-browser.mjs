@@ -15,10 +15,10 @@ const outbound={route,direction:'outbound',board:stops[0],alight:stops[2]};
 const envelope=data=>({data,provenance,meta:{indexVersion:'fixture-index'}});
 try{
   for(const width of [390,1280])for(const locale of ['en','zh-Hant']){
-    const context=await browser.newContext({viewport:{width,height:820}});
+    const context=await browser.newContext({viewport:{width,height:820},timezoneId:'America/Los_Angeles'});
     const page=await context.newPage(),requests=[],errors=[];
     page.on('pageerror',error=>errors.push(error.message));
-    let timedOut=false;
+    let timedOut=false,predictedAt;
     await context.route('https://hk.app/**',entry=>entry.abort());
     await context.route('**/api/v1/transport/**',async entry=>{
       const {pathname,searchParams}=new URL(entry.request().url());
@@ -41,10 +41,10 @@ try{
       assert.deepEqual(body,{origin:'td:stop:261',destination:'td:stop:263',includeArrivals:body.includeArrivals,limit:5});
       if(!body.includeArrivals)return entry.fulfill({json:envelope({...base,items:[outbound]})});
       if(timedOut)return entry.fulfill({status:504,json:{error:{code:'SOURCE_TIMEOUT'}}});
-      const now=Date.now()/1000;
+      const now=Date.now()/1000;predictedAt=now+60;
       const live={...outbound,arrivalStatus:'live',arrivalCheckedAt:now,arrivals:{
         items:[{eta:'raw fixture timing'}],transport:{cacheTTLSeconds:3,freshUntil:now+30,sourceTimestamp:new Date(now*1000).toISOString()},
-      },earliestPredictedDeparture:new Date((now+60)*1000).toISOString()};
+      },earliestPredictedDeparture:new Date((predictedAt+8*3600)*1000).toISOString().slice(0,-1).replace('T',' ')};
       return entry.fulfill({json:envelope({...base,items:[
         live,
         {...live,earliestPredictedDeparture:null,arrivals:{...live.arrivals,items:[],transport:{...live.arrivals.transport,cacheTTLSeconds:20}}},
@@ -73,7 +73,10 @@ try{
     await check.press('Enter');
     const partial=panel.getByText(locale==='en'?/comparison is partial/:/比較只涵蓋部分選項/);
     await partial.waitFor();
-    await panel.getByText(locale==='en'?/First future prediction/:/最早未來預測/).waitFor();
+    const expectedTime=await page.evaluate(seconds=>MhkI18n.date(seconds),predictedAt);
+    const prediction=panel.getByText(locale==='en'?/First future prediction/:/最早未來預測/);
+    await prediction.waitFor();
+    assert.ok((await prediction.innerText()).includes(expectedTime));
     assert.equal(requests.filter(r=>r.body?.includeArrivals).length,1);
     await panel.getByText(locale==='en'?/returned no predictions/:/未有回傳到站預測/).waitFor();
     await panel.getByText(/SOURCE_RESTRICTED/).waitFor();
