@@ -2,15 +2,15 @@
 (() => {
   if(!globalThis.MhkI18n)return; // A saved-locale redirect may be replacing this document.
   const $=id=>document.getElementById(id),t=(...a)=>MhkI18n.t(...a),methods=new Set(['get','post','put','patch','delete','head','options','trace']);
-  const groupKeys={catalogue:'docsGroupCatalogue',companies:'docsGroupCompanies',disclosures:'docsGroupDisclosures',places:'docsGroupPlaces',plates:'docsGroupPlates',properties:'docsGroupProperties',racing:'docsGroupRacing',resources:'docsGroupResources',sfc:'docsGroupSfc',service:'docsGroupService'};
+  const groupKeys={catalogue:'docsGroupCatalogue',companies:'docsGroupCompanies',disclosures:'docsGroupDisclosures',places:'docsGroupPlaces',plates:'docsGroupPlates',properties:'docsGroupProperties',racing:'docsGroupRacing',resources:'docsGroupResources',sfc:'docsGroupSfc',transport:'docsGroupTransport',service:'docsGroupService'};
   const node=(tag,text)=>{const e=document.createElement(tag);e.textContent=text;return e;};
   let spec=null,labels={},families=[],entries=[],consoleUi=null,consoleLoading=false,loading=false,timer;
   const params=new URL(location.href).searchParams;let query=(params.get('q')||'').slice(0,200),selectedGroup=params.get('group')||'';
   $('docs-query').value=query;
   const normal=value=>String(value).normalize('NFKC').toLowerCase();
   const title=entry=>labels[entry.key]?.[MhkI18n.locale]||entry.operation.summary||entry.path;
-  function groupFor(path){const root=path.split('/')[3];if(path.startsWith('/api/v1/catalogue')||root==='datasets')return 'catalogue';if(['addresses','restaurants','districts'].includes(root))return 'places';if(root==='hkex')return 'disclosures';return ['companies','plates','properties','racing','resources','sfc'].includes(root)?root:'service';}
-  const familyIds={addresses:['addresses'],restaurants:['restaurants'],districts:['population'],plates:['platehk'],properties:['seehouse'],companies:['company_registry','enigma','sfc_archive'],hkex:['hkex_daily','webb_sdi'],racing:['racing'],sfc:['sfc_archive'],catalogue:['catalogue','transport'],datasets:['catalogue'],resources:['catalogue','transport']};
+  function groupFor(path){const root=path.split('/')[3];if(path.startsWith('/api/v1/catalogue')||root==='datasets')return 'catalogue';if(['addresses','restaurants','districts'].includes(root))return 'places';if(root==='hkex')return 'disclosures';return ['companies','plates','properties','racing','resources','sfc','transport'].includes(root)?root:'service';}
+  const familyIds={addresses:['addresses'],restaurants:['restaurants'],districts:['population'],plates:['platehk'],properties:['seehouse'],companies:['company_registry','enigma','sfc_archive'],hkex:['hkex_daily','webb_sdi'],racing:['racing'],sfc:['sfc_archive'],transport:['transport'],catalogue:['catalogue','transport'],datasets:['catalogue'],resources:['catalogue','transport']};
   function aliases(entry){const ids=familyIds[entry.path.split('/')[3]]||[];return families.filter(f=>ids.includes(f.id)).map(f=>[f.keywords,...Object.values(f.title),...Object.values(f.question)].join(' ')).join(' ');}
   function sync(){const u=new URL(location.href);for(const [k,v]of [['q',query],['group',selectedGroup]]){if(v)u.searchParams.set(k,v);else u.searchParams.delete(k);}history.replaceState(null,'',u.pathname+u.search+u.hash);}
   function resolve(value){if(!value?.$ref?.startsWith('#/'))return value;return value.$ref.slice(2).split('/').reduce((v,k)=>v?.[k.replace(/~1/g,'/').replace(/~0/g,'~')],spec)||value;}
@@ -35,12 +35,51 @@
     for(const key of ['docsName',...(withLocation?['docsLocation']:[]),'docsRequired','docsType']){const th=node('th',t(key));th.scope='col';hr.append(th);}head.append(hr);table.append(head);
     const tbody=node('tbody','');for(const p of parameters){const tr=node('tr','');tr.append(node('td',p.name));if(withLocation)tr.append(node('td',p.in));tr.append(node('td',t(p.required?'docsRequired':'docsOptional')));const cell=node('td','');cell.append(node('code',schemaSummary(p.schema)));tr.append(cell);tbody.append(tr);}table.append(tbody);wrap.append(table);return wrap;
   }
+  const weatherResource='574e2fdcf4b1756347aedaf3ba2feeda';
+  function operationExample(key){
+    const resource=MhkI18n.locale==='zh-Hant'?'d4879f8b8408e73f528aa2be87074eba':weatherResource;
+    const examples={
+      'GET /api/v1/districts/{districtId}/statistics':[
+        '/api/v1/districts/central-western/statistics',null,
+        {data:{districtId:'central-western',population:'number',referencePeriod:'year'},provenance:[{sourceUrl:'publisher URL'}]},
+      ],
+      'GET /api/v1/catalogue/datasets':[
+        '/api/v1/catalogue/datasets?q=weather&access=sources&limit=5',null,
+        {items:[{id:'dataset identifier',sourceUrl:'publisher URL'}],total:'number',nextOffset:'number or null'},
+      ],
+      'GET /api/v1/resources':[
+        '/api/v1/resources?datasetId=hk-hko-rss-current-weather-report&limit=10',null,
+        {items:[{id:resource,datasetId:'hk-hko-rss-current-weather-report',format:'JSON'}]},
+      ],
+      'POST /api/v1/resources/{resourceId}/schema':[
+        '/api/v1/resources/'+resource+'/schema',{recordPath:'temperature/data'},
+        {resource:{id:resource},schema:{fields:[]},provenance:[{sourceUrl:'publisher URL'}]},
+      ],
+      'POST /api/v1/resources/{resourceId}/query':[
+        '/api/v1/resources/'+resource+'/query',{recordPath:'temperature/data',limit:5},
+        {resource:{id:resource},data:{items:[]},meta:{version:'resource version',nextOffset:'number or null'},provenance:[{sourceUrl:'publisher URL'}]},
+      ],
+      'GET /api/v1/transport/stops':[
+        '/api/v1/transport/stops?q=Lan%20Kwai%20Fong&limit=5',null,
+        {data:{items:[{stopId:'TD stop identifier',name:{en:'name',zhHant:'名稱'}}],selectionRequired:'boolean'},meta:{indexVersion:'reference version'}},
+      ],
+    };
+    return examples[key];
+  }
   function operationId(entry){return 'operation-'+encodeURIComponent(entry.key);}
   function renderOperation(entry){
     const row=node('details','');row.className='docs-operation';row.id=operationId(entry);
     const summary=node('summary',''),method=node('span',entry.method.toUpperCase()),path=node('code',entry.path),name=node('span',title(entry));method.className='docs-method';name.className='docs-operation-name';summary.append(method,path,name);row.append(summary);
     const body=node('div','');body.className='docs-operation-body';
     const link=node('a',t('docsOperationLink')+' ↗');link.href='#'+row.id;body.append(link);
+    const example=operationExample(entry.key);
+    if(example){
+      const [path,args,expected]=example;
+      const pre=node('pre',"curl -fsS "+(args?"-H 'Content-Type: application/json' -d '"+JSON.stringify(args)+"' ":'')+"'https://mcp.hk"+path+"'");
+      pre.tabIndex=0;body.append(pre);
+      window.MhkCopyExample?.(pre);
+      body.append(node('h4',t('docsExpectedExcerpt')),code(expected));
+    }
     body.append(node('h4',t('docsParameters')));
     const parameters=[...new Map([...(entry.pathItem.parameters||[]),...(entry.operation.parameters||[])].map(resolve).map(p=>[p.in+' '+p.name,p])).values()];
     if(!parameters.length)body.append(node('p',t('docsNoParameters')));

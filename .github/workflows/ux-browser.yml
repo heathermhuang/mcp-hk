@@ -42,6 +42,7 @@ jobs:
           for attempt in $(seq 1 30); do curl -fsS http://127.0.0.1:8767/healthz && break; sleep 1; done
           MCP_HK_TEST_ORIGIN=http://127.0.0.1:8767 node deploy/cloudflare/playground-real-api-browser.mjs
           node deploy/cloudflare/docs-browser.mjs
+          node deploy/cloudflare/setup-guide-browser.mjs
           MCP_HK_TEST_ORIGIN=http://127.0.0.1:8765 node deploy/cloudflare/unified-records-browser.mjs
 
           MCP_HK_TEST_ORIGIN=http://127.0.0.1:8765 node deploy/cloudflare/racing-browser.mjs

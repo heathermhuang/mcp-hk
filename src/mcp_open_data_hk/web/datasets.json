@@ -433,8 +433,8 @@
       "zh-Hant": "運輸署參考路線"
     },
     "limits": {
-      "en": "Stop and route references come from dated Transport Department files. Live arrival checks are on demand and depend on verifying the selected stop and route with an operator. Use the transport catalogue for other feeds and timetables.",
-      "zh-Hant": "車站同路線由有日期嘅運輸署檔案提供。即時到站預測要另行查詢，並核實營辦商嘅車站同路線。其他到站資料同時間表可喺交通數據目錄查閱。"
+      "en": "Stop and route references come from dated Transport Department files. On-demand live checks support eligible Citybus, KMB, Long Win and New Lantao Bus candidates. Each check depends on matching the selected stops and route variant with the operator. Use the transport catalogue for other feeds and timetables.",
+      "zh-Hant": "車站同路線由有日期嘅運輸署檔案提供。可另行查詢符合條件嘅城巴、九巴、龍運同新大嶼山巴士即時到站預測。每次檢查都要同營辦商核對所選車站同路線班次變體。其他到站資料同時間表可喺交通數據目錄查閱。"
     },
     "dates": {
       "en": "Prediction timestamp, scheduled departure and source check time have different meanings.",

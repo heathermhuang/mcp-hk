@@ -122,9 +122,10 @@ def text_response(path):
         )
     if path == "/sitemap.xml":
         urls = []
-        for page, data in content()["pages"].items():
-            if data.get("noindex"):
-                continue
+        pages = {
+            page for page, data in content()["pages"].items() if not data.get("noindex")
+        } | {"/docs"}
+        for page in sorted(pages):
             for lang in ("en", "zh-Hant"):
                 alternatives = "".join(
                     f'<xhtml:link rel="alternate" hreflang="{code}" '
@@ -191,7 +192,9 @@ def editorial_body(path, lang):
             f"<p>{escape(paragraph)}</p>" for paragraph in section.get("paragraphs", [])
         )
         if section.get("code"):
-            parts.append(f"<pre class=\"mhk-codebox\">{escape(section['code'])}</pre>")
+            parts.append(
+                f"<pre class=\"mhk-codebox\" data-copy-example tabindex=\"0\">{escape(section['code'])}</pre>"
+            )
         for label, href in section.get("links", []):
             parts.append(
                 f'<p><a href="{escape(href, quote=True)}">{escape(label)}</a></p>'
