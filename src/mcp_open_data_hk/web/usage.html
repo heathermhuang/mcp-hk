@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Live aggregate MCP tool usage on mcp.hk.">
+  <title>MCP usage · mcp.hk</title>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/style.css">
+  <link rel="stylesheet" href="/assets/usage.css">
+  <script src="/assets/translations.js" defer></script>
+  <script src="/assets/i18n.js" defer></script>
+  <script src="/assets/usage.js" defer></script>
+</head>
+<body>
+<a class="mhk-skip-link" href="#main-content" data-i18n="skipMain">Skip to main content</a>
+<div id="mhk-preview"><div class="mhk-window">
+  <header class="mhk-nav">
+    <a class="mhk-logo" href="/"><img src="/assets/logo.svg" width="125" height="40" alt="mcp.hk"></a>
+    <nav aria-label="Main navigation" data-i18n-aria-label="mainNavigation">
+      <a class="mhk-navbutton" href="/datasets" data-i18n="navData">Browse data</a>
+      <a class="mhk-navbutton" href="/connect" data-i18n="navConnect">Connect</a>
+      <a class="mhk-navbutton" href="/guides" data-i18n="navGuides">Guides</a>
+      <a class="mhk-navbutton" href="/sources" data-i18n="navSources">Source status</a>
+    </nav>
+    <button class="mhk-language" type="button" aria-label="Switch to Traditional Chinese">繁</button>
+  </header>
+  <main id="main-content" class="mhk-main usage-page" tabindex="-1">
+    <div class="mhk-pagehead usage-heading">
+      <div><h1 data-i18n="usageTitle">MCP usage</h1><p data-i18n="usageIntro">See how often clients call MCP.HK tools and how those calls turn out.</p></div>
+      <div class="usage-update">
+        <p id="usage-status" data-state="loading" role="status" data-i18n="usageLoading">Loading usage</p>
+        <p id="usage-updated" hidden></p>
+        <button id="usage-refresh" class="mhk-button mhk-secondary" type="button" data-i18n="usageRefresh">Refresh</button>
+      </div>
+    </div>
+    <noscript><p data-i18n="usageNoScript">Use the JSON feed to read the latest usage totals.</p></noscript>
+    <dl class="usage-today" id="usage-today" hidden>
+      <div><dt data-i18n="usageToday">Tool calls today (UTC)</dt><dd id="usage-today-calls">—</dd></div>
+      <div><dt data-i18n="usageTodayOK">OK outcomes today</dt><dd id="usage-today-ok">—</dd></div>
+      <div><dt data-i18n="usageTodayMcp">All MCP requests today</dt><dd id="usage-today-mcp">—</dd></div>
+    </dl>
+    <div id="usage-history" hidden>
+      <div class="usage-history-heading">
+        <h2 data-i18n="usageHistory">Usage history</h2>
+        <label for="usage-period"><span class="sr-only" data-i18n="usagePeriod">Reporting period</span><select id="usage-period"><option value="7" data-i18n="usageSeven">7 completed days</option><option value="30" data-i18n="usageThirty">30 completed days</option></select></label>
+      </div>
+      <div class="usage-grid">
+        <section class="usage-panel" aria-labelledby="usage-chart-heading">
+          <h3 id="usage-chart-heading" data-i18n="usageDaily">Daily tool calls</h3>
+          <p class="usage-period-total"><strong id="usage-period-calls">—</strong> <span data-i18n="usageCalls">tool calls</span></p>
+          <figure class="usage-figure">
+            <div id="usage-chart" class="usage-chart" aria-hidden="true"></div>
+            <div id="usage-chart-dates" class="usage-chart-dates" aria-hidden="true"></div>
+            <figcaption data-i18n="usageChartNote">Days use UTC. A dash indicates unavailable data.</figcaption>
+          </figure>
+          <details class="mhk-disclosure usage-values">
+            <summary data-i18n="usageViewDaily">View daily values</summary>
+            <table><thead><tr><th scope="col" data-i18n="usageDate">Date (UTC)</th><th scope="col" data-i18n="usageToolCalls">Tool calls</th><th scope="col" data-i18n="usageOkay">OK</th></tr></thead><tbody id="usage-table"></tbody></table>
+          </details>
+        </section>
+        <section class="usage-panel" aria-labelledby="usage-outcomes-heading">
+          <h3 id="usage-outcomes-heading" data-i18n="usageOutcomes">Call outcomes</h3>
+          <dl class="usage-outcomes">
+            <div><dt data-i18n="usageOkay">OK</dt><dd id="usage-outcome-ok">—</dd></div>
+            <div><dt data-i18n="usageFailed">Errors or rate limits</dt><dd id="usage-outcome-failed">—</dd></div>
+            <div><dt data-i18n="usageUnconfirmed">Uninspected or interrupted</dt><dd id="usage-outcome-unconfirmed">—</dd></div>
+          </dl>
+          <h3 data-i18n="usageTop">Most-called tools</h3>
+          <ol class="usage-ranking" id="usage-ranking" aria-label="Most-called tools" data-i18n-aria-label="usageTop"></ol>
+          <p id="usage-no-tools" hidden data-i18n="usageNoTools">No tool reached five calls in this period.</p>
+        </section>
+      </div>
+    </div>
+    <details class="mhk-disclosure usage-method">
+      <summary data-i18n="usageMethods">How these counts work</summary>
+      <p data-i18n="usageMethodCalls">Tool calls count recognized MCP requests under tools/call. All MCP requests also include pings, setup and unclassified operations. These counts include test traffic and cannot measure unique users.</p>
+      <p data-i18n="usageMethodPrivacy">Only aggregate counts are public. Tool rankings use completed days and show tools called at least five times. Caller information and query contents are excluded.</p>
+      <p data-i18n="usageMethodFreshness">The page checks for updates every 30 seconds while visible. Counts reflect recorded outcomes, including empty results marked OK.</p>
+    </details>
+    <footer class="mhk-foot"><span><a href="/api/v1/usage" data-i18n="usageJSON">Usage JSON</a> · <a href="/privacy" data-i18n="privacyTitle">Privacy policy</a></span></footer>
+  </main>
+</div></div>
+</body>
+</html>

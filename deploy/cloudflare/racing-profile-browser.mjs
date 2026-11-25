@@ -9,12 +9,18 @@ const output=new URL('../../playwright-artifacts/racing-profiles/',import.meta.u
 function unzip(bytes){const files=new Map();let p=0;while(bytes.readUInt32LE(p)===0x04034b50){const method=bytes.readUInt16LE(p+8),size=bytes.readUInt32LE(p+18),n=bytes.readUInt16LE(p+26),extra=bytes.readUInt16LE(p+28),name=bytes.subarray(p+30,p+30+n).toString(),start=p+30+n+extra,raw=bytes.subarray(start,start+size);assert.ok([0,8].includes(method));assert.ok(!name.includes('/')&&!name.includes('..'));files.set(name,method===8?inflateRawSync(raw):raw);p=start+size;}return files;}
 const browser=await chromium.launch({headless:true,...(process.env.MCP_HK_CHROME?{executablePath:process.env.MCP_HK_CHROME}:{})});
 const receipts=[],errors=[],sourceRequests=[];
+let nextApiRequestAt=0;
 try{
  for(const lang of ['en','zh-Hant'])for(const width of [320,390,768,1280]){
   const context=await browser.newContext({viewport:{width,height:900},acceptDownloads:true}),page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
   page.on('response',async response=>{if(response.url().startsWith(origin+'/api/v1/racing/')&&response.status()>=400){const body=await response.json().catch(()=>null);const failure={status:response.status(),path:new URL(response.url()).pathname,code:body?.error?.code};errors.push(failure);console.error(JSON.stringify(failure));}});
   // Exercise the real shared limiter at a sustainable request pace.
-  await context.route(origin+'/api/v1/racing/**',async route=>{await new Promise(resolve=>setTimeout(resolve,1150));await route.continue();});
+  await context.route(origin+'/api/**',async route=>{
+   const at=Math.max(Date.now(),nextApiRequestAt);
+   nextApiRequestAt=at+1150;
+   await new Promise(resolve=>setTimeout(resolve,Math.max(0,at-Date.now())));
+   await route.continue();
+  });
   await context.route(/https:\/\/[^/]*hkjc\.com\//,r=>{sourceRequests.push(r.request().url());return r.abort();});
   await context.route('https://hk.app/**',r=>r.abort());
   await page.goto(origin+'/racing?lang='+lang);await page.locator('#rows tr').waitFor();

@@ -81,3 +81,39 @@ test('racing counts returned result rows rather than coverage denominators',()=>
  const op={protocol:'http',operation:'racing',dataset:'racing',resource:'',sourceCalls:0};
  assert.equal(inspectResponse(JSON.stringify({data:{results:[{},{}]},coverage:{resultRows:100000}}),op,200).items,2);
 });
+
+test('public usage exposes only aggregate results and ranks tools over completed days', () => {
+  const {usage} = store();
+  const day = 86_400_000;
+  const record = (operation, outcome, when, protocol = 'mcp') => usage.record(
+    {protocol, operation, resource: rid, dataset: 'private-dimension', sourceCalls: 0},
+    outcome === 'rate_limited' ? 429 : 200, outcome, 42, 100, 1, 4, when,
+  );
+  for (const outcome of ['ok', 'ok', 'error', 'rate_limited', 'uninspected', 'cancelled']) {
+    record('hk_resource_query', outcome, now - day);
+  }
+  for (let i = 0; i < 5; i++) record('search_datasets', 'ok', now - 8 * day);
+  for (let i = 0; i < 4; i++) record('hk_restaurant_search', 'ok', now - day);
+  for (let i = 0; i < 8; i++) record('hk_restaurant_search', 'ok', now);
+  record('ping', 'ok', now - 2 * day);
+  record('initialize', 'ok', now - day);
+  record('unknown-custom-name', 'ok', now - day);
+  record('hk_resource_query', 'ok', now - day, 'http');
+  record('hk_resource_query', 'ok', now - 31 * day);
+
+  const report = usage.publicReport(now);
+  const dateAt = offset => new Date(now - offset * day).toISOString().slice(0, 10);
+  assert.equal(report.days.length, 31);
+  assert.equal(report.days[0].date, dateAt(30));
+  assert.deepEqual(report.days.at(-1), {date: dateAt(0), mcpRequests: 8, calls: 8, ok: 8, failed: 0, unconfirmed: 0});
+  assert.deepEqual(report.days.at(-2), {date: dateAt(1), mcpRequests: 12, calls: 10, ok: 6, failed: 2, unconfirmed: 2});
+  assert.deepEqual(report.days.at(-3), {date: dateAt(2), mcpRequests: 1, calls: 0, ok: 0, failed: 0, unconfirmed: 0});
+  assert.deepEqual(report.days.at(-4), {date: dateAt(3), mcpRequests: null, calls: null, ok: null, failed: null, unconfirmed: null});
+  assert.deepEqual(report.topTools[7], [{name: 'hk_resource_query', calls: 6}]);
+  assert.deepEqual(report.topTools[30], [{name: 'hk_resource_query', calls: 6}, {name: 'search_datasets', calls: 5}]);
+  assert.doesNotMatch(JSON.stringify(report), /private-dimension|unknown-custom-name|initialize|request_bytes|item_count|response_bytes|duration_ms|e34a14f5/);
+
+  const afterMidnight = usage.publicReport(Date.UTC(2026, 9, 18));
+  assert.equal(afterMidnight.days.at(-1).calls, null);
+  assert.deepEqual(afterMidnight.topTools[7][0], {name: 'hk_restaurant_search', calls: 12});
+});
