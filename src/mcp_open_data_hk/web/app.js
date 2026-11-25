@@ -3,7 +3,7 @@
   const root = document.getElementById('mhk-preview');
   let state = {screen: location.pathname === '/plates' ? 'plates' : location.pathname === '/sources' ? 'sources' : location.pathname === '/demo' ? 'explore' : location.pathname === '/connect' ? 'connect' : 'home', lang: MhkI18n.lang, radius: 500, code: 'http'};
   const clients=['codex','claude','cursor','other'];
-  const clientFromUrl=()=>{const value=new URL(location.href).searchParams.get('client');return clients.includes(value)?value:'codex';};
+  const clientFromUrl=()=>{const value=new URLSearchParams(location.search).get('client');return clients.includes(value)?value:'codex';};
   let clientKind=clientFromUrl();
   let selected = null, response = null, population = null, requestQuery = '', pending = false;
   let generation = 0, districtGeneration=0, districtId='', districtOptions=null, districtRead=false, populationError=false;
