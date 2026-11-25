@@ -105,3 +105,4 @@ body{margin:0;padding:20px;background:#f8f7f2;color-scheme:light dark}#mhk-previ
 .mhk-source-health{margin:20px 0;padding:16px;border:1px solid var(--mhk-line, #526056);border-radius:4px;overflow-wrap:anywhere}.mhk-source-health h3{font-size:1rem;margin:0 0 12px}.mhk-source-health dl{display:grid;grid-template-columns:minmax(140px,1fr) minmax(0,1fr);gap:8px 16px;font-size:.875rem;margin:0}.mhk-source-health dd{margin:0}.mhk-source-health p{margin:12px 0 0;font-size:.875rem}@media(max-width:600px){.mhk-source-health dl{grid-template-columns:1fr}.mhk-source-health dd{margin-bottom:8px}}
 
 #mhk-preview .dataset-task>h2{font-size:24px;margin:28px 0 14px}
+#mhk-preview .mhk-example-actions{display:flex;align-items:center;gap:10px;margin:8px 0}

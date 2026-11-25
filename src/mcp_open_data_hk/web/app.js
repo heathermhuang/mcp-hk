@@ -2,7 +2,9 @@
 (() => {
   const root = document.getElementById('mhk-preview');
   let state = {screen: location.pathname === '/plates' ? 'plates' : location.pathname === '/sources' ? 'sources' : location.pathname === '/demo' ? 'explore' : location.pathname === '/connect' ? 'connect' : 'home', lang: MhkI18n.lang, radius: 500, code: 'http'};
-  let clientKind = 'codex';
+  const clients=['codex','claude','cursor','other'];
+  const clientFromUrl=()=>{const value=new URL(location.href).searchParams.get('client');return clients.includes(value)?value:'codex';};
+  let clientKind=clientFromUrl();
   let selected = null, response = null, population = null, requestQuery = '', pending = false;
   let generation = 0, districtGeneration=0, districtId='', districtOptions=null, districtRead=false, populationError=false;
   let plateResult = null, platePending = false, plateError = '', plateRequest = null;
@@ -226,7 +228,7 @@
     if (document.documentElement?.dataset?.discovery === 'true') { location.assign(path + '?lang=' + MhkI18n.locale); return; }
     history.pushState(null, '', path + '?lang=' + MhkI18n.locale); render(); window.dispatchEvent(new Event('mhk:navigate'));
   }));
-  window.addEventListener('popstate', () => { state.screen = screenFromPath(); render();restorePlates(); });
+  window.addEventListener('popstate', () => { state.screen = screenFromPath();clientKind=clientFromUrl();render();restorePlates(); });
   window.addEventListener('mhk:language', () => { state.lang = MhkI18n.lang; render(); });
   $('#mhk-radius').addEventListener('change', e => { state.radius = Number(e.target.value); loadNearby(); });
   root.querySelectorAll('[data-code]').forEach(b => b.addEventListener('click', () => { state.code = b.dataset.code; render(); }));
@@ -275,7 +277,10 @@
     try { inventory = await api('/assets/overview.json'); } catch { inventoryError = true; }
     renderCoverage();
   }
-  root.querySelectorAll('[data-client]').forEach(b => b.addEventListener('click', () => { clientKind = b.dataset.client; $('#mhk-copy-status').textContent = ''; render(); }));
+  root.querySelectorAll('[data-client]').forEach(b => b.addEventListener('click', () => { clientKind=b.dataset.client;
+    const target=new URL(location.href);target.searchParams.set('client',clientKind);
+    history.replaceState(null,'',target.pathname+target.search+target.hash);
+    $('#mhk-copy-status').textContent='';render(); }));
   $('#mhk-copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText($('#mhk-install').textContent); $('#mhk-copy-status').textContent = state.lang === 'en' ? ' Copied' : ' 已複製'; } catch { $('#mhk-copy-status').textContent = MhkI18n.t('copyFallback'); } });
   render(); coverage();restorePlates();
 })();

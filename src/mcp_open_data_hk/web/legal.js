@@ -3,7 +3,7 @@
   const policies = {
     en: {
       terms: [
-        ['Using mcp.hk','Effective 5 November 2026. These terms apply to the mcp.hk website, HTTP API and MCP service. By using the service, you agree to these terms. If you do not agree, stop using it. The service is currently free, public and read-only; access does not give you an exclusive right to it.'],
+        ['Using mcp.hk','These terms apply to the mcp.hk website, HTTP API and MCP service. By using the service, you agree to these terms. If you do not agree, stop using it. The service is currently free, public and read-only; access does not give you an exclusive right to it.'],
         ['Sources and permitted reuse','mcp.hk is an independent project, not a Hong Kong government or transport-operator service. Each response identifies its sources where available. Source providers retain their rights; their licences, attribution requirements and terms govern reuse of their data. The open-source software licence does not relicense third-party data. Check the linked source terms before redistribution or commercial use.'],
         ['Coverage and accuracy','A catalogue listing does not mean its records are accessible. Coverage, freshness, historical reference periods, provider remarks and limitations must be read with each result. Real-time arrivals are predictions, may be delayed or unavailable, and do not guarantee a departure. Schedules are not live predictions. Historical plate auction results are not current valuations or evidence of ownership or availability. Property advertisements and observed asking-price changes are not completed transactions or verified availability. Verify important decisions with the original provider.'],
         ['Fair use and rate limits','Do not bypass safeguards, overload the service, exploit vulnerabilities, scrape private information or use the service unlawfully. Send one JSON-RPC operation per MCP request. The public service currently permits 60 backend requests per network IP per UTC minute, with shared budgets of 50,000 admitted requests and 10,000 address requests per UTC day, and a 64 KiB request-body cap. Limits may change; GET /api/v1/limits is the current machine-readable policy. A 429 response includes Retry-After. Shared networks share an IP allowance. Use caching and bounded pagination; contact the project before sustained bulk use.'],
@@ -11,7 +11,7 @@
         ['Privacy and changes','The privacy policy explains necessary service measurement, query processing and automatic Google Analytics. Material changes will be reflected in the effective date on this page. These terms are governed by Hong Kong law, subject to mandatory rights that apply to you. General questions can be directed to the project maintainers through the source repository; do not post personal information in public issues.'],
       ],
       privacy: [
-        ['Scope','Effective 5 November 2026. This policy explains how the mcp.hk project processes information when you use its website, HTTP API and MCP service. No account is required. We do not ask for your name or email to query public data.'],
+        ['Scope','This policy explains how the mcp.hk project processes information when you use its website, HTTP API and MCP service. No account is required. We do not ask for your name or email to query public data.'],
         ['Queries and source providers','We process your request and source parameters to return the data you ask for. Address searches are sent to the government address service; resource parameters are sent to the indicated provider when a source read is needed; plate queries are sent to Plate.hk; property searches and selected building IDs are sent to SeeHouse. Providers may process these requests under their own policies. Do not submit secrets, sensitive personal information or confidential prompts. An AI client connecting to MCP also processes your conversation under its own policies; mcp.hk receives the tool calls it sends, not necessarily the whole conversation.'],
         ['Necessary usage and security measurement','Our durable counters group backend requests by UTC day, protocol, operation, public dataset/resource identifier, HTTP status and outcome. They count requests, request-body bytes, streamed response-body bytes, returned items when inspectable, and request duration. They support reliability, source-demand planning, cost control and abuse prevention. These are request and volume metrics, not unique people, billing records or a history of what a person asked. We do not store query text, raw arguments, response records, user-agent strings or IP addresses in these counters.'],
         ['Private MCP usage attribution','We count signed operator tests and other tool calls and building lookups in private operational reports. We keep the known client family you report or that we infer from your client software, together with aggregate call outcomes. An optional random installation ID from your client is stored only as a keyed hash with recent active days to count installations and repeat usage. Private attribution is retained for 30 UTC days and keeps no raw IP, user-agent string, prompts or query arguments. DNT, GPC and explicit opt-out suppress client family and installation measurement.'],
@@ -26,7 +26,7 @@
     },
     zh: {
       terms: [
-        ['使用 mcp.hk','生效日期：2026 年 11 月 5 日。本條款適用於 mcp.hk 網站、HTTP API 及 MCP 服務。使用服務即表示你同意本條款；如不同意，請停止使用。目前服務免費、公開並只供讀取，不提供專有使用權。'],
+        ['使用 mcp.hk','本條款適用於 mcp.hk 網站、HTTP API 及 MCP 服務。使用服務即表示你同意本條款；如不同意，請停止使用。目前服務免費、公開並只供讀取，不提供專有使用權。'],
         ['來源及數據重用','mcp.hk 是獨立項目，並非香港政府或交通營辦商的官方服務。回應會在可行情況下列明數據來源。原始提供者保留其權利，重用數據須遵守各來源的授權、署名要求及條款。軟件的開源授權不會改變第三方數據的授權。重新發布或商業使用前，請先查看原始來源條款。'],
         ['涵蓋範圍及準確性','目錄中有數據集，不代表其紀錄能在此讀取。請一併留意涵蓋範圍、更新時間、統計參考時期、來源備註及限制。即時到站資訊屬預測，可能延誤或暫時無法取得，亦不保證實際開出時間。時間表並非即時預測。車牌歷史拍賣紀錄不代表現時估值、擁有權或可售狀態。重要決定應向原始提供者核實。'],
         ['合理使用及流量限制','不得繞過防護、令服務超出負荷、利用漏洞、擷取私人資料或作違法用途。每個 MCP 請求只可包含一項 JSON-RPC 操作。目前每個網絡 IP 每個 UTC 分鐘最多可發出 60 個後端請求；全體使用者共用每日 50,000 個獲准請求及 10,000 個地址請求的預算，每個請求主體上限為 64 KiB。限制可作調整，現行設定以 GET /api/v1/limits 為準。429 回應附有 Retry-After。共用網絡亦共用 IP 額度。請使用快取及有界分頁；持續大量使用前，請先聯絡項目維護者。'],
@@ -34,7 +34,7 @@
         ['私隱及條款更新','私隱政策說明必要服務統計、查詢處理及自動 Google Analytics。重大更新會反映於本頁生效日期。本條款受香港法律管轄，並以適用於你的強制性權利為限。一般問題可透過原始碼儲存庫聯絡項目維護者，請勿在公開議題張貼個人資料。'],
       ],
       privacy: [
-        ['政策範圍','生效日期：2026 年 11 月 5 日。本政策說明 mcp.hk 項目如何處理網站、HTTP API 及 MCP 服務的使用資料。查詢公開數據毋須註冊帳戶，亦毋須提供姓名或電郵。'],
+        ['政策範圍','本政策說明 mcp.hk 項目如何處理網站、HTTP API 及 MCP 服務的使用資料。查詢公開數據毋須註冊帳戶，亦毋須提供姓名或電郵。'],
         ['查詢及來源提供者','我們處理請求及來源參數，以回傳你所需的數據。地址查詢會傳送至政府地址服務；需要讀取來源時，資源參數會傳送至指定提供者；車牌查詢會傳送至 Plate.hk；物業搜尋及所選大廈的識別碼會傳送至 SeeHouse 睇樓。提供者可按其自身政策處理請求。請勿提交密鑰、敏感個人資料或機密提示詞。連接 MCP 的 AI 客戶端亦按其自身政策處理對話；mcp.hk 接收客戶端發出的工具呼叫，不一定接收完整對話。'],
         ['必要的用量及安全統計','耐久計數器按 UTC 日期、協定、操作、公開數據集或資源識別碼、HTTP 狀態及結果彙總後端請求，記錄請求數、請求主體位元組、串流回應位元組、可讀取時的回傳項目數及處理時間，用於可靠性、來源需求規劃、成本控制及防止濫用。這些數字代表請求及數據量，不代表獨立人數、帳單或個人查詢歷史。計數器不儲存搜尋文字、原始參數、回應紀錄、瀏覽器識別字串或 IP 地址。'],
         ['私人 MCP 用量歸因','我們在私人營運報告統計已簽署的營運測試、其他工具呼叫及大廈查詢。報告保留你提供或由客戶端軟件推斷出的已知客戶端類別，以及匯總呼叫結果。客戶端可選擇提供隨機安裝識別碼。我們只儲存其加密雜湊值及最近使用日期，以統計安裝數目及重複使用。私人歸因資料保留 30 個 UTC 日，不保留原始 IP、客戶端識別字串、提示詞或查詢參數。我們在收到 DNT、GPC 或明確拒絕訊號時停止記錄客戶端類別及安裝資料。'],
@@ -52,6 +52,9 @@
     const kind=location.pathname === '/terms' ? 'terms' : 'privacy', lang=MhkI18n.lang;
     const root=document.getElementById('mhk-legal'), title=document.createElement('h1'); title.textContent=MhkI18n.t(kind+'Title'); root.replaceChildren(title);
     document.title=title.textContent+' · mcp.hk';
+    const effective=document.createElement('p');effective.className='mhk-note';
+    effective.textContent=lang==='en'?'Effective 5 November 2026':'2026 年 11 月 5 日生效';
+    root.append(effective);
     const summary=document.createElement('p');
     summary.textContent=kind==='privacy'
       ? (lang==='en'?'Public reads require no account. Website analytics starts automatically when configured. You can turn it off in Analytics settings.':'公開讀取毋須帳戶。完成設定後，網站分析會自動啟用。你可以喺「分析數據設定」關閉。')
@@ -87,6 +90,12 @@
     }
     let index=0;
     for(const [heading,text] of policies[lang][kind]) { const h=document.createElement('h2'),p=document.createElement('p');h.id='policy-'+index++;h.textContent=heading;p.textContent=text;root.append(h,p);
+      if(kind==='terms'&&h.id==='policy-1'){
+        const terms=document.createElement('a');terms.href='https://data.gov.hk/en/terms-and-conditions';terms.textContent='DATA.GOV.HK';root.append(terms);
+      }
+      if(kind==='terms'&&h.id==='policy-3'){
+        const limits=document.createElement('a');limits.href='/api/v1/limits';limits.textContent=MhkI18n.t('requestLimits');root.append(limits);
+      }
       if(kind==='privacy' && /^(Your choices|你的選擇)$/.test(heading)){const b=document.createElement('button');b.type='button';b.textContent=MhkI18n.t('analyticsSettings');b.dataset.analyticsSettings='';b.className='mhk-button mhk-secondary';root.append(b);} }
     const links=document.createElement('p');
     for(const [href,label] of [['/terms',MhkI18n.t('termsTitle')],['/privacy',MhkI18n.t('privacyTitle')],['https://data.gov.hk/en/terms-and-conditions','DATA.GOV.HK'],['https://policies.google.com/privacy','Google'],['https://www.cloudflare.com/privacypolicy/','Cloudflare'],['https://github.com/heathermhuang/mcp-hk/issues','mcp.hk GitHub']]) {const a=document.createElement('a');a.href=href;a.textContent=label;links.append(a,document.createTextNode(' · '));}

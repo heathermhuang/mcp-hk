@@ -190,6 +190,26 @@
                 "/guides/data-sources-and-freshness"
               ]
             ]
+          },
+          {
+            "heading": "Operator and corrections",
+            "paragraphs": [
+              "mcp.hk is independent of the Hong Kong Government. The project shares an operator with Plate.hk and SeeHouse. Individual records retain their original publisher and reuse terms. Report a public correction with the affected page, source and observation date. Request a private contact route before sharing personal details."
+            ],
+            "links": [
+              [
+                "Plate.hk",
+                "https://plate.hk/"
+              ],
+              [
+                "SeeHouse",
+                "/properties"
+              ],
+              [
+                "Report a correction",
+                "https://github.com/heathermhuang/mcp-hk/issues"
+              ]
+            ]
           }
         ]
       },
@@ -250,6 +270,26 @@
                 "/guides/data-sources-and-freshness"
               ]
             ]
+          },
+          {
+            "heading": "營運者同資料更正",
+            "paragraphs": [
+              "mcp.hk 獨立於香港政府，同 Plate.hk 及 SeeHouse 由同一營運者營運。各項紀錄保留原始發布者及重用條款。報告公開更正時，請附受影響頁面、來源及觀察日期。分享個人資料前，請先要求私人聯絡途徑。"
+            ],
+            "links": [
+              [
+                "Plate.hk",
+                "https://plate.hk/"
+              ],
+              [
+                "SeeHouse",
+                "/properties"
+              ],
+              [
+                "報告資料更正",
+                "https://github.com/heathermhuang/mcp-hk/issues"
+              ]
+            ]
           }
         ]
       }
@@ -257,12 +297,12 @@
     "/guides": {
       "en": {
         "title": "Hong Kong data guides for developers and AI · mcp.hk",
-        "heading": "Hong Kong data guides for developers and AI",
+        "heading": "Guides for finding and using Hong Kong data",
         "description": "Choose a task: connect an AI assistant (requires a supported client), make your first API request (requires a terminal), or understand sources and dates (for every reader). Each guide explains how to recognize success."
       },
       "zh-Hant": {
         "title": "開發者及 AI 的香港數據指南 · mcp.hk",
-        "heading": "開發者及 AI 的香港數據指南",
+        "heading": "尋找同使用香港數據嘅指南",
         "description": "選擇工作：連接 AI（已有支援的客戶端）、第一次 API 請求（可使用終端機），或了解來源及日期（所有讀者）。每篇均附可辨認的完成步驟。"
       }
     },
@@ -289,13 +329,30 @@
               [
                 "Preview this source",
                 "/coverage?access=sources&dataset=hk-hko-rss-current-weather-report&resource=770e68f0676dcbf8e65e2b4e1c6f6e60"
+              ],
+              [
+                "Search catalogue",
+                "/docs#operation-GET%20%2Fapi%2Fv1%2Fcatalogue%2Fdatasets"
+              ],
+              [
+                "List resources",
+                "/docs#operation-GET%20%2Fapi%2Fv1%2Fresources"
+              ],
+              [
+                "Read resource schema",
+                "/docs#operation-POST%20%2Fapi%2Fv1%2Fresources%2F%7BresourceId%7D%2Fschema"
+              ],
+              [
+                "Query resource records",
+                "/docs#operation-POST%20%2Fapi%2Fv1%2Fresources%2F%7BresourceId%7D%2Fquery"
               ]
             ]
           },
           {
             "heading": "3. Recognize success and keep evidence",
             "paragraphs": [
-              "Captured response excerpt, 25 October 2026, not live weather: item.title was Bulletin updated at 10:02 HKT 25/10/2026; item.pubDate was Sun, 25 Oct 2026 02:02:00 GMT; item.description included an Observatory temperature of 27 degrees Celsius. Preserve original values, source links and warnings. provenance.publicationDate dates the resource, not the weather observation."
+              "Captured response excerpt, 25 October 2026, not live weather: item.title was Bulletin updated at 10:02 HKT 25/10/2026; item.pubDate was Sun, 25 Oct 2026 02:02:00 GMT; item.description included an Observatory temperature of 27 degrees Celsius. Preserve original values, source links and warnings. provenance.publicationDate dates the resource, not the weather observation.",
+              "From a query response, keep resource.id and resource.datasetId. Use them in Browse data to reopen the original resource. Keep the version from meta when paging."
             ],
             "links": [
               [
@@ -344,13 +401,30 @@
               [
                 "預覽同一來源",
                 "/coverage?access=sources&dataset=hk-hko-rss-current-weather-report&resource=770e68f0676dcbf8e65e2b4e1c6f6e60"
+              ],
+              [
+                "搜尋目錄",
+                "/docs#operation-GET%20%2Fapi%2Fv1%2Fcatalogue%2Fdatasets"
+              ],
+              [
+                "列出資源",
+                "/docs#operation-GET%20%2Fapi%2Fv1%2Fresources"
+              ],
+              [
+                "讀取資源結構",
+                "/docs#operation-POST%20%2Fapi%2Fv1%2Fresources%2F%7BresourceId%7D%2Fschema"
+              ],
+              [
+                "查詢資源紀錄",
+                "/docs#operation-POST%20%2Fapi%2Fv1%2Fresources%2F%7BresourceId%7D%2Fquery"
               ]
             ]
           },
           {
             "heading": "3. 辨認成功及保留來源",
             "paragraphs": [
-              "以下為 2026 年 10 月 25 日擷取的回應節錄，並非即時天氣：item.title 為 Bulletin updated at 10:02 HKT 25/10/2026；item.pubDate 為 Sun, 25 Oct 2026 02:02:00 GMT；item.description 包括香港天文台氣溫 27 degrees Celsius。請保留原始值、來源連結及警告。provenance.publicationDate 是來源發布日期，不是天氣觀測時間。"
+              "以下為 2026 年 10 月 25 日擷取的回應節錄，並非即時天氣：item.title 為 Bulletin updated at 10:02 HKT 25/10/2026；item.pubDate 為 Sun, 25 Oct 2026 02:02:00 GMT；item.description 包括香港天文台氣溫 27 degrees Celsius。請保留原始值、來源連結及警告。provenance.publicationDate 是來源發布日期，不是天氣觀測時間。",
+              "查詢後請保留 resource.id 同 resource.datasetId，可喺「瀏覽數據」再開啟原始資源。分頁時保留 meta 嘅版本。"
             ],
             "links": [
               [
@@ -391,30 +465,33 @@
             ],
             "links": [
               [
-                "Client connection settings",
-                "/connect"
+                "Codex",
+                "/connect?client=codex#client-settings"
               ],
               [
-                "Connection documentation",
-                "https://github.com/heathermhuang/mcp-hk/blob/main/docs/connect.md"
+                "Claude Code",
+                "/connect?client=claude#client-settings"
+              ],
+              [
+                "Cursor",
+                "/connect?client=cursor#client-settings"
+              ],
+              [
+                "Other Streamable HTTP client",
+                "/connect?client=other#client-settings"
               ]
             ],
             "code": "https://mcp.hk/mcp"
           },
           {
-            "heading": "Ask for discovery, records and citations",
+            "heading": "New and existing connections",
             "paragraphs": [
-              "Try: “Find Hong Kong public holiday data, inspect the available sources and show the supported records with original source links.” Ask the assistant to report access limitations, source dates and warnings. Do not infer that all catalogue resources are queryable."
-            ],
-            "links": [
-              [
-                "Browse available sources",
-                "/coverage"
-              ]
+              "For a new connection, add the settings for your client and open a fresh session. For an existing connection, update the existing entry, confirm it is enabled, and reload its tool list.",
+              "Use the same district-statistics check for either path."
             ]
           },
           {
-            "heading": "Use HTTP when your client does not support MCP",
+            "heading": "Use the HTTP API",
             "paragraphs": [
               "The same service exposes an HTTP API and OpenAPI description. Use the connection page and API reference for current request contracts. Never paste operator credentials into an AI connection; public reads do not need them."
             ],
@@ -432,7 +509,7 @@
           {
             "heading": "Recognize a successful connection",
             "paragraphs": [
-              "Finish only after the client lists hk_district_statistics and returns the central-western population record, reference year and original source. Copying settings or checking HTTP health does not establish a client connection. Choose Codex, Claude Code or Cursor on Connect AI; other apps need custom remote Streamable HTTP MCP support."
+              "Ask: “Use hk_district_statistics with districtId central-western. Report population, reference year and the original source link.” Confirm that the tool returns all three before relying on the connection."
             ],
             "links": [
               [
@@ -442,6 +519,22 @@
               [
                 "Back to guides",
                 "/guides"
+              ]
+            ]
+          },
+          {
+            "heading": "Recover a missing tool or a timeout",
+            "paragraphs": [
+              "If startup times out, allow up to 120 seconds where your client supports it. Reconnect once after the service has had time to start. If the tool is missing, check the exact endpoint, enable the existing server, start a fresh session and refresh the client’s tool list. For clients that only support local stdio, use HTTP."
+            ],
+            "links": [
+              [
+                "HTTP API reference",
+                "/docs"
+              ],
+              [
+                "Service readiness",
+                "/readyz"
               ]
             ]
           }
@@ -459,26 +552,29 @@
             ],
             "links": [
               [
-                "客戶端連接設定",
-                "/connect"
+                "Codex",
+                "/connect?client=codex#client-settings"
               ],
               [
-                "連接文件",
-                "https://github.com/heathermhuang/mcp-hk/blob/main/docs/connect.md"
+                "Claude Code",
+                "/connect?client=claude#client-settings"
+              ],
+              [
+                "Cursor",
+                "/connect?client=cursor#client-settings"
+              ],
+              [
+                "其他 Streamable HTTP 客戶端",
+                "/connect?client=other#client-settings"
               ]
             ],
             "code": "https://mcp.hk/mcp"
           },
           {
-            "heading": "要求搜尋、讀取記錄及提供來源",
+            "heading": "新連線同已有連線",
             "paragraphs": [
-              "可試問：「找出香港公眾假期數據，檢查可用來源，再列出支援的記錄及原始來源連結。」請 AI 說明存取限制、來源日期及警告，切勿假設目錄中的所有來源都能查詢。"
-            ],
-            "links": [
-              [
-                "瀏覽可用來源",
-                "/coverage"
-              ]
+              "新連線請加入客戶端設定，再開新對話。已有連線請更新現有設定，確認伺服器已啟用，再重新載入工具清單。",
+              "兩種做法都用同一個地區統計檢查。"
             ]
           },
           {
@@ -500,7 +596,7 @@
           {
             "heading": "辨認連接成功",
             "paragraphs": [
-              "客戶端須列出 hk_district_statistics，並實際回傳 central-western 的人口、統計年份及來源，才算完成。網站複製成功或 HTTP 健康檢查不等於 AI 已連接。請在連接頁選擇 Codex、Claude Code 或 Cursor；其他客戶端須支援自訂遠端 Streamable HTTP MCP。"
+              "試問：「使用 hk_district_statistics，districtId 為 central-western，列出人口、統計年份及原始來源連結。」確認工具有回傳呢三項資料，再使用連線。"
             ],
             "links": [
               [
@@ -510,6 +606,22 @@
               [
                 "返回指南",
                 "/guides"
+              ]
+            ]
+          },
+          {
+            "heading": "處理工具缺失或逾時",
+            "paragraphs": [
+              "如啟動逾時，可喺支援嘅客戶端設最多 120 秒。等服務啟動後再連線一次。如搵唔到工具，核對網址、啟用現有伺服器、開新對話，再重新載入工具清單。只支援本機 stdio 嘅客戶端可使用 HTTP。"
+            ],
+            "links": [
+              [
+                "HTTP API 參考",
+                "/docs"
+              ],
+              [
+                "服務就緒狀態",
+                "/readyz"
               ]
             ]
           }
@@ -555,6 +667,27 @@
               [
                 "Source documentation",
                 "https://github.com/heathermhuang/mcp-hk/blob/main/docs/sources.md"
+              ]
+            ]
+          },
+          {
+            "heading": "Read the timestamps in a record",
+            "paragraphs": [
+              "Illustrative weather record timestamps. Observation is when the station measured the value. Retrieval is when the provider response was read. Check is when the source response last passed the check."
+            ],
+            "code": "observationFreshness.observedAt = 2026-11-25 12:00 HKT\nprovenance.retrievedAt          = 2026-11-25 12:03 HKT\nprovenance.lastCheckedAt        = 2026-11-25 12:04 HKT",
+            "links": [
+              [
+                "Read source records",
+                "/coverage?q=weather&access=sources"
+              ],
+              [
+                "Transport check states",
+                "/sources#mhk-feed-status"
+              ],
+              [
+                "Disabled official verification",
+                "/sfc"
               ]
             ]
           },
@@ -667,6 +800,27 @@
             ]
           },
           {
+            "heading": "睇紀錄入面嘅時間",
+            "paragraphs": [
+              "以下係示意嘅天氣紀錄時間。觀察時間係測站量度嘅時間，擷取時間係讀取來源回應嘅時間，檢查時間係來源回應上次通過檢查嘅時間。"
+            ],
+            "code": "observationFreshness.observedAt = 2026-11-25 12:00 HKT\nprovenance.retrievedAt          = 2026-11-25 12:03 HKT\nprovenance.lastCheckedAt        = 2026-11-25 12:04 HKT",
+            "links": [
+              [
+                "讀取來源紀錄",
+                "/coverage?q=weather&access=sources"
+              ],
+              [
+                "交通檢查狀態",
+                "/sources#mhk-feed-status"
+              ],
+              [
+                "尚未啟用嘅官方核實",
+                "/sfc"
+              ]
+            ]
+          },
+          {
             "heading": "按數據包的限制解讀",
             "paragraphs": [
               "食肆牌照記錄不是食評，亦不保證店舖現正營業。地區人口屬全區統計，不是食肆搜尋半徑內的人口。Plate.hk 提供過往拍賣結果，並非現時擁有權、出售狀態或估值。SeeHouse 的放盤叫價及變動不是成交紀錄。交通檢查只適用於所查詢的來源、路綫及車站；時間表不等於即時到站預測。"
@@ -738,12 +892,12 @@
       "en": {
         "title": "Hong Kong company archive · mcp.hk",
         "heading": "Company archive",
-        "description": "Find an organisation in David Webb’s original Enigma archive. Follow its names, appointments and SFC records with the source version attached."
+        "description": "Search accepted Hong Kong Companies Registry observations and the historical David Webb / Webb-site company archive. Each source has its own identities, periods, and coverage."
       },
       "zh-Hant": {
         "title": "香港公司歷史資料 · mcp.hk",
         "heading": "公司歷史資料",
-        "description": "搜尋 David Webb 原始 Enigma 檔案中的機構，並按同一資料版本查看名稱、職位及證監會紀錄。"
+        "description": "搜尋已接納嘅香港公司註冊處觀察及 David Webb／Webb-site 歷史公司檔案。各來源有獨立識別碼、時期同涵蓋範圍。"
       },
       "template": "companies.html"
     },

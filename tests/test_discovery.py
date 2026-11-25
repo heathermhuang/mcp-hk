@@ -102,9 +102,9 @@ def test_sitemap_only_lists_canonical_indexable_pages_with_reciprocal_languages(
         for p, data in content()["pages"].items()
         if not data.get("noindex")
         for lang in ("en", "zh-Hant")
-    }
+    } | {canonical("/docs", lang) for lang in ("en", "zh-Hant")}
     assert {n.find("sm:loc", ns).text for n in entries} == expected
-    assert len(entries) == len(expected) == 36
+    assert len(entries) == len(expected) == 38
     for entry in entries:
         assert len(entry.findall("x:link", ns)) == 3
         for link in entry.findall("x:link", ns):
