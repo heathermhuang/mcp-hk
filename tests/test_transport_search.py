@@ -181,6 +181,19 @@ def test_source_join_preserves_td_namespace_and_refuses_language_mismatch(bodies
         parse_index(changed, [])
 
 
+def test_namespaced_td_stop_id_does_not_match_other_stop_names(bodies):
+    from mcp_open_data_hk.transport_search import TransportSearch
+
+    index = compile_index(parse_index(bodies, []))
+    another = next(sid for sid in index["stops"] if sid != "261")
+    index["stops"][another]["name"]["en"] = "Stop 261 or 999999"
+    assert len(TransportSearch.matches(index, "261")) > 1
+    assert [row["stopId"] for row in TransportSearch.matches(index, "td:stop:261")] == [
+        "261"
+    ]
+    assert TransportSearch.matches(index, "td:stop:999999") == []
+
+
 def test_unknown_pickup_flag_never_becomes_permission(bodies):
     changed = {
         **bodies,

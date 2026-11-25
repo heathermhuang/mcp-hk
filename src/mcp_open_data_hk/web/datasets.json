@@ -409,20 +409,20 @@
   {
     "id": "transport",
     "title": {
-      "en": "Transport arrivals and timetables",
-      "zh-Hant": "交通到站資訊及時間表"
+      "en": "Bus stops and direct routes",
+      "zh-Hant": "巴士站及直達路線"
     },
     "question": {
-      "en": "Which transport datasets cover routes, stops, timetables or arrivals?",
-      "zh-Hant": "哪些交通數據集提供路線、車站、時間表或到站資料？"
+      "en": "Which routes serve a bus stop or connect two selected stops?",
+      "zh-Hant": "有咩巴士路線經指定車站，或者直達你揀嘅兩個車站？"
     },
     "availability": {
-      "en": "Transport dataset catalogue",
-      "zh-Hant": "交通數據目錄"
+      "en": "Transport Department reference routes",
+      "zh-Hant": "運輸署參考路線"
     },
     "limits": {
-      "en": "The bus lookup API uses dated Transport Department files. Joined live arrivals currently support Citybus after operator stop and route-order verification. Other operator arrivals use resource queries. Direct routes are not a fastest-trip planner; service calendars and diversions are not inferred.",
-      "zh-Hant": "巴士查詢 API 使用運輸署具日期的檔案。核實營辦商車站及路線次序後，目前可串連城巴即時到站預測；其他營辦商透過資源查詢讀取。直達路線並非最快行程規劃，不會推斷服務日期或臨時改道。"
+      "en": "Stop and route references come from dated Transport Department files. Live arrival checks are on demand and depend on verifying the selected stop and route with an operator. Use the transport catalogue for other feeds and timetables.",
+      "zh-Hant": "車站同路線由有日期嘅運輸署檔案提供。即時到站預測要另行查詢，並核實營辦商嘅車站同路線。其他到站資料同時間表可喺交通數據目錄查閱。"
     },
     "dates": {
       "en": "Prediction timestamp, scheduled departure and source check time have different meanings.",
@@ -438,8 +438,8 @@
     "path": "/coverage?q=transport&access=sources",
     "keywords": "transport bus Citybus CTB KMB LWB MTR minibus ferry stops routes arrivals ETA timetables 交通 巴士 城巴 九巴 港鐵 小巴 渡輪 車站 路線 到站 時間表",
     "action": {
-      "en": "Browse transport datasets",
-      "zh-Hant": "瀏覽交通數據集"
+      "en": "Look up bus stops and routes",
+      "zh-Hant": "查巴士站及路線"
     },
     "statusPage": "/sources#mhk-feed-status"
   },

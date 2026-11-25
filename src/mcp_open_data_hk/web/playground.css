@@ -51,3 +51,13 @@
 #mhk-preview .pg-history-record{padding:12px 0;border-bottom:1px solid var(--mhk-line)}
 #mhk-preview #pg-dates p{margin:6px 0}
 #mhk-preview #pg-warnings{font-size:12px;overflow-wrap:anywhere}
+
+#mhk-preview .pg-bus{display:grid;gap:16px;overflow-wrap:anywhere}
+#mhk-preview .pg-bus p{margin:6px 0}
+#mhk-preview .pg-bus .mhk-button{min-height:44px;text-align:left;white-space:normal}
+#mhk-preview .pg-bus-picker form{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end}
+#mhk-preview .pg-bus-picker label{grid-column:1 / -1}
+#mhk-preview .pg-bus-picker input{min-width:0;min-height:44px;padding:8px;color:var(--mhk-ink);background:var(--mhk-paper);border:1px solid var(--mhk-line);border-radius:3px}
+#mhk-preview .pg-bus-matches{padding-left:18px}
+#mhk-preview .pg-bus-matches:empty{display:none}
+#mhk-preview .pg-bus-matches li{margin:6px 0}
