@@ -3,13 +3,14 @@
 import os
 from pathlib import Path
 import tempfile
+from datetime import datetime, timedelta, timezone
 
 import pytest
 
 from mcp_open_data_hk.storage import Store
 from mcp_open_data_hk.services import Service
 from mcp_open_data_hk.sources import DISTRICTS
-from test_racing_profile_public import prepared, observations, accept_profile
+from test_racing_profile_public import prepared, observations, accept_profile, policy
 
 
 def main():
@@ -28,7 +29,10 @@ def main():
         pytest.MonkeyPatch.context() as patch,
     ):
         root = Path(folder)
-        prepared.__wrapped__(service, root, patch)
+        recheck = datetime.now(timezone.utc) + timedelta(days=31)
+        prepared.__wrapped__(
+            service, root, patch, fixture_policy=policy(recheck.isoformat())
+        )
         candidate = service.racing.store.profiles.stage(*observations())
         accept_profile(service, root, candidate)
 

@@ -32,7 +32,14 @@ try{
   await page.locator('#daily-next').click();await page.locator('#daily-previous').waitFor({state:'visible'});assert.equal(await page.locator('#daily-detail-section').isVisible(),false);
   await page.locator('#daily-stock').fill('00595');await page.locator('#daily-search').evaluate(f=>f.requestSubmit());await page.waitForFunction(()=>document.querySelector('#daily-list button')?.textContent.includes('00595'));await page.locator('#daily-list button').first().click();await page.locator('#daily-detail-section').waitFor({state:'visible'});
   await page.screenshot({path:new URL(`${real?'real':'synthetic'}-${lang}-${width}.png`,out).pathname,fullPage:true});
-  if(!real){held=true;await page.locator('#daily-refresh').click();await page.waitForFunction(()=>document.querySelector('#daily-warning').textContent.length>0);assert.equal(await page.locator('#daily-list button').count(),1);fail=true;await page.locator('#daily-search').evaluate(f=>f.requestSubmit());await page.waitForFunction(()=>document.querySelector('#daily-message').textContent.length>0);assert.equal(await page.locator('#daily-list button').count(),0);assert.equal(await page.locator('#daily-export').isDisabled(),true);}
+  if(!real){
+   held=true;await page.locator('#daily-refresh').click();
+   await page.waitForFunction(()=>document.querySelector('#daily-warning').textContent===window.MhkI18n.t('dailyUpdaterHeld')&&document.querySelector('#daily-list button'));
+   assert.equal(await page.locator('#daily-list button').count(),1);
+   fail=true;await page.locator('#daily-search').evaluate(f=>f.requestSubmit());
+   await page.waitForFunction(()=>document.querySelector('#daily-message').textContent===window.MhkI18n.t('dailyFailed'));
+   assert.equal(await page.locator('#daily-list button').count(),0);assert.equal(await page.locator('#daily-export').isDisabled(),true);
+  }
   receipts.push({lang,width,realData:real,downloadRows:manifest.rowCount,zipSha256:createHash('sha256').update(b).digest('hex'),passed:true});await context.close();if(pace)await new Promise(r=>setTimeout(r,pace));
  }
  assert.deepEqual(errors,[]);await writeFile(new URL(`${real?'real':'synthetic'}-receipts.json`,out),JSON.stringify({receipts,errors},null,2)+'\n');console.log(`HKEX latest: ${receipts.length} ${real?'real':'synthetic'} browser journeys passed`);

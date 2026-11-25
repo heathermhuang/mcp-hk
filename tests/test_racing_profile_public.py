@@ -34,14 +34,14 @@ def policy_clock(monkeypatch):
     monkeypatch.setattr("mcp_open_data_hk.curated.racing.policy.datetime", clock)
 
 
-def policy():
+def policy(recheck_at="2026-11-25T00:00:00Z"):
     return {
         "schema": "racing-policy-v1",
         "source": "hkjc",
         "purpose": "read_only_racing_facts",
         "state": "active",
         "qualifiedAt": "2026-10-25T00:00:00Z",
-        "recheckAt": "2026-11-25T00:00:00Z",
+        "recheckAt": recheck_at,
         "families": {
             "profiles": {
                 "modes": {mode: "allowed" for mode in MODES},
@@ -111,7 +111,7 @@ def accept_profile(service, tmp_path, candidate):
 
 
 @pytest.fixture
-def prepared(service, tmp_path, monkeypatch):
+def prepared(service, tmp_path, monkeypatch, *, fixture_policy=None):
     monkeypatch.setattr(
         "mcp_open_data_hk.curated.racing.prototype_store.time.sleep", lambda _: None
     )
@@ -137,7 +137,7 @@ def prepared(service, tmp_path, monkeypatch):
         }
     candidate = service.racing.store.import_bundle(bundle)
     accept_profile(service, tmp_path, candidate)
-    record = policy()
+    record = fixture_policy if fixture_policy is not None else policy()
     service.racing.store.profiles.install_policy(record, checksum(record))
     return service
 
