@@ -57,6 +57,34 @@ checks for new snapshots every 30 seconds while visible. Named tools are ranked
 over completed days, with a five-call minimum and at most eight results. Operator
 traffic is included. The feed contains no caller, query, or dataset identifiers.
 
+## Private attribution
+
+`PYTHONPATH=src .venv/bin/python scripts/cloudflare_ops.py attribution --days 7`
+reads the authenticated, non-cacheable `GET /__ops/analytics` report. It covers
+newly measured MCP tool attempts and HTTP building lookups. Older counters
+cannot reconstruct attribution or recover tool names previously grouped as
+unknown. Registry parity is tested against the production tool configuration.
+
+Generate a signed five-minute operator header with
+`python3 scripts/usage_test_header.py` and attach it to test requests. The
+header only labels measurement and grants no access or quota exemption.
+Unmarked traffic may include earlier test clients. A recognized product family
+is either provided by `X-Mcp-Usage-Client` or inferred from a bounded user-agent
+allowlist. The actual header value is discarded.
+
+Clients can opt in with a locally generated random UUIDv4 in
+`X-Mcp-Usage-Installation`. Only its keyed hash and last two UTC observation
+days are stored, in a table capped at 8,192 installations and retained for
+30 reporting days. The report gives distinct and returning installation
+counts, along with linking and capacity counts. An installation can belong to
+more than one person or be reset by a single person. DNT, GPC and explicit
+opt-out suppress client family and installation. Attribution contains no raw
+IP address, query text, raw user-agent string, or response body.
+
+Property outcome categories distinguish invalid queries, missing buildings,
+provider errors and successful empty listing sets. A valid building can have
+zero qualifying listings. HTTP status alone cannot express MCP tool errors.
+
 ## Enforced limits
 
 `GET /api/v1/limits` returns the current policy. Admission is serialized through

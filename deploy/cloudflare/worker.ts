@@ -16,7 +16,14 @@ import {saveBackup, requireCheckpoint, safeOperationError} from './backup';
 import {completeRacingPublication} from './racing-publication';
 import {RacingAdmission} from './racing-admission';
 import {curatedContainerEnv} from './curated';
-import {UsageStore, LIMITS, clientKey, describeRequest, meterResponse} from './usage';
+import {UsageStore, LIMITS, UNCLASSIFIED_TOOL, clientKey, describeRequest, isTrackedTool, meterResponse} from './usage';
+import {AttributionStore, requestAttribution, usageOptOut} from './usage-attribution';
+
+function usageIngressHeaders(request: Request): Headers {
+  const headers = dataRequestHeaders(request);
+  if (usageOptOut(request)) headers.set('x-mcp-analytics-opt-out', '1');
+  return headers;
+}
 
 
 async function authorized(request: Request, token: string): Promise<boolean> {
@@ -98,6 +105,16 @@ export class McpContainer extends Container<Env> {
 
   usageReport(days: number) { return new UsageStore(this.ctx.storage.sql).report(days); }
 
+  private attribution?: AttributionStore;
+
+  private attributionStore() {
+    return this.attribution ??= new AttributionStore(this.ctx.storage.sql);
+  }
+
+  attributionReport(days: number) {
+    return this.attributionStore().report(days);
+  }
+
   private usageSnapshot?: {until: number; report: ReturnType<UsageStore['publicReport']>};
 
   publicUsageReport() {
@@ -160,11 +177,22 @@ export class McpContainer extends Container<Env> {
     const started = Date.now(), url = new URL(request.url);
     if (url.pathname.startsWith('/__ops/')) return new Response('Not found', {status: 404});
     const usage = new UsageStore(this.ctx.storage.sql);
+    let observation: {operation: string; facts: Awaited<ReturnType<typeof requestAttribution>>} | undefined;
+    const save: Parameters<typeof meterResponse>[4] = (op,status,outcome,bytesIn,bytesOut,items,duration,category) => {
+      const now = Date.now();
+      usage.record(op,status,outcome,bytesIn,bytesOut,items,duration,now);
+      if (!observation) return;
+      try {
+        const store = this.attributionStore();
+        const {operation, facts} = observation;
+        this.ctx.storage.transactionSync(() => store.record(op.protocol,operation,facts,category,now));
+      } catch { console.error(JSON.stringify({event:'usage_attribution_write_failed'})); }
+    };
     const key = await clientKey(request.headers.get('x-mcp-client-ip') || 'unknown',this.env.OPS_TOKEN);
     const preliminary=usage.quota(key,0,Date.now(),false);
     if (!preliminary.allowed) {
       const response=Response.json({error:{code:'RATE_LIMITED',scope:preliminary.scope}},{status:429,headers:{'Retry-After':String(preliminary.retryAfter),'RateLimit-Limit':String(LIMITS.perMinute),'RateLimit-Remaining':'0','RateLimit-Reset':String(preliminary.retryAfter),'Cache-Control':'no-store','Access-Control-Allow-Origin':'*','Access-Control-Expose-Headers':'RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset, Retry-After'}});
-      const metered=meterResponse(response,describeRequest(request),0,started,(...args)=>usage.record(...args));
+      const metered=meterResponse(response,describeRequest(request),0,started,save);
       this.ctx.waitUntil(metered.done);return metered.response;
     }
     let body: Uint8Array | undefined;
@@ -173,16 +201,23 @@ export class McpContainer extends Container<Env> {
       catch (error) {
         const admission=usage.quota(key,0);
         const response=admission.allowed ? Response.json({error:{code:'BODY_TOO_LARGE'}},{status:413,headers:{'Cache-Control':'no-store','Access-Control-Allow-Origin':'*'}}) : Response.json({error:{code:'RATE_LIMITED',scope:admission.scope}},{status:429,headers:{'Retry-After':String(admission.retryAfter),'Cache-Control':'no-store','Access-Control-Allow-Origin':'*'}});
-        const metered=meterResponse(response,describeRequest(request),error instanceof BodyLimitError ? error.bytesRead : 0,started,(...args)=>usage.record(...args));
+        const metered=meterResponse(response,describeRequest(request),error instanceof BodyLimitError ? error.bytesRead : 0,started,save);
         this.ctx.waitUntil(metered.done);return metered.response;
       }
     }
     const op = describeRequest(request,body);
+    const observedOperation = op.protocol === 'mcp' && (isTrackedTool(op.operation) || op.operation === UNCLASSIFIED_TOOL)
+      ? op.operation : url.pathname === '/api/v1/properties/building' && request.method === 'GET' ? 'property_building' : null;
+    if (observedOperation) {
+      try {
+        observation = {operation: observedOperation, facts: await requestAttribution(request,this.env.OPS_TOKEN,started)};
+      } catch { console.error(JSON.stringify({event:'usage_attribution_classification_failed'})); }
+    }
     const quota = usage.quota(key,op.sourceCalls);
     const rateHeaders = {'RateLimit-Limit':String(LIMITS.perMinute),'RateLimit-Remaining':String(quota.remaining),'RateLimit-Reset':String(Math.max(1,Math.ceil(quota.reset-Date.now()/1000))),'Cache-Control':'no-store','Access-Control-Allow-Origin':'*','Access-Control-Expose-Headers':'RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset, Retry-After, MCP-Protocol-Version, Mcp-Session-Id'};
     if (!quota.allowed) {
       const response = Response.json({error:{code:'RATE_LIMITED',message:'Request or source budget exceeded',scope:quota.scope}},{status:429,headers:{...rateHeaders,'Retry-After':String(quota.retryAfter)}});
-      const metered = meterResponse(response,op,body?.length || 0,started,(...args)=>usage.record(...args));
+      const metered = meterResponse(response,op,body?.length || 0,started,save);
       this.ctx.waitUntil(metered.done); return metered.response;
     }
     if (url.pathname === '/mcp' && body) {
@@ -190,13 +225,14 @@ export class McpContainer extends Container<Env> {
       try { batch = Array.isArray(JSON.parse(new TextDecoder().decode(body))); } catch { /* Backend handles JSON-RPC parse errors. */ }
       if (batch) {
         const response = Response.json({error:{code:'BATCH_NOT_SUPPORTED',message:'Send one JSON-RPC operation per request'}},{status:400,headers:rateHeaders});
-        const metered = meterResponse(response,op,body.length,started,(...args)=>usage.record(...args));
+        const metered = meterResponse(response,op,body.length,started,save);
         this.ctx.waitUntil(metered.done); return metered.response;
       }
     }
     // Repeat the boundary at the data-controller hop, retaining only the identity
     // already replaced by the trusted edge Worker for quota accounting.
     const headers = dataRequestHeaders(request,request.headers.get('x-mcp-client-ip')||'unknown');
+    for (const header of ['x-mcp-usage-test','x-mcp-usage-client','x-mcp-usage-installation','x-mcp-analytics-opt-out']) headers.delete(header);
     headers.set('x-mcp-edge-token', this.env.OPS_TOKEN);
     headers.set('x-mcp-racing-budget',JSON.stringify(new RacingAdmission(this.ctx.storage.sql).report()));
     const forwarded = new Request(request.url, {method: request.method, headers, body: body ?? request.body, redirect:'manual'});
@@ -207,12 +243,14 @@ export class McpContainer extends Container<Env> {
     const result = new Response(response.body,response);
     for (const [name,value] of Object.entries(rateHeaders)) result.headers.set(name,value);
     result.headers.set('Access-Control-Expose-Headers','RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset, Retry-After, MCP-Protocol-Version, Mcp-Session-Id');
-    const metered = meterResponse(result,op,body?.length || 0,started,(...args)=>usage.record(...args));
+    const metered = meterResponse(result,op,body?.length || 0,started,save);
     this.ctx.waitUntil(metered.done); return metered.response;
   }
 
   async maintain(pack: string) {
     new UsageStore(this.ctx.storage.sql).cleanup();
+    try { this.attributionStore().cleanup(); }
+    catch { console.error(JSON.stringify({event:'usage_attribution_cleanup_failed'})); }
     new RacingAdmission(this.ctx.storage.sql).cleanup();
     const now = Date.now();
     const lease = await this.ctx.storage.get<number>('maintenanceLease');
@@ -326,7 +364,7 @@ export default {
       if(!target||!response.ok){const result=new Response(response.body,response);result.headers.set('X-Mcp-Release',env.RELEASE_COMMIT);return result;}
       // Auth is checked durably on every request. Keep existing IP/shared data budgets.
       await response.body?.cancel();url.pathname=target;
-      const result=await env.APP.get(env.APP.idFromName('production')).fetch(new Request(url,{method:request.method,headers:dataRequestHeaders(request),redirect:'manual'}));
+      const result=await env.APP.get(env.APP.idFromName('production')).fetch(new Request(url,{method:request.method,headers:usageIngressHeaders(request),redirect:'manual'}));
       return normalizeBackendResponse(result,env.RELEASE_COMMIT);
     }
     if (url.pathname.startsWith('/__ops/')) {
@@ -385,6 +423,7 @@ export default {
       if (url.pathname === '/__ops/restart' && request.method === 'POST') return Response.json(await env.APP.get(env.APP.idFromName('production')).restartFromCheckpoint(request.headers.get('x-snapshot-sha256') || ''));
       if (url.pathname === '/__ops/diagnostics') return Response.json(await env.APP.get(env.APP.idFromName('production')).operationDiagnostics());
       if (url.pathname === '/__ops/usage' && request.method === 'GET') return Response.json(await env.APP.get(env.APP.idFromName('production')).usageReport(Number(url.searchParams.get('days') || 7)),{headers:{'Cache-Control':'no-store'}});
+      if (url.pathname === '/__ops/analytics' && request.method === 'GET') return Response.json(await env.APP.get(env.APP.idFromName('production')).attributionReport(Number(url.searchParams.get('days') || 7)),{headers:{'Cache-Control':'no-store'}});
       if (url.pathname === '/__ops/status') return Response.json(await env.APP.get(env.APP.idFromName('production')).operationsStatus());
       return new Response('Not found', {status: 404});
     }
@@ -443,7 +482,7 @@ export default {
       const manifest = await env.BACKUPS.get('latest.json');
       return Response.json({backup: manifest ? await manifest.json() : null, maintenance: await env.APP.get(env.APP.idFromName('production')).operationsStatus(), schedules: {catalogue: 'Sunday 12:00 Asia/Hong_Kong', resources: 'every five minutes at minutes 2,7,...57; up to 256 reviews, 90 seconds, six concurrent/two per host, 50000 review attempts/day', restaurants: 'daily 10:00 Asia/Hong_Kong', population: 'Sunday 11:00 Asia/Hong_Kong', backup: 'daily 09:00 Asia/Hong_Kong'}, retentionDays: 30});
     }
-    const headers = dataRequestHeaders(request);
+    const headers = usageIngressHeaders(request);
     try {
       const response = await env.APP.get(env.APP.idFromName('production')).fetch(new Request(request, {headers}));
       return normalizeBackendResponse(response, env.RELEASE_COMMIT);

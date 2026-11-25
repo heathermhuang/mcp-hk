@@ -36,6 +36,7 @@ parser.add_argument(
         "restart",
         "publish-overview",
         "usage",
+        "attribution",
     ],
 )
 parser.add_argument("--origin", default="https://mcp-hk.measurable.workers.dev")
@@ -75,6 +76,8 @@ elif args.action == "restore-test":
     path = "/__ops/snapshot"
 elif args.action == "usage":
     path = "/__ops/usage?days=" + str(args.days)
+elif args.action == "attribution":
+    path = "/__ops/analytics?days=" + str(args.days)
 elif args.action == "status":
     path = "/__ops/status"
 else:
@@ -110,7 +113,9 @@ try:
                 )
         else:
             print(
-                response.read(2_000_000 if args.action == "usage" else 10000).decode()
+                response.read(
+                    2_000_000 if args.action in {"usage", "attribution"} else 10000
+                ).decode()
             )
 except urllib.error.HTTPError as exc:
     code = ""
