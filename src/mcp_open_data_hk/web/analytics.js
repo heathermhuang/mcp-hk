@@ -14,9 +14,10 @@
   dialog.append(title,copy,status,privacy,reject,accept,close); const main=document.querySelector('.mhk-main');if(main)main.prepend(dialog);else document.body.append(dialog);
   function render() {
     title.textContent=t('analyticsChoiceTitle'); copy.textContent=t('analyticsChoiceCopy'); privacy.textContent=t('privacyTitle');
+    privacy.href='/privacy?lang='+(window.MhkI18n?.locale || 'en');
     reject.textContent=t('analyticsReject'); accept.textContent=t('analyticsAllow'); close.textContent=t('close');
     accept.disabled=!id || !production || respectsOptOut();
-    status.textContent=t(respectsOptOut() ? 'analyticsOptOut' : !id || !production ? 'analyticsNotConfigured' : choice?.allowed !== false ? 'analyticsEnabled' : 'analyticsDisabled');
+    status.textContent=t(respectsOptOut() ? 'analyticsOptOut' : !id || !production ? 'analyticsNotConfigured' : choice?.allowed === false ? 'analyticsDisabled' : choice?.allowed ? 'analyticsEnabled' : 'analyticsAutomatic');
   }
   function removeCookies() {
     for (const part of document.cookie.split(';')) {
@@ -52,7 +53,11 @@
     if (!allowed && loaded) location.reload();
   }
   reject.addEventListener('click',()=>choose(false)); accept.addEventListener('click',()=>choose(true)); close.addEventListener('click',()=>dialog.close());
-  document.querySelectorAll('[data-analytics-settings]').forEach(button=>button.addEventListener('click',()=>{render();if(dialog.open)dialog.close();dialog.showModal();}));
+  document.addEventListener('click',event=>{
+    if (!event.target.closest?.('[data-analytics-settings]') || dialog.open) return;
+    render();
+    dialog.showModal();
+  });
   window.addEventListener('mhk:language',render);
   window.addEventListener('mhk:navigate',pageView);window.addEventListener('popstate',pageView);
   render();

@@ -9,18 +9,18 @@ class Element {
 }
 async function browser({stored=null,id='G-TEST123456',url='https://mcp.hk/coverage?q=private-query#secret',gpc=false,dnt=false}={}){
   let saved=stored,reloaded=false;const button=new Element('button'),body=new Element('body'),head=new Element('head'),calls=[];
-  const document={body,head,cookie:'',activeElement:null,createElement:tag=>Object.assign(new Element(tag),{ownerDocument:document}),querySelector:()=>null,querySelectorAll:()=>[button]};
+  const document={body,head,cookie:'',activeElement:null,createElement:tag=>Object.assign(new Element(tag),{ownerDocument:document}),querySelector:()=>null,addEventListener:(name,fn)=>{button.listeners[name]=()=>fn({target:{closest:()=>button}});}};
   const initialFocus=document.createElement('input');document.activeElement=initialFocus;
   const location=new URL(url);location.reload=()=>{reloaded=true;};
   const listeners={};
   const context=vm.createContext({document,location,navigator:{globalPrivacyControl:gpc,doNotTrack:dnt?'1':null},localStorage:{getItem:()=>saved,setItem:(k,v)=>{saved=v;}},fetch:async url=>{calls.push(url);return {ok:true,json:async()=>({googleAnalyticsId:id})};},Date,URL});
-  context.window=context;context.addEventListener=(name,fn)=>{listeners[name]=fn;};context.MhkI18n={t:key=>key};
+  context.window=context;context.addEventListener=(name,fn)=>{listeners[name]=fn;};context.MhkI18n={t:key=>key,locale:'zh-Hant'};
   vm.runInContext(readFileSync(new URL('../../src/mcp_open_data_hk/web/analytics.js',import.meta.url),'utf8'),context);
   await new Promise(resolve=>setImmediate(resolve));
   const dialog=body.children[0];return {context,listeners,document,initialFocus,dialog,button,head,calls,reloaded:()=>reloaded,saved:()=>saved,reject:dialog.children[4],accept:dialog.children[5]};
 }
 test('Google starts automatically without a choice and an explicit opt-out stops it',async()=>{
-  const b=await browser();assert.equal(b.head.children.length,1);assert.ok(b.context.dataLayer);assert.equal(b.saved(),null);assert.deepEqual(b.calls,['/assets/site-config.json']);assert.equal(b.dialog.open,false);
+  const b=await browser();assert.equal(b.head.children.length,1);assert.ok(b.context.dataLayer);assert.equal(b.saved(),null);assert.deepEqual(b.calls,['/assets/site-config.json']);assert.equal(b.dialog.open,false);assert.equal(b.dialog.children[2].textContent,'analyticsAutomatic');
   b.reject.listeners.click();assert.equal(b.context['ga-disable-G-TEST123456'],true);assert.equal(JSON.parse(b.saved()).allowed,false);
   b.button.listeners.click();assert.equal(b.dialog.open,true);assert.equal(b.dialog.modal,true);
 });
@@ -38,7 +38,7 @@ test('saved consent, expiration, browser opt-out, disabled config and previews a
   for(const options of [{stored:saved,gpc:true},{stored:saved,dnt:true},{id:''},{url:'http://127.0.0.1:8765/'},{url:'https://mcp-hk.measurable.workers.dev/'}]){
     const b=await browser(options);assert.equal(b.head.children.length,0);assert.equal(b.accept.disabled,true);
   }
-  const expired=await browser({stored:JSON.stringify({version:1,allowed:true,at:Date.now()-181*86400000})});assert.equal(expired.head.children.length,1);assert.equal(expired.dialog.open,false);
+  const expired=await browser({stored:JSON.stringify({version:1,allowed:true,at:Date.now()-180*86400000})});assert.equal(expired.head.children.length,1);assert.equal(expired.dialog.children[2].textContent,'analyticsAutomatic');assert.equal(expired.dialog.open,false);
 });
 
 test('in-app navigation is counted once per path and never includes queries',async()=>{
@@ -48,9 +48,11 @@ test('in-app navigation is counted once per path and never includes queries',asy
   assert.equal(events.length,2);assert.equal(events[1][2].page_location,'https://mcp.hk/connect');assert.doesNotMatch(JSON.stringify(events),/token|private/);
 });
 
-test('opening settings promotes an existing notice to an explicit modal without enabling analytics',async()=>{
- const b=await browser();assert.equal(b.dialog.modal,false);b.button.listeners.click();
- assert.equal(b.dialog.open,true);assert.equal(b.dialog.modal,true);assert.equal(b.head.children.length,1);
+test('settings opens an explicit localized modal without starting suppressed analytics',async()=>{
+ const b=await browser({gpc:true});b.button.listeners.click();
+ assert.equal(b.dialog.open,true);assert.equal(b.dialog.modal,true);
+ assert.equal(b.head.children.length,0);assert.equal(b.dialog.children[3].href,'/privacy?lang=zh-Hant');
+ assert.equal(b.dialog.children[2].textContent,'analyticsOptOut');
 });
 
 test('the asynchronous passive notice preserves an already focused search control',async()=>{
@@ -58,11 +60,13 @@ test('the asynchronous passive notice preserves an already focused search contro
  assert.equal(b.dialog.modal,false);assert.equal(b.head.children.length,1);
 });
 
-test('playground intent and identities never enter analytics, before or after consent',async()=>{
- const b=await browser({url:'https://mcp.hk/playground?lang=en#p=private-address-record-identifier'});assert.ok(b.context.dataLayer);assert.equal(b.saved(),null);const commands=b.context.dataLayer.map(args=>Array.from(args));assert.doesNotMatch(JSON.stringify(commands),/private-address|record-identifier|lang=en|#p=/);const event=commands.find(args=>args[0]==='event');assert.equal(event[2].page_location,'https://mcp.hk/playground');
+test('playground intent and result data never enter analytics',async()=>{
+ const b=await browser({url:'https://mcp.hk/playground?lang=en#p=private-address-record-identifier'});b.context.document.title='selected-result-data';b.context.document.body.textContent='returned-result-data';b.context.location.pathname='/coverage';b.listeners['mhk:navigate']();assert.ok(b.context.dataLayer);assert.equal(b.saved(),null);const commands=b.context.dataLayer.map(args=>Array.from(args));assert.doesNotMatch(JSON.stringify(commands),/private-address|record-identifier|lang=en|#p=|result-data/);const event=commands.find(args=>args[0]==='event');assert.equal(event[2].page_location,'https://mcp.hk/playground');
 });
 
 test('expired explicit opt-outs remain off after the automatic default change',async()=>{
  const b=await browser({stored:JSON.stringify({version:1,allowed:false,at:Date.now()-181*86400000})});
  assert.equal(b.head.children.length,0);assert.equal(b.dialog.open,false);
+ assert.equal(b.dialog.children[2].textContent,'analyticsDisabled');
+ b.accept.listeners.click();assert.equal(b.head.children.length,1);assert.equal(JSON.parse(b.saved()).allowed,true);
 });

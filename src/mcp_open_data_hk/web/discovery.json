@@ -122,12 +122,12 @@
       "en": {
         "title": "Privacy policy · mcp.hk",
         "heading": "Privacy policy",
-        "description": "Read how mcp.hk handles public-data queries, operational counters and optional consent-based analytics. No analytics consent is needed to use the public data service."
+        "description": "Read how mcp.hk handles public-data queries, essential service counters, private MCP attribution and automatic website analytics. You can turn website analytics off."
       },
       "zh-Hant": {
         "title": "私隱政策 · mcp.hk",
         "heading": "私隱政策",
-        "description": "了解 mcp.hk 如何處理公共數據查詢、營運計數及須經同意才啟用的分析功能。使用公共數據服務毋須同意分析。"
+        "description": "了解 mcp.hk 如何處理公共數據查詢、必要服務計數、私人 MCP 用量歸因同自動網站分析。你可以關閉網站分析。"
       },
       "template": "legal.html",
       "noindex": true

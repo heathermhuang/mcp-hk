@@ -221,6 +221,7 @@ def family_directory(
     zh = lang == "zh-Hant"
     parts = ['<div class="dataset-directory">']
     rows = dataset_families()
+    strings = translations()["zh" if zh else "en"]
     if alphabetical:
         rows = sorted(rows, key=lambda row: row["title"]["en"].casefold())
     for row in rows:
@@ -253,10 +254,17 @@ def family_directory(
             f'<p>{escape(row["question"][lang])}</p>'
         )
         if not compact:
+            action = strings[
+                (
+                    "browseTransportDatasets"
+                    if row["id"] == "transport"
+                    else "directoryOpen"
+                )
+            ]
             parts.append(
                 f'<p class="mhk-note">{escape(row["limits"][lang])}</p>'
                 '<p class="dataset-actions">'
-                f'<a href="{href}">{"查閱資料" if zh else "Explore data"} →</a> · '
+                f'<a href="{href}">{escape(action)} →</a> · '
                 f'<a href="{escape(row["statusPage"], quote=True)}">'
                 f'{"查看範圍及狀態" if zh else "Coverage and status"}</a></p>'
                 '<details class="mhk-disclosure"><summary>'

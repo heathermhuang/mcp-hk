@@ -129,19 +129,19 @@ Before activation, configure the GA4 stream with Enhanced Measurement disabled
 clicks), advertising/Google Signals disabled and the desired event-retention
 setting. The app sends explicit page views for document and in-app navigation.
 Do not claim receipt in the correct GA property from merely loading the script.
-Verify the stream's Realtime/DebugView after a consented test, and confirm no
-collection before consent or after rejection.
+Verify the stream's Realtime/DebugView after an approved fresh-browser test.
+Verify that rejection, DNT and GPC suppress collection and that a preview host
+does not load the tag.
 
-The implementation uses Google's **basic consent mode**: the Google tag is not
-loaded until affirmative consent. There are no pre-consent cookieless pings.
-GPC or DNT keeps Google Analytics off; localhost and preview hosts cannot load it.
-Events use only origin + pathname, an empty referrer and the generic mcp.hk title.
-API/MCP calls and data/query contents are not sent as GA events. Browser choice
-and Analytics cookies expire after 180 days. Rejecting a previously accepted
-choice disables the tag, clears first-party `_ga` cookies and reloads the page.
+On HTTPS mcp.hk, a configured tag starts automatically on a fresh visit without
+writing a browser preference. GPC or DNT keeps it off. Events use only origin
+and pathname, an empty referrer and the generic mcp.hk title. API/MCP calls,
+query parameters, URL fragments and returned records are excluded. The
+affirmative preference and Analytics cookies have a 180-day lifetime.
+An explicit rejection stays in place until changed. Rejection disables the tag,
+clears first-party `_ga` cookies and reloads a page with an active tag.
 
-References: [Google consent implementation](https://developers.google.com/tag-platform/security/guides/consent?consentmode=basic),
-[GA4 configuration](https://developers.google.com/analytics/devguides/collection/ga4/reference/config),
+References: [GA4 configuration](https://developers.google.com/analytics/devguides/collection/ga4/reference/config),
 [Cloudflare Durable Object SQL](https://developers.cloudflare.com/durable-objects/api/sqlite-storage-api/),
 [PCPD policy guidance](https://www.pcpd.org.hk/misc/dpoc/files/pics_and_pps.pdf).
 
