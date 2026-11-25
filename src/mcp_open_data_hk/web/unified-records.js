@@ -1,7 +1,7 @@
-import {recordSources} from './record-sources.js';
+import {recordSources,SFC_REGISTER} from './record-sources.js';
 import {SourceHealth} from './source-health.js';
 /* One browsing surface. Each adapter reads accepted data only; no source collection. */
-import { RecordFeed, feedRows, feedCheckpoint, readCheckpoint } from './record-feed.js';
+import { RecordFeed, feedRows, recordSourceNotice, feedCheckpoint, readCheckpoint } from './record-feed.js';
 import { fetchPublicJson } from './http.js';
 import { pagePackage } from './company-export.js';
 import {partyNames} from './company-fields.js';
@@ -49,20 +49,44 @@ if (selected) {
     u.searchParams.set('record', selected.key);
     u.searchParams.set('recordVersion', selected.version);
 } history[replace ? 'replaceState' : 'pushState'](null, '', u.pathname + u.search); }
-function render() { const current = feed.current, rows = feedRows(current, MhkI18n.locale), states = Object.values(current?.states || {}), failed = states.some(s => s.error); $('record-status').textContent = loading ? tr('loading') : failed ? (rows.length ? tr('partial') : tr('failed')) : current ? rows.length ? tr('count', { n: rows.length }) : tr('empty') : tr('initial'); const credits=sources[kind].filter(source=>current?.states[source.id]?.items.length).map(source=>source.label);$('record-attribution').textContent=credits.length?(zh()?'資料來源：':'Data: ')+credits.join(' · '):''; $('record-search').querySelector('button').disabled = loading; $('record-results').replaceChildren(); for (const r of rows) {
+function render() { const current = feed.current, rows = feedRows(current, MhkI18n.locale), states = Object.values(current?.states || {}), failed = states.some(s => s.error); $('record-status').textContent = loading ? tr('loading') : failed ? (rows.length ? tr('partial') : tr('failed')) : current ? rows.length ? tr('count', { n: rows.length }) : states.some(s=>s.condition) ? '' : tr('empty') : tr('initial'); const credits=sources[kind].filter(source=>current?.states[source.id]?.items.length).map(source=>source.label);$('record-attribution').textContent=credits.length?(zh()?'資料來源：':'Data: ')+credits.join(' · '):''; $('record-search').querySelector('button').disabled = loading; $('record-results').replaceChildren(); for (const r of rows) {
     const a = node('article', null, 'mhk-record-row'), b = button(r.title, () => open(r));
     b.className = 'mhk-record-title';
     b.setAttribute('aria-pressed', String(selected?.key === r.key));
     a.append(b);
     if (r.subtitle && r.subtitle !== r.title)
         a.append(node('p', r.subtitle));
-    if (r.date)
-        a.append(node('p', tr(kind === 'hkex' ? 'event' : 'date') + ': ' + r.date));
+    for(const variant of r.variants){
+        const source=sources[kind].find(entry=>entry.id===variant.source);
+        const label=MhkI18n.t('recordSource_'+variant.source);
+        a.append(node('p', [label,source?.label,variant.id,variant.version].filter(Boolean).join(' · '),'mhk-note'));
+        if(variant.date)a.append(node('p', MhkI18n.t(variant.source==='licence-observations'?'pgObserved':'recordEventDate')+' · '+variant.date));
+        const matches=variant.raw?.matched_names||[];
+        if(matches.length){
+            const names=matches.map(match=>{
+                const value=match.display_name||match.chinese_name;
+                if(!value)return '';
+                const kind=match.name_kind==='former'?'recordFormerName':match.name_kind==='current'?'recordCurrentName':'recordMatchedName';
+                return MhkI18n.t(kind)+' · '+value;
+            }).filter(Boolean);
+            if(names.length)a.append(node('p',names.join(' · '),'mhk-note'));
+        }
+    }
     if (r.issuerChoice)
         a.append(node('p', tr('choose')));
     $('record-results').append(a);
 } for (const id of ['record-next', 'record-previous', 'record-retry'])
-    $(id).disabled = loading; $('record-next').hidden = !feed.hasNext; $('record-previous').hidden = feed.index + pageOffset < 1; $('record-retry').hidden = !failed; $('record-page').textContent = current ? tr('page', { n: pageOffset + feed.index + 1 }) : ''; }
+    $(id).disabled = loading;
+for(const source of sources[kind]){
+    const state=current?.states[source.id];
+    if(!state)continue;
+    const notice=recordSourceNotice(state,MhkI18n.t);
+    if(!notice)continue;
+    const line=node('p',source.label+' · '+notice,'mhk-note');
+    if(state.condition?.url){const link=node('a',MhkI18n.t('originalSource'));link.href=state.condition.url;line.append(document.createTextNode(' · '),link);}
+    $('record-results').append(line);
+}
+$('record-next').hidden = !feed.hasNext; $('record-previous').hidden = feed.index + pageOffset < 1; $('record-retry').hidden = !feed.hasRetry; $('record-page').textContent = current ? tr('page', { n: pageOffset + feed.index + 1 }) : ''; }
 async function search(value, {restore = false, issuer = null, issuerVersion = null, checkpoint = null} = {}) {
     const run = ++viewRun;
     detailRun++; selected = null; $('record-detail').hidden = true;
@@ -290,6 +314,12 @@ else {
     $('record-detail').hidden = true;
     render();
 } }
+if(kind==='sfc'){
+    const input=$('record-query');input.placeholder='AAB241';
+    const hint=node('p',MhkI18n.t('sfcExample'),'mhk-note'),link=node('a',MhkI18n.t('sfcOfficial'));
+    link.href=SFC_REGISTER;link.rel='noreferrer';hint.append(document.createTextNode(' · '),link);
+    $('record-search').after(hint);
+}
 $('record-search').addEventListener('submit', e => { e.preventDefault(); search($('record-query').value.trim()); });
 $('record-next').addEventListener('click', async () => { loading = true; render(); await feed.next(); loading = false; selected = null; detailRun++; $('record-detail').hidden = true; updateUrl(true); render(); });
 $('record-previous').addEventListener('click', () => { if(feed.index===0&&pageOffset){search(query.value,{issuer:query.issuer,issuerVersion:query.issuerVersion});return;}feed.previous(); selected = null; detailRun++; $('record-detail').hidden = true; updateUrl(true); render(); });

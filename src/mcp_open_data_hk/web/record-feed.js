@@ -1,5 +1,15 @@
 /* A bounded page across independently version-pinned accepted sources.
  * Source failures remain failures. Names and stock codes never join identities. */
+const TRANSIENT = new Set(['SOURCE_UNAVAILABLE','SOURCE_TIMEOUT','SERVICE_RECOVERING','RESOURCE_BUSY','REQUEST_TIMEOUT']);
+const statusKind = code => /HOLD|HELD|RESTRICTED|ACCESS_DENIED|BUDGET/.test(code) ? 'held'
+    : /DISABLED|NOT_ENABLED|NOT_ACTIVATED/.test(code) ? 'disabled'
+    : /STALE|EXPIRED/.test(code) ? 'stale' : 'error';
+export function recordSourceNotice(state, t) {
+    if (!state.condition && !state.error) return '';
+    const kind = state.condition?.kind || statusKind(state.errorCode || '');
+    return t({disabled:'recordSourceDisabled', held:'recordSourceHeld', stale:'recordSourceStale', error:'recordSourceError'}[kind])
+        + (state.error ? ' · ' + state.error : '');
+}
 export class RecordFeed {
     constructor(sources) { this.sources = sources; this.generation = 0; this.pages = []; this.index = -1; }
     cancel() { this.generation++; this.controller?.abort(); }
@@ -16,10 +26,12 @@ export class RecordFeed {
         this.controller = new AbortController();
         const states = await Promise.all(this.sources.map(async (source) => {
             const state = inputs[source.id];
-            if (state.done)
-                return { ...state, items: [], error: null };
+            if (state.done || state.error && !state.retryable)
+                return { ...state, items: [] };
             try {
                 const page = await source.read(this.query, { ...state, signal: this.controller.signal });
+                if (page?.condition)
+                    return { ...state, items: [], error: null, done: true, condition: page.condition };
                 if (!page || !Array.isArray(page.items) || page.items.length > 100 || typeof page.version !== 'string' || !page.version || state.version && page.version !== state.version)
                     throw Error('SOURCE_SCHEMA_CHANGED');
                 if (page.nextCursor != null && (typeof page.nextCursor !== 'string' || page.nextCursor === state.cursor))
@@ -27,7 +39,10 @@ export class RecordFeed {
                 return { items: page.items, version: page.version, cursor: page.nextCursor || null, done: !page.nextCursor, error: null, meta: page.meta };
             }
             catch (error) {
-                return { ...state, items: [], error: error.message || 'SOURCE_UNAVAILABLE' };
+                const errorCode = error.code || error.message?.match(/^[A-Z][A-Z_]+/)?.[0] || '';
+                const retryable = statusKind(errorCode) === 'error' && (TRANSIENT.has(errorCode)
+                    || [408,429,502,503,504].includes(error.status) || error instanceof TypeError);
+                return { ...state, items: [], error: error.message || 'SOURCE_UNAVAILABLE', errorCode, retryable };
             }
         }));
         if (run !== this.generation)
@@ -44,11 +59,18 @@ export class RecordFeed {
         return null; return this.load(this.current.states); }
     previous() { this.cancel(); if (this.index > 0)
         this.index--; return this.current; }
-    async retry() { if (!this.current)
-        return null; const prior = this.current; this.index--; const fresh = await this.load(Object.fromEntries(Object.entries(prior.states).map(([id, state]) => [id, state.error ? prior.inputs[id] : { ...state, done: true }]))); if (fresh)
-        for (const [id, state] of Object.entries(prior.states))
-            if (!state.error)
-                fresh.states[id] = state; return fresh; }
+    get hasRetry() { return Boolean(this.current && Object.values(this.current.states).some(s => s.retryable)); }
+    async retry() {
+        if (!this.hasRetry) return null;
+        const prior = this.current;
+        this.index--;
+        const fresh = await this.load(Object.fromEntries(Object.entries(prior.states).map(
+            ([id, state]) => [id, state.retryable ? prior.inputs[id] : { ...state, done: true }]
+        )));
+        if (fresh) for (const [id, state] of Object.entries(prior.states))
+            if (!state.retryable) fresh.states[id] = state;
+        return fresh;
+    }
 }
 export function feedRows(page, locale = 'en') {
     const rows = Object.entries(page?.states || {}).flatMap(([source, s]) => (s.items || []).map(item => ({ ...item, source, version: s.version, key: source + ':' + item.id })));

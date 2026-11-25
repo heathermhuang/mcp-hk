@@ -4,7 +4,7 @@
   let state = {screen: location.pathname === '/plates' ? 'plates' : location.pathname === '/sources' ? 'sources' : location.pathname === '/demo' ? 'explore' : location.pathname === '/connect' ? 'connect' : 'home', lang: MhkI18n.lang, radius: 500, code: 'http'};
   let clientKind = 'codex';
   let selected = null, response = null, population = null, requestQuery = '', pending = false;
-  let generation = 0;
+  let generation = 0, districtGeneration=0, districtId='', districtOptions=null, districtRead=false, populationError=false;
   let plateResult = null, platePending = false, plateError = '', plateRequest = null;
   let plateGeneration = 0;
   const $ = selector => root.querySelector(selector);
@@ -35,11 +35,19 @@
     $('.mhk-found').hidden = !selected;
     if (selected) {
       $('[data-dynamic=address]').textContent = label(selected.address);
-      const districtName = population ? label(population.data.name) : selected.districtId || MhkI18n.t('districtUnavailable');
+      const district= districtOptions?.find(row=>row.id===selected.districtId);
+      const districtName = district ? label(district.name) : selected.districtId || MhkI18n.t('districtUnavailable');
       $('.mhk-found small').textContent = districtName;
     }
     $('.mhk-explore-grid').hidden = !selected;
-    $('.mhk-pop').hidden = !selected;
+    if(state.screen==='explore'&&districtOptions===null&&!districtRead){
+      districtRead=true;
+      api('/api/v1/districts').then(result=>{districtOptions=result.items;render();}).catch(()=>{districtOptions=[];render();});
+    }
+    const districtPicker=$('#mhk-district');
+    districtPicker.replaceChildren(new Option(MhkI18n.t('chooseDistrict'),''));
+    for(const district of districtOptions||[])districtPicker.append(new Option(label(district.name),district.id));
+    districtPicker.value=districtId;districtPicker.disabled=!districtOptions?.length;
     const list = $('.mhk-results'); list.replaceChildren();
     for (const [i, record] of (response?.data.items || []).entries()) {
       const row = document.createElement('div'); row.className = 'mhk-result';
@@ -63,10 +71,15 @@
     const warnings = [...(response?.warnings || []), ...(population?.warnings || [])];
     $('#mhk-warnings').hidden = !warnings.length;
     $('#mhk-warnings').textContent = warnings.map(w => `${w.code}: ${w.message}`).join(' · ');
-    $('.mhk-pop-value').textContent = population ? population.data.population.toLocaleString(state.lang === 'en' ? 'en-HK' : 'zh-HK') : '—';
+    $('.mhk-pop-value').textContent = population ? population.data.population.toLocaleString(state.lang === 'en' ? 'en-HK' : 'zh-HK') + ' ' + MhkI18n.t('populationUnitText') : '—';
     $('[data-dynamic=year]').textContent = population?.data.referencePeriod || '—';
-    if (selected && !population && !pending) $('[data-i18n=populationNote]').textContent = state.lang === 'en' ? 'District statistic unavailable for this selected address.' : '此地址所屬地區的統計資料暫時不可用。';
-    if (population) $('[data-i18n=populationNote]').textContent = `${translations[state.lang].populationNote} ${population.data.areaKm2} km² · ${population.data.populationDensity.toLocaleString()} ${MhkI18n.t('personsKm')}`;
+    const districtFacts=$('#mhk-district-facts');
+    districtFacts.replaceChildren();
+    if(population){
+      districtFacts.append(document.createTextNode(`${label(population.data.name)} · ${population.data.areaKm2} km² · ${population.data.populationDensity.toLocaleString()} ${MhkI18n.t('personsKm')}`));
+      const source=population.provenance?.[0];
+      if(source?.sourceUrl){const link=document.createElement('a');link.href=source.sourceUrl;link.textContent=source.attribution||MhkI18n.t('originalSource');link.rel='noreferrer';districtFacts.append(document.createTextNode(' · '),link);}
+    }else if(populationError)districtFacts.textContent=MhkI18n.t('districtUnavailable');
     root.querySelectorAll('[data-code]').forEach(e => e.setAttribute('aria-pressed', String(e.dataset.code === state.code)));
     let code = `GET ${location.origin}/api/v1/restaurants?${requestQuery || 'lat=…&lon=…&includeSummary=true'}`;
     if (state.code === 'mcp') code = JSON.stringify({tool: 'hk_restaurant_search', arguments: selected ? {lat: selected.latitude, lon: selected.longitude, radiusM: state.radius, includeSummary: true, lang: state.lang === 'en' ? 'en' : 'zh-Hant'} : {}}, null, 2);
@@ -92,10 +105,10 @@
     const box = $('#mhk-plate-results'); box.replaceChildren();
     if (data) {
       const summary = document.createElement('p');
-      summary.textContent = data.method ? `${data.sampleSize ?? '—'} ${state.lang === 'en' ? 'comparable plates' : '個相近車牌'} · ${data.dateFrom || '—'} → ${data.dateTo || '—'}` : `${data.total} ${state.lang === 'en' ? 'historical records' : '項歷史紀錄'} · ${data.query}`;
+      summary.textContent = data.method ? `${data.sampleSize ?? '—'} ${state.lang === 'en' ? 'comparable plates' : '個相近車牌'} · ${MhkI18n.recordDate(data.dateFrom)} → ${MhkI18n.recordDate(data.dateTo)}` : `${data.total} ${state.lang === 'en' ? 'historical records' : '項歷史紀錄'} · ${data.query}`;
       box.append(summary);
       if (data.method) {
-        const method = document.createElement('p'); method.className = 'mhk-note'; method.textContent = data.method; box.append(method);
+        const method = document.createElement('p'); method.className = 'mhk-note'; method.textContent = data.method;const scope=document.createElement('p');scope.className='mhk-note';scope.textContent=MhkI18n.t('plateCohortNote');box.append(method,scope);
         const stats = document.createElement('p');
         stats.textContent = data.statistics ? `${MhkI18n.t('historicalHkd')} · ${MhkI18n.t('percentile25')} ${data.statistics.p25.toLocaleString()} · ${MhkI18n.t('median')} ${data.statistics.median.toLocaleString()} · ${MhkI18n.t('percentile75')} ${data.statistics.p75.toLocaleString()}` : (state.lang === 'en' ? 'No qualified historical price distribution.' : '未有足夠成交紀錄作比較。');
         box.append(stats);
@@ -105,8 +118,8 @@
         const mark = document.createElement('strong');
         mark.textContent = Array.isArray(record.double_line) ? record.double_line.join('\n') : record.double_line || record.single_line;
         const context = document.createElement('p');
-        const dateLabel = record.auction_date_label || (record.date_precision === 'year_range' ? record.year_range : record.auction_date) || '—';
-        context.textContent = `${dateLabel} · ${MhkI18n.t({pvrm:'pvrm',tvrm_physical:'tvrmPhysical',tvrm_eauction:'tvrmEauction',tvrm_legacy:'tvrmLegacy'}[record.dataset_key] || record.dataset_key)}${record.result_status ? ' · ' + record.result_status : ''}`;
+        const dateLabel = record.auction_date_label || (record.date_precision === 'year_range' ? record.year_range : record.auction_date);
+        context.textContent = [MhkI18n.plateCell('auction_date_label',dateLabel),MhkI18n.plateCell('dataset_key',record.dataset_key),MhkI18n.plateCell('result_status',record.result_status)].join(' · ');
         const amount = document.createElement('span');
         amount.textContent = record.amount_hkd == null ? (state.lang === 'en' ? 'No recorded amount' : '未有記錄金額') : `HK$${record.amount_hkd.toLocaleString()}`;
         const links = document.createElement('p');
@@ -153,17 +166,30 @@
     const token = ++generation;
     if (!selected) return;
     if (selected.latitude == null || selected.longitude == null) { error(MhkI18n.t('noCoordinates')); return; }
-    pending = true; response = null; population = null; error(''); render();
+    pending = true; response = null; error(''); render();
     requestQuery = new URLSearchParams({lat: selected.latitude, lon: selected.longitude, radiusM: state.radius, includeSummary: 'true', lang: state.lang === 'en' ? 'en' : 'zh-Hant'}).toString();
-    const tasks = [api('/api/v1/restaurants?' + requestQuery), selected.districtId ? api('/api/v1/districts/' + encodeURIComponent(selected.districtId) + '/statistics') : Promise.resolve(null)];
-    const result = await Promise.allSettled(tasks);
-    if (token !== generation) return;
-    pending = false;
-    if (result[0].status === 'fulfilled') response = result[0].value;
-    else error(result[0].reason.message);
-    if (result[1].status === 'fulfilled') population = result[1].value;
-    render();
+    try {
+      const result=await api('/api/v1/restaurants?'+requestQuery);
+      if(token===generation)response=result;
+    }catch(reason){if(token===generation)error(reason.message);}
+    finally{if(token===generation){pending=false;render();}}
   }
+
+  async function loadPopulation(id){
+    const token=++districtGeneration;
+    districtId=id||'';population=null;populationError=false;render();
+    if(!id)return;
+    try{
+      const result=await api('/api/v1/districts/'+encodeURIComponent(id)+'/statistics');
+      if(token===districtGeneration)population=result;
+    }catch{if(token===districtGeneration)populationError=true;}
+    finally{if(token===districtGeneration)render();}
+  }
+
+  $('#mhk-district').addEventListener('change',event=>loadPopulation(event.target.value));
+  $('#mhk-change-address').addEventListener('click',()=>{
+    ++generation;selected=null;response=null;pending=false;error('');render();$('#mhk-query').focus();
+  });
 
   $('#mhk-more').addEventListener('click', async () => {
     if (!response?.meta.nextCursor || pending) return;
@@ -178,7 +204,7 @@
   $('#mhk-address-form').addEventListener('submit', async e => {
     e.preventDefault();
     const token = ++generation;
-    selected = null; response = null; population = null; pending = true; error(''); render();
+    selected = null; response = null; pending = true; error(''); render();
     $('#mhk-candidates').replaceChildren();
     try {
       const result = await api('/api/v1/addresses/search?' + new URLSearchParams({q: $('#mhk-query').value, limit: '5'}));
@@ -186,7 +212,7 @@
       if (!result.data.items.length) error(state.lang === 'en' ? 'No source address matched. Try a building name or street number.' : '找不到符合地址，請試用大廈名稱或街道門牌。');
       for (const item of result.data.items) {
         const button = document.createElement('button'); button.type = 'button'; button.textContent = label(item.address);
-        button.addEventListener('click', () => { selected = item; $('#mhk-candidates').replaceChildren(); loadNearby(); });
+        button.addEventListener('click', () => { selected = item; $('#mhk-candidates').replaceChildren(); loadPopulation(item.districtId);loadNearby(); });
         $('#mhk-candidates').append(button);
       }
     } catch (e) { if (token === generation) error(e.message); }
@@ -214,7 +240,14 @@
       const item = document.createElement('article');
       const name = document.createElement('h2'); name.textContent = `${(source.title ? (state.lang === 'en' ? source.title : source.titleZhHant || source.title) : MhkI18n.t('source_' + source.sourceId).startsWith('source_') ? (source.attribution || source.sourceId) : MhkI18n.t('source_' + source.sourceId))} · ${MhkI18n.t(source.providerType === 'independent' ? 'independent' : 'government')}`;
       const status = document.createElement('p'); status.textContent = MhkI18n.t(source.statusUrl || source.observationStatusUrl || source.availability === 'checked_on_query' ? 'viewSpecificStatus' : source.refreshHealth?.state === 'degraded' ? 'refreshDegraded' : source.sourceId==='enigma' ? 'archiveQueryable' : !source.lastSuccess ? 'noSuccessfulRead' : source.stale ? 'noRecentCheck' : 'recentCheck') + (source.recordCount ? ` · ${source.recordCount.toLocaleString()} ${MhkI18n.t('records')}` : '');
-      const detail = document.createElement('p'); detail.className = 'mhk-small'; detail.textContent = `${MhkI18n.t('lastSuccess')}: ${source.lastSuccess ? MhkI18n.date(source.lastSuccess) : MhkI18n.t('notChecked')} · ${MhkI18n.t('lastError')}: ${source.lastError || MhkI18n.t('none')}`;
+      const detail = document.createElement('p'); detail.className = 'mhk-small';
+      const attempt=[source.lastSuccess, source.lastFailure].filter(Boolean).sort().at(-1);
+      detail.textContent = [
+        MhkI18n.t('lastAttempt')+' · '+MhkI18n.date(attempt),
+        MhkI18n.t('lastSuccess')+' · '+MhkI18n.date(source.lastSuccess),
+        source.refreshHealth?.nextDueAt?MhkI18n.t('nextExpectedCheck')+' · '+MhkI18n.date(source.refreshHealth.nextDueAt):'',
+        source.lastError?MhkI18n.t('lastError')+' · '+source.lastError:'',
+      ].filter(Boolean).join(' · ');
       const link = document.createElement('a'); link.href = source.sourceUrl; link.textContent = MhkI18n.t(source.providerType === 'independent' ? 'providerData' : 'officialDataset'); link.rel = 'noreferrer';
       item.append(name, status);
       if (!source.statusUrl && !source.observationStatusUrl && source.availability !== 'checked_on_query') item.append(detail);

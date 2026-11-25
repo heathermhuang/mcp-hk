@@ -34,3 +34,19 @@ test('shared page checkpoints retain independent versions and exclude record con
  assert.deepEqual(readCheckpoint(raw,['archive','official']),checkpoint);
  for(const bad of ['{}','null',raw.replace('webb:person:1','different identity'),raw.replace('"number":2','"number":-1')])assert.equal(readCheckpoint(bad,['archive','official']),null);
 });
+
+test('disabled, held and stale sources keep accepted rows and offer no retry',async()=>{
+ const condition={kind:'disabled',url:'https://example.com/register'};
+ const feed=new RecordFeed([
+  {id:'archive',async read(){return {version:'v1',items:[item('archive')]};}},
+  {id:'disabled',async read(){return {condition};}},
+  {id:'held',async read(){throw Object.assign(Error('Source is held'),{code:'SOURCE_ACCESS_HOLD',status:503});}},
+  {id:'stale',async read(){throw Object.assign(Error('Source check expired'),{code:'STALE_SOURCE',status:503});}},
+ ]);
+ await feed.search({});
+ assert.equal(feedRows(feed.current).length,1);
+ assert.deepEqual(feed.current.states.disabled.condition,condition);
+ assert.equal(feed.current.states.disabled.error,null);
+ assert.equal(feed.hasRetry,false);
+ assert.equal(await feed.retry(),null);
+});

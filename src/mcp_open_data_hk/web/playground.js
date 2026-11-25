@@ -3,9 +3,10 @@ import {resultPath,contextPath,discoveryBackPath,InventoryPages} from './search-
 import {parseExact,isNumber,exactJson} from './playground-wire.js';
 import {fieldLabel} from './playground-labels.js';
 import {FAMILIES,validateRecipe,encodeRecipe,decodeRecipe,RequestFlow,fieldsOf,defaultColumns,assertFields,arrivalExpiry} from './playground-state.js';
-import {genericFamily,DomainSession,request,url,mcpExample} from './playground-adapters.js';
+import {genericFamily,defaultRecordSource,DomainSession,request,url,mcpExample} from './playground-adapters.js';
 import {evidencePackage,exportPolicy} from './playground-export.js';
 import {node,button,safeLink,cellText,drawChart,drawLocations} from './playground-views.js';
+import {SFC_REGISTER} from './record-sources.js';
 import {SourceHealth} from './source-health.js';
 import {mountTransport} from './transport-lookup.js';
 import {dateFacts,qualityText,weatherChoices} from './source-quality.js';
@@ -97,21 +98,29 @@ function domainControls(){
   const box=$('domain-controls'),f=draft.family,q=draft.query;box.replaceChildren();
   const valueLabel={addresses:'Address',restaurants:'Restaurant',company_registry:'Query',enigma:'Query',hkex_daily:'Stock',webb_sdi:'Stock',sfc_archive:'CE',platehk:'Plate',seehouse:'Building'}[f];
   if(valueLabel)labelInput(box,t(valueLabel),'value',q.value||'',{required:f!=='restaurants',max:f==='platehk'?16:200});
-  if(['company_registry','enigma','hkex_daily','webb_sdi','sfc_archive'].includes(f))labelInput(box,t('Source'),'source',q.source||(['enigma','webb_sdi'].includes(f)?'archive':f==='hkex_daily'?'official':'all'),{options:[['all',t('All')],['archive',t('Archive')],['official',t('Official')]],change:v=>{draft.query.source=v;delete draft.query.issuer;}});
+  if(f==='sfc_archive'){
+    const input=box.querySelector('input');
+    input.placeholder='AAB241';
+    box.append(node('p',MhkI18n.t('sfcExample'),'mhk-note'),safeLink(SFC_REGISTER,MhkI18n.t('sfcOfficial')));
+  }
+  if(['company_registry','enigma','hkex_daily','webb_sdi','sfc_archive'].includes(f))labelInput(box,t('Source'),'source',q.source||defaultRecordSource(f),{options:[['all',t('All')],['archive',t('Archive')],['official',t('Official')]],change:v=>{draft.query.source=v;delete draft.query.issuer;}});
   if(['restaurants','population'].includes(f))labelInput(box,t('District'),'district',q.district||'',{required:f==='population',options:[['',f==='population'?t('District'):t('All')],...(choiceData.districts||[]).map(d=>[d.id,d.name?.[locale()==='zh-Hant'?'zhHant':'en']||d.nameEn||d.id])]});
   if(f==='population')labelInput(box,t('Year'),'year',q.year||'',{type:'number',max:4});
   if(f==='restaurants')labelInput(box,t('LicenceType'),'licenceType',q.licenceType||'');
   if(f==='platehk'){
-    labelInput(box,t('Operation'),'operation',q.operation||'search',{options:[['search',t('SearchRecords')],['comparables',t('Comparables')]]});
+    labelInput(box,t('Operation'),'operation',q.operation||'search',{options:[['search',MhkI18n.t('plateHistory')],['comparables',MhkI18n.t('plateCompare')]],change:value=>{draft.query.operation=value;domainControls();box.querySelector('[name=operation]').focus();}});
+    if(q.operation==='comparables'){box.append(node('p',MhkI18n.t('plateCohortNote'),'mhk-note'));return;}
     labelInput(box,t('Dataset'),'dataset',q.dataset||'all',{options:['all','pvrm','tvrm_physical','tvrm_eauction','tvrm_legacy'].map(x=>[x,x==='all'?t('All'):x])});
     labelInput(box,t('SortMode'),'mode',q.mode||'exact',{options:[['exact',t('ExactMatch')],['exact_prefix',t('ExactPrefix')],['contains',t('Contains')]]});
   }
   if(f==='seehouse'){
-    labelInput(box,t('Quality'),'quality',q.quality||'current',{options:[['current',t('Current')],['all',t('AllListings')]]});
+    box.append(node('p',MhkI18n.t(q.quality==='all'?'propertyScopeAll':'propertyScopeRecent'),'mhk-note'));
+    if(q.buildingId)box.append(node('p',MhkI18n.t('propertyMatchEvidence'),'mhk-note'));
+    labelInput(box,t('Quality'),'quality',q.quality||'current',{options:[['current',MhkI18n.t('propertyRecentMode')],['all',MhkI18n.t('propertyAllMode')]],change:value=>{draft.query.quality=value;domainControls();box.querySelector('[name=quality]').focus();}});
     if(q.buildingId){box.append(node('p',q.buildingId));labelInput(box,t('Operation'),'operation',q.operation||'building',{options:[['building',t('Listings')],['history',t('History')]]});box.append(button(t('SearchRecords'),()=>{delete draft.query.buildingId;delete draft.query.operation;domainControls();dirty();}));}
   }
   if(f==='racing'){
-    labelInput(box,t('Meeting'),'meeting',q.meeting||'',{options:[['',t('Meeting')],...(choiceData.meetings||[]).map(m=>[m.meeting.id,[m.meeting?.date,m.meeting?.venue].filter(Boolean).join(' · ')])],change:v=>{draft.query.meeting=v;delete draft.query.race;delete draft.query.profileId;}});
+    labelInput(box,t('Meeting'),'meeting',q.meeting||'',{options:[['',t('Meeting')],...(choiceData.meetings||[]).map(m=>[m.meeting.id,[m.meeting?.date,({ST:locale()==='zh-Hant'?'沙田':'Sha Tin',HV:locale()==='zh-Hant'?'跑馬地':'Happy Valley'})[m.meeting?.venue]||m.meeting?.venue].filter(Boolean).join(' · ')])],change:v=>{draft.query.meeting=v;delete draft.query.race;delete draft.query.profileId;}});
     labelInput(box,t('ProfileKind'),'profileKind',q.profileKind||'horse',{options:[['horse',t('Horse')],['jockey',t('Jockey')],['trainer',t('Trainer')]]});
     labelInput(box,t('ProfileId'),'profileId',q.profileId||'');
     if(q.profileId)labelInput(box,t('Operation'),'operation',q.operation||'profile',{options:[['profile',t('Details')],['history',t('History')]]});
@@ -248,11 +257,28 @@ function renderResult(){
   if(!result)return;clearTimeout(expiryTimer);$('output').hidden=false;$('table').replaceChildren();$('provenance').replaceChildren();$('source-export').replaceChildren();$('dates').replaceChildren();$('warnings').replaceChildren();$('code').textContent='';$('table').scrollLeft=0;$('table').scrollTop=0;
   const p=result.presentation,table=node('table'),head=node('thead'),tr=node('tr');table.append(node('caption',t('Scope')));
   const first=node('th',t('Details'));first.scope='col';tr.append(first);for(const name of p.columns){const th=node('th',fieldLabel(name,locale()));th.title=name;th.scope='col';tr.append(th);}head.append(tr);table.append(head);const body=node('tbody');
-  p.rows.forEach((cells,i)=>{const row=node('tr'),detail=node('td'),action=result.actions?.[i];const detailButton=button(action?.kind==='issuer'?t('Issuer'):action?.kind==='building'?t('Building'):action?.kind==='race'?t('Race'):t('Details'),()=>openRow(i));detailButton.setAttribute('aria-label',t('Details')+' · '+(i+1)+' · '+cells.map(c=>cellText(c,locale())).filter(c=>c&&c!=='…').slice(0,2).join(' · '));detail.append(detailButton);row.append(detail);cells.forEach((cell,i)=>{const td=node('td',cellText(cell,locale(),p.columns[i]==='dtstart'&&result.envelopes[0]?.schema?.scope==='calendar_events'));if(cell.kind==='json')td.title=t('Details');row.append(td);});body.append(row);});table.append(body);$('table').append(table);
+  p.rows.forEach((cells,i)=>{const row=node('tr'),detail=node('td'),action=result.actions?.[i];const detailButton=button(action?.kind==='issuer'?t('Issuer'):action?.kind==='building'?t('Building'):action?.kind==='race'?t('Race'):t('Details'),()=>openRow(i));detailButton.setAttribute('aria-label',t('Details')+' · '+(i+1)+' · '+cells.map(c=>cellText(c,locale())).filter(c=>c&&c!=='…').slice(0,2).join(' · '));detail.append(detailButton);row.append(detail);cells.forEach((cell,i)=>{const column=p.columns[i];
+      const raw=cellText(cell,locale(),column==='dtstart'&&result.envelopes[0]?.schema?.scope==='calendar_events');
+      let display=raw;
+      if(applied.family==='platehk')display=MhkI18n.plateCell(column,['null','missing'].includes(cell.kind)?null:raw)??raw;
+      if(applied.family==='seehouse'&&applied.query.operation==='history'){
+        if(column==='observedAt')display=MhkI18n.date(raw);
+        if(['oldPriceHkd','newPriceHkd'].includes(column)&&['integer','float'].includes(cell.kind))
+          display=new Intl.NumberFormat(locale(),{style:'currency',currency:'HKD',maximumFractionDigits:0}).format(Number(raw));
+      }
+      const td=node('td',display);if(cell.kind==='json')td.title=t('Details');row.append(td);});body.append(row);});table.append(body);$('table').append(table);
   const sources=[...new Set(result.envelopes.flatMap(envelope=>(envelope.provenance||[]).map(source=>source.attribution||source.sourceId)).filter(Boolean))];
   resultSources.textContent=sources.length?t('PageSource',{sources:sources.join(' · ')}):t('PageSourceMissing');
   $('count').textContent=t('Records',{n:result.rows.length});$('scope').textContent=(result.total==null?t('Unknown'):t('Total',{n:result.total}))+' · '+t('Scope');
-  message(result.errors?.length?t(result.rows.length?'Partial':'Failed'):!result.rows.length?t('Empty'):'');$('recovery').replaceChildren();if(result.errors?.length){for(const e of result.errors)$('recovery').append(node('p',e.source+' · '+e.message));$('recovery').append(button(t('Retry'),()=>apply({retry:true})));}
+  const sourceUnavailable=result.notices?.length&&!result.rows.length;
+  message(result.errors?.length?t(result.rows.length?'Partial':'Failed'):sourceUnavailable?'':!result.rows.length?t('Empty'):'');
+  $('recovery').replaceChildren();
+  for(const notice of result.notices||[]){
+    const row=node('p',notice.source+' · '+notice.message);
+    if(notice.url)row.append(document.createTextNode(' · '),safeLink(notice.url,MhkI18n.t('originalSource')));
+    $('recovery').append(row);
+  }
+  if(result.canRetry)$('recovery').append(button(t('Retry'),()=>apply({retry:true})));
   for(const envelope of result.envelopes){
     const qualified=qualityText(envelope,locale());if(qualified)$('warnings').append(node('p',qualified));
     for(const [label,value]of dateFacts(envelope).filter(([label])=>['Observed','Retrieved','Checked','ReferencePeriod'].includes(label)))$('dates').append(node('p',t(label)+': '+(['Observed','Retrieved','Checked'].includes(label)?MhkI18n.date(value):value)));
@@ -271,6 +297,10 @@ function renderResult(){
       else expiryTimer=setTimeout(()=>{result.expired=true;exportFlow.cancel();detailFlow.cancel();$('detail').hidden=true;$('detail-content').replaceChildren();$('table').replaceChildren(node('p',t('Expired')));$('plot').replaceChildren();$('map').replaceChildren();message(t('Expired'));renderButtons();$('recovery').replaceChildren(button(t('Refresh'),()=>apply({refresh:true})));},expiry-Date.now()+1);
     }
     if(envelope.schema?.scope==='document_pages')$('provenance').prepend(node('p',t('Document')));
+  }
+  if(applied.family==='seehouse'&&applied.query.operation==='history'){
+    $('provenance').append(node('p',MhkI18n.t('propertyAskingHistory'),'mhk-note'));
+    for(const row of result.rows)if(row.sourceListingId)$('provenance').append(node('p',row.source+' · '+row.sourceListingId));
   }
   if(applied.resource)$('code').textContent+='MCP: hk_resource_query('+JSON.stringify({resourceId:applied.resource,...result.envelopes[0].request?.body},null,2)+')';
   if(result.exportUrl){const a=node('a',t(result.exportKind==='profile'?'DownloadProfile':'DownloadRace'),'mhk-button mhk-secondary');a.href=result.exportUrl;a.download='racing-results.zip';$('source-export').append(a,node('p',t(result.exportKind==='profile'?'DownloadProfileScope':'DownloadRaceScope'),'mhk-note'));}
