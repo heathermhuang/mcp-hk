@@ -19,7 +19,7 @@
     document.documentElement.lang = lang === 'en' ? 'en' : 'zh-Hant';
     document.querySelectorAll('.mhk-navbutton').forEach(link => {
       const path = new URL(link.getAttribute('href'), location.href).pathname;
-      if (path === location.pathname || (path === '/guides' && location.pathname.startsWith('/guides/')) || (path === '/datasets' && ['/coverage','/racing','/data','/plates','/properties','/companies','/sfc','/hkex','/demo'].includes(location.pathname))) link.setAttribute('aria-current', 'page');
+      if (path === location.pathname || (path === '/guides' && location.pathname.startsWith('/guides/')) || (path === '/datasets' && ['/racing','/plates','/properties','/companies','/sfc','/hkex','/demo'].includes(location.pathname))) link.setAttribute('aria-current', 'page');
       else link.removeAttribute('aria-current');
     });
     document.querySelectorAll('[data-i18n]').forEach(e => { e.textContent = t(e.dataset.i18n); });
