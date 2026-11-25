@@ -9,7 +9,24 @@ export function contextPath(path,state,locale){
   if(typeof path!=='string'||!/^\/(?!\/)/.test(path))throw Error('INVALID_ACTION');
   const u=new URL(path,'https://mcp.hk');if(u.origin!=='https://mcp.hk')throw Error('INVALID_ACTION');
   for(const [key,value]of Object.entries({discoveryQ:state.q||'',discoveryAccess:state.access||'all',discoveryProvider:state.provider||'all',discoveryOffset:state.offset||0,lang:locale}))u.searchParams.set(key,value);
+  if(['/','/coverage'].includes(state.from))u.searchParams.set('discoveryFrom',state.from);
+  if(state.browseAll)u.searchParams.set('discoveryBrowse','all');
   return u.pathname+u.search+u.hash;
+}
+export function discoveryBackPath(source,locale){
+  const params=new URL(source).searchParams,path=params.get('discoveryFrom');
+  if(!['/','/coverage'].includes(path))return null;
+  const back=new URL(path,'https://mcp.hk');
+  setSearchState(back,{
+    q:(params.get('discoveryQ')||'').slice(0,200),
+    access:params.get('discoveryAccess')||'all',
+    provider:params.get('discoveryProvider')||'all',
+    offset:Math.max(0,Math.min(100000,Math.trunc(Number(params.get('discoveryOffset')))||0)),
+  });
+  if(path==='/'&&params.get('discoveryBrowse')==='all')back.searchParams.set('browse','all');
+  back.searchParams.set('lang',locale);
+  back.hash=path==='/'?'directory-catalogue':'search-step';
+  return back.pathname+back.search+back.hash;
 }
 export function setSearchState(url,state){
   for(const [key,value]of Object.entries(state)){
@@ -28,7 +45,7 @@ export class InventoryPages{
 
 export function preserveDiscoveryContext(target,source){
   const from=new URL(source);
-  for(const key of ['discoveryQ','discoveryAccess','discoveryProvider','discoveryOffset']){
+  for(const key of ['discoveryQ','discoveryAccess','discoveryProvider','discoveryOffset','discoveryFrom','discoveryBrowse']){
     const value=from.searchParams.get(key);if(value!=null&&value.length<=200)target.searchParams.set(key,value);
   }
   return target;

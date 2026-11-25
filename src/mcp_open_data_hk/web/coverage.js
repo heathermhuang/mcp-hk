@@ -56,14 +56,14 @@ import {weatherChoices,dateFacts,qualityText} from './source-quality.js';
       const row = node('article', ''), heading=node('h3','');row.className='catalogue-result';
       const connected=d.entryKind==='connected_service';
       const button=node('a',title(d));
-      if(connected){const a=internalLink(resultPath(d,{q:submittedQuery,access,provider,offset:searchOffset},MhkI18n.locale),title(d));button.href=a.href;}
+      if(connected){const a=internalLink(resultPath(d,{q:submittedQuery,access,provider,offset:searchOffset,from:'/coverage'},MhkI18n.locale),title(d));button.href=a.href;}
       else {button.href='/coverage?'+new URLSearchParams({q:submittedQuery,access,provider,dataset:d.id,offset:searchOffset,lang:MhkI18n.locale});button.setAttribute('aria-pressed',String(datasetId===d.id));button.addEventListener('click',event=>{if(event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;event.preventDefault();resetDataset();datasetId=d.id;datasetTitle=title(d);$('resource-step').hidden=false;syncUrl();resources().then(()=>focusSection('resource-heading'));renderDatasets();renderFocus();});}
       heading.append(button);row.append(heading);
       const description=MhkI18n.lang==='zh'?d.descriptionZhHant||d.description:d.description;if(description)row.append(node('p',String(description).replace(/<[^>]*>/g,' ').slice(0,280)));
       const states=d.resourceSummary?.byStatus||{};
       const capability=connected?'connectedQuery':states.queryable?'previewChecked':states.needs_selection||states.stale?'sourceSettingsNeeded':states.document?'documentPreview':'sourceFiles';
       const badge=node('span',t(capability));badge.className='data-capability';row.append(badge,node('p',`${d.provider} · ${t(d.providerType)} · ${d.catalogue}`));
-      if(connected){const a=internalLink(resultPath(d,{q:submittedQuery,access,provider,offset:searchOffset},MhkI18n.locale),MhkI18n.lang==='zh'?d.action.labelZhHant:d.action.label);a.className='mhk-button mhk-secondary';row.append(a);}
+      if(connected){const a=internalLink(resultPath(d,{q:submittedQuery,access,provider,offset:searchOffset,from:'/coverage'},MhkI18n.locale),MhkI18n.lang==='zh'?d.action.labelZhHant:d.action.label);a.className='mhk-button mhk-secondary';row.append(a);}
       else row.append(node('p',t('sourceCount',{total:d.resourceSummary?.total??'—'})));
       row.append(link(d.sourceUrl,t('originalSource')));$('datasets').append(row);
     }
@@ -90,9 +90,9 @@ import {weatherChoices,dateFacts,qualityText} from './source-quality.js';
     if (!datasetId && !directoryMode) { $('resources').textContent = resourceError ? failure(resourceError) : t('searchFirst'); return; }
     $('resources').replaceChildren();$('dataset-context').textContent=datasetTitle;
     if (!resourceList) { $('resources').textContent = resourceError ? failure(resourceError) : t('loadingResources'); return; }
-    if(resourceList.connected){const d=resourceList.connected;$('resources').append(node('p',t('connectedAccessHint')),internalLink(resultPath(d,{q:submittedQuery,access,provider,offset:searchOffset},MhkI18n.locale),MhkI18n.lang==='zh'?d.action.labelZhHant:d.action.label));return;}
+    if(resourceList.connected){const d=resourceList.connected;$('resources').append(node('p',t('connectedAccessHint')),internalLink(resultPath(d,{q:submittedQuery,access,provider,offset:searchOffset,from:'/coverage'},MhkI18n.locale),MhkI18n.lang==='zh'?d.action.labelZhHant:d.action.label));return;}
     $('resources').append(node('p', t('pageRange',{start:resourceList.items.length?resourceOffset+1:0,end:resourceOffset+resourceList.items.length,total:resourceList.total})));
-    for(const choice of weatherChoices(datasetId,MhkI18n.locale))$('resources').append(internalLink(contextPath(choice.href,{q:submittedQuery,access,provider,offset:searchOffset},MhkI18n.locale),choice.label+' →'),document.createElement('br'));
+    for(const choice of weatherChoices(datasetId,MhkI18n.locale))$('resources').append(internalLink(contextPath(choice.href,{q:submittedQuery,access,provider,offset:searchOffset,from:'/coverage'},MhkI18n.locale),choice.label+' →'),document.createElement('br'));
     if(datasetId==='csdi:hko_rcd_1634806665997_63899')$('resources').append(internalLink('/coverage?access=sources&dataset=hk-hko-rss-current-weather-report&resource=770e68f0676dcbf8e65e2b4e1c6f6e60',t('weatherAlternative')));
     const recommended=resourceList.items.find(r=>r.id==='770e68f0676dcbf8e65e2b4e1c6f6e60')||resourceList.items.find(r=>['JSON','CSV','GEOJSON','RSS','XML'].includes(r.format)&&r.validation?.status==='queryable'&&!r.transport?.requiredParameters?.length);
     const other=node('details','');other.append(node('summary',t('otherFormats')));

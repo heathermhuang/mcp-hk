@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {resultPath,contextPath,preserveDiscoveryContext,setSearchState,InventoryPages} from '../../src/mcp_open_data_hk/web/search-journey.js';
+import {resultPath,contextPath,discoveryBackPath,preserveDiscoveryContext,setSearchState,InventoryPages} from '../../src/mcp_open_data_hk/web/search-journey.js';
 import {assertResource,selectionAction} from '../../src/mcp_open_data_hk/web/source-actions.js';
 test('literal all and Unicode remain search intent, defaults apply only to filters',()=>{
   for(const q of ['all','天氣',' school  data ','']){
@@ -49,4 +49,13 @@ test('reject mismatched identities, unexpected actions, selectors and bounds',()
     const [g,o]=choice(field,value);assert.throws(()=>selectionAction(g,o,resource,'dataset'));
   }
   const [g,o]=choice('layer',0);assert.equal(selectionAction(g,o,resource,'dataset').selectors.layer,0);
+});
+
+test('record links retain search state and return to the origin within the site',()=>{
+  const state={q:'天氣',access:'sources',provider:'government',offset:10,from:'/'};
+  const record=new URL(contextPath('/playground#p=encoded',state,'zh-Hant'),'https://mcp.hk');
+  const back=new URL(discoveryBackPath(record,'zh-Hant'),'https://mcp.hk');
+  assert.deepEqual(Object.fromEntries(back.searchParams),{q:'天氣',access:'sources',provider:'government',offset:'10',lang:'zh-Hant'});
+  assert.equal(back.pathname,'/');assert.equal(back.hash,'#directory-catalogue');
+  record.searchParams.set('discoveryFrom','//elsewhere.test');assert.equal(discoveryBackPath(record,'en'),null);
 });
