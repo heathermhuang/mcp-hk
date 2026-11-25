@@ -9,9 +9,9 @@ export function healthSummary(family,payload,locale='en'){
   const data=payload?.data||payload||{},facts=[],warnings=[],links=[];
   if(family==='hkex_daily'){
     links.push([pick('HKEX daily summary publisher','港交所每日摘要來源'),'https://di.hkex.com.hk/di/summary/NSMSumMenu.htm']);
-    warnings.push(pick('Full official filings remain held. Retained daily summaries and the Webb archive are separate views.','完整官方申報仍暫停提供。已保留嘅每日摘要同 Webb 檔案係獨立檢視。'));
     facts.push([pick('Latest accepted summary','最新已接納摘要'),data.coverage?.latestSummaryDate||unknown],[pick('Last successful source read','上次成功讀取來源'),data.updater?.lastSuccessfulRead||unknown],[pick('Last status check','上次狀態檢查'),data.updater?.lastChecked||unknown]);
     if(data.updater?.holdCode||data.updater?.lastRun?.state==='failed')warnings.push(pick('Source updates are on hold or failed. Retained summaries remain available; newer filings may be missing.','來源更新暫停或失敗。保留的摘要仍可查閱，但可能缺少較新的披露。'));
+    warnings.push(pick('Full official filings remain held. Retained daily summaries and the Webb archive are separate views.','完整官方申報仍暫停提供。已保留嘅每日摘要同 Webb 檔案係獨立檢視。'));
     warnings.push(pick('Published summaries and the historical Webb archive have separate dates and coverage. These records do not establish current holdings.','已發布摘要與 Webb 歷史檔案的日期及涵蓋範圍不同；這些紀錄並非目前持股核實。'));
   }else if(family==='company_registry'){
     const c=data.coverage||{},q=data.maintenance?.addressQueue,capacity=q?.capacity;
