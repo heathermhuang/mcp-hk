@@ -1,6 +1,6 @@
 /* Small explicit family registry over existing read-only services. */
 import {fetchPublicJson} from './http.js';
-import {RecordFeed,feedRows,recordSourceNotice} from './record-feed.js';
+import {RecordFeed,feedRows} from './record-feed.js';
 import {recordSources} from './record-sources.js';
 import {parseExact,wirePresentation,exactJson} from './playground-wire.js';
 export const defaultRecordSource = family => ({
@@ -107,9 +107,9 @@ export class DomainSession {
     }
     const columns=['source',...new Set(rows.flatMap(Object.keys).filter(k=>!['source','version'].includes(k)))].slice(0,8);
     const out={rows,items,presentation:wirePresentation(exact,columns),envelopes,total:null,next:this.feed.hasNext,errors:Object.entries(page.states).filter(([,s])=>s.error).map(([source,s])=>({source,message:s.error})),canRetry:this.feed.hasRetry,notices:Object.entries(page.states).flatMap(([id,s])=>{
-      const message=recordSourceNotice(s,key=>MhkI18n.t(key));
+      if(!s.condition&&!s.error)return [];
       const source=this.feed.sources.find(entry=>entry.id===id);
-      return message?[{source:source?.label||id,message,url:s.condition?.url||source?.url}]:[];
+      return [{source:source?.label||id,state:s,url:s.condition?.url||source?.url}];
     }),actions:items.map(item=>({kind:item.issuerChoice?'issuer':'entity',item})),version:null};this.current=out;return out;
   }
   previous(){if(!this.feed||this.feed.index<1)return null;this.feed.previous();return this.feedResult();}

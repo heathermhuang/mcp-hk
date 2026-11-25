@@ -28,7 +28,9 @@ function show() {
     $('property-building-name').textContent = d.name || d.id;
     const listings=d.listings.filter(l=>$('property-mode').value==='all'||!$('property-mode').value||l.mode===$('property-mode').value);
     $('property-building-state').textContent=t('propertyFiltered',{count:listings.length,total:d.listings.length})+' · '+t('propertyQualifiedSummary',{qualified:d.listingQuality.currentQualifiedCount,total:d.listingQuality.providerReturnedCount});
-    $('property-records').append(node('p',t(d.listingQuality.selection==='all'?'propertyScopeAll':'propertyScopeRecent')),node('p',t('propertyMatchEvidence'),'mhk-note'));
+    const scope=$('property-active-scope'),evidence=$('property-match-evidence');
+    if(scope)scope.textContent=t(d.listingQuality.selection==='all'?'propertyScopeAll':'propertyScopeRecent');
+    if(evidence)evidence.textContent=t('propertyMatchEvidence');
     for (const listing of listings) {
       const row = node('article', ''); row.className = 'mhk-pack';
       row.append(node('h3', listing.title || listing.id));
@@ -44,6 +46,7 @@ function show() {
     if (!listings.length) $('property-records').append(node('p', t(d.listings.length?'propertyNoMode':d.listingQuality.selection === 'current' ? 'propertyNoQualified' : 'propertyEmpty')));
   } else if (kind === 'price-history') {
     $('property-building-name').textContent = t('propertyHistory');
+    for(const id of ['property-active-scope','property-match-evidence']){const node=$(id);if(node)node.textContent='';}
     const selected=candidates.find(candidate=>candidate.id===d.buildingId);
     $('property-building-state').textContent = selected?.name || t('propertyAskingHistory');
     if(selected)$('property-records').append(node('p',t('propertyAskingHistory'),'mhk-note'));

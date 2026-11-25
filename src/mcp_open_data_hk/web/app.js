@@ -45,9 +45,14 @@
       api('/api/v1/districts').then(result=>{districtOptions=result.items;render();}).catch(()=>{districtOptions=[];render();});
     }
     const districtPicker=$('#mhk-district');
-    districtPicker.replaceChildren(new Option(MhkI18n.t('chooseDistrict'),''));
-    for(const district of districtOptions||[])districtPicker.append(new Option(label(district.name),district.id));
-    districtPicker.value=districtId;districtPicker.disabled=!districtOptions?.length;
+    if(districtPicker){
+      const first=document.createElement('option');first.textContent=MhkI18n.t('chooseDistrict');first.value='';
+      districtPicker.replaceChildren();districtPicker.append(first);
+      for(const district of districtOptions||[]){
+        const option=document.createElement('option');option.textContent=label(district.name);option.value=district.id;districtPicker.append(option);
+      }
+      districtPicker.value=districtId;districtPicker.disabled=!districtOptions?.length;
+    }
     const list = $('.mhk-results'); list.replaceChildren();
     for (const [i, record] of (response?.data.items || []).entries()) {
       const row = document.createElement('div'); row.className = 'mhk-result';
@@ -74,12 +79,12 @@
     $('.mhk-pop-value').textContent = population ? population.data.population.toLocaleString(state.lang === 'en' ? 'en-HK' : 'zh-HK') + ' ' + MhkI18n.t('populationUnitText') : '—';
     $('[data-dynamic=year]').textContent = population?.data.referencePeriod || '—';
     const districtFacts=$('#mhk-district-facts');
-    districtFacts.replaceChildren();
-    if(population){
+    districtFacts?.replaceChildren();
+    if(population&&districtFacts){
       districtFacts.append(document.createTextNode(`${label(population.data.name)} · ${population.data.areaKm2} km² · ${population.data.populationDensity.toLocaleString()} ${MhkI18n.t('personsKm')}`));
       const source=population.provenance?.[0];
       if(source?.sourceUrl){const link=document.createElement('a');link.href=source.sourceUrl;link.textContent=source.attribution||MhkI18n.t('originalSource');link.rel='noreferrer';districtFacts.append(document.createTextNode(' · '),link);}
-    }else if(populationError)districtFacts.textContent=MhkI18n.t('districtUnavailable');
+    }else if(populationError&&districtFacts)districtFacts.textContent=MhkI18n.t('districtUnavailable');
     root.querySelectorAll('[data-code]').forEach(e => e.setAttribute('aria-pressed', String(e.dataset.code === state.code)));
     let code = `GET ${location.origin}/api/v1/restaurants?${requestQuery || 'lat=…&lon=…&includeSummary=true'}`;
     if (state.code === 'mcp') code = JSON.stringify({tool: 'hk_restaurant_search', arguments: selected ? {lat: selected.latitude, lon: selected.longitude, radiusM: state.radius, includeSummary: true, lang: state.lang === 'en' ? 'en' : 'zh-Hant'} : {}}, null, 2);
@@ -186,8 +191,8 @@
     finally{if(token===districtGeneration)render();}
   }
 
-  $('#mhk-district').addEventListener('change',event=>loadPopulation(event.target.value));
-  $('#mhk-change-address').addEventListener('click',()=>{
+  $('#mhk-district')?.addEventListener('change',event=>loadPopulation(event.target.value));
+  $('#mhk-change-address')?.addEventListener('click',()=>{
     ++generation;selected=null;response=null;pending=false;error('');render();$('#mhk-query').focus();
   });
 

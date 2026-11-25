@@ -6,6 +6,7 @@ import {FAMILIES,validateRecipe,encodeRecipe,decodeRecipe,RequestFlow,fieldsOf,d
 import {genericFamily,defaultRecordSource,DomainSession,request,url,mcpExample} from './playground-adapters.js';
 import {evidencePackage,exportPolicy} from './playground-export.js';
 import {node,button,safeLink,cellText,drawChart,drawLocations} from './playground-views.js';
+import {recordSourceNotice} from './record-feed.js';
 import {SFC_REGISTER} from './record-sources.js';
 import {SourceHealth} from './source-health.js';
 import {mountTransport} from './transport-lookup.js';
@@ -274,7 +275,7 @@ function renderResult(){
   message(result.errors?.length?t(result.rows.length?'Partial':'Failed'):sourceUnavailable?'':!result.rows.length?t('Empty'):'');
   $('recovery').replaceChildren();
   for(const notice of result.notices||[]){
-    const row=node('p',notice.source+' · '+notice.message);
+    const row=node('p',notice.source+' · '+recordSourceNotice(notice.state,MhkI18n.t));
     if(notice.url)row.append(document.createTextNode(' · '),safeLink(notice.url,MhkI18n.t('originalSource')));
     $('recovery').append(row);
   }
