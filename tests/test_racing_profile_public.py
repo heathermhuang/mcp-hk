@@ -4,6 +4,8 @@ import hashlib
 import io
 import json
 import zipfile
+from datetime import datetime, timezone
+from unittest.mock import Mock
 
 import httpx
 import pytest
@@ -23,6 +25,13 @@ from mcp_open_data_hk.operations import checkpoint, restore
 from mcp_open_data_hk.racing_store import RacingStore
 
 service = base_service
+
+
+@pytest.fixture(autouse=True)
+def policy_clock(monkeypatch):
+    clock = Mock(wraps=datetime)
+    clock.now.return_value = datetime(2026, 10, 27, tzinfo=timezone.utc)
+    monkeypatch.setattr("mcp_open_data_hk.curated.racing.policy.datetime", clock)
 
 
 def policy():
