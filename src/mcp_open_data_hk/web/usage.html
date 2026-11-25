@@ -66,15 +66,16 @@
             <div><dt data-i18n="usageFailed">Errors or rate limits</dt><dd id="usage-outcome-failed">—</dd></div>
             <div><dt data-i18n="usageUnconfirmed">Uninspected or interrupted</dt><dd id="usage-outcome-unconfirmed">—</dd></div>
           </dl>
+          <p id="usage-outcome-scope" class="mhk-note"></p>
           <h3 data-i18n="usageTop">Most-called tools</h3>
           <ol class="usage-ranking" id="usage-ranking" aria-label="Most-called tools" data-i18n-aria-label="usageTop"></ol>
           <p id="usage-no-tools" hidden data-i18n="usageNoTools">No tool reached five calls in this period.</p>
         </section>
       </div>
     </div>
+    <p class="mhk-note" data-i18n="usageMethodCalls"></p>
     <details class="mhk-disclosure usage-method">
       <summary data-i18n="usageMethods">How these counts work</summary>
-      <p data-i18n="usageMethodCalls">Tool calls count recognized MCP requests under tools/call. All MCP requests also include pings, setup and unclassified operations. These counts include test traffic and cannot measure unique users.</p>
       <p data-i18n="usageMethodPrivacy">Only aggregate counts are public. Tool rankings use completed days and show tools called at least five times. Caller information and query contents are excluded.</p>
       <p data-i18n="usageMethodFreshness">The page checks for updates every 30 seconds while visible. Counts reflect recorded outcomes, including empty results marked OK.</p>
     </details>

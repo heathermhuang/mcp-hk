@@ -3,6 +3,9 @@ import {fetchPublicJson} from './http.js';
 import {RecordFeed,feedRows} from './record-feed.js';
 import {recordSources} from './record-sources.js';
 import {parseExact,wirePresentation,exactJson} from './playground-wire.js';
+export const defaultRecordSource = family => ({
+  company_registry:'official',enigma:'archive',hkex_daily:'official',webb_sdi:'archive',sfc_archive:'archive',
+})[family]||'all';
 export const genericFamily = family => ['catalogue','transport'].includes(family);
 export const url = (base,args={}) => base+'?'+new URLSearchParams(Object.entries(args).filter(([,v])=>v!=null&&v!==''));
 export async function request(base,args,signal,body){
@@ -41,7 +44,7 @@ export class DomainSession {
     if(['company_registry','enigma','hkex_daily','webb_sdi','sfc_archive'].includes(f)){
       const group=['company_registry','enigma'].includes(f)?'companies':f==='sfc_archive'?'sfc':'hkex';
       let sources=this.sources[group];
-      const choose=q.source|| (f==='enigma'?'archive':f==='hkex_daily'?'official':f==='webb_sdi'?'archive':'all');
+      const choose=q.source||defaultRecordSource(f);
       sources=sources.filter(s=>choose==='all'||choose==='archive'&&/archive/.test(s.id)||choose==='official'&&!/archive/.test(s.id));
       if(!next&&!retry){this.feed?.cancel();this.feed=new RecordFeed(sources);await this.feed.search({value:group==='hkex'?q.value.padStart(5,'0'):group==='sfc'?q.value.toUpperCase():q.value,issuer:q.issuer});}
       else if(retry)await this.feed.retry();else await this.feed.next();
@@ -69,6 +72,7 @@ export class DomainSession {
       const operation=q.operation==='history'?'price-history':q.buildingId?'building':'search';
       p=await request('/api/v1/properties/'+operation,{...(q.buildingId?{buildingId:q.buildingId}:{q:q.value,limit:10}),...(operation==='building'?{quality:q.quality||'current'}:{}),lang},signal);
       rows=operation==='search'?p.data.candidates:operation==='building'?p.data.listings:p.data.events;
+      if(operation==='history')options.columns=['observedAt','source','mode','oldPriceHkd','newPriceHkd'];
       actions=rows.map(r=>operation==='search'?{kind:'building',id:r.id}:null);
     }else if(f==='racing'){
       const meeting=this.meetings?.find(m=>m.meeting.id===q.meeting);
@@ -102,7 +106,11 @@ export class DomainSession {
       rows.push({source:item.source,version:item.version,...item.raw});exact.push({source:item.source,version:item.version,...tree});
     }
     const columns=['source',...new Set(rows.flatMap(Object.keys).filter(k=>!['source','version'].includes(k)))].slice(0,8);
-    const out={rows,items,presentation:wirePresentation(exact,columns),envelopes,total:null,next:this.feed.hasNext,errors:Object.entries(page.states).filter(([,s])=>s.error).map(([source,s])=>({source,message:s.error})),actions:items.map(item=>({kind:item.issuerChoice?'issuer':'entity',item})),version:null};this.current=out;return out;
+    const out={rows,items,presentation:wirePresentation(exact,columns),envelopes,total:null,next:this.feed.hasNext,errors:Object.entries(page.states).filter(([,s])=>s.error).map(([source,s])=>({source,message:s.error})),canRetry:this.feed.hasRetry,notices:Object.entries(page.states).flatMap(([id,s])=>{
+      if(!s.condition&&!s.error)return [];
+      const source=this.feed.sources.find(entry=>entry.id===id);
+      return [{source:source?.label||id,state:s,url:s.condition?.url||source?.url}];
+    }),actions:items.map(item=>({kind:item.issuerChoice?'issuer':'entity',item})),version:null};this.current=out;return out;
   }
   previous(){if(!this.feed||this.feed.index<1)return null;this.feed.previous();return this.feedResult();}
   async detail(action,signal){

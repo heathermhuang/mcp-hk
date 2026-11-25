@@ -10,7 +10,7 @@ export async function fetchPublicJson(path, body, {signal,attempts=3,capture} = 
       await new Promise((resolve,reject) => {const timer=setTimeout(resolve,seconds*1000);signal?.addEventListener('abort',()=>{clearTimeout(timer);reject(new DOMException('Aborted','AbortError'));},{once:true});});
       continue;
     }
-    if (!response.ok) { const error=new Error(`${payload.error?.code || response.status}: ${payload.error?.message || 'Source unavailable'}`); error.code=payload.error?.code; error.retryAfter=Math.max(0,Number(response.headers.get('retry-after'))||0); throw error; }
+    if (!response.ok) { const error=new Error(`${payload.error?.code || response.status}: ${payload.error?.message || 'Source unavailable'}`); error.code=payload.error?.code; error.status=response.status; error.retryAfter=Math.max(0,Number(response.headers.get('retry-after'))||0); throw error; }
     return payload;
   }
 }

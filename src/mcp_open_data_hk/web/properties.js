@@ -26,9 +26,11 @@ function show() {
   const d = result.data;
   if (kind === 'building') {
     $('property-building-name').textContent = d.name || d.id;
-    $('property-building-state').textContent = [t('propertyReturned', {count:d.listings.length}),d.listingState.message,d.stats.lastUpdated,t('propertyQualifiedSummary',{qualified:d.listingQuality.currentQualifiedCount,total:d.listingQuality.providerReturnedCount})].filter(Boolean).join(' · ');
     const listings=d.listings.filter(l=>$('property-mode').value==='all'||!$('property-mode').value||l.mode===$('property-mode').value);
     $('property-building-state').textContent=t('propertyFiltered',{count:listings.length,total:d.listings.length})+' · '+t('propertyQualifiedSummary',{qualified:d.listingQuality.currentQualifiedCount,total:d.listingQuality.providerReturnedCount});
+    const scope=$('property-active-scope'),evidence=$('property-match-evidence');
+    if(scope)scope.textContent=t(d.listingQuality.selection==='all'?'propertyScopeAll':'propertyScopeRecent');
+    if(evidence)evidence.textContent=t('propertyMatchEvidence');
     for (const listing of listings) {
       const row = node('article', ''); row.className = 'mhk-pack';
       row.append(node('h3', listing.title || listing.id));
@@ -44,8 +46,20 @@ function show() {
     if (!listings.length) $('property-records').append(node('p', t(d.listings.length?'propertyNoMode':d.listingQuality.selection === 'current' ? 'propertyNoQualified' : 'propertyEmpty')));
   } else if (kind === 'price-history') {
     $('property-building-name').textContent = t('propertyHistory');
-    $('property-building-state').textContent = `${d.buildingId} · ${d.generatedAt}`;
-    for (const event of d.events) $('property-records').append(node('p', `${event.observedAt} · ${event.source}:${event.sourceListingId} · ${event.mode === 'buy' ? t('propertyBuy') : event.mode === 'rent' ? t('propertyRent') : '—'} · HK$${event.oldPriceHkd ?? '—'} → HK$${event.newPriceHkd ?? '—'}`));
+    for(const id of ['property-active-scope','property-match-evidence']){const node=$(id);if(node)node.textContent='';}
+    const selected=candidates.find(candidate=>candidate.id===d.buildingId);
+    $('property-building-state').textContent = selected?.name || t('propertyAskingHistory');
+    if(selected)$('property-records').append(node('p',t('propertyAskingHistory'),'mhk-note'));
+    const money=new Intl.NumberFormat(MhkI18n.locale,{style:'currency',currency:'HKD',maximumFractionDigits:0});
+    const price=value=>value==null?'—':money.format(value);
+    for (const event of d.events) {
+      const row=node('article');
+      row.append(node('p', [MhkI18n.date(event.observedAt),event.source,
+        event.mode==='buy'?t('propertyBuy'):event.mode==='rent'?t('propertyRent'):'',
+        price(event.oldPriceHkd)+' → '+price(event.newPriceHkd)].filter(Boolean).join(' · ')));
+      const evidence=node('details');evidence.append(node('summary',t('originalSource')),node('p',event.sourceListingId));
+      row.append(evidence);$('property-records').append(row);
+    }
     if (!d.events.length) $('property-records').append(node('p', t('propertyEmpty')));
   }
   $('property-response').hidden = false;

@@ -1,14 +1,17 @@
 /* Public accepted-state metadata only. No collection, polling or all-family fan-out. */
 import {fetchPublicJson} from './http.js';
+import {SFC_REGISTER} from './record-sources.js';
 const endpoints={hkex_daily:'/api/v1/hkex/latest/status',company_registry:'/api/v1/companies/updates/status',seehouse:'/api/v1/properties/coverage',racing:'/api/v1/racing/status',sfc_archive:'/api/v1/sfc/status',restaurants:'/api/v1/status',population:'/api/v1/status',addresses:'/api/v1/status'};
 export function healthSummary(family,payload,locale='en'){
   const zh=locale==='zh-Hant',pick=(en,cn)=>zh?cn:en,unknown=pick('Unknown','未知');
   const n=v=>typeof v==='number'&&Number.isFinite(v)?v.toLocaleString(zh?'zh-HK':'en-HK'):unknown;
   const pair=(a,b)=>`${n(a)} / ${n(b)}`;
-  const data=payload?.data||payload||{},facts=[],warnings=[];
+  const data=payload?.data||payload||{},facts=[],warnings=[],links=[];
   if(family==='hkex_daily'){
+    links.push([pick('HKEX daily summary publisher','港交所每日摘要來源'),'https://di.hkex.com.hk/di/summary/NSMSumMenu.htm']);
     facts.push([pick('Latest accepted summary','最新已接納摘要'),data.coverage?.latestSummaryDate||unknown],[pick('Last successful source read','上次成功讀取來源'),data.updater?.lastSuccessfulRead||unknown],[pick('Last status check','上次狀態檢查'),data.updater?.lastChecked||unknown]);
     if(data.updater?.holdCode||data.updater?.lastRun?.state==='failed')warnings.push(pick('Source updates are on hold or failed. Retained summaries remain available; newer filings may be missing.','來源更新暫停或失敗。保留的摘要仍可查閱，但可能缺少較新的披露。'));
+    warnings.push(pick('Full official filings remain held. Retained daily summaries and the Webb archive are separate views.','完整官方申報仍暫停提供。已保留嘅每日摘要同 Webb 檔案係獨立檢視。'));
     warnings.push(pick('Published summaries and the historical Webb archive have separate dates and coverage. These records do not establish current holdings.','已發布摘要與 Webb 歷史檔案的日期及涵蓋範圍不同；這些紀錄並非目前持股核實。'));
   }else if(family==='company_registry'){
     const c=data.coverage||{},q=data.maintenance?.addressQueue,capacity=q?.capacity;
@@ -26,13 +29,19 @@ export function healthSummary(family,payload,locale='en'){
     if(data.seasonCoverage?.some(s=>s.seasonComplete===false))warnings.push(pick('Season history is incomplete. Missing meetings and dividend quotes do not establish no racing or no payout.','馬季歷史尚未完整；缺少賽馬日或派彩紀錄並不代表沒有賽事或派彩。'));
     if(d.stakeNormalized===false)warnings.push(pick('Dividend quotes retain their source stake basis; they are not normalized returns.','派彩報價保留來源投注基準，並非標準化回報。'));
   }else if(family==='sfc_archive'){
+    links.push([pick('SFC public register','證監會公眾紀錄冊'),SFC_REGISTER]);
     facts.push([pick('Official verification capability','官方核實功能'),data.state?(data.enabledModes?.includes('browser')?pick('Activated','已啟用'):pick('Not activated','未啟用')):unknown],[pick('Accepted official cohort','已接納官方群組'),n(data.cohort?.accepted)]);
     if(!data.enabledModes?.includes('browser'))warnings.push(pick('Official browser verification is not activated. The historical Webb licence archive remains separate.','官方網頁核實功能尚未啟用；Webb 牌照歷史檔案另行提供。'));
   }else{
     const s=data.sources?.find(s=>s.sourceId===family);
-    if(s){facts.push([pick('Last successful source read','上次成功讀取來源'),s.lastSuccess||unknown],[pick('Accepted records','已接納紀錄'),n(s.recordCount)]);if(s.stale||s.refreshHealth?.overdue||s.refreshHealth?.latestAttemptFailed)warnings.push(pick('Source refresh is overdue or failed. Accepted records may be retained.','來源更新逾期或失敗，可能正提供保留的已接納紀錄。'));if(s.quality)facts.push([pick('Source records missing names in both languages','來源中英名稱均缺漏的紀錄'),n(s.quality.sourceNamesMissingBothLanguages)]);}
+    if(s?.sourceUrl)links.push([s.attribution||pick('Original provider','原始提供者'),s.sourceUrl]);
+    if(s){
+      const latestAttempt=[s.lastSuccess,s.lastFailure].filter(Boolean).sort().at(-1);
+      facts.push([pick('Latest attempt','最近嘗試'),latestAttempt||unknown]);
+      if(s.refreshHealth?.nextDueAt)facts.push([pick('Next expected check','預計下次檢查'),s.refreshHealth.nextDueAt]);
+      facts.push([pick('Last successful source read','上次成功讀取來源'),s.lastSuccess||unknown],[pick('Accepted records','已接納紀錄'),n(s.recordCount)]);if(s.stale||s.refreshHealth?.overdue||s.refreshHealth?.latestAttemptFailed)warnings.push(pick('Source refresh is overdue or failed. Accepted records may be retained.','來源更新逾期或失敗，可能正提供保留的已接納紀錄。'));if(s.quality)facts.push([pick('Source records missing names in both languages','來源中英名稱均缺漏的紀錄'),n(s.quality.sourceNamesMissingBothLanguages)]);}
   }
-  return {facts,warnings};
+  return {facts,warnings,links};
 }
 export class SourceHealth{
   constructor(target,locale=()=>MhkI18n.locale){this.target=target;this.locale=locale;this.sequence=0;}
@@ -48,8 +57,13 @@ export class SourceHealth{
     if(!this.family)return;const zh=this.locale()==='zh-Hant',target=this.target;target.replaceChildren();
     const title=document.createElement('h3');title.textContent=zh?'目前涵蓋範圍及來源更新':'Current coverage and source updates';target.append(title);
     if(!this.payload){const p=document.createElement('p');p.textContent=this.failed?(zh?'無法讀取來源狀態。新鮮度未知；資料查詢仍可使用。':'Source status could not be read. Freshness is unknown; record queries remain available.'):(zh?'正在檢查已接納來源的狀態…':'Checking accepted source status…');target.append(p);return;}
-    const {facts,warnings}=healthSummary(this.family,this.payload,this.locale()),dl=document.createElement('dl');dl.className='pg-source-facts';
+    const {facts,warnings,links}=healthSummary(this.family,this.payload,this.locale()),dl=document.createElement('dl');dl.className='pg-source-facts';
     for(const [label,value]of facts){const dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=label;dd.textContent=/^\d{4}-\d{2}-\d{2}T/.test(value)?MhkI18n.date(value):value;dl.append(dt,dd);}target.append(dl);
+    for(const [label,href] of links){
+      let url;try{url=new URL(href);}catch{continue;}
+      if(url.protocol!=='https:'||url.username||url.password)continue;
+      const a=document.createElement('a');a.href=url;a.rel='noreferrer';a.textContent=label;target.append(a);
+    }
     for(const message of warnings){const p=document.createElement('p');p.className='mhk-note';p.textContent=message;target.append(p);}
   }
 }

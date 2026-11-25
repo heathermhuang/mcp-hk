@@ -1,3 +1,4 @@
+export const SFC_REGISTER = 'https://www.sfc.hk/en/Regulatory-functions/Intermediaries/Licensing/Register-of-licensed-persons-and-registered-institutions';
 /* Shared accepted-source adapters; no name/code joins or collection. */
 export function recordSources(read, locale = () => 'en') {
 const zh = () => locale() === 'zh-Hant';
@@ -30,8 +31,8 @@ return {
     ],
     sfc: [
         { id: 'licence-archive', label: 'David Webb / Webb-site', notice: '/api/v1/companies/notice', async read(q, s) { const p = await read('/api/v1/companies', { namespace: 'sfc:ce_reference', value: q.value, groupBy: 'organisation', limit: 20, cursor: s.cursor }, s.signal); const matches = array(p); return page(p, matches.map(r => ({ ...companyItem(r), identity: matches.length === 1 && !p.meta.nextCursor ? 'sfc:ce_reference:' + q.value : null, subtitle: q.value }))); }, detail: async (r) => { const base = '/api/v1/companies/' + encodeURIComponent(r.id); const [record, licences] = await Promise.all([read(base, { version: r.version }), read(base + '/licences', { version: r.version, limit: 20 })]); return Object.assign(record, {licences}); } },
-        { id: 'licence-observations', label: 'Securities and Futures Commission', async read(q, s) { const capability = await read('/api/v1/sfc/status', {}, s.signal), c = capability.data; const modes = c?.enabledModes || []; if (!modes.includes('rest') || !modes.includes('browser') || !/^sfc-[a-f0-9]{32}$/.test(c.acceptedVersion || ''))
-                throw Error('SOURCE_UNAVAILABLE'); const version = s.version || c.acceptedVersion; const p = await read('/api/v1/sfc/corporations/' + q.value, { version }, s.signal); if (p.meta?.version !== version || p.data?.ce !== q.value)
+        { id: 'licence-observations', label: 'Securities and Futures Commission', async read(q, s) { const capability = await read('/api/v1/sfc/status', {}, s.signal), c = capability.data; const modes = c?.enabledModes || []; if (!modes.includes('rest') || !modes.includes('browser') || !/^sfc-[a-f0-9]{32}$/.test(c?.acceptedVersion || ''))
+                return {condition:{kind:'disabled',url:SFC_REGISTER}}; const version = s.version || c.acceptedVersion; const p = await read('/api/v1/sfc/corporations/' + q.value, { version }, s.signal); if (p.meta?.version !== version || p.data?.ce !== q.value)
                 throw Error('SOURCE_IDENTITY_CHANGED'); return { version, items: [{ id: q.value, title: labelName(p.data) || q.value, subtitle: q.value, date: p.data.observedAt?.slice(0, 10), raw: p.data, identity: 'sfc:ce_reference:' + q.value }], nextCursor: null, meta: { envelope: p, capability: c } }; }, detail: r => read('/api/v1/sfc/corporations/' + r.id, { version: r.version }) }
     ]
 };

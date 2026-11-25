@@ -33,7 +33,10 @@ try{
   assert.match(await page.locator('#hkex-controls').innerText(),lang==='en'?/Direct holding/:/直接持有/);
   if(lang==='zh-Hant')assert.match(await page.locator('#hkex-detail-heading').innerText(),/測試人士/);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
-  assert.equal(await page.locator('a[download]').count(),0);assert.equal(await page.locator('a[href*="di.hkex.com.hk"]').count(),0);
+  assert.equal(await page.locator('a[download]').count(),0);
+  const publisher=page.locator('a[href="https://di.hkex.com.hk/di/summary/NSMSumMenu.htm"]');
+  await publisher.waitFor({state:'attached'});
+  assert.equal(await page.locator('a[href*="di.hkex.com.hk"]:not([href="https://di.hkex.com.hk/di/summary/NSMSumMenu.htm"])').count(),0);
   await page.locator('#hkex-revisions button').click();await page.waitForFunction(()=>document.querySelector('#hkex-detail-heading').textContent.startsWith('B'));
   assert.match(await page.locator('#hkex-dates').innerText(),lang==='en'?/Withdrawn/:/已撤回/);
   await page.screenshot({path:new URL(`${lang}-${width}-synthetic.png`,out).pathname,fullPage:true});

@@ -32,6 +32,8 @@
       text(name, number(observed.length ? observed.reduce((sum, day) => sum + day[key], 0) : null));
     }
 
+    const calls=observed.length?observed.reduce((sum,day)=>sum+day.calls,0):null;
+    text('outcome-scope',t('usageOutcomeScope',{calls:number(calls),observed:number(observed.length),days:number(days.length)}));
     const peak = Math.max(1, ...observed.map(day => day.calls));
     byId('chart').replaceChildren(...days.map(day => {
       const bar = document.createElement('span');
@@ -53,7 +55,10 @@
     const tools = snapshot.topTools[selected];
     byId('ranking').replaceChildren(...tools.map(tool => {
       const item = document.createElement('li');
-      item.append(make('code', tool.name), make('span', number(tool.calls)));
+      const plain={hk_district_statistics:'usageToolDistrict',hk_catalogue_search:'usageToolCatalogue',hk_resource_query:'usageToolRecords',hk_address_search:'usageToolAddress'}[tool.name];
+      const label=make('span','');
+      if(plain)label.append(make('span',t(plain)+' · '));
+      label.append(make('code',tool.name));item.append(label,make('span',number(tool.calls)));
       return item;
     }));
     byId('no-tools').hidden = tools.length > 0 || !observed.length;
