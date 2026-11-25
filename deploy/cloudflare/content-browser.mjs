@@ -45,19 +45,19 @@ try{
    }
    if(path==='/datasets'){
     assert.equal(await page.locator('.dataset-family').count(),families.length);
-    for(const row of families)assert.equal(await page.locator('#dataset-'+row.id+' h2').innerText(),row.title[lang]);
+    for(const row of families)assert.equal(await page.locator('#dataset-'+row.id+' h3').innerText(),row.title[lang]);
     await page.locator('#dataset-racing summary').click();assert.match(await page.locator('#dataset-racing details').innerText(),/hk_racing_status/);
-    const link=new URL(await page.locator('#dataset-hkex_daily h2 a').getAttribute('href'),origin);
+    const link=new URL(await page.locator('#dataset-hkex_daily h3 a').getAttribute('href'),origin);
     assert.equal(link.searchParams.get('lang'),lang);assert.equal(link.pathname,'/playground');assert.equal(JSON.parse(decodeURIComponent(link.hash.slice(3))).family,'hkex_daily');
     await page.screenshot({path:new URL(`directory-${lang}-${width}.png`,out).pathname,fullPage:true});
     const lookupLabel=lang==='en'?'Look up bus stops and routes':'查巴士站及路線';
     const transport=page.locator('#dataset-transport .dataset-actions').getByRole('link',{name:lookupLabel+' →'});
-    const legacy=await page.locator('#dataset-transport h2 a').getAttribute('href');
+    const legacy=await page.locator('#dataset-transport h3 a').getAttribute('href');
     assert.equal(await transport.getAttribute('href'),legacy);
     await transport.press('Enter');
     const choice=page.locator('[data-family="transport"]');
-    await choice.waitFor();
-    assert.equal(await choice.getAttribute('aria-pressed'),'true');
+    if(width>800){await choice.waitFor();assert.equal(await choice.getAttribute('aria-pressed'),'true');}
+    else{await page.locator('.pg-bus').waitFor();assert.equal(await page.locator('#pg-subject').inputValue(),'transport');}
     await page.getByRole('button',{name:transportLabel,exact:true}).click();
     await page.locator('#pg-discovery-results').getByRole('button',{name:lang==='en'?'Bus route data':'巴士路線數據'}).waitFor();
     assert.equal(transportSearches.length,1);

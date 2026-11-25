@@ -831,17 +831,17 @@
         "description": "Choose a question, check the available source and its limits, then explore records or use the same information through HTTP and MCP.",
         "sections": [
           {
-            "heading": "Explore records or browse source datasets",
+            "heading": "Search or browse the full catalogue",
             "paragraphs": [
               "Use the guided explorers below for supported records. For weather, schools, holidays, environment and other topics, search the government dataset catalogue. Each resource has its own format and access state."
             ],
             "links": [
               [
-                "Search all data",
-                "/coverage?access=all"
+                "Start a search",
+                "/"
               ],
               [
-                "Government source catalogue",
+                "Browse data",
                 "/coverage?access=sources"
               ]
             ]
@@ -871,17 +871,17 @@
         "description": "先選擇問題，查看可用來源及限制，再查閱紀錄，或透過 HTTP 及 MCP 使用相同資料。",
         "sections": [
           {
-            "heading": "查閱紀錄或瀏覽來源目錄",
+            "heading": "搜尋或瀏覽完整目錄",
             "paragraphs": [
               "下方瀏覽器可查閱已支援的紀錄。天氣、學校、公眾假期、環境及其他主題，可在政府數據目錄搜尋；每項資源各有格式及存取狀態。"
             ],
             "links": [
               [
-                "搜尋所有資料",
-                "/coverage?access=all"
+                "開始搜尋",
+                "/"
               ],
               [
-                "政府來源目錄",
+                "瀏覽數據",
                 "/coverage?access=sources"
               ]
             ]
@@ -909,13 +909,13 @@
     "/playground": {
       "template": "playground.html",
       "en": {
-        "title": "Data playground · mcp.hk",
-        "heading": "Data playground",
+        "title": "Explorer · mcp.hk",
+        "heading": "Explorer",
         "description": "Explore Hong Kong public records with source choices, exact filters, charts, query links and bounded evidence downloads. Source coverage and permissions vary."
       },
       "zh-Hant": {
-        "title": "數據探索工作台 · mcp.hk",
-        "heading": "數據探索工作台",
+        "title": "數據查詢台 · mcp.hk",
+        "heading": "數據查詢台",
         "description": "選擇香港公共數據來源，使用精確篩選、圖表、查詢連結及有限範圍證據下載。各來源的涵蓋範圍與權限有所不同。"
       }
     }

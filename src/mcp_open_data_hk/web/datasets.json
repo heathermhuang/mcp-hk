@@ -1,6 +1,7 @@
 [
   {
     "id": "company_registry",
+    "task": "Business",
     "title": {
       "en": "Official company observations",
       "zh-Hant": "官方公司觀察資料"
@@ -38,6 +39,7 @@
   },
   {
     "id": "enigma",
+    "task": "Business",
     "title": {
       "en": "Webb organisation archive",
       "zh-Hant": "Webb 機構歷史檔案"
@@ -75,6 +77,7 @@
   },
   {
     "id": "sfc_archive",
+    "task": "Business",
     "title": {
       "en": "SFC licence archive",
       "zh-Hant": "證監會牌照歷史檔案"
@@ -112,6 +115,7 @@
   },
   {
     "id": "hkex_daily",
+    "task": "Business",
     "title": {
       "en": "HKEX published summaries",
       "zh-Hant": "港交所已發布摘要"
@@ -149,6 +153,7 @@
   },
   {
     "id": "webb_sdi",
+    "task": "Business",
     "title": {
       "en": "Webb disclosure archive",
       "zh-Hant": "Webb 權益披露歷史檔案"
@@ -186,6 +191,7 @@
   },
   {
     "id": "racing",
+    "task": "Specialist",
     "title": {
       "en": "Racing results and dated profiles",
       "zh-Hant": "賽馬賽果及具日期檔案"
@@ -223,6 +229,7 @@
   },
   {
     "id": "addresses",
+    "task": "Places",
     "title": {
       "en": "Hong Kong addresses",
       "zh-Hant": "香港地址"
@@ -260,6 +267,7 @@
   },
   {
     "id": "restaurants",
+    "task": "Places",
     "title": {
       "en": "Licensed restaurants",
       "zh-Hant": "持牌食肆"
@@ -297,6 +305,7 @@
   },
   {
     "id": "population",
+    "task": "Places",
     "title": {
       "en": "District population and density",
       "zh-Hant": "地區人口及密度"
@@ -334,6 +343,7 @@
   },
   {
     "id": "platehk",
+    "task": "Specialist",
     "title": {
       "en": "Plate.hk auction history",
       "zh-Hant": "Plate.hk 車牌拍賣紀錄"
@@ -371,6 +381,7 @@
   },
   {
     "id": "seehouse",
+    "task": "Specialist",
     "title": {
       "en": "SeeHouse buildings and listings",
       "zh-Hant": "SeeHouse 睇樓大廈及放盤"
@@ -408,6 +419,7 @@
   },
   {
     "id": "transport",
+    "task": "Places",
     "title": {
       "en": "Bus stops and direct routes",
       "zh-Hant": "巴士站及直達路線"
@@ -445,6 +457,7 @@
   },
   {
     "id": "catalogue",
+    "task": "Sources",
     "title": {
       "en": "Government dataset catalogue",
       "zh-Hant": "政府數據目錄"

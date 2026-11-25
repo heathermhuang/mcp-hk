@@ -45,8 +45,8 @@
 #mhk-preview .pg-source-facts{display:grid;grid-template-columns:minmax(100px,.6fr) 1fr;gap:8px;font-size:12px}
 #mhk-preview .pg-source-facts dd{margin:0;overflow-wrap:anywhere}
 #mhk-preview button:disabled{opacity:.5;cursor:default}
-@media(max-width:800px){#mhk-preview .pg-workspace{grid-template-columns:1fr;gap:24px}#mhk-preview .pg-discovery{border-right:0;border-bottom:1px solid var(--mhk-line);padding:0 0 16px}#mhk-preview #pg-families{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 16px;max-height:230px;overflow:auto}#mhk-preview .pg-main{padding:22px}#mhk-preview .pg-filter{grid-template-columns:1fr 1fr}#mhk-preview .pg-filter input{font-size:16px}#mhk-preview .pg-explorer .mhk-actions{gap:8px}#mhk-preview .pg-explorer .mhk-button{min-height:44px}}
-@media(max-width:400px){#mhk-preview .pg-main{padding:16px}#mhk-preview #pg-families{grid-template-columns:1fr}#mhk-preview .pg-source-facts{grid-template-columns:1fr}#mhk-preview .pg-bar{grid-template-columns:80px 1fr}}
+@media(max-width:800px){#mhk-preview .pg-workspace{grid-template-columns:1fr;gap:24px}#mhk-preview .pg-discovery{border-right:0;border-bottom:1px solid var(--mhk-line);padding:0 0 16px}#mhk-preview #pg-families{display:none}#mhk-preview #pg-subject-picker{display:grid}#mhk-preview .pg-main{padding:22px}#mhk-preview .pg-filter{grid-template-columns:1fr 1fr}#mhk-preview .pg-filter input{font-size:16px}#mhk-preview .pg-explorer .mhk-actions{gap:8px}#mhk-preview .pg-explorer .mhk-button{min-height:44px}}
+@media(max-width:400px){#mhk-preview .pg-main{padding:16px}#mhk-preview .pg-source-facts{grid-template-columns:1fr}#mhk-preview .pg-bar{grid-template-columns:80px 1fr}}
 @media(prefers-reduced-motion:reduce){#mhk-preview .pg-main *{scroll-behavior:auto;animation:none;transition:none}}
 #mhk-preview .pg-history-record{padding:12px 0;border-bottom:1px solid var(--mhk-line)}
 #mhk-preview #pg-dates p{margin:6px 0}
@@ -61,3 +61,7 @@
 #mhk-preview .pg-bus-matches{padding-left:18px}
 #mhk-preview .pg-bus-matches:empty{display:none}
 #mhk-preview .pg-bus-matches li{margin:6px 0}
+
+#mhk-preview #pg-subject-picker{gap:6px;margin:12px 0 16px}
+#mhk-preview #pg-subject-picker select{width:100%;min-height:44px;font-size:16px}
+@media(min-width:801px){#mhk-preview #pg-subject-picker{display:none}}

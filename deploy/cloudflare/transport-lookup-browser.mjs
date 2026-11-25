@@ -86,7 +86,8 @@ try{
     await panel.getByText(locale==='en'?/^A check reached its time limit/:/^檢查已達時間上限/).waitFor();
     assert.equal(await panel.getByText(locale==='en'?/Showing 1 of 6 reference/:/顯示 1 個參考選項，共 6 個/).isVisible(),true);
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
-    await page.locator('[data-family="catalogue"]').click();
+    if(width<800)await page.locator('#pg-subject').selectOption('catalogue');
+    else await page.locator('[data-family="catalogue"]').click();
     assert.equal(await panel.isVisible(),false);
     assert.deepEqual(errors,[]);
     await context.close();

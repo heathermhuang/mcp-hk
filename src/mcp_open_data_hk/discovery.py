@@ -198,7 +198,7 @@ def editorial_body(path, lang):
             )
         parts.append("</details>" if glossary else "</section>")
     if path == "/datasets":
-        parts.append(family_directory(lang))
+        parts.append(family_directory(lang, grouped=True))
     if path == "/guides":
         parts.append("<ul>")
         for target, item in content()["pages"].items():
@@ -216,7 +216,13 @@ def dataset_families():
 
 
 def family_directory(
-    lang, compact=False, keys=None, alphabetical=False, playground=True
+    lang,
+    compact=False,
+    keys=None,
+    alphabetical=False,
+    playground=True,
+    grouped=False,
+    entry_heading="h2",
 ):
     zh = lang == "zh-Hant"
     parts = ['<div class="dataset-directory">']
@@ -224,6 +230,19 @@ def family_directory(
     strings = translations()["zh" if zh else "en"]
     if alphabetical:
         rows = sorted(rows, key=lambda row: row["title"]["en"].casefold())
+    if grouped:
+        sections = []
+        for task in ("Places", "Business", "Specialist", "Sources"):
+            members = {row["id"] for row in rows if row.get("task") == task}
+            sections.append(
+                f'<section class="dataset-task" id="task-{task.lower()}">'
+                f'<h2>{escape(strings["pgTask" + task])}</h2>'
+                + family_directory(
+                    lang, keys=members, playground=playground, entry_heading="h3"
+                )
+                + "</section>"
+            )
+        return "".join(sections)
     for row in rows:
         if keys is not None and row["id"] not in keys:
             continue
@@ -249,7 +268,7 @@ def family_directory(
         )
         parts.append(
             f'<article class="dataset-family" id="dataset-{row["id"]}">'
-            f'<h2><a href="{href}">{title}</a></h2>'
+            f'<{entry_heading}><a href="{href}">{title}</a></{entry_heading}>'
             f'<p class="dataset-state">{escape(row["availability"][lang])}</p>'
             f'<p>{escape(row["question"][lang])}</p>'
         )
@@ -257,7 +276,13 @@ def family_directory(
             action = (
                 row["action"][lang]
                 if row["id"] == "transport" and playground
-                else strings["directoryOpen"]
+                else strings[
+                    (
+                        "directoryBrowseSource"
+                        if row["id"] == "catalogue"
+                        else "directoryRunQuery"
+                    )
+                ]
             )
             parts.append(
                 f'<p class="mhk-note">{escape(row["limits"][lang])}</p>'
@@ -375,18 +400,29 @@ def add_explore_navigation(doc, strings):
             or nav.attrs.get("data-i18n-aria-label") != "mainNavigation"
         ):
             continue
-        nav.children.insert(
-            0,
-            Element(
-                "a",
-                [
-                    ("class", "mhk-navbutton"),
-                    ("href", "/playground"),
-                    ("data-i18n", "pgExplore"),
-                ],
-                [strings["pgExplore"]],
-            ),
-        )
+        for position, path, key in [
+            (0, "/playground", "pgExplore"),
+            (1, "/datasets", "navData"),
+            (2, "/coverage", "navBrowse"),
+        ]:
+            existing = next(
+                (
+                    child
+                    for child in nav.children
+                    if isinstance(child, Element) and child.attrs.get("href") == path
+                ),
+                None,
+            )
+            if existing is not None:
+                nav.children.remove(existing)
+            nav.children.insert(
+                position,
+                Element(
+                    "a",
+                    [("class", "mhk-navbutton"), ("href", path), ("data-i18n", key)],
+                    [strings[key]],
+                ),
+            )
 
 
 @lru_cache(maxsize=64)
@@ -480,9 +516,17 @@ def render_page(path, lang="en", filtered=False):
             [("class", "mhk-disclosure"), ("aria-label", content()["faqLabel"][lang])],
         )
         faq.children = [Element("summary", children=[content()["faqLabel"][lang]])]
-        for question, answer in questions:
+        faq_links = [
+            ("/about", content()["aboutLabel"][lang]),
+            ("/api/v1/limits", strings["requestLimits"]),
+            ("/connect", strings["navConnect"]),
+            ("/coverage", strings["navBrowse"]),
+            ("/guides/data-sources-and-freshness", strings["directoryPrinciples"]),
+        ]
+        for (question, answer), (href, label) in zip(questions, faq_links):
             faq.children.append(Element("h3", children=[question]))
             faq.children.append(Element("p", children=[answer]))
+            faq.children.append(Element("a", [("href", href)], [label]))
         home.children.append(faq)
     context_keys = {
         "/companies": ["company_registry", "enigma"],
