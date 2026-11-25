@@ -1,6 +1,8 @@
 /* Aggregate accounting: never persist IPs, query text, arguments or record bodies. */
 export const LIMITS = {perMinute: 60, dailyRequests: 50000, dailyAddressRequests: 10000, bodyBytes: 65536, retentionDays: 90};
 const CAPTURE_BYTES = 262144;
+const DAY_MS = 86_400_000;
+const PUBLIC_RANKING_MINIMUM = 5;
 const tools = new Set(['hk_racing_status','hk_racing_search','hk_racing_results','hk_racing_profile','hk_address_search','hk_address_get','hk_restaurant_search','hk_restaurant_get','hk_district_list','hk_district_statistics','hk_data_packs','hk_source_status','hk_plate_search','hk_plate_comparables','hk_plate_datasets','hk_property_search','hk_property_building','hk_property_price_history','hk_property_coverage','hk_catalogue_search','hk_dataset_resources','hk_resource_schema','hk_resource_query','hk_coverage','list_datasets','get_dataset_details','list_categories','get_category_details','search_datasets','get_supported_formats','search_datasets_with_facets','get_datasets_by_format']);
 type ObjectValue = Record<string, unknown>;
 const object = (v: unknown): ObjectValue => v !== null && typeof v === 'object' && !Array.isArray(v) ? v as ObjectValue : {};
@@ -71,6 +73,51 @@ export class UsageStore {
     const rows = [...this.sql.exec('SELECT day,protocol,operation,dataset,resource,status,outcome,requests,request_bytes,response_bytes,returned_items,item_count_known,duration_ms FROM usage_daily WHERE day>=? ORDER BY day DESC,requests DESC LIMIT 5000',start)];
     const totals = [...this.sql.exec('SELECT count(*) groups,COALESCE(sum(requests),0) requests,COALESCE(sum(request_bytes),0) request_bytes,COALESCE(sum(response_bytes),0) response_bytes,COALESCE(sum(returned_items),0) returned_items,COALESCE(sum(item_count_known),0) item_count_known FROM usage_daily WHERE day>=?',start)][0];
     return {asOf:new Date(now).toISOString(),days,retentionDays:LIMITS.retentionDays,limits:LIMITS,totals,rows,rowLimit:5000,truncated:Number(totals?.groups)>rows.length,definitions:{requests:'Backend HTTP requests, including MCP protocol requests, failures and throttles. Excludes static pages/assets, private maintenance and browser Google Analytics.',response_bytes:'Uncompressed application response body bytes observed while streaming; partial bytes on cancelled/error streams. Not network wire bytes, upstream download volume or billable usage.',request_bytes:'Application request body bytes only; excludes URLs and headers.',returned_items:'Items in fully inspected successful envelopes, including catalogue metadata. Not dataset totals; item_count_known counts requests with a known returned-item count.',identity:'No visitor count or user identity is stored. Per-client quota uses a daily HMAC of the network IP; quota buckets cover up to three minutes and expired rows are pruned on backend traffic or hourly maintenance.',inspection:'Response metadata inspection is bounded to 256 KiB in memory. Larger/unparseable responses retain byte totals with unknown item count.'}};
+  }
+
+  publicReport(now = Date.now()) {
+    const today = Math.floor(now / DAY_MS);
+    const start = today - 30;
+    const rows = this.sql.exec<{day: number; operation: string; calls: number; ok: number; failed: number}>(
+      `SELECT day, operation, SUM(requests) AS calls,
+        SUM(CASE WHEN outcome = 'ok' THEN requests ELSE 0 END) AS ok,
+        SUM(CASE WHEN outcome IN ('error', 'rate_limited', 'stream_error', 'rejected') THEN requests ELSE 0 END) AS failed
+       FROM usage_daily WHERE day BETWEEN ? AND ? AND protocol = 'mcp'
+       GROUP BY day, operation`, start, today,
+    );
+    const observed = new Map<number, {mcpRequests: number; calls: number; ok: number; failed: number; unconfirmed: number}>();
+    const rankings = {7: new Map<string, number>(), 30: new Map<string, number>()};
+    for (const row of rows) {
+      let day = observed.get(row.day);
+      if (!day) {
+        day = {mcpRequests: 0, calls: 0, ok: 0, failed: 0, unconfirmed: 0};
+        observed.set(row.day, day);
+      }
+      day.mcpRequests += row.calls;
+      if (!tools.has(row.operation)) continue;
+      day.calls += row.calls;
+      day.ok += row.ok;
+      day.failed += row.failed;
+      day.unconfirmed += row.calls - row.ok - row.failed;
+      if (row.day === today) continue;
+      for (const days of [7, 30] as const) {
+        if (row.day < today - days) continue;
+        const ranking = rankings[days];
+        ranking.set(row.operation, (ranking.get(row.operation) ?? 0) + row.calls);
+      }
+    }
+    const top = (ranking: Map<string, number>) => [...ranking.entries()]
+      .filter(([, calls]) => calls >= PUBLIC_RANKING_MINIMUM)
+      .sort(([a, first], [b, second]) => second - first || a.localeCompare(b, 'en'))
+      .slice(0, 8).map(([name, calls]) => ({name, calls}));
+    const days = Array.from({length: 31}, (_, offset) => {
+      const day = start + offset;
+      return {
+        date: new Date(day * DAY_MS).toISOString().slice(0, 10),
+        ...(observed.get(day) ?? {mcpRequests: null, calls: null, ok: null, failed: null, unconfirmed: null}),
+      };
+    });
+    return {version: 1, asOf: new Date(now).toISOString(), timeZone: 'UTC', days, topTools: {7: top(rankings[7]), 30: top(rankings[30])}};
   }
 }
 

@@ -48,6 +48,15 @@ Unauthenticated access returns 404. The report includes full-period totals, up t
 The private report is not sent to Google Analytics. Cloudflare observability and
 the R2 public-data backup manifest are separate evidence sources.
 
+The public dashboard at `/usage` uses `GET /api/v1/usage`. The feed publishes UTC
+daily totals from the same counters for today and the prior 30 days. A day without
+an MCP observation has null counts. Recognized tool calls exclude protocol setup,
+pings and unclassified operations. Outcome counts distinguish OK responses,
+failures or rate limits, and uninspected or interrupted responses. The dashboard
+checks for new snapshots every 30 seconds while visible. Named tools are ranked
+over completed days, with a five-call minimum and at most eight results. Operator
+traffic is included. The feed contains no caller, query, or dataset identifiers.
+
 ## Enforced limits
 
 `GET /api/v1/limits` returns the current policy. Admission is serialized through

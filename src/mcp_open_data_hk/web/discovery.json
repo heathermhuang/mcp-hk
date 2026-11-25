@@ -13,6 +13,19 @@
       },
       "template": "index.html"
     },
+    "/usage": {
+      "en": {
+        "title": "Live MCP usage · mcp.hk",
+        "heading": "MCP usage",
+        "description": "See live aggregate tool calls, outcomes and recent activity on MCP.HK."
+      },
+      "zh-Hant": {
+        "title": "即時 MCP 使用統計 · mcp.hk",
+        "heading": "MCP 使用統計",
+        "description": "查看 MCP.HK 的即時工具呼叫匯總數字、結果和近期使用情況。"
+      },
+      "template": "usage.html"
+    },
     "/connect": {
       "en": {
         "title": "Connect your AI to Hong Kong data · mcp.hk",

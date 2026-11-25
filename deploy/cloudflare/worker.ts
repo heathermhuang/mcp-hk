@@ -98,6 +98,16 @@ export class McpContainer extends Container<Env> {
 
   usageReport(days: number) { return new UsageStore(this.ctx.storage.sql).report(days); }
 
+  private usageSnapshot?: {until: number; report: ReturnType<UsageStore['publicReport']>};
+
+  publicUsageReport() {
+    const now = Date.now();
+    if (!this.usageSnapshot || now >= this.usageSnapshot.until) {
+      this.usageSnapshot = {until: now + 10_000, report: new UsageStore(this.ctx.storage.sql).publicReport(now)};
+    }
+    return this.usageSnapshot.report;
+  }
+
   async publishCompanyExport(input: unknown) {
     const owner = await this.claimSeedLease();
     try {return await publishCompanyDownload(this.env.BACKUPS,input);}
@@ -298,7 +308,7 @@ export class McpContainer extends Container<Env> {
 }
 
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
     if(isAgentAuthPath(url.pathname)&&url.origin!==env.PUBLIC_ORIGIN)return new Response('Use the canonical mcp.hk origin',{status:400,headers:{'Cache-Control':'no-store'}});
     if (url.protocol !== 'https:' && !['localhost', '127.0.0.1'].includes(url.hostname)) return Response.redirect(`https://${url.host}${url.pathname}${url.search}`, 308);
@@ -379,6 +389,27 @@ export default {
       return new Response('Not found', {status: 404});
     }
     if (url.pathname === '/api/v1/limits') return Response.json({...LIMITS,window:'UTC fixed minute/day',dailyBudgets:'shared across all clients',mcpBatch:'one JSON-RPC operation per request'},{headers:{'Cache-Control':'public, max-age=300'}});
+    if (url.pathname === '/api/v1/usage') {
+      if (!['GET', 'HEAD'].includes(request.method)) {
+        return new Response(null, {status: 405, headers: {Allow: 'GET, HEAD', 'Cache-Control': 'no-store'}});
+      }
+      const key = new Request(url.origin + url.pathname);
+      let response = await caches.default.match(key).catch(() => undefined);
+      if (!response) {
+        try {
+          const report = await env.APP.get(env.APP.idFromName('production')).publicUsageReport();
+          response = Response.json(report, {headers: {
+            'Cache-Control': 'public, max-age=15',
+            'Access-Control-Allow-Origin': '*',
+            'X-Content-Type-Options': 'nosniff',
+          }});
+          ctx.waitUntil(caches.default.put(key, response.clone()).catch(() => {}));
+        } catch {
+          return Response.json({error: {code: 'USAGE_UNAVAILABLE'}}, {status: 503, headers: {'Cache-Control': 'no-store'}});
+        }
+      }
+      return request.method === 'HEAD' ? new Response(null, response) : response;
+    }
     if (url.pathname === '/assets/site-config.json') return Response.json({googleAnalyticsId:/^G-[A-Z0-9]{4,20}$/.test(env.GA_MEASUREMENT_ID) ? env.GA_MEASUREMENT_ID : ''},{headers:{'Cache-Control':'no-store'}});
     if (url.pathname === '/assets/overview.json') return serveOverview(env, request);
     const discovery = discoveryTarget(url,request.headers.get('Accept') || '');
