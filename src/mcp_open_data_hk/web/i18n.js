@@ -17,11 +17,17 @@
   };
   function apply() {
     document.documentElement.lang = lang === 'en' ? 'en' : 'zh-Hant';
-    document.querySelectorAll('.mhk-navbutton').forEach(link => {
-      const path = new URL(link.getAttribute('href'), location.href).pathname;
-      if (path === location.pathname || (path === '/guides' && location.pathname.startsWith('/guides/')) || (path === '/datasets' && ['/racing','/plates','/properties','/companies','/sfc','/hkex','/demo'].includes(location.pathname))) link.setAttribute('aria-current', 'page');
-      else link.removeAttribute('aria-current');
-    });
+    const navigation=Array.from(document.querySelectorAll('.mhk-navbutton'),link=>({
+      link,path:new URL(link.getAttribute('href'),location.href).pathname,
+    }));
+    const browseLink=navigation.some(item=>item.path==='/coverage');
+    for(const {link,path} of navigation){
+      const readingCatalogue=['/coverage','/data'].includes(location.pathname);
+      const directoryChild=['/racing','/plates','/properties','/companies','/sfc','/hkex','/demo'].includes(location.pathname);
+      const current=path===location.pathname || path==='/guides'&&location.pathname.startsWith('/guides/')
+        || path==='/coverage'&&readingCatalogue || path==='/datasets'&&(directoryChild||readingCatalogue&&!browseLink);
+      if(current)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');
+    }
     document.querySelectorAll('[data-i18n]').forEach(e => { e.textContent = t(e.dataset.i18n); });
     // Only checked-in application headings use translated markup.
     document.querySelectorAll('[data-i18n-html]').forEach(e => { e.innerHTML = t(e.dataset.i18nHtml); });
