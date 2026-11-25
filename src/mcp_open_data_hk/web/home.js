@@ -60,7 +60,7 @@ import {weatherChoices} from './source-quality.js';
     detail.append(node('h3',t('directoryDownloads')),node('p',family?localized(family.download):t('directoryResourceAccess')));
     if(!connected){const states=d.resourceSummary?.byStatus||{};detail.append(node('p',t('sourceCount',{total:d.resourceSummary?.total??'—'})));for(const [status,count]of Object.entries(states))detail.append(node('p',`${t(status)} · ${count}`));}
     const path=resultPath(d,state,MhkI18n.locale);
-    detail.append(internalLink(path,t('directoryOpen')+' →'));
+    detail.append(internalLink(path,t(family?.id==='transport'?'browseTransportDatasets':'directoryOpen')+' →'));
     if(!connected)detail.append(document.createTextNode(' · '),internalLink('/playground'+encodeRecipe({v:1,family:'catalogue',dataset:d.id,lang:MhkI18n.locale}),t('playground')));
     if(family)detail.append(document.createTextNode(' · '),internalLink(family.statusPage,t('directoryScopeLink')));
     if(connected&&d.access){detail.append(node('pre',[...(d.access.http||[]).map(p=>'GET '+p),...(d.access.tools||[]).map(tool=>'MCP: '+tool)].join('\n')));}
