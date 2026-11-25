@@ -126,6 +126,38 @@ async def test_discovery_and_all_http_mcp_pairs(service, monkeypatch):
     assert service.store.checks()["seehouse"]["success"]
 
 
+@pytest.mark.asyncio
+async def test_malformed_mcp_building_id_gives_safe_guidance_without_provider_read(
+    service,
+):
+    from fastmcp.exceptions import ToolError
+
+    async with Client(create_app(service).state.mcp) as client:
+        with pytest.raises(
+            ToolError, match="INVALID_QUERY: Pass the exact buildingId"
+        ) as error:
+            await client.call_tool("hk_property_building", {"buildingId": "not an ID"})
+    assert "not an ID" not in str(error.value)
+    assert "seehouse" not in service.store.checks()
+
+
+@pytest.mark.asyncio
+async def test_missing_mcp_building_offers_search_and_remains_an_error(
+    service, monkeypatch
+):
+    from fastmcp.exceptions import ToolError
+
+    async def missing(*args):
+        raise DomainError("NOT_FOUND", "SeeHouse building was not found", 404)
+
+    monkeypatch.setattr("mcp_open_data_hk.seehouse.request_json", missing)
+    async with Client(create_app(service).state.mcp) as client:
+        with pytest.raises(
+            ToolError, match="NOT_FOUND: Search again with hk_property_search"
+        ):
+            await client.call_tool("hk_property_building", {"buildingId": BUILDING})
+
+
 def test_nested_projection_does_not_relay_new_provider_fields():
     payload = fixture("building")
     payload["ownerContact"] = "private"

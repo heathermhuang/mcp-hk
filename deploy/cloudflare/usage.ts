@@ -1,9 +1,13 @@
+import registeredTools from './mcp-tool-names.json' with {type: 'json'};
+
 /* Aggregate accounting: never persist IPs, query text, arguments or record bodies. */
 export const LIMITS = {perMinute: 60, dailyRequests: 50000, dailyAddressRequests: 10000, bodyBytes: 65536, retentionDays: 90};
 const CAPTURE_BYTES = 262144;
 const DAY_MS = 86_400_000;
 const PUBLIC_RANKING_MINIMUM = 5;
-const tools = new Set(['hk_racing_status','hk_racing_search','hk_racing_results','hk_racing_profile','hk_address_search','hk_address_get','hk_restaurant_search','hk_restaurant_get','hk_district_list','hk_district_statistics','hk_data_packs','hk_source_status','hk_plate_search','hk_plate_comparables','hk_plate_datasets','hk_property_search','hk_property_building','hk_property_price_history','hk_property_coverage','hk_catalogue_search','hk_dataset_resources','hk_resource_schema','hk_resource_query','hk_coverage','list_datasets','get_dataset_details','list_categories','get_category_details','search_datasets','get_supported_formats','search_datasets_with_facets','get_datasets_by_format']);
+const tools = new Set(registeredTools);
+export const isTrackedTool = (operation: string): boolean => tools.has(operation);
+export const UNCLASSIFIED_TOOL = 'unclassified_tool';
 type ObjectValue = Record<string, unknown>;
 const object = (v: unknown): ObjectValue => v !== null && typeof v === 'object' && !Array.isArray(v) ? v as ObjectValue : {};
 const resource = (v: unknown) => typeof v === 'string' && /^[a-f0-9]{32}$/.test(v) ? v : '';
@@ -16,7 +20,7 @@ export function describeRequest(request: Request, body?: Uint8Array): Operation 
     let rpc: ObjectValue = {};
     try { rpc = object(JSON.parse(new TextDecoder().decode(body))); } catch { /* No argument text is retained. */ }
     const params = object(rpc.params), args = object(params.arguments);
-    const name = typeof params.name === 'string' && tools.has(params.name) ? params.name : 'other';
+    const name = typeof params.name === 'string' && isTrackedTool(params.name) ? params.name : UNCLASSIFIED_TOOL;
     const operation = rpc.method === 'tools/call' ? name : ['initialize','tools/list','notifications/initialized','ping'].includes(String(rpc.method)) ? String(rpc.method) : 'other';
     return {protocol:'mcp', operation, resource:resource(args.resourceId), dataset:'', sourceCalls:['hk_address_search','hk_address_get'].includes(operation) ? 1 : 0};
   }
@@ -94,7 +98,7 @@ export class UsageStore {
         observed.set(row.day, day);
       }
       day.mcpRequests += row.calls;
-      if (!tools.has(row.operation)) continue;
+      if (!isTrackedTool(row.operation)) continue;
       day.calls += row.calls;
       day.ok += row.ok;
       day.failed += row.failed;
@@ -121,6 +125,25 @@ export class UsageStore {
   }
 }
 
+const errorOutcomes: Record<string, string> = {
+  INVALID_QUERY: 'invalid_query', INVALID_INPUT: 'invalid_query', INVALID_ID: 'invalid_query',
+  NOT_FOUND: 'not_found', RATE_LIMITED: 'rate_limited', SEEHOUSE_RATE_LIMITED: 'provider_rate_limited',
+  UPSTREAM_TIMEOUT: 'provider_timeout', UPSTREAM_UNAVAILABLE: 'provider_unavailable',
+  SOURCE_SCHEMA_CHANGED: 'provider_schema_error', SOURCE_TOO_LARGE: 'provider_schema_error',
+  SERVICE_RECOVERING: 'service_recovering',
+};
+
+function errorOutcome(error: ObjectValue, status: number, content?: unknown): string {
+  const text = typeof content === 'string' ? content.slice(0, 240) : '';
+  const code = typeof error.code === 'string' ? error.code :
+    /^(?:Error calling tool '[a-z0-9_]+': )?([A-Z][A-Z_]{2,39}):/.exec(text)?.[1];
+  if (code && Object.hasOwn(errorOutcomes, code)) return errorOutcomes[code];
+  if (error.code === -32602 || /^\d+ validation errors? for /.test(text) || status === 400 || status === 422) return 'invalid_query';
+  if (status === 429) return 'rate_limited';
+  if (status === 404) return 'not_found';
+  return 'error';
+}
+
 export function inspectResponse(raw: string, op: Operation, status: number) {
   let payload: ObjectValue = {}, inspected = false;
   try {
@@ -132,14 +155,18 @@ export function inspectResponse(raw: string, op: Operation, status: number) {
     payload = object(JSON.parse(text)); inspected = true;
     if (op.protocol === 'mcp') {
       const result = object(payload.result);
-      if (payload.error || result.isError) return {op,outcome:'error',items:0};
+      if (payload.error || result.isError) {
+        const error = object(payload.error || object(result.structuredContent).error);
+        const message = Array.isArray(result.content) ? object(result.content[0]).text : undefined;
+        return {op,outcome:'error',items:0,category:errorOutcome(error,status,message)};
+      }
       if (result.structuredContent) payload = object(result.structuredContent);
       else if (Array.isArray(result.content)) {
         try { payload = object(JSON.parse(String(object(result.content[0]).text))); } catch { payload = {}; }
       } else payload = result;
     }
   } catch { /* Bodies are neither persisted nor logged. */ }
-  if (status >= 400 || payload.error) return {op,outcome:status === 429 ? 'rate_limited' : 'error',items:0};
+  if (status >= 400 || payload.error) return {op,outcome:status === 429 ? 'rate_limited' : 'error',items:0,category:errorOutcome(object(payload.error),status)};
   const resolved = object(payload.resource);
   const sourceId = Array.isArray(payload.provenance) ? object(payload.provenance[0]).sourceId : '';
   const pack = ['addresses','restaurants','population','platehk','seehouse','catalogue'].includes(String(sourceId)) ? String(sourceId) : '';
@@ -147,10 +174,10 @@ export function inspectResponse(raw: string, op: Operation, status: number) {
   const data = object(payload.data);
   const propertyRows = pack === 'seehouse' ? [data.candidates,data.listings,data.events].find(Array.isArray) : (op.operation==='racing'||op.operation.startsWith('hk_racing_')) ? [data.results,data.appearances].find(Array.isArray) : undefined;
   const items = Array.isArray(propertyRows) ? propertyRows.length : Array.isArray(data.items) ? data.items.length : Array.isArray(payload.items) ? payload.items.length : payload.data && Array.isArray(payload.provenance) ? 1 : null;
-  return {op:next,outcome:inspected ? 'ok' : 'uninspected',items};
+  return {op:next,outcome:inspected ? 'ok' : 'uninspected',items,category:!inspected ? 'uninspected' : items === 0 ? 'empty_result' : 'ok'};
 }
 
-export function meterResponse(response: Response, op: Operation, bytesIn: number, started: number, save: (op: Operation,status:number,outcome:string,bytesIn:number,bytesOut:number,items:number|null,duration:number)=>void) {
+export function meterResponse(response: Response, op: Operation, bytesIn: number, started: number, save: (op: Operation,status:number,outcome:string,bytesIn:number,bytesOut:number,items:number|null,duration:number,category:string)=>void) {
   const reader = response.body?.getReader();
   let total = 0, captured = 0, finished = false;
   const parts: Uint8Array[] = [];
@@ -160,7 +187,7 @@ export function meterResponse(response: Response, op: Operation, bytesIn: number
     if (finished) return; finished = true;
     const raw = total <= CAPTURE_BYTES ? new TextDecoder().decode(concat(parts,captured)) : '';
     const result = inspectResponse(raw,op,response.status);
-    try { save(result.op,response.status,reason || result.outcome,bytesIn,total,reason ? null : result.items,Date.now()-started); }
+    try { save(result.op,response.status,reason || result.outcome,bytesIn,total,reason ? null : result.items,Date.now()-started,reason || result.category); }
     catch { console.error(JSON.stringify({event:'usage_write_failed'})); }
     finally { resolveDone(); }
   }

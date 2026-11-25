@@ -31,7 +31,7 @@ test('request dimensions omit search text, coordinates, arbitrary tool names and
   const body=new TextEncoder().encode(JSON.stringify({method:'tools/call',params:{name:'hk_resource_query',arguments:{resourceId:rid,q:'private query',lat:22.3}}}));
   assert.deepEqual(describeRequest(new Request('https://mcp.hk/mcp'),body),op);
   assert.doesNotMatch(JSON.stringify(describeRequest(new Request('https://mcp.hk/api/v1/addresses/search?q=private-query&lat=22.3'))),/private|22\.3/);
-  assert.equal(describeRequest(new Request('https://mcp.hk/mcp'),new TextEncoder().encode('{"method":"tools/call","params":{"name":"a-secret"}}')).operation,'other');
+  assert.equal(describeRequest(new Request('https://mcp.hk/mcp'),new TextEncoder().encode('{"method":"tools/call","params":{"name":"a-secret"}}')).operation,'unclassified_tool');
 });
 test('MCP tool errors are errors despite HTTP 200, and returned counts never use dataset total',()=>{
   assert.equal(inspectResponse('data: '+JSON.stringify({result:{isError:true,content:[{text:'sensitive error'}]}})+'\n\n',op,200).outcome,'error');

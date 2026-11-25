@@ -2,7 +2,11 @@
 
 from typing import Literal
 
+from fastmcp.exceptions import ToolError
+from pydantic import ValidationError
+
 from .contracts import (
+    DomainError,
     PlateComparablesQuery,
     PlateDataset,
     PlateSearchQuery,
@@ -128,10 +132,23 @@ def register_data_tools(server, service=None):
         lang: Literal["en", "zh-Hant"] = "en",
         quality: Literal["all", "current"] = "all",
     ) -> dict:
-        """Read SeeHouse source-linked sale/rental listings for a buildingId from hk_property_search. Keep mode, HKD asking price, area in ft², freshness, matching and dedupe context. Advertisements are not verified availability, valuations or completed transactions; unit matching is not guaranteed. quality=current filters returned cards to observations within 48 hours, building-level matches and unexpired links; availability is not verified."""
-        return await current().properties.building(
-            PropertyListingsQuery(buildingId=buildingId, lang=lang, quality=quality)
-        )
+        """Read SeeHouse sale/rental listings. Search first with hk_property_search and pass the exact buildingId from a candidate. Keep asking price, area in ft², freshness, matching and source links. quality=current filters to observations within 48 hours, building-level matches and unexpired links. Listings do not verify availability."""
+        try:
+            query = PropertyListingsQuery(
+                buildingId=buildingId, lang=lang, quality=quality
+            )
+        except ValidationError:
+            raise ToolError(
+                "INVALID_QUERY: Pass the exact buildingId returned by hk_property_search."
+            ) from None
+        try:
+            return await current().properties.building(query)
+        except DomainError as error:
+            if error.code == "NOT_FOUND":
+                raise ToolError(
+                    "NOT_FOUND: Search again with hk_property_search and use a returned buildingId."
+                ) from None
+            raise
 
     @server.tool(annotations={"readOnlyHint": True, "destructiveHint": False})
     async def hk_property_price_history(
