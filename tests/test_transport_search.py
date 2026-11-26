@@ -450,6 +450,32 @@ async def test_mcp_and_http_search_contracts_match(service):
     )
 
 
+@pytest.mark.asyncio
+async def test_mcp_bus_journey_endpoint_choices(service):
+    origin = {"originLat": 22.2815165, "originLon": 114.1561392}
+    destination = {"destinationLat": 22.2831597, "destinationLon": 114.1478635}
+    async with Client(create_server(service)) as client:
+        for query in (
+            {**origin, **destination},
+            {**origin, "destination": "Seymour Road"},
+        ):
+            result = await client.call_tool(
+                "hk_transport_journey",
+                {**query, "radiusM": 30, "includeArrivals": False},
+            )
+            assert result.data["data"]["items"][0]["route"]["route"] == "12"
+            assert result.data["data"]["items"][0]["arrivalStatus"] == "unchecked"
+        response = await client.call_tool(
+            "hk_transport_journey",
+            {"originLat": origin["originLat"], **destination},
+            raise_on_error=False,
+        )
+        assert response.is_error
+        assert response.content[0].text.startswith(
+            "INVALID_QUERY: Supply both endpoints"
+        )
+
+
 def test_parser_rejects_duplicate_ids_and_orphan_stop(bodies):
     changed = copy.deepcopy(bodies)
     changed["route_stops"] = bodies["route_stops"].replace(

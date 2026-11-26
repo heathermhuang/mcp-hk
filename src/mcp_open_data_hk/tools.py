@@ -1,9 +1,9 @@
 """Queryable government and independent data packs alongside catalogue tools."""
 
-from typing import Literal
+from typing import Annotated, Literal
 
 from fastmcp.exceptions import ToolError
-from pydantic import ValidationError
+from pydantic import Field, ValidationError
 
 from .contracts import (
     DomainError,
@@ -15,6 +15,7 @@ from .contracts import (
     PropertyListingsQuery,
     RestaurantQuery,
 )
+from .mcp_contracts import DISTRICT_STATISTICS
 from .services import get_service
 
 
@@ -100,9 +101,20 @@ def register_data_tools(server, service=None):
         """List the 18 administrative districts with bilingual names and stable IDs."""
         return current().districts()
 
-    @server.tool(annotations={"readOnlyHint": True, "destructiveHint": False})
+    @server.tool(
+        annotations={"readOnlyHint": True, "destructiveHint": False},
+        output_schema=DISTRICT_STATISTICS,
+    )
     def hk_district_statistics(
-        districtId: str, year: int | None = None, requireFresh: bool = False
+        districtId: Annotated[
+            str, Field(description="Exact ID from hk_district_list.")
+        ],
+        year: Annotated[
+            int | None, Field(description="Census reference year; omit for latest.")
+        ] = None,
+        requireFresh: Annotated[
+            bool, Field(description="Reject a stale accepted snapshot.")
+        ] = False,
     ) -> dict:
         """Published district-wide population, area, density and reference year; never radius-level population."""
         return current().statistics(districtId, year, requireFresh)

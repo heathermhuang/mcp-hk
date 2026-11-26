@@ -32,13 +32,11 @@ def mixed(resource_service, monkeypatch):  # noqa: F811
     ]
     rows, schema = parse(json.dumps(rows).encode(), "JSON")
 
-    async def load(*args, **kwargs):
-        return {}, {"rows": rows, "schema": schema}, {"hash": "abc"}, False
+    async def load(resource_id, *args, **kwargs):
+        resource = resource_service.resources.catalogue.resource(resource_id)
+        return resource, {"rows": rows, "schema": schema}, {"hash": "abc"}, False
 
     monkeypatch.setattr(resource_service.resources, "load", load)
-    monkeypatch.setattr(
-        resource_service.resources, "envelope", lambda *args: {"schema": schema}
-    )
     return resource_service
 
 
@@ -143,9 +141,9 @@ async def test_real_completion_admission_deadline_and_cleanup(mixed, monkeypatch
     monkeypatch.setattr(resources, "FileRows", Rows)
     rows = Rows()
 
-    async def load(*args, **kwargs):
+    async def load(resource_id, *args, **kwargs):
         return (
-            {},
+            mixed.resources.catalogue.resource(resource_id),
             {"rows": rows, "schema": {"fields": [{"name": "n"}], "queryFields": []}},
             {"hash": "x"},
             False,
@@ -191,9 +189,9 @@ async def test_whole_envelope_budget(mixed, monkeypatch):
 async def test_sidecar_bytes_count_toward_cap_but_legacy_page_still_fits(
     mixed, monkeypatch
 ):
-    async def load(*args, **kwargs):
+    async def load(resource_id, *args, **kwargs):
         return (
-            {},
+            mixed.resources.catalogue.resource(resource_id),
             {
                 "rows": [{"s": "x" * 400000}],
                 "schema": {"fields": [{"name": "s"}], "queryFields": []},
@@ -221,9 +219,9 @@ async def test_unfiltered_count_does_not_scan_the_entire_accepted_source(
                 yield {"n": index}
             raise AssertionError("Preview scanned beyond its page")
 
-    async def load(*args, **kwargs):
+    async def load(resource_id, *args, **kwargs):
         return (
-            {},
+            mixed.resources.catalogue.resource(resource_id),
             {"rows": Rows(), "schema": {"fields": [{"name": "n"}], "queryFields": []}},
             {"hash": "x"},
             False,

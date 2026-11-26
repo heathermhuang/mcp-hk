@@ -1,6 +1,9 @@
+import json
+
 from fastmcp import FastMCP
 from .http import request_json
 from .contracts import DomainError
+from .mcp_contracts import PublicToolContracts
 from typing import Optional, List, Dict, Any
 
 # Base URLs for the data.gov.hk API
@@ -86,7 +89,7 @@ async def list_categories(
     offset: Optional[int] = None,
     all_fields: bool = False,
     language: str = "en",
-) -> Any:
+) -> List[str | Dict[str, Any]]:
     """
     Get a list of data categories (groups)
 
@@ -239,14 +242,21 @@ async def search_datasets_with_facets(
         A dictionary containing:
         - count: Total number of matching datasets
         - search_facets: Faceted information about the results
-        - sample_results: First 3 matching datasets
+        - results: First 3 matching datasets
     """
     # Using package_search API for search functionality
     base_url = BASE_URLS.get(language, BASE_URLS["en"])
     url = f"{base_url}/package_search"
 
     rows = 3  # Number of sample results to return
-    params = {"q": query, "rows": rows, "start": 0, "facet": "true", "facet.limit": 10}
+    params = {
+        "q": query,
+        "rows": rows,
+        "start": 0,
+        "facet": "true",
+        "facet.field": json.dumps(["groups", "res_format"]),
+        "facet.limit": 10,
+    }
 
     result = await make_api_request(url, params)
 
@@ -307,6 +317,7 @@ def create_server(service=None):
     from .tools import register_data_tools
 
     server = FastMCP("mcp.hk")
+    server.add_middleware(PublicToolContracts())
     for fn in [
         list_datasets,
         get_dataset_details,
