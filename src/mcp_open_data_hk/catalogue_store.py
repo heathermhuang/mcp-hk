@@ -293,7 +293,8 @@ class CatalogueStore:
         if capability != "all" or entity_kind != "all":
             # Connected services retain their independently declared contracts.
             curated = []
-        terms = connected.normalise(q).split() or [""]
+        phrase = connected.normalise(q)
+        terms = phrase.split() or [""]
         patterns = [
             "%" + t.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%"
             for t in terms
@@ -315,16 +316,13 @@ class CatalogueStore:
             **search_ranking.TASK_ALIASES,
             **{p["datasetId"]: p.get("aliases", []) for p in profiles()},
         }
-        phrase = connected.normalise(q)
-        exact_task = search_ranking.TASK_PHRASES.get(phrase.rstrip(" ?"))
-        if exact_task:
-            aliases[exact_task] = [*aliases.get(exact_task, []), phrase]
+        arrival_dataset = transport.arrival_dataset(phrase)
+        lexical_matches = []
         for term, pattern in zip(terms, patterns):
             matching_aliases = [
                 dataset_id
                 for dataset_id, names in aliases.items()
-                if dataset_id == exact_task
-                or (term and term in connected.normalise(" ".join(names)))
+                if term and term in connected.normalise(" ".join(names))
             ]
             expression = "search_normalise(" + lexical + ") LIKE ? ESCAPE '\\'"
             args += (pattern,)
@@ -333,7 +331,13 @@ class CatalogueStore:
                     " OR id IN (" + ",".join("?" for _ in matching_aliases) + ")"
                 )
                 args += tuple(matching_aliases)
-            where += " AND (" + expression + ")"
+            lexical_matches.append("(" + expression + ")")
+        match = " AND ".join(lexical_matches)
+        if arrival_dataset:
+            aliases[arrival_dataset] = [*aliases.get(arrival_dataset, []), phrase]
+            match = "(" + match + " OR id=?)"
+            args += (arrival_dataset,)
+        where += " AND " + match
         if provider != "all":
             where += (
                 " AND COALESCE(json_extract(payload,'$.providerType'),'unclassified')=?"

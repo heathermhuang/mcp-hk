@@ -8,7 +8,7 @@ import re
 
 import pytest
 
-from mcp_open_data_hk import connected
+from mcp_open_data_hk import connected, transport
 from mcp_open_data_hk.services import Service
 from mcp_open_data_hk.storage import Store
 from mcp_open_data_hk.api import create_app
@@ -253,35 +253,134 @@ def test_reviewed_bilingual_task_ids_without_translated_source_metadata(
     assert result["items"][0].get("titleZhHant") is None
 
 
-@pytest.mark.parametrize(
-    "phrase",
-    [
-        "next train at Central",
-        "next train at Central?",
-        "中環 港鐵 到站",
-        "中環港鐵到站？",
-    ],
-)
-def test_rail_task_phrases_do_not_change_unrelated_searches(tmp_path, phrase):
-    catalogue = Service(Store(str(tmp_path / "rail.sqlite3"))).resources.catalogue
-    rail = "mtr-data2-nexttrain-data"
-    light_rail = "mtr-lrnt_data-light-rail-nexttrain-data"
-    bus = "mtr-mtr_bus-mtr-bus-eta-data"
-    catalogue.publish(
+@pytest.fixture
+def arrival_catalogue(tmp_path):
+    service = Service(Store(str(tmp_path / "arrivals.sqlite3")))
+    service.resources.catalogue.publish(
         [
-            {"id": rail, "title": "Real-time MTR train information"},
-            {"id": light_rail, "title": "Real-time Light Rail train information"},
-            {"id": bus, "title": "Real-time MTR Bus Schedule"},
+            {
+                "id": identifier,
+                "title": title,
+                "providerType": "independent_or_public_corporation",
+            }
+            for identifier, title in (
+                (transport.MTR_RAIL_DATASET, "Real-time MTR train information"),
+                (
+                    transport.MTR_LIGHT_RAIL_DATASET,
+                    "Real-time Light Rail train information",
+                ),
+                (transport.MTR_BUS_DATASET, "Real-time MTR Bus Schedule"),
+            )
         ],
         [],
         {},
     )
-    assert [item["id"] for item in catalogue.search(phrase, limit=3)["items"]] == [rail]
-    assert catalogue.search(phrase, limit=1, offset=1)["items"] == []
-    assert [item["id"] for item in catalogue.search("Light Rail")["items"]] == [
-        light_rail
-    ]
-    assert [
-        item["id"] for item in catalogue.search("MTR Bus", access="sources")["items"]
-    ] == [bus]
-    assert catalogue.search("next flight at Central")["items"] == []
+    return service
+
+
+@pytest.mark.parametrize(
+    "phrase, expected",
+    [
+        ("next train at Central", transport.MTR_RAIL_DATASET),
+        ("next train at Central?", transport.MTR_RAIL_DATASET),
+        (
+            "When is the next Tsuen Wan line train from Central?",
+            transport.MTR_RAIL_DATASET,
+        ),
+        ("How soon does the train arrive at Admiralty?", transport.MTR_RAIL_DATASET),
+        ("next train from Mei Foo", transport.MTR_RAIL_DATASET),
+        ("When does the Airport Express depart?", transport.MTR_RAIL_DATASET),
+        ("中環 港鐵 到站", transport.MTR_RAIL_DATASET),
+        ("中環港鐵到站？", transport.MTR_RAIL_DATASET),
+        ("中環站下一班往荃灣的港鐵幾點到", transport.MTR_RAIL_DATASET),
+        ("港鐵金鐘站仲有幾多分鐘到", transport.MTR_RAIL_DATASET),
+        ("荃湾线下一班几点到", transport.MTR_RAIL_DATASET),
+        (
+            "When does the next Light Rail train arrive at Tuen Mun?",
+            transport.MTR_LIGHT_RAIL_DATASET,
+        ),
+        ("屯門輕鐵下一班何時到站", transport.MTR_LIGHT_RAIL_DATASET),
+        ("天水围轻铁实时到站", transport.MTR_LIGHT_RAIL_DATASET),
+        ("When is the next MTR feeder bus?", transport.MTR_BUS_DATASET),
+        ("show live arrivals for MTR buses", transport.MTR_BUS_DATASET),
+        ("下一班港鐵接駁巴士幾時到", transport.MTR_BUS_DATASET),
+        ("港铁巴士实时到站", transport.MTR_BUS_DATASET),
+    ],
+)
+def test_arrival_questions_route_to_the_correct_catalogue_dataset(
+    arrival_catalogue, phrase, expected
+):
+    catalogue = arrival_catalogue.resources.catalogue
+    page = catalogue.search(phrase, limit=1, access="sources")
+    assert [item["id"] for item in page["items"]] == [expected]
+    assert page["total"] == 1 and page["nextOffset"] is None
+    assert catalogue.search(phrase, limit=1, offset=1, access="sources")["items"] == []
+    assert catalogue.search(phrase, access="connected")["sourceTotal"] == 0
+    assert (
+        catalogue.search(phrase, provider="government", access="sources")["items"] == []
+    )
+
+
+@pytest.mark.parametrize(
+    "phrase",
+    [
+        "next flight at Central",
+        "when is the next ferry from Central?",
+        "next Citybus outside Central MTR station",
+        "next KMB from Admiralty MTR station",
+        "下一班九巴幾時到港鐵站",
+        "MTR station entrances and accessibility",
+        "historical MTR arrivals last week",
+        "next high-speed train at West Kowloon",
+        "MTR timetable and fares at Central",
+        "What is the next stop on the MTR?",
+        "When does the MTR train arrive at Central tomorrow?",
+        "明天中環站下一班港鐵幾點到",
+        "港鐵站外下一班小巴幾時到",
+        "香港西九龍下一班高鐵幾點到",
+        "中環去荃灣港鐵車程幾多分鐘",
+    ],
+)
+def test_arrival_matching_does_not_admit_other_intents(arrival_catalogue, phrase):
+    assert transport.arrival_dataset(connected.normalise(phrase)) is None
+    assert (
+        arrival_catalogue.resources.catalogue.search(phrase, access="sources")["items"]
+        == []
+    )
+
+
+def test_arrival_matching_keeps_existing_literal_mode_searches(arrival_catalogue):
+    catalogue = arrival_catalogue.resources.catalogue
+    for phrase, expected in (
+        ("Light Rail", transport.MTR_LIGHT_RAIL_DATASET),
+        ("MTR Bus", transport.MTR_BUS_DATASET),
+    ):
+        assert [
+            item["id"] for item in catalogue.search(phrase, access="sources")["items"]
+        ] == [expected]
+
+
+@pytest.mark.asyncio
+async def test_arrival_question_catalogue_parity_over_mcp_and_http(arrival_catalogue):
+    app = create_app(arrival_catalogue)
+    with TestClient(app) as http:
+        async with Client(app.state.mcp) as mcp:
+            for phrase, expected in (
+                (
+                    "When is the next Tsuen Wan line train from Central?",
+                    transport.MTR_RAIL_DATASET,
+                ),
+                ("中環站下一班往荃灣的港鐵幾點到", transport.MTR_RAIL_DATASET),
+                (
+                    "When does the next Light Rail train arrive at Tuen Mun?",
+                    transport.MTR_LIGHT_RAIL_DATASET,
+                ),
+                ("下一班港鐵接駁巴士幾時到", transport.MTR_BUS_DATASET),
+            ):
+                args = {"q": phrase, "limit": 3, "access": "sources"}
+                result = await mcp.call_tool("hk_catalogue_search", args)
+                response = http.get("/api/v1/catalogue/datasets", params=args)
+                assert response.status_code == 200
+                page = result.structured_content
+                assert page == response.json() == json.loads(result.content[0].text)
+                assert page["items"][0]["id"] == expected

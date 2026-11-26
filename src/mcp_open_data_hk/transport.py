@@ -16,10 +16,13 @@ from .contracts import DomainError
 
 REVISION = "transport-2"
 HKT = timezone(timedelta(hours=8))
+MTR_RAIL_DATASET = "mtr-data2-nexttrain-data"
+MTR_LIGHT_RAIL_DATASET = "mtr-lrnt_data-light-rail-nexttrain-data"
+MTR_BUS_DATASET = "mtr-mtr_bus-mtr-bus-eta-data"
 DATASETS = (
-    "mtr-data2-nexttrain-data",
-    "mtr-lrnt_data-light-rail-nexttrain-data",
-    "mtr-mtr_bus-mtr-bus-eta-data",
+    MTR_RAIL_DATASET,
+    MTR_LIGHT_RAIL_DATASET,
+    MTR_BUS_DATASET,
     "hk-td-tis_21-etakmb",
     "ctb-eta-transport-realtime-eta",
     "nlb-bus-nlb-bus-service-v2",
@@ -30,6 +33,58 @@ DATASETS = (
     "ff-watertaxi-schedule2",
     "hkkf-hkkfdata-hkkf-eta-data",
 )
+
+
+# Match the transport mode and arrival intent independently. These rules point
+# to catalogue datasets. The selected source still requires its own parameters.
+ARRIVAL_INTENT = re.compile(
+    r"\b(?:next|upcoming|live|real[ -]time|eta|arriv\w*|depart(?:s|ure|ures)?)\b"
+    r"|下一班|下班車|下班车|幾時到|几时到|幾點到|几点到|何時到|何时到|"
+    r"到站|到達|到达|抵達|抵达|幾多分鐘|几多分钟|實時|实时|即時|即时"
+)
+NON_LIVE_SCOPE = re.compile(
+    r"\b(?:histor\w*|archives?|yesterday|tomorrow|timetables?|fares?|last week|"
+    r"next (?:stop|station|week|month)|high[ -]speed|express rail link|west kowloon|"
+    r"journey time|travel time)\b"
+    r"|歷史|历史|昨日|昨天|明日|明天|下一站|時刻表|时刻表|車費|车费|票價|票价|高鐵|高铁|西九龍|西九龙|車程|车程"
+)
+LIGHT_RAIL = re.compile(r"\blight[ -]rail\b|輕鐵|轻铁")
+MTR_BUS = re.compile(
+    r"\bmtr (?:feeder )?bus(?:es)?\b|港鐵(?:接駁)?巴士|港铁(?:接驳)?巴士"
+)
+OTHER_MODE = re.compile(
+    r"\b(?:bus(?:es)?|minibus(?:es)?|citybus|kmb|lwb|nlb|ferry|ferries|trams?|taxi|flight)\b"
+    r"|巴士|小巴|九巴|城巴|嶼巴|屿巴|龍運|龙运|渡輪|渡轮|渡船|電車|电车|的士|航班"
+)
+MTR_RAIL = re.compile(
+    r"\b(?:mtr|airport express|mass transit railway|east rail|"
+    r"(?:tsuen wan|island|kwun tong|tung chung|tseung kwan o|tuen ma|south island) line)\b"
+    r"|港鐵|港铁|東鐵|东铁|機場快[綫線线]|机场快线|地鐵|地铁"
+    r"|(?:荃灣|荃湾|港島|港岛|觀塘|观塘|東涌|东涌|將軍澳|将军澳|屯馬|屯马|南港島|南港岛)[綫線线]"
+)
+TRAIN = re.compile(r"\btrains?\b|列車|列车")
+RAIL_LOCATION = re.compile(
+    r"\b(?:central|admiralty|tsuen wan|mong kok|tsim sha tsui|kwun tong|"
+    r"mei foo|wan chai|north point|tai wai|tung chung|tseung kwan o)\b"
+    r"|中環|中环|金鐘|金钟|荃灣|荃湾|觀塘|观塘|港島|港岛|東涌|东涌|將軍澳|将军澳|屯馬|屯马"
+)
+
+
+def arrival_dataset(normalized_query):
+    if NON_LIVE_SCOPE.search(normalized_query) or not ARRIVAL_INTENT.search(
+        normalized_query
+    ):
+        return None
+    if LIGHT_RAIL.search(normalized_query):
+        return MTR_LIGHT_RAIL_DATASET
+    if MTR_BUS.search(normalized_query):
+        return MTR_BUS_DATASET
+    if not OTHER_MODE.search(normalized_query) and (
+        MTR_RAIL.search(normalized_query)
+        or (TRAIN.search(normalized_query) and RAIL_LOCATION.search(normalized_query))
+    ):
+        return MTR_RAIL_DATASET
+    return None
 
 
 @dataclass

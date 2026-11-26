@@ -157,9 +157,10 @@ for direct routes. Joined ETAs are available for Citybus (CTB), KMB, LWB and NLB
 when operator stop identities, service variants and stop order are verified.
 Select ambiguous stops and inspect each arrivalStatus/error. Other transport
 arrival feeds use resource tools; absence from a dedicated pack never establishes
-source absence. For a question such as “next train at Central” or “中環 港鐵 到站”,
-locate the MTR rail feed, inspect its line and station parameters, and ask for the
-line or direction when it is ambiguous. Report the provider timestamp.
+source absence. For arrival questions in English or Chinese, identify the MTR
+train, Light Rail or MTR bus feed. Inspect its required line, station, route or
+direction and ask the user when a selection is ambiguous. Report the provider
+timestamp and any advisories.
 For other datasets, hk_resource_query accepts contains={sourceField: partialText}
 for case-insensitive partial matching alongside exact typed filters.
 Plate.hk historical auction results
