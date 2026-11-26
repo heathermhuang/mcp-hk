@@ -217,7 +217,7 @@ def register_mcp(server, current):
         capability: CatalogueCapability = "all",
         entityKind: EntityKind = "all",
     ) -> dict:
-        """Search connected query services (including independent Plate.hk and SeeHouse) and harvested DATA.GOV.HK/CSDI sources. Connected entries include direct HTTP/MCP actions; source entries require resource inspection. Discovery is not record validation."""
+        """Search connected query services (including independent Plate.hk and SeeHouse) and harvested DATA.GOV.HK/CSDI sources. Connected entries include direct HTTP/MCP actions; source entries require resource inspection. English and Chinese MTR, Light Rail and MTR bus arrival questions can locate the source feed. Inspect its parameters before querying. Discovery is not record validation."""
         return current().resources.catalogue.search(
             q, limit, offset, access, provider, order, capability, entityKind
         )

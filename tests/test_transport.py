@@ -559,7 +559,12 @@ async def test_mcp_bilingual_train_discovery_and_arrival_states(
 
     monkeypatch.setattr("mcp_open_data_hk.resources.fetch", source)
     async with Client(create_server(transport_service)) as client:
-        for phrase in ("next train at Central", "中環 港鐵 到站"):
+        for phrase in (
+            "next train at Central",
+            "中環 港鐵 到站",
+            "When is the next Tsuen Wan line train from Central?",
+            "中環站下一班往荃灣的港鐵幾點到",
+        ):
             search = await client.call_tool(
                 "hk_catalogue_search", {"q": phrase, "limit": 3}
             )
