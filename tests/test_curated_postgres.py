@@ -550,6 +550,18 @@ async def test_gateway_rest_mcp_and_discovery_share_real_backend(
         assert all(response.status_code == 200 for response in responses), [
             r.text for r in responses
         ]
+        first = responses[0].json()
+        cursor = first["meta"]["nextCursor"]
+        assert cursor and first["meta"]["version"] == version
+        continuation = {"q": "foo", "limit": 1, "version": version, "cursor": cursor}
+        pinned = http.get("/api/v1/companies", params=continuation)
+        assert pinned.status_code == 200 and pinned.json()["meta"]["version"] == version
+        assert pinned.json()["data"] != first["data"]
+        mismatch = http.get(
+            "/api/v1/companies", params={**continuation, "version": "other-version"}
+        )
+        assert mismatch.status_code == 409
+        assert mismatch.json()["error"]["code"] == "INVALID_CURSOR"
         assert {"enigma", "company_registry", "sfc_archive"} <= {
             p["id"] for p in http.get("/api/v1/packs").json()["items"]
         }
@@ -593,6 +605,8 @@ async def test_gateway_rest_mcp_and_discovery_share_real_backend(
         ).data
         assert second["data"] != first["data"]
         assert second["meta"]["version"] == version
+        resumed = await mcp.call_tool("hk_company_search", continuation)
+        assert resumed.data["data"] == pinned.json()["data"] == second["data"]
     party = responses[3].json()["data"]["items"][0]["party"]
     assert party["name1"] == "CHAN" and party["name2"] == "Tai Man"
 

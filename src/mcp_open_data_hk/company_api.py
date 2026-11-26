@@ -18,7 +18,7 @@ def register_company_tools(server, current):
         view: Literal["archive", "latest_observed"] = "archive",
         requireFresh: bool = False,
     ) -> dict:
-        """Search organisation name prefixes or explicit identifiers. view=archive selects Enigma; view=latest_observed selects the separately maintained official Registry subset (cr:local:brn, cr:foreign:brn, cr:mlr). Historical observations, not current company verification. Preserve source IDs and leading zeros. Multiple name facts can match one organisation. Pass returned version to detail/history reads and the signed cursor to the next page."""
+        """Search organisation name prefixes or explicit identifiers. view=archive selects Enigma; view=latest_observed selects the separately maintained official Registry subset (cr:local:brn, cr:foreign:brn, cr:mlr). Historical observations, not current company verification. Preserve source IDs and leading zeros. Multiple name facts can match one organisation. Pass the returned version to detail and history reads. For the next page, reuse the view and filters, and pass the signed cursor and returned version."""
         query = CompanySearchQuery(
             groupBy=groupBy,
             q=q,

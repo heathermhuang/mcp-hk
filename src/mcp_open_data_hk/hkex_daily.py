@@ -147,6 +147,15 @@ class DailySummaries:
             if isinstance(data, list)
             else public_record(data)
         )
+        coverage = payload["coverage"]
+        latest_date = coverage.get("latestSummaryDate")
+        status_tool = "hk_hkex_latest_status"
+        snapshot_note = "This response reads an accepted snapshot. Check the updater's last source check and any access hold with hk_hkex_latest_status."
+        if latest_date:
+            snapshot_note = (
+                f"Latest HKEX summary date in this snapshot: {latest_date}. "
+                + snapshot_note
+            )
         result = Envelope(
             data={"items": data} if isinstance(data, list) else data,
             meta={
@@ -156,8 +165,14 @@ class DailySummaries:
                 "nextCursor": payload.get("nextCursor"),
                 "returnedCount": len(data) if isinstance(data, list) else 1,
                 "countScope": "this_page",
-                "coverage": payload["coverage"],
+                "coverage": coverage,
                 "queryCoverage": payload.get("queryCoverage"),
+                "summaryFreshness": {
+                    "latestAcceptedSummaryDate": latest_date,
+                    "upstreamCheckedOnRead": False,
+                    "statusTool": status_tool,
+                    "statusPath": "/api/v1/hkex/latest/status",
+                },
                 "currentVerification": False,
                 "dateBasis": "daily_summary_date",
             },
@@ -170,9 +185,14 @@ class DailySummaries:
                     "licenceClaimed": False,
                 }
             ],
-            warnings=[{"code": "DAILY_SUMMARY_SCOPE", "message": NOTICE}],
+            warnings=[
+                {"code": "DAILY_SUMMARY_SCOPE", "message": NOTICE},
+                {"code": "DAILY_SUMMARY_SNAPSHOT", "message": snapshot_note},
+            ],
         ).model_dump(mode="json")
-        if payload.get("queryCoverage", {}).get("completeRequestedReports") is False:
+        if (payload.get("queryCoverage") or {}).get(
+            "completeRequestedReports"
+        ) is False:
             result["warnings"].append(
                 {
                     "code": "UNOBSERVED_REPORT_DATES",
@@ -230,7 +250,7 @@ def register_mcp(server, current):
         cursor: str | None = None,
         version: str | None = None,
     ) -> dict:
-        """Read latest published HKEX daily-summary rows, optionally by stock code or summary-date interval (1–31 days, end exclusive). Defaults to seven days ending at latest observed summary. Pin version for pagination. Includes shareholder/director categories; this is summary facts, not full forms or current holdings."""
+        """Read latest accepted HKEX daily-summary rows, optionally by stock code or summary-date interval (1–31 days, end exclusive). Defaults to seven days ending at the latest accepted summary. Check hk_hkex_latest_status for updater freshness and holds. Pin version for pagination. Includes shareholder/director categories; this is summary facts, not full forms or current holdings."""
         query = DailyQuery(
             stockCode=stockCode,
             start=start,

@@ -589,3 +589,90 @@ async def test_full_public_tool_inventory_and_legacy_category_wire(
             else:
                 assert result.content == []
             Draft202012Validator(tools["list_categories"].outputSchema).validate(shape)
+
+
+@pytest.mark.asyncio
+async def test_als_search_geoaddress_handoff_preserves_optional_nulls(
+    service, monkeypatch
+):
+    exact = fixture("als-geo")
+
+    async def read(url, params):
+        if url.endswith("/galookup"):
+            assert (
+                params["ga"]
+                == exact["SuggestedAddress"][0]["Address"]["PremisesAddress"][
+                    "GeoAddress"
+                ]
+            )
+            return exact
+        assert url.endswith("/lookup")
+        return fixture("als")
+
+    monkeypatch.setattr("mcp_open_data_hk.services.request_json", read)
+    app = create_app(service)
+    async with Client(app.state.mcp) as mcp:
+        match = await mcp.call_tool(
+            "hk_address_search", {"q": "Central Government Offices"}
+        )
+        identifier = match.structured_content["data"]["items"][0]["id"]
+        detail = await mcp.call_tool("hk_address_get", {"geoAddress": identifier})
+        data = detail.structured_content["data"]
+    with TestClient(app) as http:
+        result = http.get("/api/v1/addresses/" + identifier)
+    assert result.status_code == 200 and result.json()["data"] == data
+    assert data["id"] == identifier
+    assert data["score"] is None and data["districtId"] == "central-western"
+    assert data["latitude"] and data["longitude"]
+
+
+@pytest.mark.asyncio
+async def test_als_malformed_optional_object_has_a_source_error(service, monkeypatch):
+    exact = fixture("als-geo")
+    exact["SuggestedAddress"][0]["ValidationInformation"] = "unexpected"
+
+    async def read(*args):
+        return exact
+
+    monkeypatch.setattr("mcp_open_data_hk.services.request_json", read)
+    async with Client(create_app(service).state.mcp) as mcp:
+        result = await mcp.call_tool(
+            "hk_address_get",
+            {"geoAddress": "3508215732T20110704"},
+            raise_on_error=False,
+        )
+    assert result.is_error and result.content[0].text.startswith(
+        "SOURCE_SCHEMA_CHANGED:"
+    )
+
+
+@pytest.mark.asyncio
+async def test_legacy_dataset_default_and_pagination_are_bounded(monkeypatch):
+    from mcp_open_data_hk import server
+
+    calls = []
+    data = [f"dataset-{i}" for i in range(1600)]
+
+    async def read(url, params):
+        assert url.endswith("/package_list")
+        calls.append(params)
+        return {"success": True, "result": data[params.get("offset", 0) :]}
+
+    monkeypatch.setattr(server, "make_api_request", read)
+    async with Client(server.create_server()) as mcp:
+        first = await mcp.call_tool("list_datasets", {})
+        second = await mcp.call_tool("list_datasets", {"offset": 1000})
+        for tool, arguments in (
+            ("list_datasets", {"limit": -1}),
+            ("list_datasets", {"offset": -1}),
+            ("list_categories", {"limit": -1}),
+            ("list_categories", {"offset": -1}),
+            ("search_datasets", {"limit": -1}),
+            ("search_datasets", {"offset": -1}),
+            ("get_datasets_by_format", {"limit": -1, "file_format": "JSON"}),
+        ):
+            error = await mcp.call_tool(tool, arguments, raise_on_error=False)
+            assert error.is_error and error.content[0].text.startswith("INVALID_QUERY:")
+    assert first.structured_content["result"] == data[:1000]
+    assert second.structured_content["result"] == data[1000:]
+    assert calls == [{"limit": 1000}, {"limit": 1000, "offset": 1000}]

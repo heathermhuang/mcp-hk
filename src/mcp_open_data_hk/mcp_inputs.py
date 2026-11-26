@@ -2,6 +2,8 @@
 
 from functools import lru_cache
 
+from .contracts import LEGACY_CATALOGUE_PAGE_LIMIT
+
 
 PARAMETER_HELP = {
     "access": "Search connected services, source datasets, or both.",
@@ -119,7 +121,13 @@ CONSTRAINT_KEYS = {
     "minLength",
     "maxItems",
 }
+LEGACY_LIMIT = {"minimum": 0, "maximum": LEGACY_CATALOGUE_PAGE_LIMIT}
+LEGACY_OFFSET = {"minimum": 0}
 DIRECT_CONSTRAINTS = {
+    "list_datasets": {"limit": LEGACY_LIMIT, "offset": LEGACY_OFFSET},
+    "list_categories": {"limit": LEGACY_LIMIT, "offset": LEGACY_OFFSET},
+    "search_datasets": {"limit": LEGACY_LIMIT, "offset": LEGACY_OFFSET},
+    "get_datasets_by_format": {"limit": LEGACY_LIMIT},
     "hk_address_search": {
         "q": {"minLength": 1, "maxLength": 200},
         "limit": {"minimum": 1, "maximum": 10},
