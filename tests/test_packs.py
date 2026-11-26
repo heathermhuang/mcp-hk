@@ -384,18 +384,44 @@ async def test_schema_failure_persists_receipt_and_keeps_active(service, monkeyp
 
 
 @pytest.mark.asyncio
-async def test_catalogue_legacy_facets_are_additive(monkeypatch):
+@pytest.mark.parametrize("language", ["en", "tc", "sc"])
+async def test_catalogue_legacy_facets_are_additive(monkeypatch, language):
     from mcp_open_data_hk import server
 
     async def read(url, params):
+        assert url == server.BASE_URLS[language] + "/package_search"
+        assert json.loads(params["facet.field"]) == ["groups", "res_format"]
+        assert params["facet.limit"] == 10
+        if params["q"] == "error":
+            return {"success": False}
+        if params["q"] == "zero":
+            return {"success": True, "result": {"results": [], "count": 0}}
         return {
             "success": True,
-            "result": {"results": [], "count": 0, "search_facets": {"tags": {}}},
+            "result": {
+                "results": [{"id": "weather"}],
+                "count": 10,
+                "search_facets": {
+                    "groups": {"items": [{"name": "weather", "count": 10}]}
+                },
+            },
         }
 
     monkeypatch.setattr(server, "make_api_request", read)
-    result = await server.search_datasets_with_facets("transport")
-    assert {"count", "results", "has_more", "search_facets"} == set(result)
+    assert await server.search_datasets_with_facets("weather", language) == {
+        "count": 10,
+        "results": [{"id": "weather"}],
+        "search_facets": {"groups": {"items": [{"name": "weather", "count": 10}]}},
+        "has_more": True,
+    }
+    assert await server.search_datasets_with_facets("zero", language) == {
+        "count": 0,
+        "results": [],
+        "search_facets": {},
+        "has_more": False,
+    }
+    with pytest.raises(DomainError, match="CATALOGUE_ERROR"):
+        await server.search_datasets_with_facets("error", language)
 
 
 @pytest.mark.asyncio
@@ -438,3 +464,128 @@ def test_introductory_http_guide_matches_the_source_linked_statistics_contract(s
         assert "/api/v1/districts/central-western/statistics" in first["code"]
         assert "data.referencePeriod" in first["paragraphs"][0]
         assert "data.items" not in first["paragraphs"][0]
+
+
+def test_district_statistics_wire_schema_and_validation(service):
+    from jsonschema import validate
+
+    headers = {"Accept": "application/json, text/event-stream"}
+
+    def rpc(client, method, params):
+        response = client.post(
+            "/mcp",
+            json={"jsonrpc": "2.0", "id": 1, "method": method, "params": params},
+            headers=headers,
+        )
+        assert response.status_code == 200
+        return json.loads(
+            next(
+                line[6:]
+                for line in response.text.splitlines()
+                if line.startswith("data: ")
+            )
+        )["result"]
+
+    with TestClient(create_app(service)) as client:
+        tools = rpc(client, "tools/list", {})["tools"]
+        district = next(t for t in tools if t["name"] == "hk_district_statistics")
+        assert (
+            "hk_district_list"
+            in district["inputSchema"]["properties"]["districtId"]["description"]
+        )
+        row = service.store.snapshot("population")[1][0]
+        result = rpc(
+            client,
+            "tools/call",
+            {
+                "name": district["name"],
+                "arguments": {"districtId": row["districtId"]},
+            },
+        )
+        assert result["isError"] is False
+        structured = result["structuredContent"]
+        validate(structured, district["outputSchema"])
+        assert json.loads(result["content"][0]["text"]) == structured
+        assert structured["data"] == row
+        for name, args, expected in [
+            (district["name"], {}, "districtId: required"),
+            (
+                district["name"],
+                {"districtId": [], "year": "private text"},
+                "districtId: invalid",
+            ),
+            ("hk_transport_journey", {}, "Supply both endpoints"),
+            ("hk_resource_query", {}, "resourceId: required"),
+        ]:
+            error = rpc(client, "tools/call", {"name": name, "arguments": args})
+            assert error["isError"] is True
+            assert error["content"][0]["text"].startswith("INVALID_QUERY: ")
+            assert expected in error["content"][0]["text"]
+            assert "private text" not in error["content"][0]["text"]
+
+
+@pytest.mark.asyncio
+async def test_full_public_tool_inventory_and_legacy_category_wire(
+    service, monkeypatch
+):
+    from jsonschema import Draft202012Validator
+    from mcp_open_data_hk import server
+
+    monkeypatch.setenv("MCP_HK_CURATED_ORIGIN", "https://curated.example")
+    monkeypatch.setenv("MCP_HK_CURATED_TOKEN", "x" * 32)
+    monkeypatch.setenv("MCP_HK_HKEX_DAILY_ENABLED", "true")
+    monkeypatch.setenv("MCP_HK_WEBB_SDI_ENABLED", "true")
+    expected = set(
+        json.loads(
+            (
+                Path(__file__).parents[1] / "deploy/cloudflare/mcp-tool-names.json"
+            ).read_text()
+        )
+    ) - {"hk_racing_profile_observation", "hk_racing_profile_history"}
+
+    async def group_list(url, params):
+        assert url.endswith("/group_list")
+        rows = (
+            [{"name": "weather", "title": "Weather"}]
+            if params["all_fields"] == "true"
+            else ["weather"]
+        )
+        return {"success": True, "result": rows[: int(params.get("limit", 1))]}
+
+    monkeypatch.setattr(server, "make_api_request", group_list)
+    service = Service(service.store)
+    async with Client(server.create_server(service)) as client:
+        tools = {tool.name: tool for tool in await client.list_tools()}
+        assert set(tools) == expected
+        for tool in tools.values():
+            assert (
+                tool.annotations.readOnlyHint and not tool.annotations.destructiveHint
+            )
+            shape = tool.outputSchema.get("allOf", [tool.outputSchema])[0]
+            assert shape.get("properties"), tool.name
+            Draft202012Validator.check_schema(tool.outputSchema)
+            Draft202012Validator.check_schema(tool.inputSchema)
+            for name, field in tool.inputSchema.get("properties", {}).items():
+                assert field.get("description"), (tool.name, name)
+        assert (
+            tools["hk_resource_query"].inputSchema["properties"]["limit"]["maximum"]
+            == 100
+        )
+        assert (
+            tools["hk_transport_journey"].inputSchema["properties"]["radiusM"][
+                "maximum"
+            ]
+            == 2000
+        )
+        for fields, limit in ((False, 1), (True, 1), (False, 0), (True, 0)):
+            result = await client.call_tool(
+                "list_categories", {"all_fields": fields, "limit": limit}
+            )
+            shape = result.structured_content
+            assert len(shape["result"]) == limit
+            if limit:
+                assert json.loads(result.content[0].text) == shape["result"]
+                assert isinstance(shape["result"][0], dict if fields else str)
+            else:
+                assert result.content == []
+            Draft202012Validator(tools["list_categories"].outputSchema).validate(shape)

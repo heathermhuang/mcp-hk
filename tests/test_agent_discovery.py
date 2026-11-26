@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -15,6 +16,7 @@ from mcp_open_data_hk.agent_discovery import agent_documents, prefers_markdown
 from mcp_open_data_hk.api import create_app
 from mcp_open_data_hk.services import Service
 from mcp_open_data_hk.storage import Store
+from mcp_open_data_hk.transport_search import ETA_OPERATOR_CODES
 
 
 @pytest.fixture
@@ -167,3 +169,13 @@ def test_generated_agent_assets_match_the_self_hosted_documents():
                 ).read_text() == markdown_document(
                     discovery, path, lang, "-filtered-" in key
                 )
+
+
+def test_agent_guide_matches_joined_eta_dispatch():
+    guides = agent_documents(discovery)
+    guide = guides["/.well-known/agent-skills/hong-kong-public-data/SKILL.md"][0]
+    joined = next(line for line in guide.splitlines() if "Joined ETAs" in line)
+    assert set(re.findall(r"\b[A-Z]{3}\b", joined)) == {
+        code for codes in ETA_OPERATOR_CODES.values() for code in codes
+    }
+    assert "service variants and stop order are verified" in guide

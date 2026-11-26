@@ -251,3 +251,37 @@ def test_reviewed_bilingual_task_ids_without_translated_source_metadata(
     result = c.search(query)
     assert result["items"][0]["id"] == expected
     assert result["items"][0].get("titleZhHant") is None
+
+
+@pytest.mark.parametrize(
+    "phrase",
+    [
+        "next train at Central",
+        "next train at Central?",
+        "中環 港鐵 到站",
+        "中環港鐵到站？",
+    ],
+)
+def test_rail_task_phrases_do_not_change_unrelated_searches(tmp_path, phrase):
+    catalogue = Service(Store(str(tmp_path / "rail.sqlite3"))).resources.catalogue
+    rail = "mtr-data2-nexttrain-data"
+    light_rail = "mtr-lrnt_data-light-rail-nexttrain-data"
+    bus = "mtr-mtr_bus-mtr-bus-eta-data"
+    catalogue.publish(
+        [
+            {"id": rail, "title": "Real-time MTR train information"},
+            {"id": light_rail, "title": "Real-time Light Rail train information"},
+            {"id": bus, "title": "Real-time MTR Bus Schedule"},
+        ],
+        [],
+        {},
+    )
+    assert [item["id"] for item in catalogue.search(phrase, limit=3)["items"]] == [rail]
+    assert catalogue.search(phrase, limit=1, offset=1)["items"] == []
+    assert [item["id"] for item in catalogue.search("Light Rail")["items"]] == [
+        light_rail
+    ]
+    assert [
+        item["id"] for item in catalogue.search("MTR Bus", access="sources")["items"]
+    ] == [bus]
+    assert catalogue.search("next flight at Central")["items"] == []

@@ -540,3 +540,64 @@ def test_mtr_bus_explicit_outage_is_not_empty_arrivals(route, advisory, code):
         transport.validate(body, p, {"routeName": "K12"}, {})
     if code == "SOURCE_UNAVAILABLE":
         assert advisory in str(error.value)
+
+
+@pytest.mark.asyncio
+async def test_mcp_bilingual_train_discovery_and_arrival_states(
+    transport_service, monkeypatch
+):
+    from fastmcp import Client
+
+    from mcp_open_data_hk.server import create_server
+
+    monkeypatch.setattr(transport.time, "time", lambda: NOW)
+    payload = mtr_payload()
+
+    async def source(url, headers=None, **kwargs):
+        assert "line=TWL" in url and "sta=CEN" in url
+        return json.dumps(payload).encode(), {}, url, 200
+
+    monkeypatch.setattr("mcp_open_data_hk.resources.fetch", source)
+    async with Client(create_server(transport_service)) as client:
+        for phrase in ("next train at Central", "中環 港鐵 到站"):
+            search = await client.call_tool(
+                "hk_catalogue_search", {"q": phrase, "limit": 3}
+            )
+            assert (
+                search.structured_content["items"][0]["id"]
+                == "mtr-data2-nexttrain-data"
+            )
+        for dataset in ("mtr-data2-nexttrain-data", "mcp:transport"):
+            page = await client.call_tool(
+                "hk_dataset_resources", {"datasetId": dataset}
+            )
+            if dataset.startswith("mcp:"):
+                assert page.structured_content["access"]
+            else:
+                assert page.structured_content["items"][0]["id"] == "mtr"
+        schema = await client.call_tool("hk_resource_schema", {"resourceId": "mtr"})
+        selection = schema.structured_content
+        assert selection["selectionRequired"] == "parameters"
+        assert selection["parameters"] == ["line", "sta"]
+        args = {
+            "resourceId": "mtr",
+            "parameters": selection["transport"]["parameterExamples"],
+            "requireFresh": True,
+        }
+        for state, count in (("arrivals", 1), ("no_arrivals", 0)):
+            payload = mtr_payload(empty=count == 0)
+            result = await client.call_tool("hk_resource_query", args)
+            assert not result.is_error
+            answer = result.structured_content
+            freshness = answer["schema"]["transport"]
+            assert freshness["arrivalState"] == state
+            assert freshness["sourceTimestamp"] == STAMP
+            assert freshness["freshnessBasis"] == "provider_timestamp"
+            assert len(answer["data"]["items"]) == count
+            assert answer["provenance"][0]["sourceUrl"].startswith(
+                "https://rt.data.gov.hk/"
+            )
+        payload = mtr_payload("2000-01-01T00:00:00+08:00")
+        failed = await client.call_tool("hk_resource_query", args, raise_on_error=False)
+        assert failed.is_error
+        assert failed.content[0].text.startswith("STALE_TRANSPORT_DATA: ")

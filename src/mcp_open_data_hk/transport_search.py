@@ -31,6 +31,11 @@ CITYBUS = {
     "stop": "3eca9b6a7bf3414531b1206042744a2f",
     "eta": "2b1b8d6b425bf3ddd1e1ddb811d54ba4",
 }
+ETA_OPERATOR_CODES = {
+    "ctb": ("CTB",),
+    "kmb": ("KMB", "LWB"),
+    "nlb": ("NLB",),
+}
 TTL = 86400
 WARNING = {
     "code": "BUS_DISCOVERY_SCOPE",
@@ -685,16 +690,12 @@ class TransportSearch:
         expanded = []
         for candidate in candidates:
             operators = candidate["route"]["operator"].split("+")
-            namespaces = []
-            if not query.operator or query.operator == "CTB":
-                if "CTB" in operators:
-                    namespaces.append("ctb")
-            if not query.operator or query.operator in {"KMB", "LWB"}:
-                if set(operators) & {"KMB", "LWB"}:
-                    namespaces.append("kmb")
-            if not query.operator or query.operator == "NLB":
-                if "NLB" in operators:
-                    namespaces.append("nlb")
+            namespaces = [
+                namespace
+                for namespace, codes in ETA_OPERATOR_CODES.items()
+                if (not query.operator or query.operator in codes)
+                and any(code in operators for code in codes)
+            ]
             if not query.includeArrivals or not namespaces:
                 expanded.append(candidate)
                 continue

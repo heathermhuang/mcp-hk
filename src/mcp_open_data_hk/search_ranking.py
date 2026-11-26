@@ -18,6 +18,13 @@ TASK_ALIASES = {
     ]
 }
 
+# Exact task phrases do not make each word a global alias for the dataset.
+TASK_PHRASES = {
+    "next train at central": "mtr-data2-nexttrain-data",
+    "中環 港鐵 到站": "mtr-data2-nexttrain-data",
+    "中環港鐵到站": "mtr-data2-nexttrain-data",
+}
+
 CATALOGUE_INTENT = frozenset(
     [
         "mcp:catalogue",
