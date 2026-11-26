@@ -1,5 +1,6 @@
 """Shared HTTP/MCP contracts. Source publication and retrieval dates are distinct."""
 
+import re
 from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -127,9 +128,14 @@ class PlateComparablesQuery(Model):
     pageSize: int = Field(default=8, ge=1, le=50)
 
 
+COMPANY_VERSION_PATTERN = r"^[A-Za-z0-9._-]+$"
+OFFICIAL_COMPANY_VERSION_PATTERN = r"^official-[a-f0-9]{32}$"
+LEGACY_CATALOGUE_PAGE_LIMIT = 1000
+
+
 class CompanySearchQuery(Model):
     version: str | None = Field(
-        default=None, max_length=100, pattern=r"^official-[a-f0-9]{32}$"
+        default=None, max_length=100, pattern=COMPANY_VERSION_PATTERN
     )
     groupBy: Literal["organisation"] | None = None
     q: str | None = Field(default=None, min_length=2, max_length=200)
@@ -142,8 +148,12 @@ class CompanySearchQuery(Model):
 
     @model_validator(mode="after")
     def choose_search(self):
-        if self.version is not None and self.view != "latest_observed":
-            raise ValueError("Explicit search version applies to official observations")
+        if (
+            self.version is not None
+            and self.view == "latest_observed"
+            and not re.fullmatch(OFFICIAL_COMPANY_VERSION_PATTERN, self.version)
+        ):
+            raise ValueError("Use the version returned by the official company view")
         if self.groupBy and self.limit > 20:
             raise ValueError("Grouped search returns at most 20 organisations")
         if self.q is not None:
@@ -159,7 +169,7 @@ class CompanySearchQuery(Model):
 
 class CompanyReadQuery(Model):
     version: str | None = Field(
-        default=None, max_length=100, pattern=r"^[A-Za-z0-9._-]+$"
+        default=None, max_length=100, pattern=COMPANY_VERSION_PATTERN
     )
     view: Literal["archive", "latest_observed"] = "archive"
     requireFresh: bool = False

@@ -170,6 +170,16 @@ class Companies:
                 "Archival response violates its bounded source contract",
             )
         if (
+            operation == "search"
+            and params.get("version")
+            and payload["version"] != params["version"]
+        ):
+            raise DomainError(
+                "INVALID_CURSOR" if params.get("cursor") else "VERSION_EXPIRED",
+                "Requested version differs from the archive search snapshot; restart this search.",
+                409,
+            )
+        if (
             (operation == "get" and not isinstance(data, dict))
             or (operation != "get" and not isinstance(data, list))
             or (params.get("version") and payload["version"] != params["version"])

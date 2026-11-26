@@ -232,6 +232,26 @@ RESOURCE_QUERY["required"] += ["resource", "schema"]
 LEGACY_SEARCH_FIELDS = {"count": INTEGER, "results": ROWS, "has_more": BOOLEAN}
 CURSOR_ENVELOPE = envelope(ITEMS, META)
 DETAIL_ENVELOPE = envelope(OBJECT, META)
+HKEX_SUMMARY_META = obj(
+    {
+        **META["properties"],
+        "summaryFreshness": obj(
+            {
+                "latestAcceptedSummaryDate": NULLABLE_STRING,
+                "upstreamCheckedOnRead": BOOLEAN,
+                "statusTool": STRING,
+                "statusPath": STRING,
+            },
+            (
+                "latestAcceptedSummaryDate",
+                "upstreamCheckedOnRead",
+                "statusTool",
+                "statusPath",
+            ),
+        ),
+    },
+    ("summaryFreshness",),
+)
 BUS_STOP = obj(
     {"stopId": STRING, "name": OBJECT, "latitude": NUMBER, "longitude": NUMBER},
     ("stopId", "name"),
@@ -331,8 +351,8 @@ OUTPUT_SCHEMAS = {
     "hk_hkex_archive_issuers": CURSOR_ENVELOPE,
     "hk_hkex_archive_disclosures": CURSOR_ENVELOPE,
     "hk_hkex_archive_disclosure": DETAIL_ENVELOPE,
-    "hk_hkex_latest_disclosures": CURSOR_ENVELOPE,
-    "hk_hkex_latest_disclosure": DETAIL_ENVELOPE,
+    "hk_hkex_latest_disclosures": envelope(ITEMS, HKEX_SUMMARY_META),
+    "hk_hkex_latest_disclosure": envelope(OBJECT, HKEX_SUMMARY_META),
     "hk_hkex_issuers": obj(
         {
             "source": STRING,

@@ -324,12 +324,25 @@ async def test_private_rest_mcp_summary_value_parity(model, tmp_path, monkeypatc
         assert status.status_code == 200, status.text
         page = c.get("/api/v1/hkex/latest/disclosures")
         assert page.status_code == 200, page.text
+        freshness = page.json()["meta"]["summaryFreshness"]
+        assert freshness == {
+            "latestAcceptedSummaryDate": status.json()["coverage"]["latestSummaryDate"],
+            "upstreamCheckedOnRead": False,
+            "statusTool": "hk_hkex_latest_status",
+            "statusPath": "/api/v1/hkex/latest/status",
+        }
+        assert any(
+            w["code"] == "DAILY_SUMMARY_SNAPSHOT"
+            and freshness["latestAcceptedSummaryDate"] in w["message"]
+            for w in page.json()["warnings"]
+        )
         key = page.json()["data"]["items"][0]["id"]
         detail = c.get(
             "/api/v1/hkex/latest/disclosures/" + key,
             params={"version": result["version"]},
         )
         assert detail.status_code == 200, detail.text
+        assert detail.json()["meta"]["summaryFreshness"] == freshness
         assert detail.json()["data"]["source_search_ref"] == "100"
         assert "issuer_id" not in detail.json()["data"]
         assert c.get("/api/v1/hkex/latest/disclosures?limit=101").status_code == 400

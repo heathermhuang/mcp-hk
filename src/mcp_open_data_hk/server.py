@@ -2,7 +2,7 @@ import json
 
 from fastmcp import FastMCP
 from .http import request_json
-from .contracts import DomainError
+from .contracts import DomainError, LEGACY_CATALOGUE_PAGE_LIMIT
 from .mcp_contracts import PublicToolContracts
 from typing import Optional, List, Dict, Any
 
@@ -24,29 +24,42 @@ async def make_api_request(
     return await request_json(url, params)
 
 
+def legacy_page_size(limit: int, offset: int | None = None) -> int:
+    if limit < 0 or (offset is not None and offset < 0):
+        raise DomainError(
+            "INVALID_QUERY", "Page size and offset must be non-negative.", 400
+        )
+    return min(limit, LEGACY_CATALOGUE_PAGE_LIMIT)
+
+
 async def list_datasets(
-    limit: Optional[int] = None, offset: Optional[int] = None, language: str = "en"
+    limit: Optional[int] = LEGACY_CATALOGUE_PAGE_LIMIT,
+    offset: Optional[int] = None,
+    language: str = "en",
 ) -> List[str]:
     """
     Get a list of dataset IDs from data.gov.hk
 
     Args:
-        limit: Maximum number of datasets to return (default: 1000)
+        limit: Page size (default and maximum 1000). Use offset for later pages.
         offset: Offset of the first dataset to return
         language: Language code (en, tc, sc)
     """
     base_url = BASE_URLS.get(language, BASE_URLS["en"])
     url = f"{base_url}/package_list"
 
-    params = {}
-    if limit is not None:
-        params["limit"] = limit
+    size = legacy_page_size(
+        LEGACY_CATALOGUE_PAGE_LIMIT if limit is None else limit, offset
+    )
+    if size == 0:
+        return []
+    params = {"limit": size}
     if offset is not None:
         params["offset"] = offset
 
     result = await make_api_request(url, params)
     if result.get("success"):
-        return result["result"]
+        return result["result"][:size]
     else:
         raise DomainError(
             "CATALOGUE_ERROR", "DATA.GOV.HK rejected or could not complete the query"
@@ -96,7 +109,7 @@ async def list_categories(
     Args:
         order_by: Field to sort by ('name' or 'packages') - deprecated, use sort instead
         sort: Sorting of results ('name asc', 'package_count desc', etc.)
-        limit: Maximum number of categories to return
+        limit: Maximum number of categories to return (up to 1000)
         offset: Offset for pagination
         all_fields: Return full group dictionaries instead of just names
         language: Language code (en, tc, sc)
@@ -109,14 +122,19 @@ async def list_categories(
     if order_by != "name":  # Only add if not default
         params["order_by"] = order_by
 
+    size = legacy_page_size(
+        LEGACY_CATALOGUE_PAGE_LIMIT if limit is None else limit, offset
+    )
+    if size == 0:
+        return []
     if limit is not None:
-        params["limit"] = str(limit)
+        params["limit"] = str(size)
     if offset is not None:
         params["offset"] = str(offset)
 
     result = await make_api_request(url, params)
     if result.get("success"):
-        return result["result"]
+        return result["result"][:size]
     else:
         raise DomainError(
             "CATALOGUE_ERROR", "DATA.GOV.HK rejected or could not complete the query"
@@ -198,7 +216,7 @@ async def search_datasets(
     url = f"{base_url}/package_search"
 
     # Limit the maximum number of results
-    rows = min(limit, 1000)
+    rows = legacy_page_size(limit, offset)
 
     params = {"q": query, "rows": rows, "start": offset}
 
@@ -208,7 +226,7 @@ async def search_datasets(
         search_result = result["result"]
         return {
             "count": search_result.get("count", 0),
-            "results": search_result.get("results", []),
+            "results": search_result.get("results", [])[:rows],
             "has_more": search_result.get("count", 0) > (offset + rows),
         }
     else:
@@ -282,7 +300,7 @@ async def get_datasets_by_format(
 
     Args:
         file_format: The file format to filter by (e.g., "CSV", "JSON", "GeoJSON")
-        limit: Maximum number of datasets to return
+        limit: Maximum number of datasets to return (up to 1000)
         language: Language code (en, tc, sc)
 
     Returns:
@@ -297,7 +315,8 @@ async def get_datasets_by_format(
     # Create a query that filters by format
     query = f"res_format:{file_format}"
 
-    params = {"q": query, "rows": min(limit, 1000), "start": 0}
+    rows = legacy_page_size(limit)
+    params = {"q": query, "rows": rows, "start": 0}
 
     result = await make_api_request(url, params)
 
@@ -305,7 +324,7 @@ async def get_datasets_by_format(
         search_result = result["result"]
         return {
             "count": search_result.get("count", 0),
-            "results": search_result.get("results", []),
+            "results": search_result.get("results", [])[:rows],
         }
     else:
         raise DomainError(

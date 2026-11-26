@@ -260,9 +260,17 @@ def parse_population(feature: dict) -> dict:
     ).model_dump()
 
 
+def _optional_address_object(value) -> dict:
+    if value is None:
+        return {}
+    if not isinstance(value, dict):
+        raise TypeError("Expected an address object")
+    return value
+
+
 def _format_address(a: dict, chinese: bool = False) -> str:
     prefix = "Chi" if chinese else "Eng"
-    street = a.get(prefix + "Street", {})
+    street = _optional_address_object(a.get(prefix + "Street"))
     values = [
         a.get("BuildingName"),
         street.get("BuildingNoFrom"),
@@ -273,25 +281,33 @@ def _format_address(a: dict, chinese: bool = False) -> str:
 
 
 def parse_addresses(payload: dict) -> list[dict]:
-    if "SuggestedAddress" not in payload:
+    if not isinstance(payload, dict) or not isinstance(
+        payload.get("SuggestedAddress"), list
+    ):
         raise DomainError("SOURCE_SCHEMA_CHANGED", "ALS response format changed")
     results = []
     for candidate in payload["SuggestedAddress"]:
         a = candidate["Address"]["PremisesAddress"]
-        en, zh = a.get("EngPremisesAddress", {}), a.get("ChiPremisesAddress", {})
-        geo = a.get("GeospatialInformation", {})
+        if not isinstance(a, dict):
+            raise TypeError("Expected a premises address")
+        en = _optional_address_object(a.get("EngPremisesAddress"))
+        zh = _optional_address_object(a.get("ChiPremisesAddress"))
+        geo = a.get("GeospatialInformation")
         if isinstance(geo, list):
-            geo = geo[0] if geo else {}
+            geo = geo[0] if geo else None
+        geo = _optional_address_object(geo)
+        district = _optional_address_object(en.get("EngDistrict"))
+        validation = _optional_address_object(candidate.get("ValidationInformation"))
         lat, lon = coordinates(geo.get("Latitude"), geo.get("Longitude"))
         results.append(
             Address(
                 id=a["GeoAddress"],
                 name=Name(en=en.get("BuildingName"), zhHant=zh.get("BuildingName")),
                 address=Name(en=_format_address(en), zhHant=_format_address(zh, True)),
-                districtId=district_id(en.get("EngDistrict", {}).get("DcDistrict")),
+                districtId=district_id(district.get("DcDistrict")),
                 latitude=lat,
                 longitude=lon,
-                score=candidate.get("ValidationInformation", {}).get("Score"),
+                score=validation.get("Score"),
             ).model_dump()
         )
     return results
