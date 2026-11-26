@@ -315,11 +315,16 @@ class CatalogueStore:
             **search_ranking.TASK_ALIASES,
             **{p["datasetId"]: p.get("aliases", []) for p in profiles()},
         }
+        phrase = connected.normalise(q)
+        exact_task = search_ranking.TASK_PHRASES.get(phrase.rstrip(" ?"))
+        if exact_task:
+            aliases[exact_task] = [*aliases.get(exact_task, []), phrase]
         for term, pattern in zip(terms, patterns):
             matching_aliases = [
                 dataset_id
                 for dataset_id, names in aliases.items()
-                if term and term in connected.normalise(" ".join(names))
+                if dataset_id == exact_task
+                or (term and term in connected.normalise(" ".join(names)))
             ]
             expression = "search_normalise(" + lexical + ") LIKE ? ESCAPE '\\'"
             args += (pattern,)
