@@ -1,12 +1,18 @@
 /** Stream authenticated checkpoints; never buffer expanded inventory in Worker memory. */
 export const MAX_BACKUP = 150_000_000;
 
-export async function saveBackup(env: Pick<Env, 'BACKUPS'>, source: Request | Response, reason: string) {
+export const RESOURCE_CHECKPOINT_RETENTION_HOURS = 48;
+const rollingPrefix = 'rolling-resource-checkpoints/';
+const historicalPrefix = 'backups/';
+const generatedKey = /^(?:backups|rolling-resource-checkpoints)\/\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}\.\d{3}Z-[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}\.snapshot\.tar\.gz$/;
+
+export async function saveBackup(env: Pick<Env, 'BACKUPS'>, source: Request | Response, reason: string, scheduled = false) {
   const length = Number(source.headers.get('content-length'));
   const sha256 = source.headers.get('x-snapshot-sha256') || '';
   if (!source.body || !Number.isSafeInteger(length) || length < 1 || length > MAX_BACKUP || !/^[a-f0-9]{64}$/.test(sha256)) throw new Error('Invalid checkpoint length/checksum');
   const createdAt = new Date().toISOString();
-  const key = `backups/${createdAt.replaceAll(':', '-')}-${crypto.randomUUID()}.snapshot.tar.gz`;
+  const prefix = scheduled && reason === 'resources' && !source.headers.has('X-Racing-Candidate') ? rollingPrefix : historicalPrefix;
+  const key = `${prefix}${createdAt.replaceAll(':', '-')}-${crypto.randomUUID()}.snapshot.tar.gz`;
   const metadata = {sha256, createdAt, reason};
   // FixedLengthStream fails on truncation/overflow. The authenticated producer
   // hashes its SQLite checkpoint; bootstrap independently verifies that checksum.
@@ -36,6 +42,30 @@ export async function saveBackup(env: Pick<Env, 'BACKUPS'>, source: Request | Re
   const receipt = {key, sha256, createdAt, bytes: length, reason};
   await env.BACKUPS.put('latest.json', JSON.stringify(receipt), {httpMetadata: {contentType: 'application/json'}});
   return receipt;
+}
+
+/** Sweep one page per class per maintenance run, advancing only after successful deletes. */
+export async function pruneCheckpoints(bucket: R2Bucket, storage: DurableObjectStorage, now = Date.now()) {
+  const [root, manifest] = await Promise.all([bucket.head('latest.snapshot.tar.gz'), bucket.get('latest.json')]);
+  if (!manifest || manifest.size > 4096) throw new Error('Checkpoint manifest unavailable');
+  const receipt = await manifest.json<{key?: unknown}>();
+  const rootKey = root?.customMetadata?.backupKey;
+  const manifestKey = receipt?.key;
+  if (!rootKey || !generatedKey.test(rootKey) || typeof manifestKey !== 'string' || !generatedKey.test(manifestKey)) {
+    throw new Error('Invalid checkpoint retention pointers');
+  }
+  for (const [prefix, hours] of [[rollingPrefix, RESOURCE_CHECKPOINT_RETENTION_HOURS], [historicalPrefix, 30 * 24]] as const) {
+    const cursorKey = 'checkpointPruneCursor:' + prefix;
+    const cursor = await storage.get<string>(cursorKey);
+    const page = await bucket.list({prefix, cursor, limit: 128});
+    const expired = page.objects.filter(object =>
+      object.key.startsWith(prefix) && generatedKey.test(object.key) &&
+      object.key !== rootKey && object.key !== manifestKey && object.uploaded.getTime() < now - hours * 3600000
+    ).map(object => object.key);
+    if (expired.length) await bucket.delete(expired);
+    if (page.truncated) await storage.put(cursorKey, page.cursor);
+    else if (cursor) await storage.delete(cursorKey);
+  }
 }
 
 /** Recovery must name the exact accepted checkpoint before stopping an instance. */

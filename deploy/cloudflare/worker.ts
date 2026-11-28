@@ -12,7 +12,7 @@ import {probePublicSource} from './source-probe';
 import {relayApprovedSource} from './source-relay';
 import {saveOverview, serveOverview} from './overview';
 import {normalizeBackendResponse, recoveringResponse} from './recovery';
-import {saveBackup, requireCheckpoint, safeOperationError} from './backup';
+import {saveBackup, requireCheckpoint, safeOperationError, pruneCheckpoints, RESOURCE_CHECKPOINT_RETENTION_HOURS} from './backup';
 import {completeRacingPublication} from './racing-publication';
 import {RacingAdmission} from './racing-admission';
 import {curatedContainerEnv} from './curated';
@@ -271,24 +271,23 @@ export class McpContainer extends Container<Env> {
     if (!acquired) throw new Error('Maintenance already running');
     let scheduled;
     try {
-      if (pack === 'scheduled') {
+      const automatic = pack === 'scheduled';
+      if (automatic) {
         scheduled = await nextScheduled(this.ctx.storage);
         pack = scheduled?.pack || 'resources';
       }
       const path = pack === 'backup' ? '/__ops/backup' : `/__ops/refresh?pack=${pack}`;
       const response = await this.containerFetch(`${this.env.PUBLIC_ORIGIN}${path}`, {method: 'POST', headers: {'Authorization': `Bearer ${this.env.OPS_TOKEN}`, 'x-mcp-edge-token': this.env.OPS_TOKEN}});
       if (!response.ok) throw new Error(`Maintenance source returned ${response.status}`);
-      const saved = await saveBackup(this.env, response, pack);
+      const saved = await saveBackup(this.env, response, pack, automatic);
       const receipt = await this.acceptRacingCandidate(response,saved);
       let overview;
       try { overview = await this.publishOverview(); }
       catch (error) { overview = {status: 'failed', error: safeOperationError(error, this.env.OPS_TOKEN)}; }
       await this.ctx.storage.put('maintenanceStatus', {status: 'success', ...receipt, overview});
       if (scheduled) await settleScheduled(this.ctx.storage, scheduled, 'success');
-      const cutoff = Date.now() - 30 * 86400000;
-      const versions = await this.env.BACKUPS.list({prefix: 'backups/'});
-      const expired = versions.objects.filter(object => object.uploaded.getTime() < cutoff).map(object => object.key);
-      if (expired.length) await this.env.BACKUPS.delete(expired);
+      try { await pruneCheckpoints(this.env.BACKUPS, this.ctx.storage); }
+      catch (error) { console.error(JSON.stringify({event:'checkpoint_cleanup_failed', error:safeOperationError(error,this.env.OPS_TOKEN)})); }
       return receipt;
     } catch (error) {
       if (scheduled) await settleScheduled(this.ctx.storage, scheduled, 'failed');
@@ -480,7 +479,7 @@ export default {
     }
     if (url.pathname === '/api/v1/operations') {
       const manifest = await env.BACKUPS.get('latest.json');
-      return Response.json({backup: manifest ? await manifest.json() : null, maintenance: await env.APP.get(env.APP.idFromName('production')).operationsStatus(), schedules: {catalogue: 'Sunday 12:00 Asia/Hong_Kong', resources: 'every five minutes at minutes 2,7,...57; up to 256 reviews, 90 seconds, six concurrent/two per host, 50000 review attempts/day', restaurants: 'daily 10:00 Asia/Hong_Kong', population: 'Sunday 11:00 Asia/Hong_Kong', backup: 'daily 09:00 Asia/Hong_Kong'}, retentionDays: 30});
+      return Response.json({backup: manifest ? await manifest.json() : null, maintenance: await env.APP.get(env.APP.idFromName('production')).operationsStatus(), schedules: {catalogue: 'Sunday 12:00 Asia/Hong_Kong', resources: 'every five minutes at minutes 2,7,...57; up to 256 reviews, 90 seconds, six concurrent/two per host, 50000 review attempts/day', restaurants: 'daily 10:00 Asia/Hong_Kong', population: 'Sunday 11:00 Asia/Hong_Kong', backup: 'daily 09:00 Asia/Hong_Kong'}, retentionDays: 30, resourceCheckpointRetentionHours: RESOURCE_CHECKPOINT_RETENTION_HOURS});
     }
     const headers = usageIngressHeaders(request);
     try {

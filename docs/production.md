@@ -52,11 +52,12 @@ maintenance lease:
 | Reconciled catalogue sync + backup | `0 4 * * SUN` | Sunday 12:00 |
 | Cadence-aware resource review + backup | `2-59/5 * * * *` | Every five minutes at minutes 2,7,...57 |
 
-Every successful operation stores an immutable version under `backups/`, then
-publishes `latest.snapshot.tar.gz` and a manifest. Only complete, validated imports
-can advance an accepted generation. A failed refresh retains the prior data and
-backup, and records failure in the durable maintenance status. Re-run only after
-investigating a changed condition. There is no model-based recurring automation.
+Every successful operation stores an immutable checkpoint, then publishes
+`latest.snapshot.tar.gz` and `latest.json` for recovery. Only complete, validated
+imports can advance an accepted generation. A failed refresh retains the prior
+data and backup, and records failure in the durable maintenance status. Re-run
+only after investigating a changed condition. There is no model-based recurring
+automation.
 
 Daily/weekly jobs are recorded durably before attempting the shared lease. If
 another job holds the lease, the next resource tick services the oldest pending
@@ -68,10 +69,19 @@ settle as failed and are not retried by resource ticks; the next regular schedul
 or an investigated operator action is required. Interrupted requests never clear
 leases, and a newer schedule cannot be erased by an older completion.
 
-R2 versions are retained for 30 days. Local pruning retains active and previous
-generations, all recently retired generations for a 48-hour pagination window,
-associated source captures, and unexpired address cache entries. Full R2 checkpoints
-recover database and captures together. Test an offsite restore after deployment:
+Automatic resource reviews without a racing candidate retain 48 hours of
+checkpoint history under `rolling-resource-checkpoints/`. The existing `backups/`
+prefix retains its 30-day window for historical objects, daily and operator
+checkpoints, imports, and racing checkpoints. After a successful checkpoint, the
+controller prunes the rolling history under the maintenance lease and protects
+the immutable objects named by both recovery references. Missing or invalid
+recovery references stop rolling cleanup. Existing history ages out on its
+original schedule, so billed storage falls as those objects expire.
+
+Local pruning retains active and previous generations, all recently retired
+generations for a 48-hour pagination window, associated source captures, and
+unexpired address cache entries. Full R2 checkpoints recover database and captures
+together. Test an offsite restore after deployment:
 
 ```sh
 uv run python scripts/cloudflare_ops.py backup

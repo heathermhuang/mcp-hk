@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
-import {saveBackup, MAX_BACKUP, requireCheckpoint, safeOperationError} from './backup.ts';
+import {saveBackup, MAX_BACKUP, requireCheckpoint, safeOperationError, pruneCheckpoints} from './backup.ts';
 
 globalThis.FixedLengthStream = class extends TransformStream {
   constructor(length) {
@@ -49,4 +49,99 @@ test('container transform bodies do not require unsupported inter-stream pipeTo'
   const receipt=await saveBackup({BACKUPS},response,'container-backup');
   assert.equal(receipt.bytes,3);
   assert.deepEqual([...BACKUPS.objects.get('latest.snapshot.tar.gz').data],[1,2,3]);
+});
+
+test('only scheduled resources without a racing candidate receive short retention', async () => {
+  for (const [reason, scheduled, candidate, rolling] of [
+    ['resources',true,null,true], ['resources',false,null,false], ['resources-recovery',false,null,false],
+    ['resources',true,'racing-results-v1-'+'a'.repeat(64),false], ['resources',true,'',false],
+    ['resources',true,'invalid',false], ['backup',true,null,false], ['catalogue',true,null,false],
+    ['racing-accepted',false,null,false], ['operator-seed',false,null,false],
+  ]) {
+    const response=source([1,2,3]);
+    if (candidate !== null) response.headers.set('X-Racing-Candidate',candidate);
+    const receipt=await saveBackup({BACKUPS:bucket()},response,reason,scheduled);
+    assert.equal(receipt.key.split('/')[0], rolling ? 'rolling-resource-checkpoints' : 'backups');
+  }
+});
+
+test('failed publication preserves recoverable bytes and exposes both immutable references', async () => {
+  const BACKUPS=bucket();
+  const first=await saveBackup({BACKUPS},source([1]),'backup');
+  await assert.rejects(saveBackup({BACKUPS},source([2],2),'resources',true));
+  assert.equal((await BACKUPS.head('latest.snapshot.tar.gz')).customMetadata.backupKey,first.key);
+  const put=BACKUPS.put.bind(BACKUPS);
+  BACKUPS.put=(key,...args)=>{if(key==='latest.json')throw new Error('manifest unavailable');return put(key,...args);};
+  await assert.rejects(saveBackup({BACKUPS},source([2]),'resources',true));
+  const rootKey=(await BACKUPS.head('latest.snapshot.tar.gz')).customMetadata.backupKey;
+  assert.notEqual(rootKey,first.key);
+  assert.deepEqual([...BACKUPS.objects.get(rootKey).data],[2]);
+  assert.equal(JSON.parse(new TextDecoder().decode(BACKUPS.objects.get('latest.json').data)).key,first.key);
+});
+
+function retentionFixture() {
+  const now=Date.UTC(2026,10,28);
+  const objects=new Map(), cursors=new Map(), requests=[];
+  const rolling='rolling-resource-checkpoints/', history='backups/';
+  function add(prefix,hours,id) {
+    const uploaded=new Date(now-hours*3600000);
+    const stamp=uploaded.toISOString().replaceAll(':','-');
+    const key=prefix+stamp+'-00000000-0000-4000-8000-'+String(id).padStart(12,'0')+'.snapshot.tar.gz';
+    objects.set(key,{key,uploaded});
+    return key;
+  }
+  const root=add(rolling,80,1), manifest=add(history,31*24,2);
+  const bucket={
+    async head(){return {customMetadata:{backupKey:root}};},
+    async get(){return {size:100,json:async()=>({key:manifest})};},
+    async list({prefix,cursor='',limit}){
+      requests.push({prefix,cursor,limit});
+      const keys=[...objects.keys()].filter(k=>k.startsWith(prefix)&&k>cursor).sort();
+      const page=keys.slice(0,limit);
+      return {objects:page.map(k=>objects.get(k)),truncated:keys.length>limit,cursor:page.at(-1)};
+    },
+    async delete(keys){for(const k of keys)objects.delete(k);},
+  };
+  const storage={get:k=>cursors.get(k),put:(k,v)=>cursors.set(k,v),delete:k=>cursors.delete(k)};
+  return {now,objects,cursors,requests,rolling,history,root,manifest,add,bucket,storage};
+}
+
+test('age, current pointers, key shape and prefix constrain bounded retention pages',async()=>{
+  const f=retentionFixture();
+  const expired=Array.from({length:260},(_,i)=>f.add(f.rolling,50,i));
+  const protectedKeys=[f.root,f.manifest,f.add(f.rolling,48,3),f.add(f.history,30*24,4),f.add('company/',1000,6)];
+  const invalid=f.rolling+'unrelated';
+  f.objects.set(invalid,{key:invalid,uploaded:new Date(0)});
+  const oldHistory=f.add(f.history,31*24,5);
+  await pruneCheckpoints(f.bucket,f.storage,f.now);
+  assert.equal(f.requests.length,2);
+  assert.ok(f.objects.has(expired.at(-1)));
+  assert.ok(!f.objects.has(oldHistory));
+  await pruneCheckpoints(f.bucket,f.storage,f.now);
+  await pruneCheckpoints(f.bucket,f.storage,f.now);
+  assert.ok(f.requests[2].cursor);
+  assert.equal(f.cursors.size,0);
+  for(const key of expired)assert.ok(!f.objects.has(key));
+  for(const key of [...protectedKeys,invalid])assert.ok(f.objects.has(key));
+});
+
+test('cleanup fails closed for absent, malformed or unreadable pointers',async()=>{
+  for(const changes of [
+    {head:async()=>null},{get:async()=>null},{head:async()=>({customMetadata:{backupKey:'other/key'}})},
+    {get:async()=>({size:5,json:async()=>({key:'other/key'})})},{get:async()=>{throw new Error('R2 unavailable');}},
+  ]){
+    const f=retentionFixture();
+    await assert.rejects(pruneCheckpoints({...f.bucket,...changes},f.storage,f.now));
+    assert.equal(f.requests.length,0);
+  }
+});
+
+test('failed page deletion leaves the page available for retry',async()=>{
+  const f=retentionFixture();
+  const expired=Array.from({length:140},(_,i)=>f.add(f.rolling,50,i));
+  await assert.rejects(pruneCheckpoints({...f.bucket,delete:async()=>{throw new Error('delete unavailable');}},f.storage,f.now));
+  assert.equal(f.cursors.size,0);
+  await pruneCheckpoints(f.bucket,f.storage,f.now);
+  await pruneCheckpoints(f.bucket,f.storage,f.now);
+  assert.ok(expired.every(key=>!f.objects.has(key)));
 });
